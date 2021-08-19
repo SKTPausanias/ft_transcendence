@@ -1,2 +1,5 @@
-/backend/dist/
-README.md
+#Backend exluded files
+/backend/*
+!/backend/src
+#Frontend exluded files
+
