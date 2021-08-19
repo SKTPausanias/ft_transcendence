@@ -16,27 +16,33 @@ export class AppService {
 	_REDIRECT: string="redirect_uri=http://localhost:4200"
 	_URL: string="https://api.intra.42.fr/oauth/token?"
 
-	req_url: string = this._URL + this._GRANT_TYPE + this._ID + this._SECRET + this._CODE + this._REDIRECT;
+	req_url: string = this._URL + this._GRANT_TYPE + this._ID + this._SECRET;// + this._CODE + this._REDIRECT;
 	tok: Promise<string>;
 	result: Promise<string>;
 	constructor(private readonly httpService: HttpService) {}
 
 	async getHello():  Promise<string>
 	{
-		const some = await this.getAccessToken();
-		const userId = await this.getUserId(some);
-		const userLogin = await this.getUserLogin(some, userId);
-		return ("Acces_token = " + some + "<br>" + "User ID = " + userId + "<br> userLogin = " + userLogin);
+		return ("Hello World");
   	}
  
-	async getAccessToken(): Promise<string> {
-		console.log("getAuthToken");
+	async getLoginInfo(code:string):  Promise<any>
+	{
+		const some = await this.getAccessToken(code);
+		const userId = await this.getUserId(some);
+		const userLogin = await this.getUserLogin(some, userId);
+		return (userLogin);
+	}
+	async getAccessToken(code:string): Promise<string>
+	{
+		this.req_url += "code=" + code + "&" + this._REDIRECT;
 		const response = await this.httpService.post(
 		this.req_url,
 		).toPromise();
 		return response.data.access_token;
 	}
-	async getUserId(code: string): Promise<string> {
+	async getUserId(code: string): Promise<string>
+	{
 		const url = "https://api.intra.42.fr/oauth/token/info";
 		const headersRequest = {
 			'Authorization': 'Bearer ' + code,
@@ -44,14 +50,13 @@ export class AppService {
 		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
 		return response.data.resource_owner_id;
 	}
-	async getUserLogin(code: string, userId: string): Promise<string> {
+	async getUserLogin(code: string, userId: string): Promise<any> {
 		const url = "https://api.intra.42.fr/v2/users/" + userId + "/";
 		const headersRequest = {
 			'Authorization': 'Bearer ' + code,
 		};
 		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
-		console.log(response.data);
-		return response.data.displayname;
+		return response.data;
 	}
 
 }
