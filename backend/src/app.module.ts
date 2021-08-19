@@ -7,12 +7,16 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal: true}),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL,
-      autoLoadEntities: true,
-      synchronize: true
-    }),
+	TypeOrmModule.forRoot({
+		type: 'postgres',
+		host: 'localhost',
+		port: 5432,
+		username: 'admin', //admin
+		password: 'admin',		//admin
+		database: 'ft_transcendence', //ft_transcendence
+		autoLoadEntities: true,
+		synchronize: true
+	}),
   ],
   controllers: [AppController],
   providers: [AppService],

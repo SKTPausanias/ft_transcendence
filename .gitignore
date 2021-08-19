@@ -1,5 +1,6 @@
 #Backend exluded files
 /backend/*
 !/backend/src
+!/backend/*.json
 #Frontend exluded files
 
