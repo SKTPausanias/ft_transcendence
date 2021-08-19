@@ -7,7 +7,7 @@ import { map, catchError } from 'rxjs/operators';
 export class AppService {
 
 
-	code: string = "5a643570cb7809cf917c6ab8e60c809f31e9357bb7e398d0f21dd21fa67612a7";
+	code: string = "2699789f179e811f607174468c053236f3bc7200bdd9b5635e60d4a569c6d5d9";
 
 	_GRANT_TYPE: string="grant_type=authorization_code&"
 	_ID: string="client_id=54468a192544b06fef8e25a40d1e3d1febb65e21f600d6b57e1068e5aeba9823&"
@@ -17,28 +17,41 @@ export class AppService {
 	_URL: string="https://api.intra.42.fr/oauth/token?"
 
 	req_url: string = this._URL + this._GRANT_TYPE + this._ID + this._SECRET + this._CODE + this._REDIRECT;
-	tok: string = "";
+	tok: Promise<string>;
+	result: Promise<string>;
 	constructor(private readonly httpService: HttpService) {}
-	getHello():  string 
+
+	async getHello():  Promise<string>
 	{
-    	 this.getAccessToken().source.subscribe(item =>{
-			console.log("ACCESS TOKEN = " + item.data.access_token);
-			this.tok = (item.data.access_token);
-			console.log("--->" + this.tok + "<---- && type = " + typeof(this.tok));
-		});
-		return (this.tok);
+		const some = await this.getAccessToken();
+		const userId = await this.getUserId(some);
+		const userLogin = await this.getUserLogin(some, userId);
+		return ("Acces_token = " + some + "<br>" + "User ID = " + userId + "<br> userLogin = " + userLogin);
   	}
-  	getAccessToken():  Observable<AxiosResponse<object>> {
-	return this.httpService
-	.post(this.req_url)
-	.pipe(
-		map((axiosResponse: AxiosResponse) => {
-		return axiosResponse.data;
-		}),
-	);
-	
-  }
-  getRand(): string{
-	return ("123");
-}
+ 
+	async getAccessToken(): Promise<string> {
+		console.log("getAuthToken");
+		const response = await this.httpService.post(
+		this.req_url,
+		).toPromise();
+		return response.data.access_token;
+	}
+	async getUserId(code: string): Promise<string> {
+		const url = "https://api.intra.42.fr/oauth/token/info";
+		const headersRequest = {
+			'Authorization': 'Bearer ' + code,
+		};
+		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
+		return response.data.resource_owner_id;
+	}
+	async getUserLogin(code: string, userId: string): Promise<string> {
+		const url = "https://api.intra.42.fr/v2/users/" + userId + "/";
+		const headersRequest = {
+			'Authorization': 'Bearer ' + code,
+		};
+		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
+		console.log(response.data);
+		return response.data.displayname;
+	}
+
 }
