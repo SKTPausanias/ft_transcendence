@@ -3,4 +3,5 @@
 !/backend/src
 !/backend/*.json
 #Frontend exluded files
+/frontend/node_modules
 
