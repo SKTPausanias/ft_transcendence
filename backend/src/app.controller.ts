@@ -3,6 +3,8 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
+
+	tok: string = "";
   constructor(private readonly appService: AppService) {}
 
   @Get()
