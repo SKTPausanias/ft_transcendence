@@ -30,7 +30,11 @@ export class AppService {
 	{
 		const some = await this.getAccessToken(code);
 		const userId = await this.getUserId(some);
+		//Find if userID exists in DB 
+		//EXISTS return obejto de user
 		const userLogin = await this.getUserLogin(some, userId);
+		//Guardamos en base de datos
+		// OBJETO id: 65016, email: "dbelinsk@student.42madrid.com", login: "dbelinsk", first_name: "Dainis", last_name: "Belinskis"
 		return (userLogin);
 	}
 	async getAccessToken(code:string): Promise<string>
@@ -40,19 +44,19 @@ export class AppService {
 		).toPromise();
 		return response.data.access_token;
 	}
-	async getUserId(code: string): Promise<string>
+	async getUserId(access_token: string): Promise<string>
 	{
 		const url = "https://api.intra.42.fr/oauth/token/info";
 		const headersRequest = {
-			'Authorization': 'Bearer ' + code,
+			'Authorization': 'bearer ' + access_token,
 		};
 		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
 		return response.data.resource_owner_id;
 	}
-	async getUserLogin(code: string, userId: string): Promise<any> {
-		const url = "https://api.intra.42.fr/v2/users/" + userId + "/";
+	async getUserLogin(access_token: string, userId: string): Promise<any> {
+		const url = "https://api.intra.42.fr/v2/users/" + 63846 + "/";
 		const headersRequest = {
-			'Authorization': 'Bearer ' + code,
+			'Authorization': 'Bearer ' + access_token,
 		};
 		const response = await this.httpService.get(url, { headers: headersRequest }).toPromise();
 		return response.data;
