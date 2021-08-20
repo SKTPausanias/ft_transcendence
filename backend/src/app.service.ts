@@ -35,9 +35,8 @@ export class AppService {
 	}
 	async getAccessToken(code:string): Promise<string>
 	{
-		this.req_url += "code=" + code + "&" + this._REDIRECT;
-		const response = await this.httpService.post(
-		this.req_url,
+		const url = this._URL + this._GRANT_TYPE + this._ID + this._SECRET + "code=" + code + "&" + this._REDIRECT;
+		const response = await this.httpService.post(url,
 		).toPromise();
 		return response.data.access_token;
 	}
