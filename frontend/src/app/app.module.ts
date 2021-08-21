@@ -4,32 +4,21 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/component/login.component';
+import { LoginComponent } from './component/login/login.component';
+import { HomeComponent } from './component/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
 	HttpClientModule
   ],
-  providers: [
-	  {
-		provide: 'SocialAuthServiceConfig',
-		useValue: {
-		  autoLogin: true, //keeps the user signed in
-		  providers: [
-			{
-			  //id: GoogleLoginProvider.PROVIDER_ID,
-			  //provider: new GoogleLoginProvider('148517665605-jspahbqleats6lv**********2c11b5g7o.apps.googleusercontent.com') // your client id
-			}
-		  ]
-		}
-	  }
-  ],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
