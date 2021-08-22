@@ -1,5 +1,6 @@
 <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh">
 	<div>
-		<button class="btn btn-outline-success center-block" (click)="loginWith42()">Login with 42</button>
+		<button *ngIf="!isLoading" class="btn btn-outline-success center-block" (click)="loginWith42()">Login with 42</button>
+		<p *ngIf="isLoading" class="center-block">LOADING...</p>
 	</div>
 </div>

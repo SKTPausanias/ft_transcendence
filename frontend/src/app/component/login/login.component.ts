@@ -12,6 +12,9 @@ import { AppComponent } from '../../app.component'
 
 
 export class LoginComponent implements OnInit {
+
+	isLoading: boolean = false;
+
   	constructor
 		(
 			private location:Location, private route: ActivatedRoute,
@@ -24,7 +27,9 @@ export class LoginComponent implements OnInit {
 		const code = await this.getCode(resp);
 		if (code !== undefined)
 		{
+			this.isLoading = true;
 			await this.loginService.getExample(code);
+			this.isLoading = false;
 			this.router.navigateByUrl('/home');
 		}
 		this.location.replaceState(this.location.path().split('?')[0], '');

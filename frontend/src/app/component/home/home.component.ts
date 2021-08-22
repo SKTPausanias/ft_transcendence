@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppComponent } from "../../app.component"
 import { Router } from '@angular/router';
 import { UserI } from '../../model/interface/user'
+import { LocalStorageService } from 'src/app/service/local-storage/local-storage.service';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,7 @@ export class HomeComponent implements OnInit {
 	user: UserI = <UserI>{};
   constructor(
 	  private appComponent: AppComponent,
-	  private router: Router
+	  private router: Router,
 	) {}
 
   async ngOnInit(): Promise<void> {
@@ -21,6 +22,10 @@ export class HomeComponent implements OnInit {
 		await this.router.navigateByUrl('/login');
 	else
 		this.user = this.appComponent.getUser();
+  }
+  logOut(): void {
+	this.appComponent.logoutUser();
+	this.ngOnInit();
   }
 
 }
