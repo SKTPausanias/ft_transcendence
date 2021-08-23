@@ -26,12 +26,15 @@ export class HomeComponent implements OnInit {
 	else
 		this.user = this.appComponent.getUser();
   }
+
   logOut(): void {
 	this.appComponent.logoutUser();
 	this.ngOnInit();
   }
-  refreshToken(): void {
-	  this.user.token_expires = Date.now() + 20;
-	  console.log("Refresh: " + this.user.token_expires);
+
+  updateToken() : void {
+	  if (!this.appComponent.refreshToken())
+	  	this.logOut();
+	  console.log("Token updated!! -> " + this.user.token_expires);
   }
 }

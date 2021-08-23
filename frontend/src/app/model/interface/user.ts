@@ -8,6 +8,6 @@ export interface UserI {
 	email:		string;
 	role?:		UserRole;
 	token?:		string; //uuid -> npm install uuid/v4
-	token_expires?:	number; 
-	token_creation_time?: number;
+	token_expires:	number; 
+	token_creation_time: number;
 }
