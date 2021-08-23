@@ -30,5 +30,8 @@ export class HomeComponent implements OnInit {
 	this.appComponent.logoutUser();
 	this.ngOnInit();
   }
-
+  refreshToken(): void {
+	  this.user.token_expires = Date.now() + 20;
+	  console.log("Refresh: " + this.user.token_expires);
+  }
 }

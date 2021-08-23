@@ -7,8 +7,7 @@ export interface UserI {
 	username:	string;
 	email:		string;
 	role?:		UserRole;
-	token?:		string;
-	//token: 		string 20
-	//toke_expires	number
-	//token_creation_time number	
+	token?:		string; //uuid -> npm install uuid/v4
+	token_expires?:	number; 
+	token_creation_time?: number;
 }
