@@ -1,4 +1,4 @@
-import { UserRole } from "../../enums/roles"
+import { UserRole } from "../enums/roles"
 
 export interface UserI {
 	id: 		number;
@@ -8,4 +8,7 @@ export interface UserI {
 	email:		string;
 	role?:		UserRole;
 	token?:		string;
+	//token: 		string 20
+	//toke_expires	number
+	//token_creation_time number	
 }

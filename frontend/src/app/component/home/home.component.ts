@@ -12,9 +12,12 @@ import { LocalStorageService } from 'src/app/service/local-storage/local-storage
 export class HomeComponent implements OnInit {
 
 	user: UserI = <UserI>{};
-  constructor(
-	  private appComponent: AppComponent,
-	  private router: Router,
+	pepe: boolean = true;
+	str: string = "Hola Pepe";
+	str2: string = "Hola Juan";
+	constructor(
+		private appComponent: AppComponent,
+		private router: Router,
 	) {}
 
   async ngOnInit(): Promise<void> {

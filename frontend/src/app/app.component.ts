@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { LoginService } from './service/login/login.service';
 import { UserI } from "./model/interface/user"
 import { Observable } from 'rxjs';
-import { UserRole } from './enums/roles'
+import { UserRole } from './model/enums/roles'
 import { LocalStorageService } from './service/local-storage/local-storage.service'
 
 @Component({
@@ -24,6 +24,7 @@ export class AppComponent {
 		this.user.username = userData.login;
 		this.user.email = userData.email;
 		this.user.role = UserRole.ADMIN;
+		
 		this.localStorageService.set("test", this.user);
 	}
 	hasToken(): boolean{

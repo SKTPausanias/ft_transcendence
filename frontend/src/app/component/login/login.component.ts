@@ -27,10 +27,15 @@ export class LoginComponent implements OnInit {
 		const code = await this.getCode(resp);
 		if (code !== undefined)
 		{
-			this.isLoading = true;
-			await this.loginService.getExample(code);
-			this.isLoading = false;
-			this.router.navigateByUrl('/home');
+			if (code == "401")
+				this.router.navigateByUrl('/unauthorized');
+			else 
+			{
+				this.isLoading = true;
+				await this.loginService.getExample(code);
+				this.isLoading = false;
+				this.router.navigateByUrl('/home');
+			}
 		}
 		this.location.replaceState(this.location.path().split('?')[0], '');
 	
@@ -41,6 +46,10 @@ export class LoginComponent implements OnInit {
 	}
 	getCode(resp: any): string | undefined
 	{
-		return (resp._value.code);
+		if (resp._value.code !== undefined)
+			return (resp._value.code);
+		else if (resp._value.error)
+			return ("401");
+		return (undefined);
 	}
 }
