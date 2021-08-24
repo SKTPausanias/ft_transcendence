@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
 	) {}
 
   async ngOnInit(): Promise<void> {
+	  console.log("home");
 	if (!this.appComponent.hasToken())
 		await this.router.navigateByUrl('/login');
 	else

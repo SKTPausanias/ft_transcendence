@@ -4,6 +4,9 @@ import { LoginService } from '../../service/login/login.service';
 import { Location } from '@angular/common';
 import { AppComponent } from '../../app.component'
 
+import { UserI } from '../../model/interface/user'
+import { UserStatus } from '../../model/enums/userStatus';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -13,6 +16,7 @@ import { AppComponent } from '../../app.component'
 
 export class LoginComponent implements OnInit {
 
+	user: UserI = <UserI>{};
 	isLoading: boolean = false;
 
   	constructor
@@ -23,8 +27,13 @@ export class LoginComponent implements OnInit {
 		) { }
 
 	async ngOnInit(): Promise<void> {
-		if (this.appComponent.hasToken())
+		this.user = this.appComponent.getUser();
+		if (this.user.status == UserStatus.UNCONFIRMED)
+			this.router.navigateByUrl('/confirmation');
+		else if (this.user.status == UserStatus.CONFIRMED)
 			this.router.navigateByUrl('/');
+		/*if (this.appComponent.hasToken())
+			this.router.navigateByUrl('/');*/
 		const resp = await this.route.queryParams;
 		const code = await this.getCode(resp);
 		if (code !== undefined)
@@ -34,12 +43,23 @@ export class LoginComponent implements OnInit {
 			else 
 			{
 				this.isLoading = true;
-				await this.loginService.getExample(code);
+				this.user = await this.loginService.getUserData(code);
 				this.isLoading = false;
-				this.router.navigateByUrl('/');
+
+				if (this.user.status == UserStatus.UNREGISTERED)
+				{
+					this.router.navigateByUrl('/registration');
+					this.user = this.appComponent.getUser();
+					
+				}
+				else if (this.user.status == UserStatus.UNCONFIRMED)
+					this.router.navigateByUrl('/confirmation');
+				else 
+					this.router.navigateByUrl('/');
 			}
 		}
 		this.location.replaceState(this.location.path().split('?')[0], '');
+		
 	
 	}
 	async loginWith42(): Promise<void> {

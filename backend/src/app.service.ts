@@ -29,7 +29,11 @@ export class AppService {
 		//Find if userID exists in DB 
 		//EXISTS return obejto de user
 		const token_info = await this.getTokenInfo();
+		//llamar a base de datos con owner id
+
+		
 		const user_info = await this.getUserInfo(token_info)
+
 		// If dosn't exists save user info in database
 		// OBJETO id: 65016, email: "dbelinsk@student.42madrid.com", login: "dbelinsk", first_name: "Dainis", last_name: "Belinskis"
 		return (user_info);

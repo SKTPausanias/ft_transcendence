@@ -9,6 +9,8 @@ import { HomeComponent } from './component/home/home.component';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 import { UnauthorizedComponent } from './component/unauthorized/unauthorized.component';
 import { LoadingComponent } from './component/loading/loading.component';
+import { RegistrationComponent } from './component/registration/registration.component';
+import { ConfirmationComponent } from './component/confirmation/confirmation.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { LoadingComponent } from './component/loading/loading.component';
     NotFoundComponent,
     UnauthorizedComponent,
     LoadingComponent,
+    RegistrationComponent,
+    ConfirmationComponent,
   ],
   imports: [
     BrowserModule,
