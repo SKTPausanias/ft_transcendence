@@ -8,6 +8,7 @@ import { LoginComponent } from './component/login/login.component';
 import { HomeComponent } from './component/home/home.component';
 import { NotFoundComponent } from './component/not-found/not-found.component';
 import { UnauthorizedComponent } from './component/unauthorized/unauthorized.component';
+import { LoadingComponent } from './component/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { UnauthorizedComponent } from './component/unauthorized/unauthorized.com
     HomeComponent,
     NotFoundComponent,
     UnauthorizedComponent,
+    LoadingComponent,
   ],
   imports: [
     BrowserModule,
