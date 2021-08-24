@@ -1,6 +1,13 @@
-<div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh">
-	<div>
-		<button *ngIf="!isLoading" class="btn btn-outline-success center-block" (click)="loginWith42()">Login with 42</button>
-		<p *ngIf="isLoading" class="center-block">LOADING...</p>
+<app-loading *ngIf="isLoading"></app-loading>
+<div *ngIf="!isLoading" class="outer center">
+	<div class="inner">
+		<div>
+			<img  class="img" src="/assets/img/logo.png" alt="image">
+		</div>
+		<div>
+			<button class="login_btn" (click)="loginWith42()">Login with 42</button>
+		</div>
 	</div>
-</div>
+</div> 
+
+

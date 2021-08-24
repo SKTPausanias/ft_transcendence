@@ -23,6 +23,8 @@ export class LoginComponent implements OnInit {
 		) { }
 
 	async ngOnInit(): Promise<void> {
+		if (this.appComponent.hasToken())
+			this.router.navigateByUrl('/');
 		const resp = await this.route.queryParams;
 		const code = await this.getCode(resp);
 		if (code !== undefined)
@@ -34,7 +36,7 @@ export class LoginComponent implements OnInit {
 				this.isLoading = true;
 				await this.loginService.getExample(code);
 				this.isLoading = false;
-				this.router.navigateByUrl('/home');
+				this.router.navigateByUrl('/');
 			}
 		}
 		this.location.replaceState(this.location.path().split('?')[0], '');
