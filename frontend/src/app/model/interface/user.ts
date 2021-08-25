@@ -3,9 +3,10 @@ import { UserStatus } from "../enums/userStatus"
 
 export interface UserI {
 	id: 		number;
-	firstName: 	string;
-	lastName: 	string;
-	username:	string;
+	first_name: 	string;
+	last_name: 	string;
+	nickname:	string;
+	login: 		string;
 	email:		string;
 	status?:	UserStatus;
 	role?:		UserRole;

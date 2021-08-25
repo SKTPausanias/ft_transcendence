@@ -13,8 +13,8 @@ import { LoginController } from './api/login/login.controller';
     ConfigModule.forRoot({isGlobal: true}),
 	TypeOrmModule.forRoot({
 		type: 'postgres',
-		host: '192.168.1.12',
-		//host: 'localhost',
+		//host: '192.168.1.12',
+		host: 'localhost',
 		port: 5432,
 		username: 'admin', //admin
 		password: 'admin',		//admin

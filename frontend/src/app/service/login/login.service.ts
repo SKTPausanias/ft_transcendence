@@ -27,7 +27,7 @@ export class LoginService {
 	}
 	async registerUser(data: UserI): Promise<UserI>
 	{
-		const url = '/api/registration';
+		const url = '/api/user/registration';
 		this.user = await this.http.post<any>(url, data).toPromise();
 		console.log(this.user);
 		this.appComponent.setUser(this.user);
@@ -35,9 +35,10 @@ export class LoginService {
 	}
 	tmpFillUser(userData: any){
 		this.user.id = userData.id;
-		this.user.firstName = userData.first_name;
-		this.user.lastName = userData.last_name;
-		this.user.username = userData.login;
+		this.user.first_name = userData.first_name;
+		this.user.last_name = userData.last_name;
+		this.user.nickname = userData.login;
+		this.user.login = "saanpedro";
 		this.user.email = userData.email;
 		this.user.role = UserRole.ADMIN;
 		this.user.token = uuid.v4();

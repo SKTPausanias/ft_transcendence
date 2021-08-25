@@ -13,14 +13,6 @@ export class LoginController {
 		// 1. user info
 		// 2. status
 
-		return (resp); 
+		return (resp);
 	}
-	@Post('/registration')
-	async register(@Body() body: any): Promise<any>
-	{
-		console.log(body);
-		body.status = 2;
-		return (body);
-	}
-
 }
