@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UserEntity } from './entity/user.entity';
 import { UserModule } from './module/user/user.module';
 import { LoginController } from './api/login/login.controller';
+import { UserService } from './service/user/user.service';
+import { UserController } from './api/user/user.controller';
 
 @Module({
   imports: [

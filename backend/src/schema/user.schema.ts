@@ -3,7 +3,7 @@ import { UserEntity } from '../entity/user.entity';
 
 export const UserSchema = new EntitySchema<UserEntity>({
   
-    name: 'users',
+    name: 'UserEntity',
   
     target: UserEntity,
   

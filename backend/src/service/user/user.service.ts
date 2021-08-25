@@ -10,8 +10,7 @@ export class UserService {
             private repository: Repository<UserEntity>){}
     
     findAll() : Promise<UserEntity[]> {
-        const data = this.repository.find();
-        console.log("Data from db: " + data);
-        return (data);
+        
+        return (this.repository.find());
     }
 }
