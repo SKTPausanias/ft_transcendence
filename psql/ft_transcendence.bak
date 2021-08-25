@@ -39,12 +39,48 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO admin;
 
 --
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO admin;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: admin
 --
 
 COPY public.users (id, email, login, nickname, first_name, last_name, status, role) FROM stdin;
 222	pepe@gmail.com	pepe	pepe42	Pepe	Ventura	0	admin
+223	juan@gmail.com	juan	juan42	Juan	Ventura	0	admin
 \.
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.users_id_seq', 1, false);
 
 
 --
@@ -53,6 +89,30 @@ COPY public.users (id, email, login, nickname, first_name, last_name, status, ro
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY (id);
+
+
+--
+-- Name: users UQ_2d443082eccd5198f95f2a36e2c; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT "UQ_2d443082eccd5198f95f2a36e2c" UNIQUE (login);
+
+
+--
+-- Name: users UQ_97672ac88f789774dd47f7c8be3; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE (email);
+
+
+--
+-- Name: users UQ_ad02a1be8707004cb805a4b5023; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT "UQ_ad02a1be8707004cb805a4b5023" UNIQUE (nickname);
 
 
 --
