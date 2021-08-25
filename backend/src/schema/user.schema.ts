@@ -1,11 +1,10 @@
 import { EntitySchema } from 'typeorm';
-import { UserEntity } from '../entity/user.entity';
+import { users } from '../entity/user.entity';
 
-export const UserSchema = new EntitySchema<UserEntity>({
+export const UserSchema = new EntitySchema<users>({
   
-    name: 'UserEntity',
-  
-    target: UserEntity,
+    name: 'users',
+    target: users,
   
   columns: {
     id: {
