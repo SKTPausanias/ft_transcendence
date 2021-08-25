@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.3
--- Dumped by pg_dump version 13.3
+-- Dumped from database version 13.4 (Ubuntu 13.4-1.pgdg18.04+1)
+-- Dumped by pg_dump version 13.4 (Ubuntu 13.4-1.pgdg18.04+1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,7 +21,46 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: admin
+-- Name: user_entity; Type: TABLE; Schema: public; Owner: admin
+--
+
+CREATE TABLE public.user_entity (
+    id integer NOT NULL,
+    email character varying NOT NULL,
+    login character varying NOT NULL,
+    nickname character varying NOT NULL,
+    first_name character varying NOT NULL,
+    last_name character varying NOT NULL,
+    status integer NOT NULL,
+    role character varying NOT NULL
+);
+
+
+ALTER TABLE public.user_entity OWNER TO admin;
+
+--
+-- Name: user_entity_id_seq; Type: SEQUENCE; Schema: public; Owner: admin
+--
+
+CREATE SEQUENCE public.user_entity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_entity_id_seq OWNER TO admin;
+
+--
+-- Name: user_entity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: admin
+--
+
+ALTER SEQUENCE public.user_entity_id_seq OWNED BY public.user_entity.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: administrador
 --
 
 CREATE TABLE public.users (
@@ -30,22 +69,79 @@ CREATE TABLE public.users (
     login character varying(50) NOT NULL,
     nickname character varying(50) NOT NULL,
     first_name character varying(50) NOT NULL,
-    last_name character varying(50) NOT NULL
+    last_name character varying(50) NOT NULL,
+    status integer NOT NULL,
+    role character varying(20) NOT NULL
 );
 
 
-ALTER TABLE public.users OWNER TO admin;
+ALTER TABLE public.users OWNER TO administrador;
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: admin
+-- Name: user_entity id; Type: DEFAULT; Schema: public; Owner: admin
 --
 
-COPY public.users (id, email, login, nickname, first_name, last_name) FROM stdin;
+ALTER TABLE ONLY public.user_entity ALTER COLUMN id SET DEFAULT nextval('public.user_entity_id_seq'::regclass);
+
+
+--
+-- Data for Name: user_entity; Type: TABLE DATA; Schema: public; Owner: admin
+--
+
+COPY public.user_entity (id, email, login, nickname, first_name, last_name, status, role) FROM stdin;
 \.
 
 
 --
--- Name: users user_email_key; Type: CONSTRAINT; Schema: public; Owner: admin
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: administrador
+--
+
+COPY public.users (id, email, login, nickname, first_name, last_name, status, role) FROM stdin;
+65535	pepe@local.com	pepe	pe42	pepe	perez	0	admin
+\.
+
+
+--
+-- Name: user_entity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: admin
+--
+
+SELECT pg_catalog.setval('public.user_entity_id_seq', 1, false);
+
+
+--
+-- Name: user_entity PK_b54f8ea623b17094db7667d8206; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_entity
+    ADD CONSTRAINT "PK_b54f8ea623b17094db7667d8206" PRIMARY KEY (id);
+
+
+--
+-- Name: user_entity UQ_415c35b9b3b6fe45a3b065030f5; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_entity
+    ADD CONSTRAINT "UQ_415c35b9b3b6fe45a3b065030f5" UNIQUE (email);
+
+
+--
+-- Name: user_entity UQ_70a1af4dcafe328ae2fb2dc9690; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_entity
+    ADD CONSTRAINT "UQ_70a1af4dcafe328ae2fb2dc9690" UNIQUE (nickname);
+
+
+--
+-- Name: user_entity UQ_e74b542753b5bf00d728607f81a; Type: CONSTRAINT; Schema: public; Owner: admin
+--
+
+ALTER TABLE ONLY public.user_entity
+    ADD CONSTRAINT "UQ_e74b542753b5bf00d728607f81a" UNIQUE (login);
+
+
+--
+-- Name: users user_email_key; Type: CONSTRAINT; Schema: public; Owner: administrador
 --
 
 ALTER TABLE ONLY public.users
@@ -53,7 +149,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_login_key; Type: CONSTRAINT; Schema: public; Owner: admin
+-- Name: users users_login_key; Type: CONSTRAINT; Schema: public; Owner: administrador
 --
 
 ALTER TABLE ONLY public.users
@@ -61,7 +157,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_nickname_key; Type: CONSTRAINT; Schema: public; Owner: admin
+-- Name: users users_nickname_key; Type: CONSTRAINT; Schema: public; Owner: administrador
 --
 
 ALTER TABLE ONLY public.users
@@ -69,7 +165,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: admin
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: administrador
 --
 
 ALTER TABLE ONLY public.users
