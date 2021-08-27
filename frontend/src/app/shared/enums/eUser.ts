@@ -1,5 +1,5 @@
 export enum Storage {
-	USERNAME = 'username',
+	USER = 'user',
 	STATUS = 'status',
 }
 export enum UserRole {

@@ -14,8 +14,19 @@ export class AuthService {
 	constructor(private http:HttpClient) { }
 	async getUserData(code: string): Promise<UserI>{ // TODO <uncomment when data is comming from backend> Promise<Observable<any>>{
 		const url = '/api/login';
-		const userData = await this.http.get<any>(url + "?code=" + code).toPromise();
-		return (userData);
+		return (await this.http.get<any>(url + "?code=" + code).toPromise());
+	}
+	async registerUser(userData: UserI): Promise<UserI>
+	{
+		const url = '/api/user/registration';
+		this.user = await this.http.post<any>(url, userData).toPromise();
+		return (this.user);
+	}
+	async updateUser(userData: UserI): Promise<UserI>
+	{
+		const url = '/api/user/confirmation';
+		this.user = await this.http.post<any>(url, userData).toPromise();
+		return(this.user);
 	}
 	createUser(userData: any){
 		this.user.id = userData.id;

@@ -20,5 +20,13 @@ export class UserController {
 		//body.status = 2;
 		return (data);
 	}
+	@Post('/confirmation')
+	async updateUser(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.confirmUser(body);
+		console.log("confirm data :" + data);
+		//body.status = 2;
+		return (data);
+	}
 
 }

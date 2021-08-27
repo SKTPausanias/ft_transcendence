@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/model/class/cUser';
+import { UserI } from 'src/model/interface/iUser';
 import { Repository } from 'typeorm';
 import { users } from '../../entity/user.entity';
 import { firstValueFrom } from 'rxjs';
@@ -26,65 +27,66 @@ export class UserService {
             private repository: Repository<users>,
 			private readonly httpService: HttpService ){}
 
-			async authorization(code:string):  Promise<any>
-			{
-				this.authHeader = await this.getAuthHeader(code);
-				//Find if userID exists in DB 
-				//EXISTS return obejto de user
-				const token_info = await this.getTokenInfo();
-				console.log(token_info);
-				const data = await this.findById(token_info.resource_owner_id);
-				//llamar a base de datos con owner id
-				//if (token_info.resource_owner_id existe en base de datos)
-				// return info de base datos
-				//else
-				if (data !== undefined)
-					return (data);
-				const user_info = await this.getUserInfo(token_info)
-				this.user.setUser(user_info);
-				this.user.status = 1;
-				if (this.user.login == 'jheras-f' || this.user.login == 'jheras-f' || this.user.login == 'jheras-f' )
-				this.user.role = 'admin';
-				this.insertUser(this.user);
-				
-				//user.sayHello();
-				// If dosn't exists save user info in database
-				// OBJETO id: 65016, email: "dbelinsk@student.42madrid.com", login: "dbelinsk", first_name: "Dainis", last_name: "Belinskis"
-				return (this.user);
-			}
-			async getAuthHeader(code:string): Promise<any>
-			{
-				const url = this._URL + this._GRANT_TYPE + this._ID + this._SECRET + "code=" + code + "&" + this._REDIRECT;
-				const response = await (await firstValueFrom(this.httpService.post(url))).data;
-				return ({'Authorization': response.token_type + ' ' + response.access_token});
-			}
-			async getTokenInfo(): Promise<any>
-			{
-				const url = "https://api.intra.42.fr/oauth/token/info";
-				return ((await firstValueFrom(this.httpService.get(url, { headers: this.authHeader } ))).data);
-			}
-			async getUserInfo(token_info: any): Promise<any> 
-			{
-				const url = "https://api.intra.42.fr/v2/users/" + token_info.resource_owner_id + "/";
-				return ((await firstValueFrom(this.httpService.get(url,  { headers: this.authHeader } ))).data);
-			}
-		
-
-
-
-    
+	async authorization(code:string):  Promise<any>
+	{
+		this.authHeader = await this.getAuthHeader(code);
+		//Find if userID exists in DB 
+		//EXISTS return obejto de user
+		const token_info = await this.getTokenInfo();
+		console.log(token_info);
+		const data = await this.findById(token_info.resource_owner_id);
+		//llamar a base de datos con owner id
+		//if (token_info.resource_owner_id existe en base de datos)
+		// return info de base datos
+		//else
+		if (data !== undefined)
+			return (data);
+		const user_info = await this.getUserInfo(token_info)
+		this.user.setUser(user_info);
+		this.user.status = 1;
+		if (this.user.login == 'jheras-f' || this.user.login == 'dbelinsk' || this.user.login == 'mlaplana' )
+			this.user.role = 'admin';
+		else
+			this.user.role = 'user';				
+		//user.sayHello();
+		// If dosn't exists save user info in database
+		// OBJETO id: 65016, email: "dbelinsk@student.42madrid.com", login: "dbelinsk", first_name: "Dainis", last_name: "Belinskis"
+		return (this.user);
+	}
+	async getAuthHeader(code:string): Promise<any>
+	{
+		const url = this._URL + this._GRANT_TYPE + this._ID + this._SECRET + "code=" + code + "&" + this._REDIRECT;
+		const response = await (await firstValueFrom(this.httpService.post(url))).data;
+		return ({'Authorization': response.token_type + ' ' + response.access_token});
+	}
+	async getTokenInfo(): Promise<any>
+	{
+		const url = "https://api.intra.42.fr/oauth/token/info";
+		return ((await firstValueFrom(this.httpService.get(url, { headers: this.authHeader } ))).data);
+	}
+	async getUserInfo(token_info: any): Promise<any> 
+	{
+		const url = "https://api.intra.42.fr/v2/users/" + token_info.resource_owner_id + "/";
+		return ((await firstValueFrom(this.httpService.get(url,  { headers: this.authHeader } ))).data);
+	}
+		 
     findAll() : Promise<users[]> {
         
         return (this.repository.find());
     }
 
-    insertUser(user : any) : Promise<any> {
-        console.log("user:" + user);
-        user.status = 1;
-        const data = this.repository.insert(user);
-        console.log("data after insert : " + data);
-        return (data);
+    async insertUser(user : any) : Promise<any> {
+        user.status = 2;
+        await this.repository.insert(user);
+        return (user);
     }
+	confirmUser(user: any) : Promise<any>
+	{
+		user.status = 3;
+		this.repository.save({...user, id: user.id})
+		return (user);
+	}
+
 	async findById(id: number): Promise<users>
 	{
 		const data = await this.repository.findOne(id);

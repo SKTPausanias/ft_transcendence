@@ -1,28 +1,38 @@
-import { Injectable } from '@angular/core';
-import { LocalStorageService } from './local-storage.service';
-import { Storage } from 'src/app/shared/enums/eUser';
+	import { Injectable } from '@angular/core';
+	import { LocalStorageService } from './local-storage.service';
+	import { Storage } from 'src/app/shared/enums/eUser';
+	import { UserI } from '../interface/user';
 
+	@Injectable({
+	providedIn: 'root',
+	})
+	export class LocalStorageQueryService {
+	constructor(private localStorageService: LocalStorageService) {}
 
-@Injectable({
-  providedIn: 'root'
-})
-export class LocalStorageQueryService {
+	setUser(user: UserI) {
+		this.localStorageService.set(Storage.USER, user);
+	}
+	getUser(): UserI {
+		const data = this.localStorageService.get(Storage.USER);
+		if (data)
+			return data;
+		return <UserI>{};
+	}
+	removeUser(){
+		this.localStorageService.remove(Storage.USER);
+	}
+	getStatus(): any {
+		const data = this.localStorageService.get(Storage.STATUS);
+		if (data)
+			return data.status;
+		return null;
+	}
 
-  constructor(private localStorageService : LocalStorageService) {
-  }
+	setStatus(statusValue: number) {
+		this.localStorageService.set(Storage.STATUS, { status: statusValue });
+	}
 
-  getStatus(): any {
-    const data = this.localStorageService.get(Storage.STATUS);
-    if (data) 
-      return data.status;
-    return null;
-  }
-
-  setStatus(statusValue : number) {
-    this.localStorageService.set(Storage.STATUS, { status: statusValue });
-  }
-
-  removeStatus(): void {
-    this.localStorageService.remove(Storage.STATUS);
-  }
-}
+	removeStatus(): void {
+		this.localStorageService.remove(Storage.STATUS);
+	}
+	}

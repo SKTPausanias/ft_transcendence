@@ -12,8 +12,7 @@ import { AuthService } from './auth.service';
 })
 export class AuthComponent implements OnInit {
 
-	user: UserI = <UserI>{};
-	data: any = this.sQuery.getStatus();
+	user: UserI = this.sQuery.getUser();
 	isLoading: boolean = false;
 	constructor(
 		private sQuery: LocalStorageQueryService,
@@ -31,30 +30,32 @@ export class AuthComponent implements OnInit {
 			this.isLoading = true;
 			this.user = await this.authService.getUserData(code);
 			this.isLoading = false;
-			console.log('Response from auth component:', this.user);
+			this.sQuery.setUser(this.user);
 		}
-		if (!this.data) this.router.navigateByUrl('auth/login');
-		else if (this.data == UserStatus.UNREGISTERED)
+		if (this.user.status === undefined)
+			this.router.navigateByUrl('auth/login');
+		else if (this.user.status == UserStatus.UNREGISTERED)
 			this.router.navigateByUrl('auth/registration');
-		else if (this.data == UserStatus.UNCONFIRMED)
+		else if (this.user.status == UserStatus.UNCONFIRMED)
 			this.router.navigateByUrl('auth/confirmation');
 		else this.router.navigateByUrl('');
 	}
 
 	showLogin(): boolean {
-		if (!this.data || !this.user === undefined) 
+		if (this.user.status === undefined) 
 			return true;
 		return false;
 	}
 
 	showRegister(): boolean {
-		if (this.user !== undefined && this.user.status == UserStatus.UNREGISTERED) 
+		if (this.user.status == UserStatus.UNREGISTERED) 
 			return true;
 		return false;
 	}
 
 	showConfirm(): boolean {
-		if (this.data == UserStatus.UNCONFIRMED) return true;
+		if (this.user.status == UserStatus.UNCONFIRMED) 
+			return true;
 		return false;
 	}
 

@@ -1,7 +1,35 @@
-<h1>If you are here it mean's that you are:</h1>
-<h3>1. Logged in</h3>
-<h3>2. Registered</h3>
-<h3>3. Confirmed</h3>
-<br>
-<p style="font-style: italic;">Now you can clear data stored in local storage and try it again. Just press the button</p>
-<button (click)='clearCache()'>Clear Cache</button>
+<a href="/test-logo-click"><img  class="logo" src="/assets/img/logo.png" alt="image"></a>
+
+<div class="d-flex justify-content-end p-3">
+</div>
+
+<table class="table table-hover table-success">
+	<thead>
+	  <tr>
+		<th scope="col">UserID</th>
+		<th scope="col">FirstName</th>
+		<th scope="col">LastName</th>
+		<th scope="col">Username</th>
+		<th scope="col">Email</th>
+		<th scope="col">Role</th>
+		<th scope="col">Token</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr>
+		<td>{{user.id}}</td>
+		<td>{{user.first_name}}</td>
+		<td>{{user.last_name}}</td>
+		<td>{{user.nickname}}</td>
+		<td>{{user.email}}</td>
+		<td>{{user.role}}</td>
+		<td>NOTHING_FOR_NOW</td>
+	  </tr>
+	 
+	</tbody>
+  </table>
+
+  <div class="d-flex justify-content-end p-3">
+	<button class="btn btn-danger pull-right" (click)="updateToken()">Refresh Now</button>
+</div>
+	<button class="btn btn-danger center" (click)="logOut()">Logout</button>
