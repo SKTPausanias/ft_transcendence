@@ -26,7 +26,7 @@ import { LoginController } from './api/login/login.controller';
 	HttpModule,
 	UserModule,
   ],
-  controllers: [AppController, LoginController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {

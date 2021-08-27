@@ -1,0 +1,5 @@
+<app-login *ngIf='showLogin() && !isLoading'></app-login>
+<app-registration *ngIf='showRegister() && !isLoading'></app-registration>
+<app-confirmation *ngIf='showConfirm() && !isLoading'></app-confirmation><br>
+<app-loading *ngIf='isLoading'></app-loading>
+
