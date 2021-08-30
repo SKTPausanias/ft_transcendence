@@ -77,7 +77,8 @@ export class UserService {
 
     async insertUser(user : any) : Promise<any> {
         user.status = 2;
-        await this.repository.insert(user);
+        const data = await this.repository.insert(user);
+		console.log("insertUser data= ", data);
         return (user);
     }
 	confirmUser(user: any) : Promise<any>
@@ -89,8 +90,11 @@ export class UserService {
 
 	async findById(id: number): Promise<users>
 	{
+		if (id === undefined)
+			return (<UserI>{});
+		console.log("lets find: " , id);
 		const data = await this.repository.findOne(id);
-		console.log(data);
+		console.log("findByID: ", data);
 		return (data);
 
 	}

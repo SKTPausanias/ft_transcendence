@@ -18,8 +18,6 @@ export class LocalStorageService {
 	  return null;
 	}
 	set(key: string, value: any): boolean {
-		console.log(key, typeof(key));
-		console.log(value, typeof(value));
 	  if (this.isLocalStorageSupported) {
 		this.localStorage.setItem(key, JSON.stringify(value));
 		return true;

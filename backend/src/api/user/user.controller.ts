@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { users } from 'src/entity/user.entity';
 import { UserService } from 'src/service/user/user.service';
 
@@ -16,7 +16,7 @@ export class UserController {
 	async registerUser(@Body() body: any): Promise<any>
 	{
 		const data = await this.userService.insertUser(body);
-		console.log("data :" + data);
+		console.log("register user data: ",  data);
 		//body.status = 2;
 		return (data);
 	}
@@ -27,6 +27,14 @@ export class UserController {
 		console.log("confirm data :" + data);
 		//body.status = 2;
 		return (data);
+	}
+	@Get('/data')
+	async getUserData(@Query() param: any): Promise<any>{
+		console.log("get user data param: ", param);
+		console.log("get user data param.id: ", param.id);
+		const response = await this.userService.findById(param.id);
+		console.log("user by id: ", response);
+		return (response);
 	}
 
 }

@@ -21,9 +21,7 @@ export class AuthComponent implements OnInit {
 		private authService: AuthService
 	) {}
 
-	async ngOnInit(): Promise<void> {
-		console.log('OnInit: Auth');
-		
+	async ngOnInit(): Promise<void> {	
 		const queryParam = await this.route.queryParams;
 		const code = this.getCode(queryParam);
 		if (code !== undefined) {
