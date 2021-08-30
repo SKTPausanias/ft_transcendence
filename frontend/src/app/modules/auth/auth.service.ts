@@ -14,7 +14,8 @@ export class AuthService {
 	constructor(private http:HttpClient) { }
 	async getUserData(code: string): Promise<UserI>{ // TODO <uncomment when data is comming from backend> Promise<Observable<any>>{
 		const url = '/api/login';
-		return (await this.http.get<any>(url + "?code=" + code).toPromise());
+		const data =  (await this.http.get<any>(url + "?code=" + code).toPromise());
+		return data;
 	}
 	async registerUser(userData: UserI): Promise<UserI>
 	{

@@ -1,12 +1,11 @@
 import { Controller, Get, Post, Body, Query} from '@nestjs/common';
-import { UserService } from "../../service/user/user.service"
+import { UserService } from '../../user.service';
 
-@Controller('api')
+@Controller('/api')
 export class LoginController {
 	constructor(private userService: UserService){}
 	@Get('/login')
 	async getLogin(@Query() query){
-		console.log("llega aqui?");
 		const resp =  await this.userService.authorization(query.code);
 		//42 api data
 		// Deberia devolver nuestro modelo

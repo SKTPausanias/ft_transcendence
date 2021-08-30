@@ -1,5 +1,4 @@
-import { UserRole, UserStatus } from "../enums/eUser";
-import { UserI } from "../interface/iUser";
+import { UserI } from "./iUser";
 
 export class User implements UserI {
 

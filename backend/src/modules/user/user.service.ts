@@ -1,11 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/model/class/cUser';
-import { UserI } from 'src/model/interface/iUser';
 import { Repository } from 'typeorm';
-import { users } from '../../entity/user.entity';
 import { firstValueFrom } from 'rxjs';
+import { users } from 'src/shared/entity/user.entity';
+import { User } from './model/user/cUser';
+import { UserI } from './model/user/iUser';
 
 
 @Injectable()
@@ -33,7 +33,6 @@ export class UserService {
 		//Find if userID exists in DB 
 		//EXISTS return obejto de user
 		const token_info = await this.getTokenInfo();
-		console.log(token_info);
 		const data = await this.findById(token_info.resource_owner_id);
 		//llamar a base de datos con owner id
 		//if (token_info.resource_owner_id existe en base de datos)
@@ -78,7 +77,6 @@ export class UserService {
     async insertUser(user : any) : Promise<any> {
         user.status = 2;
         const data = await this.repository.insert(user);
-		console.log("insertUser data= ", data);
         return (user);
     }
 	confirmUser(user: any) : Promise<any>
@@ -92,9 +90,7 @@ export class UserService {
 	{
 		if (id === undefined)
 			return (<UserI>{});
-		console.log("lets find: " , id);
 		const data = await this.repository.findOne(id);
-		console.log("findByID: ", data);
 		return (data);
 
 	}

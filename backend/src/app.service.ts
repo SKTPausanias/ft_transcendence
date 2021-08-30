@@ -1,18 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
-import { User } from './model/class/cUser';
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class AppService {
-	
-	
 	constructor() {}
 
-	async getHello():  Promise<string>
-	{
-		return ("Hello World");
-  	}
- 
-	
+	async getHello(): Promise<string> {
+		return "Hello World";
+	}
 }

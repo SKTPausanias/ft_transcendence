@@ -19,9 +19,9 @@ export class RegistrationComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		console.log('OnInit: Registration');
+		console.log('OnInit: Registration: ', this.user);
 	}
-	
+
 	async getRegistered(): Promise<void> {
 		this.user = await this.authService.registerUser(this.user);
 		this.sQuery.setUser(this.user);

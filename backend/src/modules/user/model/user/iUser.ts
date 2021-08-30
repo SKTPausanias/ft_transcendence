@@ -1,4 +1,3 @@
-import * as enums from '../enums/eUser'
 
 export interface UserI {
 	id: 			number;

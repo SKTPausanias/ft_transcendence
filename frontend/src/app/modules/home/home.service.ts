@@ -15,11 +15,10 @@ export class HomeService {
 	) {}
 
 	async getUserData(): Promise<UserI> {
-		if (this.userId === undefined) return <UserI>{};
-		const url = '/api/user/data';
-		const response = await this.http
-		.get<any>(url + '?id=' + this.userId)
-		.toPromise();
+		if (this.userId === undefined)
+			return <UserI>{};
+			const url = '/api/user/data';
+			const response = await this.http.get<any>(url + '?id=' + this.userId).toPromise();
 		return response ? response : <UserI>{};
 	}
 }

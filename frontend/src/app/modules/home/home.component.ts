@@ -22,8 +22,10 @@
 		this.user = await this.homeService.getUserData();
 		this.sQuery.setUser(this.user);
 		if (this.user.status !== UserStatus.CONFIRMED)
-		this.router.navigateByUrl('/auth');
-		else this.isLoaded = true;
+			this.router.navigateByUrl('/auth');
+		else 
+			this.isLoaded = true;
+		console.log(this.user);
 	}
 	logOut(): void {
 		this.sQuery.removeUser();
