@@ -1,2 +1,86 @@
-<p>registration works!</p>
-<button (click)='getRegistered()'>Register Me</button>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="box">
+		<div class="container">
+			<form class="form-group">
+				<div>
+					<h3>Registration</h3>
+					<hr />
+					<div class="form-group mb-3">
+						<label for="name">First Name</label>
+						<input
+							type="text"
+							value = {{user.first_name}}
+							name="first_name"
+							class="form-control"
+							readonly
+							required
+						/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="last_name">Last Name</label>
+						<input
+							type="text"
+							value = {{user.last_name}}
+							name="last_name"
+							class="form-control"
+							readonly
+							required
+						/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="last_name">42 Login</label>
+						<input
+							type="text"
+							value = {{user.login}}
+							name="login"
+							class="form-control"
+							readonly
+							required
+						/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="nickname">Nickname*</label>
+							<input
+								id="nickname_box"
+								type="text"
+								placeholder = {{user.nickname}}
+								minlength="5"
+								name="nickname"
+								class="form-control"
+								required
+							/>
+						<div class="form-check mt-2 d-flex align-items-center">
+							<input type="checkbox" class="form-check-input me-2" id="nickname_check">
+							<label class="form-check-label" for="nickname_check"><small><i>Use 42 Login</i></small></label>
+						</div>
+					</div>
+					<div class="form-group mb-3">
+						<label for="exampleInputEmail1">Email Address</label>
+						<input
+							type="email"
+							class="form-control"
+							id="exampleInputEmail1"
+							aria-describedby="emailHelp"
+							value = "{{user.email}}"
+							placeholder="Enter email"
+							readonly
+						/>
+						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					</div>
+					<div class="form-group mb-3">
+						<label for="exampleInputPassword1">Password</label>
+						<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+					</div>
+					
+				</div>
+				<div class="btn_container">
+					<button type="submit" (click)='getRegistered()' class="btn_register p-2 px-5 mt-4">Register</button>
+				</div>
+			</form>
+		  </div>
+	</div>
+</div>
+
+
+<!--- <p>registration works!</p>
+<button (click)='getRegistered()'>Register Me</button> --->
