@@ -5,3 +5,4 @@
 #Frontend exluded files
 /frontend/node_modules
 
+sendgrid.env

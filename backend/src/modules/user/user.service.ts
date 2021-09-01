@@ -77,6 +77,34 @@ export class UserService {
     async insertUser(user : any) : Promise<any> {
         user.status = 2;
         const data = await this.repository.insert(user);
+		//TODO SEND EMAIL
+		//API key does not start with "SG.".
+		const nodemailer = require('nodemailer');
+
+		const transporter = nodemailer.createTransport({
+			host: 'smtp.gmail.com',
+			port: 587,
+			auth: {
+			  user: 'ft.transcendence.42@gmail.com',
+			  pass: '@qwerty12345',
+			},
+		  });
+
+
+		transporter.sendMail({
+		from: '"42 PONG"', // sender address
+		to: user.email, // list of receivers
+		subject: "✔YOUR PONG CONFIRMATION", // Subject line
+		text: "Click this link to complelte!", // plain text body
+		html: "<b>Click this link to complelte!</b>", // html body
+		}).then(info => {
+		console.log({info});
+		}).catch(console.error);
+
+
+
+
+		//
         return (user);
     }
 	confirmUser(user: any) : Promise<any>
