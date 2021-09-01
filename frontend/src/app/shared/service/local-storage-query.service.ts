@@ -14,7 +14,8 @@ export class LocalStorageQueryService {
 	}
 	getUser(): UserI {
 		const data = this.localStorageService.get(Storage.USER);
-		if (data) return data;
+		if (data)
+			return data;
 		return <UserI>{};
 	}
 	removeUser() {

@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="box">
 		<div class="container">
-			<form class="form-group">
+			<form ngNativeValidate class="form-group" #reg="ngForm" (ngSubmit)="onSubmitRegister(reg.value)">
 				<div>
 					<h3>Registration</h3>
 					<hr />
@@ -9,7 +9,7 @@
 						<label for="name">First Name</label>
 						<input
 							type="text"
-							value = {{user.first_name}}
+							ngModel={{user.first_name}}
 							name="first_name"
 							class="form-control"
 							readonly
@@ -20,7 +20,7 @@
 						<label for="last_name">Last Name</label>
 						<input
 							type="text"
-							value = {{user.last_name}}
+							ngModel={{user.last_name}}
 							name="last_name"
 							class="form-control"
 							readonly
@@ -28,10 +28,10 @@
 						/>
 					</div>
 					<div class="form-group mb-3">
-						<label for="last_name">42 Login</label>
+						<label for="login">42 Login</label>
 						<input
 							type="text"
-							value = {{user.login}}
+							ngModel = {{user.login}}
 							name="login"
 							class="form-control"
 							readonly
@@ -40,17 +40,18 @@
 					</div>
 					<div class="form-group mb-3">
 						<label for="nickname">Nickname*</label>
-							<input
-								id="nickname_box"
-								type="text"
-								placeholder = {{user.nickname}}
-								minlength="5"
+							<input 
+								#nickname_input
+								ngModel={{nickname}}
 								name="nickname"
+								type="text"
+								placeholder = "Select your nickname"
+								minlength="5"
 								class="form-control"
 								required
 							/>
 						<div class="form-check mt-2 d-flex align-items-center">
-							<input type="checkbox" class="form-check-input me-2" id="nickname_check">
+							<input type="checkbox" class="form-check-input me-2" (change)="checkboxChange($event)">
 							<label class="form-check-label" for="nickname_check"><small><i>Use 42 Login</i></small></label>
 						</div>
 					</div>
@@ -59,11 +60,12 @@
 						<input
 							type="email"
 							class="form-control"
-							id="exampleInputEmail1"
 							aria-describedby="emailHelp"
-							value = "{{user.email}}"
-							placeholder="Enter email"
+							ngModel = "{{user.email}}"
+							name="emaiil"
 							readonly
+							required
+
 						/>
 						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
 					</div>
@@ -74,7 +76,7 @@
 					
 				</div>
 				<div class="btn_container">
-					<button type="submit" (click)='getRegistered()' class="btn_register p-2 px-5 mt-4">Register</button>
+					<button type="submit" class="btn_register p-2 px-5 mt-4">Register</button>
 				</div>
 			</form>
 		  </div>

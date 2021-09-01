@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { UserI } from 'src/app/shared/interface/user';
 import * as enums from 'src/app/shared/enums/eUser'
 import * as uuid from 'uuid';
+import { HomeService } from '../home/home.service';
 
 
 @Injectable({
@@ -11,7 +12,12 @@ import * as uuid from 'uuid';
 export class AuthService {
 
 	user: UserI = <UserI>{};
-	constructor(private http:HttpClient) { }
+	constructor(private http:HttpClient, private homeService: HomeService) { }
+
+	async getUser()
+	{
+		return (await this.homeService.getUserData())
+	}
 	async getUserData(code: string): Promise<UserI>{ // TODO <uncomment when data is comming from backend> Promise<Observable<any>>{
 		const url = '/api/login';
 		const data =  (await this.http.get<any>(url + "?code=" + code).toPromise());

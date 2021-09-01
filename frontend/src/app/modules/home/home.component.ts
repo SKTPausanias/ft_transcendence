@@ -11,7 +11,7 @@
 	styleUrls: ['./home.component.css'],
 	})
 	export class HomeComponent implements OnInit {
-	user: UserI = <UserI>{};
+	user: UserI = this.sQuery.getUser();
 	isLoaded: boolean = false;
 	constructor(
 		private sQuery: LocalStorageQueryService,

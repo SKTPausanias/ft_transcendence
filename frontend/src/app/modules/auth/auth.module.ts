@@ -5,6 +5,8 @@ import { LoginComponent } from './components/login/login.component';
 import { RegistrationComponent } from './components/registration/registration.component';
 import { AuthComponent} from './auth.component';
 import { LoadingComponent } from './components/loading/loading.component';
+import { FormsModule } from '@angular/forms'
+
 
 @NgModule({
   declarations: [
@@ -12,10 +14,11 @@ import { LoadingComponent } from './components/loading/loading.component';
     LoginComponent,
     RegistrationComponent,
     ConfirmationComponent,
-    LoadingComponent,
+    LoadingComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+	FormsModule,
   ],
   exports: [AuthComponent]
 })

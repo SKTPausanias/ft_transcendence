@@ -14,6 +14,7 @@ export class AuthComponent implements OnInit {
 
 	user: UserI = this.sQuery.getUser();
 	isLoading: boolean = false;
+	isLoaded: boolean = false;
 	constructor(
 		private sQuery: LocalStorageQueryService,
 		private router: Router,
@@ -22,11 +23,10 @@ export class AuthComponent implements OnInit {
 	) {}
 
 	async ngOnInit(): Promise<void> {	
-		console.log(0);
+		this.isLoaded = false;
+		this.user = await this.authService.getUser();
 		const queryParam = await this.route.queryParams;
-		console.log(1);
 		const code = this.getCode(queryParam);
-		console.log(2);
 		if (code !== undefined) {
 			this.isLoading = true;
 			this.user = await this.authService.getUserData(code);
@@ -40,6 +40,7 @@ export class AuthComponent implements OnInit {
 		else if (this.user.status == UserStatus.UNCONFIRMED)
 			this.router.navigateByUrl('auth/confirmation');
 		else this.router.navigateByUrl('');
+		this.isLoaded = true;
 	}
 
 	showLogin(): boolean {

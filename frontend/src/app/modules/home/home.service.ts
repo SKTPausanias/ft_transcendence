@@ -7,7 +7,6 @@ import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-q
 providedIn: 'root',
 })
 export class HomeService {
-	userId: number = this.sQuery.getUser().id;
 
 	constructor(
 		private http: HttpClient,
@@ -15,10 +14,12 @@ export class HomeService {
 	) {}
 
 	async getUserData(): Promise<UserI> {
-		if (this.userId === undefined)
+		const id = this.sQuery.getUser().id;
+		console.log(id);
+		if (id === undefined)
 			return <UserI>{};
-			const url = '/api/user/data';
-			const response = await this.http.get<any>(url + '?id=' + this.userId).toPromise();
+		const url = '/api/user/data';
+		const response = await this.http.get<any>(url + '?id=' + id).toPromise();
 		return response ? response : <UserI>{};
 	}
 }
