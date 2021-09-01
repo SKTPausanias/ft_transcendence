@@ -29,5 +29,10 @@ export class UserController {
 		const response = await this.userService.findById(param.id);
 		return (response);
 	}
+	@Get('/delete')
+	async deleteUserAccount(@Query() param: any): Promise<any> {
+		const response = await this.userService.deleteById(param.id);
+		return (response);
+	}
 
 }

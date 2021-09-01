@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import { users } from 'src/shared/entity/user.entity';
 import { User } from './model/user/cUser';
@@ -92,6 +92,14 @@ export class UserService {
 			return (<UserI>{});
 		const data = await this.repository.findOne(id);
 		return (data);
+
+	}
+	async deleteById(id: number): Promise<DeleteResult>
+	{
+		if (id === undefined)
+			return (<DeleteResult>{});
+		const deleted = await this.repository.delete(id);
+		return (deleted);
 
 	}
 }

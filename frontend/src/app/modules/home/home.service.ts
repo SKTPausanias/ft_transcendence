@@ -22,4 +22,14 @@ export class HomeService {
 		const response = await this.http.get<any>(url + '?id=' + id).toPromise();
 		return response ? response : <UserI>{};
 	}
+
+	async deleteUserAccount(): Promise<any> {
+		const id = this.sQuery.getUser().id;
+		console.log("Deleting user calling the backend controller: ", id);
+		if (id === undefined)
+			return <UserI>{};
+		const url = '/api/user/delete';
+		const response = await this.http.get<any>(url + '?id=' + id).toPromise();
+		return (response);
+	}
 }
