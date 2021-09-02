@@ -23,6 +23,7 @@
 		async ngOnInit(): Promise<void> {
 			this.user = await this.homeService.getUserData();
 			this.sQuery.setUser(this.user);
+			console.log(this.sQuery.getUser());
 			if (this.user.status !== UserStatus.CONFIRMED)
 				this.router.navigateByUrl('/auth');
 			else 
@@ -45,3 +46,12 @@
 			this.logOut();
 		}
 	}
+
+
+	/*
+
+		sesion_token: 789217389732
+		token_expires: 8000
+		token_creation_time: 
+
+	*/
