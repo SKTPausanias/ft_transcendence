@@ -1,9 +1,30 @@
-<div class="d-flex justify-content-center align-items-center vh-100">
+
+<!-- <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="box">
 		<div class="container">
-<div> eMail has been sent to <b><i>{{user.email}}</i></b>.Please, check your email </div>
+			<div> eMail has been sent to <b><i>{{user.email}}</i></b>.Please, check your email </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<button (click)='getConfirm()'>Continue</button>
+
+<div class="outer center custom">
+	<div class="inner box">
+		<div class="sp">
+			<img  class="ico_l" src="/assets/img/logo.png" alt="image">
+		</div>
+		<div class="sp">
+			<h3>Email Confirmation</h3>
+		</div> 
+		<div class="sp">
+			<p>
+				We have sent email to <span class="email">{{user.email}}</span> to confirm the validity of your account. After receiving the email follow the link provided to complete your registration.
+			</p>
+		</div>
+		<hr>
+		<div>
+			<p><small>If you didn't receive any email </small><a class="email" href="#">Resend confirmation email</a> </p>
+		</div>
+		<button class="btn btn-danger" (click)='getConfirm()'>Continue</button>
+	</div>
+</div> 

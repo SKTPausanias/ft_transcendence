@@ -22,3 +22,36 @@ body{
 	padding-left: 35px;
 	padding-right: 35px;
 }
+.ico_s{
+	width: 50px;
+	height: auto;
+}
+.ico_m{
+	width: 100px;
+	height: auto;
+}
+.ico_l{
+	width: 150px;
+	height: auto;
+}
+.ico_xl{
+	width: 250px;
+	height: auto;
+}
+
+.center {
+	position: fixed;
+	bottom: 35%;
+	left: 0;
+	width: 100%;
+	text-align: center;
+}
+.outer {
+	position: fixed;
+	text-align: center;
+	left: 0;
+	right: 0;
+}
+.inner {
+	display: inline-block;
+}

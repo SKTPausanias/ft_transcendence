@@ -1,24 +1,3 @@
-.center {
-	position: fixed;
-	bottom: 35%;
-	left: 0;
-	width: 100%;
-	text-align: center;
-}
-.outer {
-	position: fixed;
-	text-align: center;
-	left: 0;
-	right: 0;
-}
-.inner {
-	display: inline-block;
-}
-.img {
-	width: 250px;
-	height: auto;
-}
-
 .login_btn
 {
 	background-color: #704380;

@@ -6,12 +6,11 @@ import { LocalStorageQueryService } from '../../shared/service/local-storage-que
 import { AuthService } from './auth.service';
 
 @Component({
-	selector: 'app-auth',
-	templateUrl: './auth.component.html',
-	styleUrls: ['./auth.component.css'],
+selector: 'app-auth',
+templateUrl: './auth.component.html',
+styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent implements OnInit {
-
 	user: UserI = this.sQuery.getUser();
 	isLoading: boolean = false;
 	isLoaded: boolean = false;
@@ -22,48 +21,56 @@ export class AuthComponent implements OnInit {
 		private authService: AuthService
 	) {}
 
-	async ngOnInit(): Promise<void> {	
+	async ngOnInit(): Promise<void> {
 		this.isLoaded = false;
 		this.user = await this.authService.getUser();
 		const queryParam = await this.route.queryParams;
-		const code = this.getCode(queryParam);
-		if (code !== undefined) {
-			this.isLoading = true;
-			this.user = await this.authService.getUserData(code);
-			this.isLoading = false;
-			this.sQuery.setUser(this.user);
-		}
-		if (this.user.status === undefined)
+		this.queryAction(queryParam);
+		if (this.user.status === undefined) 
 			this.router.navigateByUrl('auth/login');
 		else if (this.user.status == UserStatus.UNREGISTERED)
 			this.router.navigateByUrl('auth/registration');
 		else if (this.user.status == UserStatus.UNCONFIRMED)
 			this.router.navigateByUrl('auth/confirmation');
-		else this.router.navigateByUrl('');
+		else 
+			this.router.navigateByUrl('');
 		this.isLoaded = true;
 	}
 
+	 queryAction(resp: any) {
+		if (resp._value.code !== undefined) 
+			this.authUser(resp._value.code);
+		else if (resp._value.uuid) 
+			this.confirmUser(resp._value.code);
+		else if (resp._value.error) 
+			console.log('401');
+		else
+			console.log("there is no query action");
+	}
+
+	async authUser(code: string) {
+		this.isLoading = true;
+		this.user = await this.authService.getUserData(code);
+		this.isLoading = false;
+		this.sQuery.setUser(this.user);
+	}
+	async confirmUser(uuid: string) {
+		this.isLoading = true;
+		this.user = await this.authService.confirmUser(uuid);
+		this.isLoading = false;
+		this.sQuery.setUser(this.user);
+		this.router.navigateByUrl('/');
+	}
+
 	showLogin(): boolean {
-		if (this.user.status === undefined) 
-			return true;
-		return false;
+		return (this.user.status === undefined ? true : false);
 	}
 
 	showRegister(): boolean {
-		if (this.user.status == UserStatus.UNREGISTERED) 
-			return true;
-		return false;
+		return (this.user.status == UserStatus.UNREGISTERED ? true : false);
 	}
 
 	showConfirm(): boolean {
-		if (this.user.status == UserStatus.UNCONFIRMED) 
-			return true;
-		return false;
-	}
-
-	getCode(resp: any): string | undefined {
-		if (resp._value.code !== undefined) return resp._value.code;
-		else if (resp._value.error) return '401';
-		return undefined;
+		return (this.user.status == UserStatus.UNCONFIRMED ? true : false);
 	}
 }

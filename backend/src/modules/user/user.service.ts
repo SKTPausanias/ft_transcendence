@@ -100,7 +100,7 @@ export class UserService {
 		to: user.email, // list of receivers
 		subject: "✔YOUR PONG CONFIRMATION", // Subject line
 		text: "Click this link to complelte!", // plain text body
-		html: "<b>Click this link to complelte!</b><a href='http://192.168.1.13:4200/auth/confirmation?uuid=" + user.uuid + "'>confirm your account</a>", // html body
+		html: "<b>Click this link to complelte!</b><a href='http://localhost:4200/auth/confirmation?uuid=" + user.uuid + "'>confirm your account</a>", // html body
 		}).then(info => {
 		console.log({info});
 		}).catch(console.error);
