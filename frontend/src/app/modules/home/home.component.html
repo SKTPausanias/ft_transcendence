@@ -1,40 +1,44 @@
 <div *ngIf="isLoaded">
-<a href="/test-logo-click"><img  class="logo" src="/assets/img/logo.png" alt="image"></a>
+	<a href="/test-logo-click"><img  class="logo" src="/assets/img/logo.png" alt="image"></a>
 
-<div class="d-flex justify-content-end p-3">
+<div class="dropdown d-flex justify-content-end p-3" mdbDropdown>
+	<button mdbDropdownToggle mdbBtn class="dropdown-toggle waves-light" type="button" mdbWavesEffect data-toggle="dropdown">
+		User settings
+	</button>
+	
+	<div class="dropdown-menu dropdown-primary">
+		<a class="btn btn-danger pull-right dropdown-item" href="#" (click)="updateToken()">Refresh Now</a>
+		<a class="btn btn-danger pull-right dropdown-item" href="#" (click)="deleteAccount()">Delete Account</a>
+	</div>
 </div>
 
-<table class="table table-hover table-success">
-	<thead>
-	  <tr>
-		<th scope="col">UserID</th>
-		<th scope="col">FirstName</th>
-		<th scope="col">LastName</th>
-		<th scope="col">Username</th>
-		<th scope="col">Email</th>
-		<th scope="col">Role</th>
-		<th scope="col">Token</th>
-	  </tr>
-	</thead>
-	<tbody>
-	  <tr>
-		<td>{{user.id}}</td>
-		<td>{{user.first_name}}</td>
-		<td>{{user.last_name}}</td>
-		<td>{{user.nickname}}</td>
-		<td>{{user.email}}</td>
-		<td>{{user.role}}</td>
-		<td>{{user.uuid}}</td>
-	  </tr>
-	 
-	</tbody>
-  </table>
+<div>
+	<table class="table table-hover table-success">
+		<thead>
+		<tr>
+			<th scope="col">UserID</th>
+			<th scope="col">FirstName</th>
+			<th scope="col">LastName</th>
+			<th scope="col">Username</th>
+			<th scope="col">Email</th>
+			<th scope="col">Role</th>
+			<th scope="col">Token</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td>{{user.id}}</td>
+			<td>{{user.first_name}}</td>
+			<td>{{user.last_name}}</td>
+			<td>{{user.nickname}}</td>
+			<td>{{user.email}}</td>
+			<td>{{user.role}}</td>
+			<td>{{user.uuid}}</td>
+		</tr>
+		</tbody>
+	</table>
+</div>
 
-<div class="d-flex justify-content-end p-3">
-	<button class="btn btn-danger pull-right" (click)="updateToken()">Refresh Now</button>
-</div>
-<div class="d-flex justify-content-end p-3">
-	<button class="btn btn-danger pull-right" (click)="deleteAccount()">Delete Account</button>
-</div>
+<div>
 	<button class="btn btn-danger center" (click)="logOut()">Logout</button>
 </div>
