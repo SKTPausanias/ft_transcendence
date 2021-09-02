@@ -6,7 +6,7 @@ front_path="./deploy/frontend"
 back_path="./deploy/backend"
 ft_transcendence="./ft_transcendence"
 deploy="./deploy"
-clone='https://puthereyourgituser@github.com/SKTPausanias/ft_transcendence'
+clone='https://photowifirnd@github.com/SKTPausanias/ft_transcendence'
 needDependencies=false
 backDependencies=false
 frontDependencies=false
@@ -101,6 +101,8 @@ then
 		npm install --save @nestjs/typeorm typeorm mysql2
 		npm i --save @nestjs/config
 		npm install pg --save
+		npm install nodemailer
+		npm install uuid
 	fi
 	
 	if [ $frontDependencies = true ]

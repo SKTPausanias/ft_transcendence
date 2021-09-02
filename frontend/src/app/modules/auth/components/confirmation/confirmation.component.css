@@ -1,0 +1,10 @@
+.box {
+	background-color: white;
+	height: auto;
+	padding: 35px 100px 35px 100px;
+    text-align: center;
+	border: 2px solid #673D76;
+	border-radius: 20px;
+	box-shadow: 0px 15px 30px 0px #673D76, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	opacity: 1;
+}

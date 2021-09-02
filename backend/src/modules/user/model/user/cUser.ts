@@ -3,6 +3,7 @@ import { UserI } from "./iUser";
 export class User implements UserI {
 
 	id: 			number;
+	uuid:			string;
 	first_name: 	string;
 	last_name: 		string;
 	nickname:		string;
@@ -16,6 +17,7 @@ export class User implements UserI {
 	setUser(data: any)
 	{
 		this.id = data.id;
+		this.uuid = data.uuid;
 		this.first_name = data.first_name;
 		this.last_name = data.last_name;
 		this.nickname = data.login;

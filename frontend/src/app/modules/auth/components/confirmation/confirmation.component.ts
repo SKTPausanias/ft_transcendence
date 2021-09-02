@@ -27,6 +27,8 @@
 
 	async getConfirm(): Promise<void> {
 		this.user = await this.authService.updateUser(this.user);
+		//this.user = await this.authService.getUserData(this.sQuery.getUser().id);
+		console.log("User at confirmation component: ", this.user);
 		this.sQuery.setUser(this.user);
 		this.router.navigateByUrl('/');
 	}

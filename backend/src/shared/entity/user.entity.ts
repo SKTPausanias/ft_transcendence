@@ -5,6 +5,9 @@ export class users {
 
     @PrimaryColumn()
     id: number;
+    
+    @Column({unique: true})
+    uuid: string;
 
     @Column({unique: true})
     email: string;

@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { users } from 'src/shared/entity/user.entity';
 import { User } from './model/user/cUser';
 import { UserI } from './model/user/iUser';
+import { v1 as uuid} from 'uuid';
 
 
 @Injectable()
@@ -43,6 +44,7 @@ export class UserService {
 		const user_info = await this.getUserInfo(token_info)
 		this.user.setUser(user_info);
 		this.user.status = 1;
+		
 		if (this.user.login == 'jheras-f' || this.user.login == 'dbelinsk' || this.user.login == 'mlaplana' )
 			this.user.role = 'admin';
 		else
@@ -76,6 +78,8 @@ export class UserService {
 
     async insertUser(user : any) : Promise<any> {
         user.status = 2;
+		user.uuid = uuid();
+		console.log("WTF: uuid: ", user.uuid);
         const data = await this.repository.insert(user);
 		//TODO SEND EMAIL
 		//API key does not start with "SG.".
@@ -96,7 +100,7 @@ export class UserService {
 		to: user.email, // list of receivers
 		subject: "✔YOUR PONG CONFIRMATION", // Subject line
 		text: "Click this link to complelte!", // plain text body
-		html: "<b>Click this link to complelte!</b>", // html body
+		html: "<b>Click this link to complelte!</b><a href='http://192.168.1.13:4200/auth/confirmation?uuid=" + user.uuid + "'>confirm your account</a>", // html body
 		}).then(info => {
 		console.log({info});
 		}).catch(console.error);
