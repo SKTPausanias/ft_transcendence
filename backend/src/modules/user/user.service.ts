@@ -45,7 +45,7 @@ export class UserService {
 		this.user.setUser(user_info);
 		this.user.status = 1;
 		
-		if (this.user.login == 'jheras-f' || this.user.login == 'dbelinsk' || this.user.login == 'mlaplana' )
+		if (this.user.login == 'jheras-f' || this.user.login == 'dbelinsk' || this.user.login == 'mlaplana' || this.user.login == 'aserrano' )
 			this.user.role = 'admin';
 		else
 			this.user.role = 'user';				
