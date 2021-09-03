@@ -25,7 +25,7 @@ export class AuthComponent implements OnInit {
 		this.isLoaded = false;
 		this.user = await this.authService.getUser();
 		const queryParam = await this.route.queryParams;
-		this.queryAction(queryParam);
+		await this.queryAction(queryParam);
 		if (this.user.status === undefined) 
 			this.router.navigateByUrl('auth/login');
 		else if (this.user.status == UserStatus.UNREGISTERED)
@@ -37,11 +37,11 @@ export class AuthComponent implements OnInit {
 		this.isLoaded = true;
 	}
 
-	 queryAction(resp: any) {
+	async queryAction(resp: any) {
 		if (resp._value.code !== undefined) 
-			this.authUser(resp._value.code);
+			await this.authUser(resp._value.code);
 		else if (resp._value.uuid) 
-			this.confirmUser(resp._value.code);
+			await this.confirmUser(resp._value.code);
 		else if (resp._value.error) 
 			console.log('401');
 		else

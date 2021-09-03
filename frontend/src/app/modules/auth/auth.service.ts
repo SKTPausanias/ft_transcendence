@@ -30,10 +30,10 @@ export class AuthService {
 		return (this.user);
 	}
 	
-	async confirmUser(param: string): Promise<UserI>
+	async confirmUser(param: any): Promise<UserI>
 	{
 		const url = '/api/user/confirmation';
-		this.user = await this.http.post<any>(url, {uuid: param}).toPromise();
+		this.user = await this.http.post<any>(url, param).toPromise();
 		return(this.user);
 	}
 	createUser(userData: any){

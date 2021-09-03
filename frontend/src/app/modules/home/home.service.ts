@@ -15,7 +15,7 @@ export class HomeService {
 
 	async getUserData(): Promise<UserI> {
 		const id = this.sQuery.getUser().id;
-		console.log(id);
+		console.log("calling backend: ", id);
 		if (id === undefined)
 			return <UserI>{};
 		const url = '/api/user/data';
