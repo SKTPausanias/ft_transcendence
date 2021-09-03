@@ -110,17 +110,11 @@ export class UserService {
 	{
 		if (uniqueID === undefined)
 			return (<UserI>{});
-
-		const userData = await this.repository.findOne({where: {uuid: uniqueID}});
-		
+		let userData = await this.repository.findOne({where: {uuid: uniqueID}});
 		if (userData === undefined)
 			return (<UserI>{});
-    	
-		this.repository.save({...userData, status: 3});
-
-		userData.status = 3;
-
-		return (userData);
+		const ret = await this.repository.save({...userData, status: 3});
+		return (ret);
 	}
 
 	async findById(id: number): Promise<users>

@@ -41,7 +41,7 @@ export class AuthComponent implements OnInit {
 		if (resp._value.code !== undefined) 
 			await this.authUser(resp._value.code);
 		else if (resp._value.uuid) 
-			await this.confirmUser(resp._value.code);
+			await this.confirmUser(resp._value.uuid);
 		else if (resp._value.error) 
 			console.log('401');
 		else
