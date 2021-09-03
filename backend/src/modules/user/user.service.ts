@@ -1,12 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, getConnection } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
 import { users } from 'src/shared/entity/user.entity';
 import { User } from './model/user/cUser';
 import { UserI } from './model/user/iUser';
-import { v1 as uuid} from 'uuid';
+import { v4 as uuid} from 'uuid';
 
 
 @Injectable()
@@ -79,7 +79,6 @@ export class UserService {
     async insertUser(user : any) : Promise<any> {
         user.status = 2;
 		user.uuid = uuid();
-		console.log("WTF: uuid: ", user.uuid);
         const data = await this.repository.insert(user);
 		//TODO SEND EMAIL
 		//API key does not start with "SG.".
@@ -104,18 +103,24 @@ export class UserService {
 		}).then(info => {
 		console.log({info});
 		}).catch(console.error);
-
-
-
-
 		//
         return (user);
     }
-	confirmUser(user: any) : Promise<any>
+	async confirmUser(uniqueID: any) : Promise<users>
 	{
-		user.status = 3;
-		this.repository.save({...user, id: user.id})
-		return (user);
+		if (uniqueID === undefined)
+			return (<UserI>{});
+
+		const userData = await this.repository.findOne({where: {uuid: uniqueID}});
+		
+		if (userData === undefined)
+			return (<UserI>{});
+    	
+		this.repository.save({...userData, status: 3});
+
+		userData.status = 3;
+
+		return (userData);
 	}
 
 	async findById(id: number): Promise<users>
@@ -126,6 +131,7 @@ export class UserService {
 		return (data);
 
 	}
+
 	async deleteById(id: number): Promise<DeleteResult>
 	{
 		if (id === undefined)

@@ -21,8 +21,7 @@ export class UserController {
 	@Post('/confirmation')
 	async updateUser(@Body() body: any): Promise<any>
 	{
-		const data = await this.userService.confirmUser(body);
-		return (data);
+		return (await this.userService.confirmUser(body.uuid));
 	}
 	@Get('/data')
 	async getUserData(@Query() param: any): Promise<any>{
