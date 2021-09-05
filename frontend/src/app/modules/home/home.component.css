@@ -1,9 +1,13 @@
-.dropdown {
-  position: relative;
-  display: inline-block;
-  background-color: aqua;
+.btn
+{
+  background-color: rgb(188, 74, 241);
 }
 
-.btn-danger{
-  background-color: red;
+.btn-danger {
+  color: rgb(209, 13, 13);
+}
+
+.logo {
+  width: 2.5%;
+  height: 2.5%;
 }
