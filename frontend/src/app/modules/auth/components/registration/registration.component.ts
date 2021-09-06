@@ -11,8 +11,10 @@ styleUrls: ['./registration.component.css'],
 })
 export class RegistrationComponent implements OnInit {
 	@ViewChild('nickname_input') nickElement: ElementRef<HTMLInputElement>;
+	@ViewChild('email_input') emailElement: ElementRef<HTMLInputElement>;
 	user: UserI = this.sQuery.getUser();
 	nickname: string;
+	email: string;
 	constructor(
 		private sQuery: LocalStorageQueryService,
 		private router: Router,
@@ -30,7 +32,7 @@ export class RegistrationComponent implements OnInit {
 		this.sQuery.setUser(this.user);
 		this.router.navigateByUrl('/');
 	}
-	checkboxChange(e: any){
+	nicknameCheckbox(e: any){
 		if (e.target.checked)
 		{
 			this.nickname = this.user.login;
@@ -40,6 +42,19 @@ export class RegistrationComponent implements OnInit {
 		{
 			this.nickname = '';
 			this.nickElement.nativeElement.readOnly = false;
+		}
+	}
+	emailCheckbox(e: any){
+
+		if (e.target.checked)
+		{
+			this.email = this.user.email;
+			this.emailElement.nativeElement.readOnly = true;
+		}
+		else
+		{
+			this.email = '';
+			this.emailElement.nativeElement.readOnly = false;
 		}
 	}
 }

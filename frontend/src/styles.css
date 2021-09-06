@@ -3,14 +3,21 @@
 	font-family: sportsjersey;
 	src: url(assets/fonts/omegle/sportsjersey.ttf	) format("opentype");
   }
-body{	
+body{
 	background: url("./assets/img/bg.png") no-repeat center center fixed;
 	-webkit-background-size: cover;
   	-moz-background-size: cover;
   	-o-background-size: cover;
   	background-size: cover;
 }
-
+main{
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	overflow: auto;  
+}
 .logo {
 	width: 75px;
 	height: auto;
