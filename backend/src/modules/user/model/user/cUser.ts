@@ -11,6 +11,10 @@ export class User implements UserI {
 	email:			string;
 	status:			number;
 	role:			string;
+	avatar:			string;
+	code2factor:	string;
+	factor_enabled:	boolean;
+	online:			boolean;	
 
 	constructor (){};
 
@@ -23,5 +27,9 @@ export class User implements UserI {
 		this.nickname = data.login;
 		this.login = data.login;
 		this.email = data.email;
+		this.avatar = data.image_url;
+		this.code2factor = '';
+		this.factor_enabled = false;
+		this.online = false;
 	}
 }

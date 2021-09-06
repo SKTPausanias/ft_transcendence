@@ -41,7 +41,7 @@ export class AuthService {
 		this.user.first_name = userData.first_name;
 		this.user.last_name = userData.last_name;
 		this.user.nickname = userData.login;
-		this.user.login = "saanpedro";
+		this.user.login = userData.login;
 		this.user.email = userData.email;
 		this.user.role = enums.UserRole.ADMIN;
 	/* 	this.user.token = uuid.v4();

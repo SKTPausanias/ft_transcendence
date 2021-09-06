@@ -25,6 +25,7 @@ export class AuthComponent implements OnInit {
 		this.isLoaded = false;
 		this.user = await this.authService.getUser();
 		const queryParam = await this.route.queryParams;
+		
 		await this.queryAction(queryParam);
 		if (this.user.status === undefined) 
 			this.router.navigateByUrl('auth/login');
@@ -52,6 +53,7 @@ export class AuthComponent implements OnInit {
 		this.isLoading = true;
 		this.user = await this.authService.getUserData(code);
 		this.isLoading = false;
+		console.log("authUser from authComponent: ", code);
 		this.sQuery.setUser(this.user);
 	}
 	async confirmUser(uuid: string) {

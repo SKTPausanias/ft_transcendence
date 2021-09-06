@@ -29,5 +29,17 @@ export class users {
 
     @Column()
     role: string;
+
+    @Column()
+    avatar: string;
+
+    @Column()
+    code2factor: string;
+
+    @Column()
+    factor_enabled: boolean;
+
+    @Column()
+    online: boolean;
 }
 

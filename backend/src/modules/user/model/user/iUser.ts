@@ -9,4 +9,8 @@ export interface UserI {
 	email:			string;
 	status:			number;
 	role:			string;
+	avatar:			string;
+	code2factor:	string;
+	factor_enabled:	boolean;
+	online:			boolean;
 }
