@@ -57,4 +57,10 @@ export class RegistrationComponent implements OnInit {
 			this.emailElement.nativeElement.readOnly = false;
 		}
 	}
+	factorCheckbox(e: any) {
+		if (e.target.checked)
+			this.user.factor_enabled = true;
+		else
+			this.user.factor_enabled = false;
+	}
 }

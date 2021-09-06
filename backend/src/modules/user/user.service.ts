@@ -30,10 +30,13 @@ export class UserService {
 
 	async authorization(code:string):  Promise<any>
 	{
+		console.log("code from authorization: ", code);
+
 		this.authHeader = await this.getAuthHeader(code);
 		//Find if userID exists in DB 
 		//EXISTS return obejto de user
 		const token_info = await this.getTokenInfo();
+		
 		const data = await this.findById(token_info.resource_owner_id);
 		//llamar a base de datos con owner id
 		//if (token_info.resource_owner_id existe en base de datos)
@@ -42,6 +45,7 @@ export class UserService {
 		if (data !== undefined)
 			return (data);
 		const user_info = await this.getUserInfo(token_info)
+		console.log("From userService: authorization ", user_info);
 		this.user.setUser(user_info);
 		this.user.status = 1;
 		
@@ -67,6 +71,7 @@ export class UserService {
 	}
 	async getUserInfo(token_info: any): Promise<any> 
 	{
+		console.log("From getUserInfo on userService ", token_info);
 		const url = "https://api.intra.42.fr/v2/users/" + token_info.resource_owner_id + "/";
 		return ((await firstValueFrom(this.httpService.get(url,  { headers: this.authHeader } ))).data);
 	}
@@ -77,8 +82,16 @@ export class UserService {
     }
 
     async insertUser(user : any) : Promise<any> {
+		console.log(user);
         user.status = 2;
 		user.uuid = uuid();
+		/* Creating 2-Factor */
+		user.factor_enabled = true;
+		
+		user.online = true;
+		user.code2factor="123456";
+
+
         const data = await this.repository.insert(user);
 		//TODO SEND EMAIL
 		//API key does not start with "SG.".

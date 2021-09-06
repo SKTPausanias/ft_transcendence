@@ -75,8 +75,21 @@
 									<input type="checkbox" class="form-check-input me-2" (change)="emailCheckbox($event)">
 									<label class="form-check-label" for="email_check"><small><i>Use 42 Email</i></small></label>
 								</div>
+								
 								<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-							</div>							
+							</div>
+							<div class="form-group mb-3">
+								<div class="form-check mt-2 d-flex align-items-center">
+									<input
+									#factor_input
+									name="email"
+									type="checkbox"
+									class="form-check-input me-2"
+								/>
+								<label class="form-check-label" for="_factor"><small><i>Enable 2-factor authentication</i></small></label>
+								</div>
+								
+							</div>					
 						</div>
 						<div class="btn_container">
 							<button type="submit" class="btn_register p-2 px-5 mt-4">Register</button>

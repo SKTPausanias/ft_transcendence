@@ -10,6 +10,7 @@ export class LocalStorageQueryService {
 	constructor(private localStorageService: LocalStorageService) {}
 
 	setUser(user: UserI) {
+		console.log("setUser localStorage: ", user);
 		this.localStorageService.set(Storage.USER, user);
 	}
 	getUser(): UserI {
