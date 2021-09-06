@@ -7,8 +7,7 @@ import { RegistrationComponent } from './modules/auth/components/registration/re
 import { ConfirmationComponent } from './modules/auth/components/confirmation/confirmation.component';
 
 const routes: Routes = [
-	{ path: '', component: RegistrationComponent},
-	//{ path: '', component: HomeComponent},
+	{ path: '', component: HomeComponent},
 	{ path: 'home', redirectTo: '', pathMatch: 'full'},
 	{ path: 'auth', component: AuthComponent,
 	children: [

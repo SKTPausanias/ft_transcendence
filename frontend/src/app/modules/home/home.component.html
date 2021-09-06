@@ -1,4 +1,12 @@
-<div *ngIf="isLoaded">
+
+<div class="row mx-0">
+		<app-left-nav class="col-1"></app-left-nav>
+		<app-content class="col-10"></app-content>
+		<app-right-nav class="col-1"></app-right-nav>
+</div>
+
+
+<!-- <div *ngIf="isLoaded">
 	<a href="/test-logo-click"><img  class="logo" src="/assets/img/logo.png" alt="image"></a>
 
 <div class="dropdown d-flex justify-content-end p-3" mdbDropdown>
@@ -41,4 +49,4 @@
 
 <div>
 	<button class="btn btn-danger center" (click)="logOut()">Logout</button>
-</div>
+</div> -->

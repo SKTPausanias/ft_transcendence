@@ -7,3 +7,11 @@
 .btn-danger{
   background-color: red;
 }
+app-right-nav, app-left-nav{
+	padding: 0;
+	width: 5%;
+}
+app-content{
+	padding: 0;
+	width: 90%;
+}
