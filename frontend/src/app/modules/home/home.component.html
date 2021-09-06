@@ -1,31 +1,24 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-transparent">
-    <div class="container-fluid">
-        <img  class="logo" src="/assets/img/logo.png" alt="image">
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-					<button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-						{{user.nickname}}
-					</button>
-						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-							<a class="dropdown-item" (click)="updateToken()">Refresh Now</a>
-							<a class="dropdown-item btn-logout">Settings</a>
-							<a class="dropdown-item btn-logout" (click)="logOut()">Logout</a>
-							<a class="dropdown-item btn-danger" (click)="deleteAccount()">Delete Account</a>
-						</div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+
+<div class="row mx-0">
+		<app-left-nav class="col-1"></app-left-nav>
+		<app-content class="col-10"></app-content>
+		<app-right-nav class="col-1"></app-right-nav>
+</div>
+
+
+<!-- <div *ngIf="isLoaded">
+	<a href="/test-logo-click"><img  class="logo" src="/assets/img/logo.png" alt="image"></a>
+
+<div class="dropdown d-flex justify-content-end p-3" mdbDropdown>
+	<button mdbDropdownToggle mdbBtn class="dropdown-toggle waves-light" type="button" mdbWavesEffect data-toggle="dropdown">
+		User settings
+	</button>
+	
+	<div class="dropdown-menu dropdown-primary">
+		<a class="btn btn-danger pull-right dropdown-item" href="#" (click)="updateToken()">Refresh Now</a>
+		<a class="btn btn-danger pull-right dropdown-item" href="#" (click)="deleteAccount()">Delete Account</a>
+	</div>
+</div>
 
 <div>
 	<table class="table table-hover table-success">
@@ -52,4 +45,12 @@
 		</tr>
 		</tbody>
 	</table>
+<<<<<<< HEAD
 </div>
+=======
+</div>
+
+<div>
+	<button class="btn btn-danger center" (click)="logOut()">Logout</button>
+</div> -->
+>>>>>>> dbelinsk-styles
