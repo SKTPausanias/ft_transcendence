@@ -53,7 +53,6 @@ export class AuthComponent implements OnInit {
 		this.isLoading = true;
 		this.user = await this.authService.getUserData(code);
 		this.isLoading = false;
-		console.log("authUser from authComponent: ", code);
 		this.sQuery.setUser(this.user);
 	}
 	async confirmUser(uuid: string) {
