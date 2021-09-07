@@ -66,3 +66,12 @@ export class LeftNavComponent implements OnInit {
 		sel.nativeElement.classList.add("selected");
 	}
 }
+
+/*
+1. info component
+2. game component
+3. live component
+4. chat component
+5. settings component
+
+*/
