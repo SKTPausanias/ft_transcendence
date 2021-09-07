@@ -11,6 +11,7 @@ export class LeftNavComponent implements OnInit {
 	@ViewChild('home_e') eHome: ElementRef<HTMLInputElement>;
 	@ViewChild('play_e') ePlay: ElementRef<HTMLInputElement>;
 	@ViewChild('live_e') eLive: ElementRef<HTMLInputElement>;
+	@ViewChild('chat_e') eChat: ElementRef<HTMLInputElement>;
 	@ViewChild('conf_e') eConf: ElementRef<HTMLInputElement>;
 	@ViewChild('logout_e') eLogout: ElementRef<HTMLInputElement>;
 
@@ -36,7 +37,10 @@ export class LeftNavComponent implements OnInit {
 		this.select_view(this.eLive);
 		console.log("live selected");
 	}
-
+	chat(){
+		this.select_view(this.eChat);
+		console.log("chat selected");
+	}
 	conf(){
 		this.select_view(this.eConf);
 		console.log("conf selected");
@@ -56,6 +60,7 @@ export class LeftNavComponent implements OnInit {
 		this.eHome.nativeElement.classList.remove("selected");
 		this.ePlay.nativeElement.classList.remove("selected");
 		this.eLive.nativeElement.classList.remove("selected");
+		this.eChat.nativeElement.classList.remove("selected");
 		this.eConf.nativeElement.classList.remove("selected");
 		this.eLogout.nativeElement.classList.remove("selected");
 		sel.nativeElement.classList.add("selected");
