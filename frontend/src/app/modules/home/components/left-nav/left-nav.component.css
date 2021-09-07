@@ -1,5 +1,5 @@
 .ico {
-  opacity: 0.6;
+  opacity: 0.2;
 }
 .ico:hover {
   cursor: pointer;
@@ -7,4 +7,7 @@
 }
 #sep{
 	border-bottom: 1px solid rgba(255, 255, 255, 0.671);
+}
+.selected{
+	opacity: 1;
 }
