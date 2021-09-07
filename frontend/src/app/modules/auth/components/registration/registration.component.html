@@ -82,11 +82,12 @@
 								<div class="form-check mt-2 d-flex align-items-center">
 									<input
 									#factor_input
-									name="email"
+									name="factor"
 									type="checkbox"
 									class="form-check-input me-2"
+									(change)="factorCheckbox($event)"
 								/>
-								<label class="form-check-label" for="_factor"><small><i>Enable 2-factor authentication</i></small></label>
+								<label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
 								</div>
 								
 							</div>					
