@@ -1,5 +1,8 @@
 
 <div class="bg-light min-vh-100 min-vw-95">
-	
-		<p> HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTEDHERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTEDHERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED HERE COMES ANY FRAGMENT SELECTED </p>
+	<app-info *ngIf="fragment == 0"></app-info>
+	<app-play *ngIf="fragment == 1"></app-play>
+	<app-live *ngIf="fragment == 2"></app-live>
+	<app-chat *ngIf="fragment == 3"></app-chat>
+	<app-settings *ngIf="fragment == 4"></app-settings>
 </div>

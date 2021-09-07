@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
 @Component({
   selector: 'app-content',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ContentComponent implements OnInit {
 
-  constructor() { }
+	@Input() fragment: number;
+  	constructor(private sQuery: LocalStorageQueryService) { }
 
   ngOnInit(): void {
+	  console.log("ngOnInit content");
   }
 
 }

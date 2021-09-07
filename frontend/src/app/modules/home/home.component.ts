@@ -15,6 +15,7 @@ import { RightNavI } from 'src/app/shared/interface/rightNav';
 export class HomeComponent implements OnInit {
 	user: UserI = this.sQuery.getUser();
 	isLoaded: boolean = false;
+	frag: number = 0;
 	rightNavObj: RightNavI = {
 		userInfo : {
 			nickname: '',
@@ -58,6 +59,11 @@ export class HomeComponent implements OnInit {
 	
 	mouseLeave(){
 		this.rightNavObj.userInfo.nickname = '';
+	}
+	setFragment(ev: any)
+	{
+		console.log("setFragment: ",ev);
+		this.frag = ev;
 	}
 }
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
@@ -8,6 +8,7 @@ templateUrl: './left-nav.component.html',
 styleUrls: ['./left-nav.component.css'],
 })
 export class LeftNavComponent implements OnInit {
+	@Output() newItemEvent = new EventEmitter<number>();
 	@ViewChild('home_e') eHome: ElementRef<HTMLInputElement>;
 	@ViewChild('play_e') ePlay: ElementRef<HTMLInputElement>;
 	@ViewChild('live_e') eLive: ElementRef<HTMLInputElement>;
@@ -22,26 +23,37 @@ export class LeftNavComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		
 	}
 	home(){
+		this.newItemEvent.emit(0);
+		this.router.navigateByUrl('');
 		this.select_view(this.eHome);
 		console.log("home selected");
 	}
 
 	play(){
+		this.newItemEvent.emit(1);
+		this.router.navigateByUrl('play');
 		this.select_view(this.ePlay);
 		console.log("play selected");
 	}
 
 	live(){
+		this.newItemEvent.emit(2);
+		this.router.navigateByUrl('live');
 		this.select_view(this.eLive);
 		console.log("live selected");
 	}
 	chat(){
+		this.newItemEvent.emit(3);
+		this.router.navigateByUrl('chat');
 		this.select_view(this.eChat);
 		console.log("chat selected");
 	}
 	conf(){
+		this.newItemEvent.emit(4);
+		this.router.navigateByUrl('settings');
 		this.select_view(this.eConf);
 		console.log("conf selected");
 	}
