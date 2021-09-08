@@ -1,8 +1,8 @@
 
 <div class="row mx-0">
-		<app-left-nav class="col-1"></app-left-nav>
-		<app-content class="col-10"></app-content>
-		<app-right-nav class="col-1"></app-right-nav>
+		<app-left-nav class="" (newItemEvent)="setFragment($event)"></app-left-nav>
+		<app-content class="" [fragment]="frag"></app-content>
+		<app-right-nav class="" (mouseenter) ="mouseEnter() " (mouseleave) ="mouseLeave()" [item]="rightNavObj"></app-right-nav>
 </div>
 
 
@@ -53,4 +53,3 @@
 <div>
 	<button class="btn btn-danger center" (click)="logOut()">Logout</button>
 </div> -->
->>>>>>> dbelinsk-styles

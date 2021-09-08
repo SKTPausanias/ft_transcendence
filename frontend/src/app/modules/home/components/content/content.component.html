@@ -1,6 +1,8 @@
 
-		<div class="bg-light min-vh-100">
-			<div class="position-absolute top-50 start-50 translate-middle">
-				HERE COMES ANY FRAGMENT SELECTED
-			</div>
-		</div>
+<div class="bg-light min-vh-100 min-vw-95">
+	<app-info *ngIf="fragment == 0"></app-info>
+	<app-play *ngIf="fragment == 1"></app-play>
+	<app-live *ngIf="fragment == 2"></app-live>
+	<app-chat *ngIf="fragment == 3"></app-chat>
+	<app-settings *ngIf="fragment == 4"></app-settings>
+</div>

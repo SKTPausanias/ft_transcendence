@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { RightNavI } from 'src/app/shared/interface/rightNav';
 import { UserI } from 'src/app/shared/interface/user';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
@@ -8,9 +9,11 @@ import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-q
   styleUrls: ['./right-nav.component.css']
 })
 export class RightNavComponent implements OnInit {
+	@Input() item: RightNavI;
 
-  user: UserI = this.sQuery.getUser();
-  constructor(private sQuery: LocalStorageQueryService) { }
+  constructor(private sQuery: LocalStorageQueryService) {
+	  
+   }
 
   ngOnInit(): void {
   }
