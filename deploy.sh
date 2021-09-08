@@ -108,7 +108,8 @@ then
 	if [ $frontDependencies = true ]
 	then
 		cd "${root}/${back_path}"
-		npm install bootstrap jquery
+		npm install bootstrap jquery popper.js
+		npm i --save-dev @types/uuid
 		npm audit fix
 	fi
 else
