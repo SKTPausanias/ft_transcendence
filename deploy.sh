@@ -110,6 +110,7 @@ then
 		cd "${root}/${back_path}"
 		npm install bootstrap jquery popper.js
 		npm i --save-dev @types/uuid
+		npm install --save @ng-bootstrap/ng-bootstrap
 		npm audit fix
 	fi
 else
