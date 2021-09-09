@@ -114,6 +114,12 @@ export class UserService {
 		//
         return (user);
     }
+
+    async updateUser(user : any) : Promise<any> {
+        const data = await this.repository.update(this.user, user);
+        return (user);
+    }
+
 	async confirmUser(uniqueID: any) : Promise<users>
 	{
 		if (uniqueID === undefined)

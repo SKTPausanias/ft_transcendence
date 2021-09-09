@@ -10,6 +10,7 @@ import { PlayComponent } from './components/content/play/play.component';
 import { LiveComponent } from './components/content/live/live.component';
 import { ChatComponent } from './components/content/chat/chat.component';
 import { SettingsComponent } from './components/content/settings/settings.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { SettingsComponent } from './components/content/settings/settings.compon
   ],
   imports: [
     CommonModule,
-	AuthModule
+	AuthModule,
+  FormsModule
   ]
 })
-export class HomeModule { }
+export class HomeModule {}

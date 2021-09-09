@@ -8,6 +8,8 @@ providedIn: 'root',
 })
 export class HomeService {
 
+	user: UserI = <UserI>{};
+
 	constructor(
 		private http: HttpClient,
 		private sQuery: LocalStorageQueryService
@@ -31,5 +33,12 @@ export class HomeService {
 		const url = '/api/user/delete';
 		const response = await this.http.get<any>(url + '?id=' + id).toPromise();
 		return (response);
+	}
+
+	async updateUser(userData: UserI): Promise<UserI>
+	{
+		const url = '/api/user/updateUser';
+		this.user = await this.http.post<any>(url, userData).toPromise();
+		return (this.user);
 	}
 }

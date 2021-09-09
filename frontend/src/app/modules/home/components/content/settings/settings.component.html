@@ -1,1 +1,65 @@
-<p>settings works!</p>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="box">
+		<div class="container">
+			<form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitSettings(set.value)">
+				<div>
+					<h3>User settings</h3>
+					<hr />
+					<div class="form-group mb-3">
+						<label for="login">42 Login</label>
+						<input
+							type="text"
+							ngModel = {{user.login}}
+							name="login"
+							class="form-control"
+							readonly
+							required
+						/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="nickname">Nickname</label>
+							<input 
+								ngModel={{user.nickname}}
+								name="nickname"
+								type="text"
+								minlength="5"
+								class="form-control"
+                                readonly
+								required
+							/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="exampleInputEmail1">Email Address</label>
+						<input
+							type="email"
+							class="form-control"
+							aria-describedby="emailHelp"
+							ngModel = "{{user.email}}"
+							name="email"
+							required
+
+						/>
+						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					</div>
+                    <div class="form-group mb-3">
+                        <label for="2factorAuthentication">Enable 2 Factor authentication</label>
+                        <div class="form-check mt-2 d-flex align-items-center">
+                            <input
+                            #factor_input
+                            name="factor"
+                            type="checkbox"
+                            class="form-check-input me-2"
+                            (change)="factorCheckbox($event)"
+                        />
+                        <label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
+                        </div>
+                        
+                    </div>
+				</div>
+				<div class="btn_container">
+					<button type="submit" class="btn_register p-2 px-5 mt-4">Save changes</button>
+				</div>
+			</form>
+		  </div>
+	</div>
+</div>
