@@ -10,6 +10,7 @@ import { PlayComponent } from './modules/home/components/content/play/play.compo
 import { LiveComponent } from './modules/home/components/content/live/live.component';
 import { ChatComponent } from './modules/home/components/content/chat/chat.component';
 import { SettingsComponent } from './modules/home/components/content/settings/settings.component';
+import { Auth2factorComponent } from './modules/auth/components/auth2factor/auth2factor.component';
 
 const routes: Routes = [
 	{ path: '', component: HomeComponent,
@@ -24,7 +25,8 @@ const routes: Routes = [
 	children: [
 		{ path: 'login', component: LoginComponent },
 		{ path: 'registration',	component: RegistrationComponent },
-		{ path: 'confirmation',	component: ConfirmationComponent }
+		{ path: 'confirmation',	component: ConfirmationComponent },
+		{ path: 'auth2factor',	component: Auth2factorComponent }
 	] },
 ];
 

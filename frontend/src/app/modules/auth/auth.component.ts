@@ -33,6 +33,8 @@ export class AuthComponent implements OnInit {
 			this.router.navigateByUrl('auth/registration');
 		else if (this.user.status == UserStatus.UNCONFIRMED)
 			this.router.navigateByUrl('auth/confirmation');
+		else if (this.user.status == UserStatus.CONFIRMED && this.user.factor_enabled)
+			this.router.navigateByUrl('auth/auth2factor');
 		else 
 			this.router.navigateByUrl('');
 		this.isLoaded = true;
@@ -73,5 +75,10 @@ export class AuthComponent implements OnInit {
 
 	showConfirm(): boolean {
 		return (this.user.status == UserStatus.UNCONFIRMED ? true : false);
+	}
+
+	show2Factor(): boolean {
+		console.log("Checked auth2factor: ", this.user.factor_enabled);
+		return ((this.user.status == UserStatus.CONFIRMED && this.user.factor_enabled == true) ? true : false);
 	}
 }

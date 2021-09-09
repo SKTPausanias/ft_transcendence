@@ -18,6 +18,14 @@ export class UserController {
 		const data = await this.userService.insertUser(body);
 		return (data);
 	}
+
+	@Post('/code2factor')
+	async send2factor(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.sendEmailCode(body);
+		return (data);
+	}
+	
 	@Post('/confirmation')
 	async updateUser(@Body() body: any): Promise<any>
 	{

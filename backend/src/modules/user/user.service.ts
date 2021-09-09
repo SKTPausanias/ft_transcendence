@@ -142,4 +142,30 @@ export class UserService {
 		return (deleted);
 
 	}
+
+	async sendEmailCode(user: any): Promise<void> {
+		
+		const nodemailer = require('nodemailer');
+
+		const transporter = nodemailer.createTransport({
+			host: 'smtp.gmail.com',
+			port: 587,
+			auth: {
+			  user: 'ft.transcendence.42@gmail.com',
+			  pass: '@qwerty12345',
+			},
+		  });
+
+		transporter.sendMail({
+		from: '"42 PONG"', // sender address
+		to: user.email, // list of receivers
+		subject: "✔[PONG]Verification Code", // Subject line
+		text: "To complete the sign in, enter the verification code!." + "123789" // plain text body
+		
+		
+		}).then(info => {
+		console.log({info});
+		}).catch(console.error);
+		
+	}
 }
