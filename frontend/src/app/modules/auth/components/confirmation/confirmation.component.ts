@@ -1,5 +1,6 @@
 	import { Component, OnInit } from '@angular/core';
 	import { Router } from '@angular/router';
+import { UserStatus } from 'src/app/shared/enums/eUser';
 	import { UserI } from 'src/app/shared/interface/user';
 	import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 	import { AuthService } from '../../auth.service';
@@ -22,7 +23,8 @@
 	}
 
 	async getConfirm(): Promise<void> {
-		this.user = await this.authService.confirmUser(this.user);
+		
+		this.user = await this.authService.confirmUser(this.user.uuid);
 		//this.user = await this.authService.getUserData(this.sQuery.getUser().id);
 		console.log("User at confirmation component: ", this.user);
 		this.sQuery.setUser(this.user);

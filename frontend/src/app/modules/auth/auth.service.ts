@@ -30,6 +30,12 @@ export class AuthService {
 		return (this.user);
 	}
 	
+	async sendCode2Factor(userData: UserI): Promise<UserI>
+	{
+		const url = '/api/user/code2factor';
+		this.user = await this.http.post<any>(url, userData).toPromise();
+		return (this.user);
+	}
 	async confirmUser(uniqueID: any): Promise<UserI>
 	{
 		const url = '/api/user/confirmation';

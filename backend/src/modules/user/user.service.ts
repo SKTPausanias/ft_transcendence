@@ -30,8 +30,6 @@ export class UserService {
 
 	async authorization(code:string):  Promise<any>
 	{
-		console.log("code from authorization: ", code);
-
 		this.authHeader = await this.getAuthHeader(code);
 		//Find if userID exists in DB 
 		//EXISTS return obejto de user
@@ -45,7 +43,11 @@ export class UserService {
 		if (data !== undefined)
 			return (data);
 		const user_info = await this.getUserInfo(token_info)
-		console.log("From userService: authorization ", user_info);
+		
+		/* */
+		//console.log("From userService: authorization() ", user_info);
+		/* */
+		
 		this.user.setUser(user_info);
 		this.user.status = 1;
 		
@@ -71,7 +73,6 @@ export class UserService {
 	}
 	async getUserInfo(token_info: any): Promise<any> 
 	{
-		console.log("From getUserInfo on userService ", token_info);
 		const url = "https://api.intra.42.fr/v2/users/" + token_info.resource_owner_id + "/";
 		return ((await firstValueFrom(this.httpService.get(url,  { headers: this.authHeader } ))).data);
 	}
@@ -85,12 +86,6 @@ export class UserService {
 		console.log(user);
         user.status = 2;
 		user.uuid = uuid();
-		/* Creating 2-Factor */
-		user.factor_enabled = true;
-		
-		user.online = true;
-		user.code2factor="123456";
-
 
         const data = await this.repository.insert(user);
 		//TODO SEND EMAIL
@@ -146,5 +141,31 @@ export class UserService {
 		const deleted = await this.repository.delete(id);
 		return (deleted);
 
+	}
+
+	async sendEmailCode(user: any): Promise<void> {
+		
+		const nodemailer = require('nodemailer');
+
+		const transporter = nodemailer.createTransport({
+			host: 'smtp.gmail.com',
+			port: 587,
+			auth: {
+			  user: 'ft.transcendence.42@gmail.com',
+			  pass: '@qwerty12345',
+			},
+		  });
+
+		transporter.sendMail({
+		from: '"42 PONG"', // sender address
+		to: user.email, // list of receivers
+		subject: "✔[PONG]Verification Code", // Subject line
+		text: "To complete the sign in, enter the verification code!." + "123789" // plain text body
+		
+		
+		}).then(info => {
+		console.log({info});
+		}).catch(console.error);
+		
 	}
 }
