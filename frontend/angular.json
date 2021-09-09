@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "auth-test": {
+    "frontend": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:application": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/auth-test",
+            "outputPath": "dist/frontend",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -27,14 +27,14 @@
               "src/assets"
             ],
             "styles": [
-				"./node_modules/bootstrap/dist/css/bootstrap.min.css",
-				"src/styles.css"
-            ],
-            "scripts": [
-				"./node_modules/jquery/dist/jquery.min.js",
-				"./node_modules/@popperjs/core/dist/umd/popper.min.js",
-				"./node_modules/bootstrap/dist/js/bootstrap.min.js"
-			]
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.css"
+                  ],
+                  "scripts": [
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "auth-test:build:production"
+              "browserTarget": "frontend:build:production"
             },
             "development": {
-              "browserTarget": "auth-test:build:development"
+              "browserTarget": "frontend:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -84,7 +84,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "auth-test:build"
+            "browserTarget": "frontend:build"
           }
         },
         "test": {
@@ -99,13 +99,18 @@
               "src/assets"
             ],
             "styles": [
-				"styles.css"
-			  ],
-			  "scripts": []
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.css"
+                  ],
+                  "scripts": [
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/@popperjs/core/dist/umd/popper.min.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ]
           }
         }
       }
     }
   },
-  "defaultProject": "auth-test"
+  "defaultProject": "frontend"
 }
