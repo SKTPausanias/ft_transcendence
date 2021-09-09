@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Component, ElementRef, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
-=======
 import { Component, Type, ElementRef, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
->>>>>>> 2factor_jhf
 import { Router } from '@angular/router';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,25 +17,6 @@ export class LeftNavComponent implements OnInit {
 	@ViewChild('chat_e') eChat: ElementRef<HTMLInputElement>;
 	@ViewChild('conf_e') eConf: ElementRef<HTMLInputElement>;
 	@ViewChild('logout_e') eLogout: ElementRef<HTMLInputElement>;
-<<<<<<< HEAD
-
-	constructor(
-		private sQuery: LocalStorageQueryService,
-		private router: Router
-	) {
-	}
-
-	ngOnInit(): void {
-		
-	}
-	home(){
-		this.newItemEvent.emit(0);
-		this.router.navigateByUrl('');
-		this.select_view(this.eHome);
-		console.log("home selected");
-	}
-
-=======
 	MODALS: {[name: string]: Type<any>} = {
 		focusFirst: NgbdModalConfirm,
 	};
@@ -60,7 +37,6 @@ export class LeftNavComponent implements OnInit {
 		console.log("home selected");
 	}
 
->>>>>>> 2factor_jhf
 	play(){
 		this.newItemEvent.emit(1);
 		this.router.navigateByUrl('play');
@@ -86,11 +62,7 @@ export class LeftNavComponent implements OnInit {
 		this.select_view(this.eConf);
 		console.log("conf selected");
 	}
-<<<<<<< HEAD
-	logOut(): void {
-=======
 	/*logOut(): void {
->>>>>>> 2factor_jhf
 		this.select_view(this.eLogout);
 		var answer = window.confirm('Are you realy want to log out?');
 		if (answer) {
@@ -100,16 +72,12 @@ export class LeftNavComponent implements OnInit {
 			this.home();
 		console.log('answer2: ', answer);
 		}
-<<<<<<< HEAD
-	}
-=======
 	}*/
 
 	open(name: string) {
 		this.modalService.open(this.MODALS[name], { centered: true, animation: true });
 	}
 
->>>>>>> 2factor_jhf
 	select_view(sel: ElementRef<HTMLInputElement>){
 		this.eHome.nativeElement.classList.remove("selected");
 		this.ePlay.nativeElement.classList.remove("selected");

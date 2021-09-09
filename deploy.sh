@@ -77,7 +77,7 @@ then
 else
 	echo "copy backend sources from:" $sback_path
 	cp -R "${sback_path}/src" "${back_path}/"
-	cp $(ls ${sback_path}/*.json) "${back_path}/"
+#	cp $(ls ${sback_path}/*.json) "${back_path}/"
 fi
 
 if ! [ -d $sfront_path ]
@@ -86,7 +86,7 @@ then
 else
 	echo "copy frontend sources from:" $sback_path
 	cp -R "${sfront_path}/src" "${front_path}/"
-	cp $(ls ${sfront_path}/*.json) "${front_path}/"
+#	cp $(ls ${sfront_path}/*.json) "${front_path}/"
 fi
 
 echo "Checking dependencies..."
