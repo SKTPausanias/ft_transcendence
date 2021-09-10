@@ -50,6 +50,7 @@
                             type="checkbox"
                             class="form-check-input me-2"
                             (change)="factorCheckbox($event)"
+							[(ngModel)]="user.factor_enabled"
                         />
                         <label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
                         </div>

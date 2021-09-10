@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 import { UserI } from 'src/app/shared/interface/user';
 import { HomeService } from '../../../home.service';
@@ -9,6 +9,7 @@ import { HomeService } from '../../../home.service';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
+	@ViewChild('factor_input') factorElement: ElementRef<HTMLInputElement>;
   user: UserI = this.sQuery.getUser();
   constructor(
     private sQuery: LocalStorageQueryService,
@@ -16,6 +17,11 @@ export class SettingsComponent implements OnInit {
   ) { }
   
   ngOnInit(): void {
+	/* if (this.user.factor_enabled)
+		this.factorElement.nativeElement.checked = true;
+	else
+	this.factorElement.nativeElement.checked = false;
+  console.log("2 factor: ", this.user.factor_enabled); */
   }
 
 	async onSubmitSettings(value: any)
