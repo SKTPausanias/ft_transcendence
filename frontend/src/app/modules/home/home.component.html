@@ -1,7 +1,6 @@
-
 <div class="row mx-0">
 		<app-left-nav class="" (newItemEvent)="setFragment($event)"></app-left-nav>
-		<app-content class="" [fragment]="frag"></app-content>
+		<app-content class="" [path]="_path"></app-content>
 		<app-right-nav class="" (mouseenter) ="mouseEnter() " (mouseleave) ="mouseLeave()" [item]="rightNavObj"></app-right-nav>
 </div>
 

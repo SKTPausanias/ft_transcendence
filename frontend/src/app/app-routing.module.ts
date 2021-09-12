@@ -11,6 +11,7 @@ import { LiveComponent } from './modules/home/components/content/live/live.compo
 import { ChatComponent } from './modules/home/components/content/chat/chat.component';
 import { SettingsComponent } from './modules/home/components/content/settings/settings.component';
 import { Auth2factorComponent } from './modules/auth/components/auth2factor/auth2factor.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
 const routes: Routes = [
 	{ path: '', component: HomeComponent,
@@ -28,6 +29,7 @@ const routes: Routes = [
 		{ path: 'confirmation',	component: ConfirmationComponent },
 		{ path: 'auth2factor',	component: Auth2factorComponent }
 	] },
+	{ path: '**', component: NotFoundComponent}
 ];
 
 @NgModule({

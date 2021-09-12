@@ -22,13 +22,4 @@ export class LocalStorageQueryService {
 	removeUser() {
 		this.localStorageService.remove(Storage.USER);
 	}
-	setFragment(pos: number){
-		this.localStorageService.set("fragment", {fragment: pos});
-	}
-	getFragment(): number{
-		const data = this.localStorageService.get("fragment");
-		if (data)
-			return data.fragment;
-		return 0;
-	}
 }
