@@ -33,11 +33,15 @@ export class Auth2factorComponent implements OnInit {
     }
     this.userEmail += this.user.email.substring(i);
   }
-  getAuthenticate(): void
+  async getAuthenticate(value: any): Promise<void>
   {
-    this.route.navigateByUrl('/');
+    this.user.code2factor = value.validation_code;
+    const ret = await this.authService.validate2Factor(this.user);
+    if (ret)
+      this.route.navigateByUrl('/');
   }
+
   reSendCode(): void {
-    this.authService.sendCode2Factor(this.user);
+    this.authService.reSendCode2Factor(this.user);
   }
 }

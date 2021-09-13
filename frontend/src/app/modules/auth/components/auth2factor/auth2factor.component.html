@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-around mt-5 mb-5 mx-1">
             <div class="box col-10 col-md-8 col-lg-6 col-xl-5 align-self-center">
-                <form ngNativeValidate class="form-group" #reg="ngForm" (ngSubmit)="getAuthenticate()">
+                <form ngNativeValidate class="form-group" #reg="ngForm" (ngSubmit)="getAuthenticate(reg.value)">
                     <div>
                         <div class="sp">
                             <img  class="ico_l" src="/assets/img/logo.png" alt="image">
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="btn_container">
-                        <button class="btn btn-danger" (click)='getAuthenticate()'>Validate</button>
+                        <button type="submit" class="btn btn-danger">Validate</button>
                     </div>
                 </form>
                 <div class="clearfix mt-4">

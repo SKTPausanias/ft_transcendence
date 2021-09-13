@@ -22,15 +22,35 @@ export class UserController {
 	@Post('/code2factor')
 	async send2factor(@Body() body: any): Promise<any>
 	{
-		const data = await this.userService.sendEmailCode(body);
+		const data = await this.userService.sendCode(body);
+		return (data);
+	}
+	@Post('/code2factor/resend')
+	async reSend2factor(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.reSendCode(body);
+		return (data);
+	}
+	@Post('/code2factor/validate')
+	async validate2factor(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.validateCode(body);
 		return (data);
 	}
 	
 	@Post('/confirmation')
-	async updateUser(@Body() body: any): Promise<any>
+	async confirmUser(@Body() body: any): Promise<any>
 	{
 		return (await this.userService.confirmUser(body.uuid));
 	}
+
+	@Post('/updateUser')
+	async updateUser(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.updateUser(body);
+		return (data);
+	}
+	
 	@Get('/data')
 	async getUserData(@Query() param: any): Promise<any>{
 		const response = await this.userService.findById(param.id);
