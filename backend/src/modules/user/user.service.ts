@@ -151,8 +151,9 @@ export class UserService {
 	async validateCode(user: any): Promise<boolean> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		
-		if (res !== undefined && res.expiration_time < Math.round(Date.now() / 1000) && res.code == user.code2factor){
-			console.log("Codes: ", user.code2factor, res.code);
+		console.log("Llego", res.code, " -> ", user.code2factor);
+		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && res.code == user.code2factor){
+			console.log("Codes match: ", user.code2factor, res.code);
 			this.codeFactorTable.remove(res);
 			return (true);
 		}
