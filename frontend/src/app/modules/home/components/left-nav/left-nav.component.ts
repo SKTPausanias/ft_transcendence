@@ -12,6 +12,7 @@ styleUrls: ['./left-nav.component.css'],
 export class LeftNavComponent implements OnInit {
 	@Output() newItemEvent = new EventEmitter<string>();
 	url: string;
+	navL = Nav;
 	MODALS: {[name: string]: Type<any>} = {
 		focusFirst: NgbdModalConfirm,
 	};

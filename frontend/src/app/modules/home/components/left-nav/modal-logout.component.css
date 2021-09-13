@@ -1,0 +1,18 @@
+.mi{
+	width: 25px;
+	height: 25px;
+	box-sizing: unset;
+	background: none;
+	border-style: unset;
+	border: 1px solid #673D76;
+	border-radius: 50px;
+	padding: 0;
+	margin: 0;
+	color: #673D76;
+}
+.mi:hover{
+	background-color: #673D76;
+	border: none;
+	color: #ffffff;
+	text-align: center;
+}
