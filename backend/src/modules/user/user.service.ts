@@ -153,8 +153,9 @@ export class UserService {
 		
 		console.log("Llego", res.code, " -> ", user.code2factor);
 		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && res.code == user.code2factor){
+			res.validated = true;
+			this.codeFactorTable.save({...res, validated: true});
 			console.log("Codes match: ", user.code2factor, res.code);
-			this.codeFactorTable.remove(res);
 			return (true);
 		}
 
@@ -170,6 +171,7 @@ export class UserService {
 		codeData.code = rcode;
 		codeData.creation_time = Math.round(Date.now() / 1000);
 		codeData.expiration_time = codeData.creation_time + (120);
+		codeData.validated = false;
 		codeData.userID = user.id;
 
 		return (codeData);
@@ -188,10 +190,10 @@ export class UserService {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		var codeData = await this.generateCode(user);
 		
-		if (res === undefined)
+		if (res === undefined || res.validated == true)
 		{
 			console.log("insert this new code: ", codeData.code);			
-			await this.codeFactorTable.insert(codeData);
+			await this.codeFactorTable.save({...res, ...codeData});
 			this.sendEmailCode(user, codeData);
 		}
 		

@@ -14,7 +14,10 @@ export class code2factor {
     creation_time: number;
 
     @Column()
-    expiration_time: number;   
+    expiration_time: number;
+
+    @Column()
+    validated: boolean; 
 
     @OneToOne(type => users, {onDelete:'CASCADE'}) @JoinColumn() 
     userID: users;
