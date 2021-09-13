@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { users } from './shared/entity/user.entity';
+import { code2factor } from './shared/entity/code2factor.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { users } from './shared/entity/user.entity';
 		username: 'admin', //admin
 		password: 'admin',		//admin
 		database: 'ft_transcendence', //ft_transcendence
-		entities: [users],
+		entities: [users, code2factor],
 //		autoLoadEntities: true,
 		synchronize: true,
 	}),

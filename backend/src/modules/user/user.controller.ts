@@ -22,7 +22,19 @@ export class UserController {
 	@Post('/code2factor')
 	async send2factor(@Body() body: any): Promise<any>
 	{
-		const data = await this.userService.sendEmailCode(body);
+		const data = await this.userService.sendCode(body);
+		return (data);
+	}
+	@Post('/code2factor/resend')
+	async reSend2factor(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.reSendCode(body);
+		return (data);
+	}
+	@Post('/code2factor/validate')
+	async validate2factor(@Body() body: any): Promise<any>
+	{
+		const data = await this.userService.validateCode(body);
 		return (data);
 	}
 	
