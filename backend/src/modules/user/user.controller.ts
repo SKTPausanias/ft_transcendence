@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { users } from 'src/shared/entity/user.entity';
 import { UserService } from './user.service';
+import { CodeI } from './model/code/i2factor';
 
 
 @Controller('/api/user')
@@ -20,13 +21,13 @@ export class UserController {
 	}
 
 	@Post('/code2factor')
-	async send2factor(@Body() body: any): Promise<any>
+	async send2factor(@Body() body: any): Promise<CodeI> 
 	{
 		const data = await this.userService.sendCode(body);
 		return (data);
 	}
 	@Post('/code2factor/resend')
-	async reSend2factor(@Body() body: any): Promise<any>
+	async reSend2factor(@Body() body: any): Promise<CodeI>
 	{
 		const data = await this.userService.reSendCode(body);
 		return (data);

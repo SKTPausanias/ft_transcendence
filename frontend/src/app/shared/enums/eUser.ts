@@ -11,10 +11,3 @@ export enum UserStatus {
 	UNCONFIRMED = 2,
 	CONFIRMED = 3
 }
-export enum Nav {
-	HOME = '/',
-	GAME = '/play',
-	LIVE = '/live',
-	CHAT = '/chat',
-	CONF = '/settings'
-}

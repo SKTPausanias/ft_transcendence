@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 import { UserI } from 'src/app/shared/interface/user';
 import { AuthService } from '../../auth.service';
+import { CodeI } from '../../../../shared/interface/c2f';
 
 @Component({
   selector: 'app-auth2factor',
@@ -13,14 +14,16 @@ export class Auth2factorComponent implements OnInit {
 
   user: UserI = this.sQuery.getUser();
   userEmail: string = "";
+  c2f: CodeI = <CodeI>{};
 
   constructor(private sQuery: LocalStorageQueryService,
               private authService: AuthService,
               private route: Router) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.partialHide();
-    this.authService.sendCode2Factor(this.user);
+    this.c2f = await this.authService.sendCode2Factor(this.user);
+    
   }
 
   partialHide(): void {
@@ -41,7 +44,9 @@ export class Auth2factorComponent implements OnInit {
       this.route.navigateByUrl('/');
   }
 
-  reSendCode(): void {
-    this.authService.reSendCode2Factor(this.user);
+  async reSendCode(): Promise<void> {
+    console.log("Llego...");
+    this.c2f = await this.authService.reSendCode2Factor(this.user);
+    console.log("from oninit auth2factor: ", this.c2f);
   }
 }

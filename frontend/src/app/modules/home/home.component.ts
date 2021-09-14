@@ -15,7 +15,7 @@ import { RightNavI } from 'src/app/shared/interface/rightNav';
 export class HomeComponent implements OnInit {
 	user: UserI = this.sQuery.getUser();
 	isLoaded: boolean = false;
-	_path: string = '/';
+	frag: number = 0;
 	rightNavObj: RightNavI = {
 		userInfo : {
 			nickname: '',
@@ -63,6 +63,15 @@ export class HomeComponent implements OnInit {
 	setFragment(ev: any)
 	{
 		console.log("setFragment: ",ev);
-		this._path = ev;
+		this.frag = ev;
 	}
 }
+
+
+/*
+
+	sesion_token: 789217389732
+	token_expires: 8000
+	token_creation_time: 
+
+*/

@@ -7,3 +7,9 @@ export interface i2factor {
     expiration_time: number;   
     userID: users;
 }
+
+export interface CodeI {
+    creation_time: number;
+    expiration_time: number;
+    validated: boolean;
+}

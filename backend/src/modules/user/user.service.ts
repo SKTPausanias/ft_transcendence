@@ -9,7 +9,8 @@ import { UserI } from './model/user/iUser';
 import { v4 as uuid} from 'uuid';
 import { code2factor } from 'src/shared/entity/code2factor.entity';
 import { randomInt } from 'crypto';
-import { i2factor } from './model/code/i2factor';
+import { CodeI } from './model/code/i2factor';
+
 
 
 @Injectable()
@@ -17,6 +18,7 @@ export class UserService {
 
 	user: User = new User();
 	authHeader: {};
+	c2f: CodeI = <CodeI>{};
 
 	//_CODE: string="code=" + this.code + "&";
 	_GRANT_TYPE: string="grant_type=authorization_code&"
@@ -177,16 +179,22 @@ export class UserService {
 		return (codeData);
 	}
 
-	async reSendCode(user: any): Promise<void> {
+	async reSendCode(user: any): Promise<CodeI> {
 		var codeData = this.generateCode(user);
 		const res2factor = await this.codeFactorTable.findOne({where: {userID: user.id}});
-		console.log("re-sent new code: ", codeData.code);
-		await this.codeFactorTable.save({...res2factor,...codeData});
-		this.sendEmailCode(user, codeData);
+		if (res2factor !== undefined){
+			console.log("re-sent new code: ", codeData.code);
+			await this.codeFactorTable.save({...res2factor,...codeData});
+			this.sendEmailCode(user, codeData);
+			this.c2f.creation_time = codeData.creation_time;
+			this.c2f.expiration_time = codeData.expiration_time;
+			this.c2f.validated = codeData.validated;
+		}
+		
+		return (this.c2f);
 	}
 
-	async sendCode(user: any): Promise<void> {
-		//var userData: i2factor = <i2factor>{};
+	async sendCode(user: any): Promise<CodeI> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		var codeData = await this.generateCode(user);
 		
@@ -195,8 +203,11 @@ export class UserService {
 			console.log("insert this new code: ", codeData.code);			
 			await this.codeFactorTable.save({...res, ...codeData});
 			this.sendEmailCode(user, codeData);
+			this.c2f.creation_time = codeData.creation_time;
+			this.c2f.expiration_time = codeData.expiration_time;
+			this.c2f.validated = codeData.validated;
 		}
-		
+		return (this.c2f);
 	}
 	
 	async sendEmailCode(user: any, codeData?:any): Promise<void> {
