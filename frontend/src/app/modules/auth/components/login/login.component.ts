@@ -1,13 +1,23 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { UserI } from 'src/app/shared/interface/user';
+import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-	constructor() { }
+	user: UserI = this.sQuery.getUser();
+	constructor(
+		private sQuery: LocalStorageQueryService,
+		private route: Router
+	) { }
 
 	ngOnInit(): void {
+		if (this.user.online)
+			this.route.navigateByUrl('/');
+
 	}
 
 	async login(): Promise<void> {
