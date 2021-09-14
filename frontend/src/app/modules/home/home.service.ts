@@ -35,10 +35,9 @@ export class HomeService {
 		return (response);
 	}
 
-	async updateUser(userData: UserI): Promise<UserI>
+	async updateUser(userData: UserI): Promise<boolean>
 	{
 		const url = '/api/user/updateUser';
-		this.user = await this.http.post<any>(url, userData).toPromise();
-		return (this.user);
+		return await this.http.post<any>(url, userData).toPromise(); 
 	}
 }

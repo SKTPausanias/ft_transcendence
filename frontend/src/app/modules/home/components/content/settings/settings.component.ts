@@ -11,27 +11,20 @@ import { HomeService } from '../../../home.service';
 export class SettingsComponent implements OnInit {
 	@ViewChild('factor_input') factorElement: ElementRef<HTMLInputElement>;
   user: UserI = this.sQuery.getUser();
+  updated: boolean = false;
   constructor(
     private sQuery: LocalStorageQueryService,
     private homeService: HomeService
   ) { }
   
-  ngOnInit(): void {
-	/* if (this.user.factor_enabled)
-		this.factorElement.nativeElement.checked = true;
-	else
-	this.factorElement.nativeElement.checked = false;
-  console.log("2 factor: ", this.user.factor_enabled); */
-  }
+  ngOnInit(): void { }
 
-	async onSubmitSettings(value: any)
-	{
-    console.log(this.user);
-		this.user.email = value.email;
-		this.user = await this.homeService.updateUser(this.user);
-		this.sQuery.setUser(this.user);
-    console.log(this.sQuery.getUser());	
-	}
+  async onSubmitSettings(value: any) {
+	this.user.email = value.email;
+	this.updated = await this.homeService.updateUser(this.user);
+	this.sQuery.setUser(this.user);
+	console.log(this.sQuery.getUser());	
+}
 
 	factorCheckbox(e: any) {
 		if (e.target.checked)
