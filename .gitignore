@@ -4,5 +4,5 @@
 !/backend/*.json
 #Frontend exluded files
 /frontend/node_modules
-
+!/frontend/*.json
 sendgrid.env
