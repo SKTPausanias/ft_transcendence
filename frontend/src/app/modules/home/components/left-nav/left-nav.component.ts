@@ -28,6 +28,7 @@ export class LeftNavComponent implements OnInit {
 		{
 			this.router.events.subscribe((event: Event) => {
 			if (event instanceof NavigationStart) {
+				this.url = '/';
 				console.log("navigation start: ", event);
 			}
 			if (event instanceof NavigationEnd) {

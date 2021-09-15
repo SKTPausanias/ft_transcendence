@@ -44,6 +44,7 @@ export class Auth2factorComponent implements OnInit {
 		}
 		*/
     const ret = await this.authService.validate2Factor(this.user);
+	console.log("get authenticate code: ", this.user);
     if (ret)
       this.route.navigateByUrl('/');
 	else
@@ -54,7 +55,7 @@ export class Auth2factorComponent implements OnInit {
     this.authService.reSendCode2Factor(this.user);
   }
   timeCounter(){
-		let intervalId = setInterval(() => {
+	/* 	let intervalId = setInterval(() => {
 		this.counter = this.counter - 1;
 		this.counterMsg = String(this.counter);
 		console.log(this.counter)
@@ -63,11 +64,13 @@ export class Auth2factorComponent implements OnInit {
 			clearInterval(intervalId);
 			this.counterMsg = "EXPIRED";
 			console.log("Time expired! You must click on resend code!");
-			if (!this.user.online)
-				this.sQuery.removeUser();
+
+			//if (!this.user.online)
+			//	this.sQuery.removeUser();
+
 			//this.route.navigateByUrl('/');
 		}
-	}, 1000)
+	}, 1000) */
 	console.log("thats it");
 	
   }

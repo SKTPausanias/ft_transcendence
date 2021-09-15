@@ -16,6 +16,7 @@ export class HomeService {
 	) {}
 
 	async getUserData(): Promise<UserI> {
+		console.log("calling backend 1 ---> : ", this.sQuery.getUser());
 		const id = this.sQuery.getUser().id;
 		console.log("calling backend: ", id);
 		if (id === undefined)
@@ -40,5 +41,12 @@ export class HomeService {
 		const url = '/api/user/updateUser';
 		this.user = await this.http.post<any>(url, userData).toPromise();
 		return (this.user);
+	}
+	async logoutUser(){
+		const id = this.sQuery.getUser().id;
+		const url = '/api/logout';
+		console.log("lets log out user: ", id);
+		await this.http.get<any>(url + '?id=' + id).toPromise();
+		console.log("DONE LOGOUT!");
 	}
 }

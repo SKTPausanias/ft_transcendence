@@ -155,6 +155,8 @@ export class UserService {
 		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && res.code == user.code2factor){
 			res.validated = true;
 			this.codeFactorTable.save({...res, validated: true});
+			user.online = true;
+			await this.updateUser(user);
 			console.log("Codes match: ", user.code2factor, res.code);
 			return (true);
 		}
