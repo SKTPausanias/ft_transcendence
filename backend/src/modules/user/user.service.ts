@@ -7,6 +7,10 @@ import { users } from 'src/shared/entity/user.entity';
 import { User } from './model/user/cUser';
 import { UserI } from './model/user/iUser';
 import { v4 as uuid} from 'uuid';
+import { code2factor } from 'src/shared/entity/code2factor.entity';
+import { randomInt } from 'crypto';
+import { CodeI } from './model/code/i2factor';
+
 
 
 @Injectable()
@@ -14,18 +18,20 @@ export class UserService {
 
 	user: User = new User();
 	authHeader: {};
-	code: string = "2699789f179e811f607174468c053236f3bc7200bdd9b5635e60d4a569c6d5d9";
+	c2f: CodeI = <CodeI>{};
 
+	//_CODE: string="code=" + this.code + "&";
 	_GRANT_TYPE: string="grant_type=authorization_code&"
 	_ID: string="client_id=54468a192544b06fef8e25a40d1e3d1febb65e21f600d6b57e1068e5aeba9823&"
 	_SECRET: string="client_secret=5405c583abbbf06cbd9c6dc4a4c53144a2cb1ce5dfd47f3295dcd0a7ce9498f2&"
-	_CODE: string="code=" + this.code + "&";
 	_REDIRECT: string="redirect_uri=http://localhost:4200/auth"
 	_URL: string="https://api.intra.42.fr/oauth/token?"
 	req_url: string = this._URL + this._GRANT_TYPE + this._ID + this._SECRET;
 	
     constructor (@InjectRepository(users)
             private repository: Repository<users>,
+			@InjectRepository(code2factor)
+			private codeFactorTable: Repository<code2factor>,
 			private readonly httpService: HttpService ){}
 
 	async authorization(code:string):  Promise<any>
@@ -44,10 +50,6 @@ export class UserService {
 			return (data);
 		const user_info = await this.getUserInfo(token_info)
 		
-		/* */
-		//console.log("From userService: authorization() ", user_info);
-		/* */
-		
 		this.user.setUser(user_info);
 		this.user.status = 1;
 		
@@ -55,7 +57,6 @@ export class UserService {
 			this.user.role = 'admin';
 		else
 			this.user.role = 'user';				
-		//user.sayHello();
 		// If dosn't exists save user info in database
 		// OBJETO id: 65016, email: "dbelinsk@student.42madrid.com", login: "dbelinsk", first_name: "Dainis", last_name: "Belinskis"
 		return (this.user);
@@ -115,9 +116,13 @@ export class UserService {
         return (user);
     }
 
-    async updateUser(user : any) : Promise<any> {
+    async updateUser(user : any) : Promise<boolean> {
         const data = await this.repository.update(this.user, user);
-        return (user);
+		console.log("updateUser:", data);
+		if (data.affected > 0)
+			return (true);
+		else
+			return (false);
     }
 
 	async confirmUser(uniqueID: any) : Promise<users>
@@ -149,7 +154,67 @@ export class UserService {
 
 	}
 
-	async sendEmailCode(user: any): Promise<void> {
+	async validateCode(user: any): Promise<boolean> {
+		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
+		
+		console.log("Llego", res.code, " -> ", user.code2factor);
+		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && res.code == user.code2factor){
+			res.validated = true;
+			this.codeFactorTable.save({...res, validated: true});
+			console.log("Codes match: ", user.code2factor, res.code);
+			return (true);
+		}
+
+		return (false);
+	}
+
+	generateCode(user: any): code2factor {
+		var codeData = new code2factor();
+		
+		var rcode: string = "";
+		for (var i = 0; i < 6; i++)
+			rcode += String(randomInt(0, 9));
+		codeData.code = rcode;
+		codeData.creation_time = Math.round(Date.now() / 1000);
+		codeData.expiration_time = codeData.creation_time + (120);
+		codeData.validated = false;
+		codeData.userID = user.id;
+
+		return (codeData);
+	}
+
+	async reSendCode(user: any): Promise<CodeI> {
+		var codeData = this.generateCode(user);
+		const res2factor = await this.codeFactorTable.findOne({where: {userID: user.id}});
+		if (res2factor !== undefined){
+			console.log("re-sent new code: ", codeData.code);
+			await this.codeFactorTable.save({...res2factor,...codeData});
+			this.sendEmailCode(user, codeData);
+			this.c2f.creation_time = codeData.creation_time;
+			this.c2f.expiration_time = codeData.expiration_time;
+			this.c2f.validated = codeData.validated;
+		}
+		
+		return (this.c2f);
+	}
+
+	async sendCode(user: any): Promise<CodeI> {
+		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
+		var codeData = await this.generateCode(user);
+		
+		if (res === undefined || res.validated == true)
+		{
+			console.log("insert this new code: ", codeData.code);			
+			await this.codeFactorTable.save({...res, ...codeData});
+			this.sendEmailCode(user, codeData);
+			this.c2f.creation_time = codeData.creation_time;
+			this.c2f.expiration_time = codeData.expiration_time;
+			this.c2f.validated = codeData.validated;
+		}
+		return (this.c2f);
+	}
+	
+	async sendEmailCode(user: any, codeData?:any): Promise<void> {
 		
 		const nodemailer = require('nodemailer');
 
@@ -163,14 +228,12 @@ export class UserService {
 		  });
 
 		transporter.sendMail({
-		from: '"42 PONG"', // sender address
-		to: user.email, // list of receivers
-		subject: "✔[PONG]Verification Code", // Subject line
-		text: "To complete the sign in, enter the verification code!." + "123789" // plain text body
-		
-		
+			from: '"42 PONG"',
+			to: user.email,
+			subject: "✔[PONG] Verification Code",
+			text: "To complete the sign in, enter the verification code!\n" + codeData.code
 		}).then(info => {
-		console.log({info});
+			console.log({info});
 		}).catch(console.error);
 		
 	}

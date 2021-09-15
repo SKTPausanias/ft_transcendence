@@ -4,6 +4,7 @@ import { UserI } from 'src/app/shared/interface/user';
 import * as enums from 'src/app/shared/enums/eUser'
 import * as uuid from 'uuid';
 import { HomeService } from '../home/home.service';
+import { CodeI } from 'src/app/shared/interface/c2f';
 
 
 @Injectable({
@@ -30,12 +31,26 @@ export class AuthService {
 		return (this.user);
 	}
 	
-	async sendCode2Factor(userData: UserI): Promise<UserI>
+	async sendCode2Factor(userData: UserI): Promise<CodeI>  // change return value to an object data with expiration and validation
 	{
 		const url = '/api/user/code2factor';
-		this.user = await this.http.post<any>(url, userData).toPromise();
-		return (this.user);
+		var data = await this.http.post<any>(url, userData).toPromise();
+		return (data);
 	}
+	async reSendCode2Factor(userData: UserI): Promise<CodeI>  // change return value to an object data with expiration and validation
+	{
+		const url = '/api/user/code2factor/resend';
+		var data = await this.http.post<any>(url, userData).toPromise();
+		return (data);
+	}
+
+	async validate2Factor(userData: UserI): Promise<boolean>
+	{
+		const url = '/api/user/code2factor/validate';
+		const ret = await this.http.post<any>(url, userData).toPromise();
+		return (ret);
+	}
+
 	async confirmUser(uniqueID: any): Promise<UserI>
 	{
 		const url = '/api/user/confirmation';
