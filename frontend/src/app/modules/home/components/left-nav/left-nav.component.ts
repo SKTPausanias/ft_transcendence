@@ -3,6 +3,8 @@ import { Router, NavigationStart, Event, NavigationEnd, NavigationError } from '
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from './modal-logout.component'
 import { Nav } from 'src/app/shared/enums/eUser'
+import { UserI } from 'src/app/shared/interface/user';
+import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
 @Component({
 selector: 'app-left-nav',
@@ -11,6 +13,7 @@ styleUrls: ['./left-nav.component.css'],
 })
 export class LeftNavComponent implements OnInit {
 	@Output() newItemEvent = new EventEmitter<string>();
+	user: UserI = this.sQuery.getUser()
 	url: string;
 	navL = Nav;
 	MODALS: {[name: string]: Type<any>} = {
@@ -18,21 +21,24 @@ export class LeftNavComponent implements OnInit {
 	};
 	constructor(
 		private router: Router,
-		private modalService: NgbModal
+		private modalService: NgbModal,
+		private sQuery: LocalStorageQueryService
 	) {
-		this.router.events.subscribe((event: Event) => {
-            if (event instanceof NavigationStart) {
+		
+			this.router.events.subscribe((event: Event) => {
+			if (event instanceof NavigationStart) {
+				this.url = '/';
 				console.log("navigation start: ", event);
-            }
-            if (event instanceof NavigationEnd) {
+			}
+			if (event instanceof NavigationEnd) {
 				console.log("navigation end: ", event);
 				this.url = event.url;
 				this.newItemEvent.emit(this.url);
-            }
-            if (event instanceof NavigationError) {
-                console.log(event.error);
-            }
-        });
+			}
+			if (event instanceof NavigationError) {
+				console.log(event.error);
+			}
+		});
 	}
 
 	ngOnInit(): void {

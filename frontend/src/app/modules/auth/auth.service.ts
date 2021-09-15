@@ -17,7 +17,7 @@ export class AuthService {
 
 	async getUser()
 	{
-		return (await this.homeService.getUserData())
+		return (await this.homeService.getUserData());
 	}
 	async getUserData(code: string): Promise<UserI>{ // TODO <uncomment when data is comming from backend> Promise<Observable<any>>{
 		const url = '/api/login';
@@ -47,7 +47,9 @@ export class AuthService {
 	async validate2Factor(userData: UserI): Promise<boolean>
 	{
 		const url = '/api/user/code2factor/validate';
+		console.log("validating....");
 		const ret = await this.http.post<any>(url, userData).toPromise();
+		console.log("done: ", ret);
 		return (ret);
 	}
 

@@ -1,9 +1,9 @@
 <app-loading *ngIf='isLoading'></app-loading>
-<div *ngIf="isLoaded">
-	<app-login *ngIf='showLogin() && !isLoading'></app-login>
-	<app-registration *ngIf='showRegister() && !isLoading'></app-registration>
-	<app-confirmation *ngIf='showConfirm() && !isLoading'></app-confirmation><br>
-	<app-auth2factor *ngIf='show2Factor() && !isLoading'></app-auth2factor>
+<div *ngIf="isLoaded && !isLoading">
+	<app-login *ngIf='showLogin()'></app-login>
+	<app-registration *ngIf='showRegister()'></app-registration>
+	<app-confirmation *ngIf='showConfirm()'></app-confirmation><br>
+	<app-auth2factor *ngIf='show2Factor()'></app-auth2factor>
 </div>
 
 

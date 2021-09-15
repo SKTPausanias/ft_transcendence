@@ -41,4 +41,11 @@ export class HomeService {
 		this.user = await this.http.post<any>(url, userData).toPromise();
 		return (this.user);
 	}
+	async logoutUser(){
+		const id = this.sQuery.getUser().id;
+		const url = '/api/logout';
+		console.log("lets log out user: ", id);
+		await this.http.get<any>(url + '?id=' + id).toPromise();
+		console.log("DONE LOGOUT!");
+	}
 }

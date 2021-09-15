@@ -30,9 +30,9 @@ export class HomeComponent implements OnInit {
 
 	async ngOnInit(): Promise<void> {
 		this.user = await this.homeService.getUserData();
+		console.log("on init home: ", this.user);
 		this.sQuery.setUser(this.user);
-		console.log(this.sQuery.getUser());
-		if (this.user.status !== UserStatus.CONFIRMED)
+		if (!this.user.online)
 			this.router.navigateByUrl('/auth');
 		else 
 			this.isLoaded = true;

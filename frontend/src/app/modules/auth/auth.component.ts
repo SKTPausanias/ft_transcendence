@@ -22,6 +22,7 @@ export class AuthComponent implements OnInit {
 	) {}
 
 	async ngOnInit(): Promise<void> {
+		console.log("oninit auth");
 		this.isLoaded = false;
 		this.user = await this.authService.getUser();
 		const queryParam = await this.route.queryParams;
@@ -35,7 +36,9 @@ export class AuthComponent implements OnInit {
 			this.router.navigateByUrl('auth/confirmation');
 		else if (this.user.status == UserStatus.CONFIRMED && this.user.factor_enabled)
 			this.router.navigateByUrl('auth/auth2factor');
-		else 
+		else if(!this.user.online)
+			this.router.navigateByUrl('auth/login');
+		else
 			this.router.navigateByUrl('');
 		this.isLoaded = true;
 	}
@@ -66,7 +69,7 @@ export class AuthComponent implements OnInit {
 	}
 
 	showLogin(): boolean {
-		return (this.user.status === undefined ? true : false);
+		return ((this.user.status === undefined || !this.user.online) && !this.show2Factor() ? true : false);
 	}
 
 	showRegister(): boolean {
@@ -78,7 +81,7 @@ export class AuthComponent implements OnInit {
 	}
 
 	show2Factor(): boolean {
-		console.log("Checked auth2factor: ", this.user.factor_enabled);
+		//console.log("Checked auth2factor: ", this.user.factor_enabled);
 		return ((this.user.status == UserStatus.CONFIRMED && this.user.factor_enabled == true) ? true : false);
 	}
 }
