@@ -21,7 +21,7 @@ export class ResendBoxComponent {
   @ViewChild('resend_msg') resendMsg: ElementRef;
   constructor(private router: Router, private authService: AuthService) { }
   onClickResendBox(event: Event) {
-    this.resendMsg.nativeElement.remove();
+    //this.resendMsg.nativeElement.remove();
   }
 }
 @Component({
@@ -37,6 +37,7 @@ export class Auth2factorComponent implements OnInit {
   c2f: CodeI = <CodeI>{};
   date_formated : string;
   show : boolean = false;
+  boxMsg = '';
   constructor(private sQuery: LocalStorageQueryService,
               private authService: AuthService,
               private route: Router) { }
@@ -60,12 +61,29 @@ export class Auth2factorComponent implements OnInit {
     const ret = await this.authService.validate2Factor(this.user);
     if (ret)
       this.route.navigateByUrl('/');
+	else{
+		this.boxMsg = "Oopsss bad code";
+		this.show = true;
+		}
   }
   async reSendCode(): Promise<void> {
-    this.c2f = await this.authService.reSendCode2Factor(this.user);
+  	this.c2f = await this.authService.reSendCode2Factor(this.user);
     this.date_formated =  this.toDateTime(this.c2f.expiration_time);
     console.log("parentElement: ",this.parentElement);
+
+
     this.show = true;
+	this.boxMsg = 'Your authentication code has been sent';
+	/* let counter = 10;
+	let intervalId = setInterval(() => {
+		counter = counter - 1;
+		console.log("msgBox wil close in: ", counter);
+		if(counter === 0 || this.show == false) 
+		{
+			clearInterval(intervalId);
+			this.show = false;
+		}
+	}, 1000) */
     //var node = document.createElement("div");
     //node.textContent = "Re-send";
     //this.parentElement.nativeElement.insertBefore(node, this.parentElement.nativeElement.firstChild);
@@ -77,5 +95,9 @@ export class Auth2factorComponent implements OnInit {
     str1 = t.toString();
     str1 = str1.substr(0, str1.indexOf('GMT'));
     return str1;
+  }
+  closeMsg(){
+	  this.show = false;
+	  this.boxMsg = '';
   }
 }
