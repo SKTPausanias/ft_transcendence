@@ -35,10 +35,7 @@ export class UserController {
 	@Post('/code2factor/validate')
 	async validate2factor(@Body() body: any): Promise<any>
 	{
-		console.log(1);
 		const data = await this.userService.validateCode(body);
-		console.log(2);
-		console.log(data);
 		return (data);
 	}
 	

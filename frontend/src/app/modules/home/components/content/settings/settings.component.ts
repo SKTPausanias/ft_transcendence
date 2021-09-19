@@ -26,12 +26,9 @@ export class SettingsComponent implements OnInit {
 
 	async onSubmitSettings(value: any)
 	{
-    console.log(this.user);
 		this.user.email = value.email;
 		await this.homeService.updateUser(this.user);
-		this.sQuery.setUser(this.user);
-   		 console.log("on submit: ", this.sQuery.getUser());	
-		
+		this.sQuery.setUser(this.user);		
 	}
 
 	factorCheckbox(e: any) {

@@ -29,6 +29,21 @@ export class HomeComponent implements OnInit {
 	) {}
 
 	async ngOnInit(): Promise<void> {
+		// sesion token: {
+		// token: String -> encoded 
+		//  status: String -> 1,2,3
+		//  creation_time: ->
+		//  expires: -> 
+		//-------------
+		//Only in postgress
+		// 42 api authorization header: string
+		// expiration_time: number
+		// id: number
+		//}
+		//if !session token || session token expired
+		//	go to auth
+		//else
+		//	call backend
 		this.user = await this.homeService.getUserData();
 		console.log("on init home: ", this.user);
 		this.sQuery.setUser(this.user);
@@ -36,17 +51,16 @@ export class HomeComponent implements OnInit {
 			this.router.navigateByUrl('/auth');
 		else 
 			this.isLoaded = true;
-		console.log(this.user);
 	}
 
 	logOut(): void {
+		//remove sesion tocen from cache
 		this.sQuery.removeUser();
 		this.router.navigateByUrl('/auth');
 		this.isLoaded = false;
 	}
 
 	updateToken(): void {
-		console.log('Token updated!! -> ');
 	}
 
 	deleteAccount():void {
@@ -62,7 +76,7 @@ export class HomeComponent implements OnInit {
 	}
 	setFragment(ev: any)
 	{
-		console.log("setFragment: ",ev);
+		console.log('path: ', ev);
 		this._path = ev;
 	}
 }

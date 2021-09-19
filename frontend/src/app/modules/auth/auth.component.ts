@@ -24,10 +24,12 @@ export class AuthComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		console.log("oninit auth");
 		this.isLoaded = false;
-		this.user = await this.authService.getUser();
+		//get sesion token
+		this.user = this.sQuery.getUser();
 		const queryParam = await this.route.queryParams;
 		
 		await this.queryAction(queryParam);
+		//Comparation with session token 
 		if (this.user.status === undefined) 
 			this.router.navigateByUrl('auth/login');
 		else if (this.user.status == UserStatus.UNREGISTERED)

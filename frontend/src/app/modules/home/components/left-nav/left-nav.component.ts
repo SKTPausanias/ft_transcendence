@@ -42,7 +42,6 @@ export class LeftNavComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		//console.log("lets load: ", this.page);
 	}
 	
 	home(): void { this.navigate(Nav.HOME); }

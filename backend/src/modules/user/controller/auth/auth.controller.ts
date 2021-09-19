@@ -9,14 +9,12 @@ export class LoginController {
 	@Get('/login')
 	async getLogin(@Query() query){
 		const resp =  await this.userService.authorization(query.code);
-		console.log("getLogin: ", resp);
 		if (resp.status === UserStatus.CONFIRMED && resp.factor_enabled === false)
 		{
 			resp.online = true;
 			await this.userService.updateUser(resp);
 		}
-
-		console.log("getLogin after: ", resp);
+		console.log("login");
 		//42 api data
 		// Deberia devolver nuestro modelo
 		// 1. user info
@@ -27,7 +25,6 @@ export class LoginController {
 	@Get('/logout')
 	async logout(@Query() query)
 	{
-		console.log("llega a logout");
 		const usr = await this.userService.findById(query.id);
 		if (usr !== undefined && usr.online)
 		{
