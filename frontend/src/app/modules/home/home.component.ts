@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
 		// token: String -> encoded 
 		//  status: String -> 1,2,3
 		//  creation_time: ->
-		//  expires: -> 
+		//  expires_in: -> 
 		//-------------
 		//Only in postgress
 		// 42 api authorization header: string
