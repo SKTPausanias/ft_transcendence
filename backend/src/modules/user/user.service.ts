@@ -70,6 +70,7 @@ export class UserService {
 	async getTokenInfo(): Promise<any>
 	{
 		const url = "https://api.intra.42.fr/oauth/token/info";
+		console.log(this.authHeader);
 		return ((await firstValueFrom(this.httpService.get(url, { headers: this.authHeader } ))).data);
 	}
 	async getUserInfo(token_info: any): Promise<any> 

@@ -13,7 +13,8 @@ export interface SessionTokenI{
 		//-------------
 		//Only in postgress
 		// 42 api authorization header: string
-		// expiration_time: number
+		//creation_time: number,
+		//expires_in: number, 3600 
 		// id: number
 		//}
 		//if !session token || session token expired
