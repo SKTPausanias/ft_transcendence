@@ -1,4 +1,5 @@
 /* https://www.tutorialspoint.com/typeorm/typeorm_relations.htm - OneToOne relation */
+import { type } from 'os';
 import { PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, Entity, Timestamp} from 'typeorm'
 import { users } from './user.entity';
 
@@ -17,7 +18,22 @@ export class code2factor {
     expiration_time: number;
 
     @Column()
-    validated: boolean; 
+    validated: boolean;
+
+    @Column()
+    ascii: string;
+
+    @Column()
+    hex: string;
+
+    @Column()
+    base32: string;
+
+    @Column()
+    otpauth_url: string;
+
+    @Column("bytea", {nullable: false})
+    qrCode: Buffer;
 
     @OneToOne(type => users, {onDelete:'CASCADE'}) @JoinColumn() 
     userID: users;

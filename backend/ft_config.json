@@ -1,0 +1,47 @@
+{
+	"ft_transcendence": 
+	{
+		"version": "0.0.1",
+		"contributors": [
+			"aserrano", "dbelinsk", "jheras", "mlaplana"
+		]
+	},
+	"http":
+	{
+		"address": "0.0.0.0",
+		"port": 80
+	},
+	"postgres": 
+	{
+		"type": "postgres",
+		"host": "localhost",
+		"port": "4321",
+		"username": "admin",
+		"password": "admin",
+		"database": "ft_transcendence",
+		"entities": ["users", "code2factor"],
+		"autoLoadEntities": true,
+		"synchronize": true
+	},
+	"auth": 
+	{
+		"key":{
+			"grant_type": "grant_type=",
+			"client_id": "client_id=",
+			"client_secret": "client_secret=",
+			"redirect_uri": "redirect_uri=",
+			"code": "grant_type="
+		},
+		"value": {
+			"grant_type": "authorization_code&",
+			"client_id": "54468a192544b06fef8e25a40d1e3d1febb65e21f600d6b57e1068e5aeba9823&",
+			"client_secret": "5405c583abbbf06cbd9c6dc4a4c53144a2cb1ce5dfd47f3295dcd0a7ce9498f2&",
+			"redirect_uri": "http://localhost:4200/auth"
+		},
+		"url": {
+			"oauth_token": "https://api.intra.42.fr/oauth/token?",
+			"oauth_token_info": "https://api.intra.42.fr/oauth/token/info",
+			"users": "https://api.intra.42.fr/v2/users/"
+		}
+	}
+}

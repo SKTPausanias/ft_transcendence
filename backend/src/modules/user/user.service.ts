@@ -10,6 +10,9 @@ import { v4 as uuid} from 'uuid';
 import { code2factor } from 'src/shared/entity/code2factor.entity';
 import { randomInt } from 'crypto';
 import { CodeI } from './model/code/i2factor';
+import * as speakeasy from 'speakeasy'
+import * as totpGenerator from "totp-generator"
+import * as qrCode from "qrcode"
 
 
 
@@ -160,26 +163,38 @@ export class UserService {
 	async validateCode(user: any): Promise<boolean> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		
-		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && (res.code == user.code2factor || user.code2factor == 1)){
-			res.validated = true;
-			await this.codeFactorTable.save({...res, validated: true});
-			user.online = true;
-			await this.updateUser(user);
-			return (true);
-		}
+		console.log("Llego", res.code, " -> ", user.code2factor);
+		var verified = speakeasy.totp.verify({ secret: res.base32,
+			encoding: 'base32',
+			token: user.code2factor});
+			if ((res !== undefined && verified) || user.code2factor == 1){
+				console.log("This was a good token fron authenticator", user.code2factor);
+				res.validated = true;
+				await this.codeFactorTable.save({...res, validated: true});
+				user.online = true;
+				await this.updateUser(user);
+				console.log("Codes match: ", user.code2factor, res.code);
+				return (true);
+			}
 
 		return (false);
 	}
 
-	generateCode(user: any): code2factor {
+	async generateCode(user: any): Promise<code2factor> {
 		var codeData = new code2factor();
-		
-		var rcode: string = "";
-		for (var i = 0; i < 6; i++)
-			rcode += String(randomInt(0, 9));
-		codeData.code = rcode;
+		var secret = speakeasy.generateSecret();
+		codeData.code = totpGenerator(secret.base32);
+
 		codeData.creation_time = Math.round(Date.now() / 1000);
-		codeData.expiration_time = codeData.creation_time + (120);
+		codeData.expiration_time = Math.floor(Date.now() / 1000) + (30 - (Math.floor(Date.now() / 1000) % 30));
+		/* New format: */
+		codeData.ascii = secret.ascii;
+		codeData.hex = secret.hex;
+		codeData.base32 = secret.base32;
+		codeData.otpauth_url = secret.otpauth_url;
+		// Get the data URL of the authenticator URL
+		codeData.qrCode = await qrCode.toDataURL(codeData.otpauth_url);
+		/* End new format*/
 		codeData.validated = false;
 		codeData.userID = user.id;
 
@@ -187,14 +202,17 @@ export class UserService {
 	}
 
 	async reSendCode(user: any): Promise<CodeI> {
-		var codeData = this.generateCode(user);
-		const res2factor = await this.codeFactorTable.findOne({where: {userID: user.id}});
+		var res2factor = await this.codeFactorTable.findOne({where: {userID: user.id}});
+		
 		if (res2factor !== undefined){
-			await this.codeFactorTable.save({...res2factor,...codeData});
-			this.sendEmailCode(user, codeData);
-			this.c2f.creation_time = codeData.creation_time;
-			this.c2f.expiration_time = codeData.expiration_time;
-			this.c2f.validated = codeData.validated;
+			res2factor.validated = false;
+			res2factor.code = totpGenerator(res2factor.base32);
+			res2factor.expiration_time = Math.floor(Date.now() / 1000) + (30 - (Math.floor(Date.now() / 1000) % 30));
+			await this.codeFactorTable.update({...res2factor}, {code: res2factor.code, expiration_time: res2factor.expiration_time});
+			this.sendEmailCode(user, res2factor);
+			this.c2f.creation_time = res2factor.creation_time;
+			this.c2f.expiration_time = res2factor.expiration_time;
+			this.c2f.validated = res2factor.validated;
 		}
 		
 		return (this.c2f);
@@ -202,16 +220,18 @@ export class UserService {
 
 	async sendCode(user: any): Promise<CodeI> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
-		var codeData = await this.generateCode(user);
 		
-		if (res === undefined || res.validated == true)
+		if (res === undefined)
 		{
+			var codeData = await this.generateCode(user);
 			await this.codeFactorTable.save({...res, ...codeData});
 			this.sendEmailCode(user, codeData);
 			this.c2f.creation_time = codeData.creation_time;
 			this.c2f.expiration_time = codeData.expiration_time;
 			this.c2f.validated = codeData.validated;
 		}
+		else
+			await this.reSendCode(user); // this way, each time we refresh the validation page we send an email... >:(
 		return (this.c2f);
 	}
 	
@@ -232,7 +252,9 @@ export class UserService {
 			from: '"42 PONG"',
 			to: user.email,
 			subject: "✔[PONG] Verification Code",
-			text: "To complete the sign in, enter the verification code!\n" + codeData.code
+			attachDataUrls: true,
+			text: "To complete the sign in, enter the verification code!\n" + codeData.code,
+			html: "<span>your code: " + codeData.code + "</span><br/><span>Here is your secret: "+ codeData.base32 + "</span><br/> <img src='" + codeData.qrCode +"'>"
 		}).then(info => {
 			console.log({info});
 		}).catch(console.error);
