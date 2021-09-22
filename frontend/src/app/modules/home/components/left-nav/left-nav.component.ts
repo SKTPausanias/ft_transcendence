@@ -24,7 +24,6 @@ export class LeftNavComponent implements OnInit {
 		private modalService: NgbModal,
 		private sQuery: LocalStorageQueryService
 	) {
-		
 			this.router.events.subscribe((event: Event) => {
 			if (event instanceof NavigationStart) {
 				this.url = '/';
