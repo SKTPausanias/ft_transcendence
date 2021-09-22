@@ -15,9 +15,7 @@ import { HomeService } from '../../home.service';
                 private router: Router,
 				private homeService: HomeService) {}
     async close(result?: any): Promise<void> {
-		console.log("close1");
 		await this.homeService.logoutUser();
-		console.log("close2");
 		this.sQuery.removeUser();
 		this.router.navigateByUrl('/auth');
 		this.modal.close();

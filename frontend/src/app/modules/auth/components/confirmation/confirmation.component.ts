@@ -26,7 +26,6 @@ import { UserStatus } from 'src/app/shared/enums/eUser';
 		
 		this.user = await this.authService.confirmUser(this.user.uuid);
 		//this.user = await this.authService.getUserData(this.sQuery.getUser().id);
-		console.log("User at confirmation component: ", this.user);
 		this.sQuery.setUser(this.user);
 		this.router.navigateByUrl('/');
 	}

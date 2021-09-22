@@ -27,7 +27,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
 	AuthModule,
-  FormsModule
+  	FormsModule
   ]
 })
 export class HomeModule {}

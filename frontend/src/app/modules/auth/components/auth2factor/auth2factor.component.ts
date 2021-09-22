@@ -69,7 +69,6 @@ export class Auth2factorComponent implements OnInit {
   async reSendCode(): Promise<void> {
   	this.c2f = await this.authService.reSendCode2Factor(this.user);
     this.date_formated =  this.toDateTime(this.c2f.expiration_time);
-    console.log("parentElement: ",this.parentElement);
 
 
     this.show = true;

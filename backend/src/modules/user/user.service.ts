@@ -70,6 +70,7 @@ export class UserService {
 	async getTokenInfo(): Promise<any>
 	{
 		const url = "https://api.intra.42.fr/oauth/token/info";
+		console.log(this.authHeader);
 		return ((await firstValueFrom(this.httpService.get(url, { headers: this.authHeader } ))).data);
 	}
 	async getUserInfo(token_info: any): Promise<any> 
@@ -84,7 +85,6 @@ export class UserService {
     }
 
     async insertUser(user : any) : Promise<any> {
-		console.log(user);
         user.status = 2;
 		user.uuid = uuid();
 
@@ -116,9 +116,8 @@ export class UserService {
         return (user);
     }
 
-    async updateUser(user : any) : Promise<boolean> {
-        const data = await this.repository.update(this.user, user);
-		console.log("updateUser:", data);
+    async updateUser(user : any) : Promise<boolean> {		
+        const data = await this.repository.save(user);
 		if (data.affected > 0)
 			return (true);
 		else
@@ -132,12 +131,16 @@ export class UserService {
 		let userData = await this.repository.findOne({where: {uuid: uniqueID}});
 		if (userData === undefined)
 			return (<UserI>{});
-		const ret = await this.repository.save({...userData, status: 3});
+		userData.status = 3;
+		userData.online = true;
+		//const ret = await this.repository.save({...userData, status: 3});
+		const ret = await this.repository.save(userData);
 		return (ret);
 	}
 
 	async findById(id: number): Promise<users>
 	{
+		console.log("find by id: ", id);
 		if (id === undefined)
 			return (<UserI>{});
 		const data = await this.repository.findOne(id);
@@ -157,13 +160,11 @@ export class UserService {
 	async validateCode(user: any): Promise<boolean> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		
-		console.log("Llego", res.code, " -> ", user.code2factor);
 		if (res !== undefined && res.expiration_time > Math.round(Date.now() / 1000) && (res.code == user.code2factor || user.code2factor == 1)){
 			res.validated = true;
 			await this.codeFactorTable.save({...res, validated: true});
 			user.online = true;
 			await this.updateUser(user);
-			console.log("Codes match: ", user.code2factor, res.code);
 			return (true);
 		}
 
@@ -189,7 +190,6 @@ export class UserService {
 		var codeData = this.generateCode(user);
 		const res2factor = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		if (res2factor !== undefined){
-			console.log("re-sent new code: ", codeData.code);
 			await this.codeFactorTable.save({...res2factor,...codeData});
 			this.sendEmailCode(user, codeData);
 			this.c2f.creation_time = codeData.creation_time;
@@ -206,7 +206,6 @@ export class UserService {
 		
 		if (res === undefined || res.validated == true)
 		{
-			console.log("insert this new code: ", codeData.code);			
 			await this.codeFactorTable.save({...res, ...codeData});
 			this.sendEmailCode(user, codeData);
 			this.c2f.creation_time = codeData.creation_time;

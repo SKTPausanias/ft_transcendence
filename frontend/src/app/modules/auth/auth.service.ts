@@ -47,9 +47,7 @@ export class AuthService {
 	async validate2Factor(userData: UserI): Promise<boolean>
 	{
 		const url = '/api/user/code2factor/validate';
-		console.log("validating....");
 		const ret = await this.http.post<any>(url, userData).toPromise();
-		console.log("done: ", ret);
 		return (ret);
 	}
 
