@@ -4,7 +4,6 @@ import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-q
 import { UserI } from 'src/app/shared/interface/user';
 import { AuthService } from '../../auth.service';
 import { CodeI } from '../../../../shared/interface/c2f';
-import { stringify } from '@angular/compiler/src/util';
 
 @Component({
   selector: 'resend-box',
@@ -72,7 +71,7 @@ export class Auth2factorComponent implements OnInit {
 
 
     this.show = true;
-	this.boxMsg = 'Your authentication code has been sent';
+	  this.boxMsg = 'Your authentication code has been sent';
 	/* let counter = 10;
 	let intervalId = setInterval(() => {
 		counter = counter - 1;

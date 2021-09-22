@@ -8,11 +8,12 @@ import { User } from './model/user/cUser';
 import { UserI } from './model/user/iUser';
 import { v4 as uuid} from 'uuid';
 import { code2factor } from 'src/shared/entity/code2factor.entity';
-import { randomInt } from 'crypto';
 import { CodeI } from './model/code/i2factor';
 import * as speakeasy from 'speakeasy'
 import * as totpGenerator from "totp-generator"
 import * as qrCode from "qrcode"
+import * as nodemailer from "nodemailer"
+
 
 
 
@@ -22,6 +23,7 @@ export class UserService {
 	user: User = new User();
 	authHeader: {};
 	c2f: CodeI = <CodeI>{};
+	transporter: any;
 
 	//_CODE: string="code=" + this.code + "&";
 	_GRANT_TYPE: string="grant_type=authorization_code&"
@@ -35,7 +37,16 @@ export class UserService {
             private repository: Repository<users>,
 			@InjectRepository(code2factor)
 			private codeFactorTable: Repository<code2factor>,
-			private readonly httpService: HttpService ){}
+			private readonly httpService: HttpService ){
+				this.transporter = nodemailer.createTransport({
+					host: 'smtp.gmail.com',
+					port: 587,
+					auth: {
+					  user: 'ft.transcendence.42@gmail.com',
+					  pass: '@qwerty12345',
+					},
+				  });
+			}
 
 	async authorization(code:string):  Promise<any>
 	{
@@ -92,28 +103,14 @@ export class UserService {
 		user.uuid = uuid();
 
         const data = await this.repository.insert(user);
-		//TODO SEND EMAIL
-		//API key does not start with "SG.".
-		const nodemailer = require('nodemailer');
-
-		const transporter = nodemailer.createTransport({
-			host: 'smtp.gmail.com',
-			port: 587,
-			auth: {
-			  user: 'ft.transcendence.42@gmail.com',
-			  pass: '@qwerty12345',
-			},
-		  });
-
-
-		transporter.sendMail({
+		this.transporter.sendMail({
 		from: '"42 PONG"', // sender address
 		to: user.email, // list of receivers
 		subject: "✔YOUR PONG CONFIRMATION", // Subject line
 		text: "Click this link to complelte!", // plain text body
 		html: "<b>Click this link to complelte!</b><a href='http://localhost:4200/auth/confirmation?uuid=" + user.uuid + "'>confirm your account</a>", // html body
 		}).then(info => {
-		console.log({info});
+			console.log({info});
 		}).catch(console.error);
 		//
         return (user);
@@ -163,7 +160,6 @@ export class UserService {
 	async validateCode(user: any): Promise<boolean> {
 		const res = await this.codeFactorTable.findOne({where: {userID: user.id}});
 		
-		console.log("Llego", res.code, " -> ", user.code2factor);
 		var verified = speakeasy.totp.verify({ secret: res.base32,
 			encoding: 'base32',
 			token: user.code2factor});
@@ -173,7 +169,6 @@ export class UserService {
 				await this.codeFactorTable.save({...res, validated: true});
 				user.online = true;
 				await this.updateUser(user);
-				console.log("Codes match: ", user.code2factor, res.code);
 				return (true);
 			}
 
@@ -185,7 +180,7 @@ export class UserService {
 		var secret = speakeasy.generateSecret();
 		codeData.code = totpGenerator(secret.base32);
 
-		codeData.creation_time = Math.round(Date.now() / 1000);
+		codeData.creation_time = Math.floor(Date.now() / 1000);
 		codeData.expiration_time = Math.floor(Date.now() / 1000) + (30 - (Math.floor(Date.now() / 1000) % 30));
 		/* New format: */
 		codeData.ascii = secret.ascii;
@@ -236,19 +231,7 @@ export class UserService {
 	}
 	
 	async sendEmailCode(user: any, codeData?:any): Promise<void> {
-		
-		const nodemailer = require('nodemailer');
-
-		const transporter = nodemailer.createTransport({
-			host: 'smtp.gmail.com',
-			port: 587,
-			auth: {
-			  user: 'ft.transcendence.42@gmail.com',
-			  pass: '@qwerty12345',
-			},
-		  });
-
-		transporter.sendMail({
+		this.transporter.sendMail({
 			from: '"42 PONG"',
 			to: user.email,
 			subject: "✔[PONG] Verification Code",
