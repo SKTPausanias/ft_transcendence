@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { bottom } from '@popperjs/core';
 import { UserI } from 'src/app/shared/interface/user';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
@@ -36,7 +37,13 @@ export class HomeService {
 	async updateUser(userData: UserI): Promise<UserI>
 	{
 		const url = '/api/user/updateUser';
-		this.user = await this.http.post<any>(url, userData).toPromise();
+		var ok = false;
+		try{
+			ok = await this.http.post<any>(url, userData).toPromise();
+		}catch(e){
+			console.log("Error from catch: ", e);
+		}
+		console.log("User: ", ok);
 		return (this.user);
 	}
 	async logoutUser(){

@@ -27,7 +27,12 @@ export class SettingsComponent implements OnInit {
 	async onSubmitSettings(value: any)
 	{
 		this.user.email = value.email;
-		await this.homeService.updateUser(this.user);
+		this.user.nickname = value.nickname;
+		const result = await this.homeService.updateUser(this.user);
+		//if (result)
+		// show popup [updated success X]
+		//else
+		// show popup [error updating X]
 		this.sQuery.setUser(this.user);		
 	}
 

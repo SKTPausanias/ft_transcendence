@@ -1,11 +1,14 @@
 import { UserI } from "./iUser";
+import { IsAlpha, IsNumber, Matches } from 'class-validator'
 
 export class User implements UserI {
 
+	@IsNumber()
 	id: 			number;
 	uuid:			string;
 	first_name: 	string;
 	last_name: 		string;
+	@IsAlpha()
 	nickname:		string;
 	login: 			string;
 	email:			string;

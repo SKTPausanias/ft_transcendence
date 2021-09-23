@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ValidationPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, getConnection } from 'typeorm';
 import { firstValueFrom } from 'rxjs';
@@ -13,7 +13,8 @@ import * as speakeasy from 'speakeasy'
 import * as totpGenerator from "totp-generator"
 import * as qrCode from "qrcode"
 import * as nodemailer from "nodemailer"
-
+//import * as pepe from 'class-validator'
+import {IsAlpha, Matches} from 'class-validator'
 
 
 
@@ -98,7 +99,8 @@ export class UserService {
         return (this.repository.find());
     }
 
-    async insertUser(user : any) : Promise<any> {
+    async insertUser(user: any): Promise<any> {
+		
         user.status = 2;
 		user.uuid = uuid();
 
@@ -116,9 +118,9 @@ export class UserService {
         return (user);
     }
 
-    async updateUser(user : any) : Promise<boolean> {		
+    async updateUser(user: any): Promise<boolean> {		
         const data = await this.repository.save(user);
-		if (data.affected > 0)
+		if (data !== undefined)
 			return (true);
 		else
 			return (false);

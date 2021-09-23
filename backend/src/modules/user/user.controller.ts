@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { users } from 'src/shared/entity/user.entity';
 import { UserService } from './user.service';
 import { CodeI } from './model/code/i2factor';
+import { User } from './model/user/cUser'
 
 
 @Controller('/api/user')
@@ -46,7 +47,7 @@ export class UserController {
 	}
 
 	@Post('/updateUser')
-	async updateUser(@Body() body: any): Promise<any>
+	async updateUser(@Body() body: User): Promise<boolean>
 	{
 		const data = await this.userService.updateUser(body);
 		return (data);
