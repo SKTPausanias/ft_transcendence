@@ -41,7 +41,8 @@ export class HomeService {
 		try{
 			ok = await this.http.post<any>(url, userData).toPromise();
 		}catch(e){
-			console.log("Error from catch: ", e);
+			console.log("Error from catch: ", e.message);
+			//show error message e.message
 		}
 		console.log("User: ", ok);
 		return (this.user);

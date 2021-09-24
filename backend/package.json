@@ -28,6 +28,8 @@
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/typeorm": "^8.0.2",
     "bootstrap": "^5.1.1",
+    "class-transformer": "^0.4.0",
+    "class-validator": "^0.13.1",
     "jquery": "^3.6.0",
     "mysql2": "^2.3.0",
     "nodemailer": "^6.6.3",

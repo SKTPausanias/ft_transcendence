@@ -1,22 +1,42 @@
 import { UserI } from "./iUser";
-import { IsAlpha, IsNumber, Matches } from 'class-validator'
+import { IsAlpha, IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength } from 'class-validator'
 
 export class User implements UserI {
 
 	@IsNumber()
 	id: 			number;
+
 	uuid:			string;
-	first_name: 	string;
-	last_name: 		string;
+
 	@IsAlpha()
+	first_name: 	string;
+
+	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
+	last_name: 		string;
+
+	@Matches(/^[a-zA-Z0-9\-\_]{5,12}$/, { message: 'Invalid nickname' })
+	@MaxLength(12, { message: 'nickname too long: max 12 characters' })
+	@MinLength(5, { message: 'nickname too short: min 5 characters' })
 	nickname:		string;
+
+	@MaxLength(12)
+	@MinLength(6)
 	login: 			string;
+	
+	@IsEmail()
 	email:			string;
+
+	@IsNumber()
 	status:			number;
+
 	role:			string;
 	avatar:			string;
 	code2factor:	string;
+
+	@IsBoolean()
 	factor_enabled:	boolean;
+
+	@IsBoolean()
 	online:			boolean;	
 
 	constructor (){};
