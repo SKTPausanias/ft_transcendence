@@ -5,7 +5,7 @@ import { UserI } from 'src/app/shared/interface/user';
 import { AuthService } from '../../auth.service';
 import { CodeI } from '../../../../shared/interface/c2f';
 
-@Component({
+/*@Component({
   selector: 'resend-box',
   template: `<div #resend_msg>
               <span>Your authentication code has been sent.</span>
@@ -22,7 +22,7 @@ export class ResendBoxComponent {
   onClickResendBox(event: Event) {
     //this.resendMsg.nativeElement.remove();
   }
-}
+}*/
 @Component({
   selector: 'app-auth2factor',
   templateUrl: './auth2factor.component.html',
@@ -30,7 +30,7 @@ export class ResendBoxComponent {
 })
 export class Auth2factorComponent implements OnInit {
   @ViewChild('parent') parentElement: ElementRef<HTMLInputElement>;
-  resendBox: ResendBoxComponent;
+  //resendBox: ResendBoxComponent;
   user: UserI = this.sQuery.getUser();
   userEmail: string = "";
   c2f: CodeI = <CodeI>{};

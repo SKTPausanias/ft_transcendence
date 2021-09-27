@@ -6,7 +6,7 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { AuthComponent} from './auth.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { FormsModule } from '@angular/forms';
-import { Auth2factorComponent, ResendBoxComponent } from './components/auth2factor/auth2factor.component'
+import { Auth2factorComponent } from './components/auth2factor/auth2factor.component'
 
 
 @NgModule({
@@ -17,7 +17,6 @@ import { Auth2factorComponent, ResendBoxComponent } from './components/auth2fact
     ConfirmationComponent,
     LoadingComponent,
     Auth2factorComponent,
-    ResendBoxComponent
   ],
   imports: [
     CommonModule,

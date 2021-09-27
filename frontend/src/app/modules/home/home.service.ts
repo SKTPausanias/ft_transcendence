@@ -34,19 +34,18 @@ export class HomeService {
 		return (response);
 	}
 
-	async updateUser(userData: UserI): Promise<UserI>
+	async updateUser(userData: UserI): Promise<any>
 	{
 		const url = '/api/user/updateUser';
-		var ok = false;
+
 		try{
-			ok = await this.http.post<any>(url, userData).toPromise();
-		}catch(e){
-			console.log("Error from catch: ", e.message);
-			//show error message e.message
+			return (await this.http.post<any>(url, userData).toPromise());
 		}
-		console.log("User: ", ok);
-		return (this.user);
+		catch(e){
+			return e;
+		}
 	}
+
 	async logoutUser(){
 		const id = this.sQuery.getUser().id;
 		const url = '/api/logout';

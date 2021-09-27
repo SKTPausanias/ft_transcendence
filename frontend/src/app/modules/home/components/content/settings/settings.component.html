@@ -5,6 +5,14 @@
 				<div>
 					<h3>User settings</h3>
 					<hr />
+					<div *ngIf="show" class="row">
+						<div class="col-10">
+							<small>{{update_message}}</small>
+						</div>
+						<div class="col-2">
+							<button (click)="closeMsg()">X</button>
+						</div>
+					</div>
 					<div class="form-group mb-3">
 						<label for="login">42 Login</label>
 						<input

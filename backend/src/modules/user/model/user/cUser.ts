@@ -1,5 +1,5 @@
 import { UserI } from "./iUser";
-import { IsAlpha, IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength } from 'class-validator'
+import { IsAlpha, IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
 
 export class User implements UserI {
 
@@ -8,7 +8,7 @@ export class User implements UserI {
 
 	uuid:			string;
 
-	@IsAlpha()
+	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
 	first_name: 	string;
 
 	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)

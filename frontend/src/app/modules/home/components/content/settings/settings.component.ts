@@ -11,28 +11,27 @@ import { HomeService } from '../../../home.service';
 export class SettingsComponent implements OnInit {
 	@ViewChild('factor_input') factorElement: ElementRef<HTMLInputElement>;
   user: UserI = this.sQuery.getUser();
+  show : boolean = false;
+  update_message : string = "";
   constructor(
     private sQuery: LocalStorageQueryService,
     private homeService: HomeService
   ) { }
   
   ngOnInit(): void {
-	/* if (this.user.factor_enabled)
-		this.factorElement.nativeElement.checked = true;
-	else
-	this.factorElement.nativeElement.checked = false;
-  console.log("2 factor: ", this.user.factor_enabled); */
   }
 
 	async onSubmitSettings(value: any)
 	{
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
+		this.show = true;
 		const result = await this.homeService.updateUser(this.user);
-		//if (result)
-		// show popup [updated success X]
-		//else
-		// show popup [error updating X]
+		if (result.ok == false)
+			this.update_message = "Settings update error";
+			//this.update_message = result.error.message;
+		else
+			this.update_message = "Successfully updated";
 		this.sQuery.setUser(this.user);		
 	}
 
@@ -41,5 +40,10 @@ export class SettingsComponent implements OnInit {
 			this.user.factor_enabled = true;
 		else
 			this.user.factor_enabled = false;
+	}
+
+	closeMsg(){
+		this.show = false;
+		this.update_message = "";
 	}
 }
