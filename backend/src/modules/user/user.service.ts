@@ -245,4 +245,31 @@ export class UserService {
 		}).catch(console.error);
 		
 	}
+
+	static filterHelper(req: Request, file, cb):any {
+		//https://gabrieltanner.org/blog/nestjs-file-uploading-using-multer -> this should be on server side
+		/*if (!file.name.match(/\.(jpg|jpeg|png|gif)$/)) {
+			return cb(new Error('Only image files are allowed!'), false);
+		}
+		cb(null, true);*/
+		const ext = (file.mimetype).substring(file.mimetype.indexOf('/') + 1);
+		if ( ext !== 'png' && ext !== 'jpeg') {
+		  return cb(null, false); // FileIntercepter is completely ignoring this when thrown an Error exception as first argument.
+		}
+		return cb(null, true);
+	}
+	static fileNemaHelper(req, file, cb):void {
+		cb(null, file.originalname)
+	}
+
+	static destinationHelper(req, file, cb): void {
+		cb(null, '../frontend/src/assets/uploads');
+	}
+
+	static limitFilesHelper(): number {
+		return (1);
+	}
+	static limitSizeHelper(): number {
+		return (2000000);
+	}
 }

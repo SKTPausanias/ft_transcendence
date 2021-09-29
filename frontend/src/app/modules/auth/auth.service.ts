@@ -27,13 +27,11 @@ export class AuthService {
 	async registerUser(userData: UserI): Promise<UserI>
 	{
 		const url = '/api/user/registration';
-		try{
+		try {
 			this.user = await this.http.post<any>(url, userData).toPromise();
 		}catch(e){
-			console.log("Error from catch: ", e.message);
-			//show error message e.message
+			console.log(e);
 		}
-		console.log("User: ", this.user);
 		return (this.user);
 	}
 	

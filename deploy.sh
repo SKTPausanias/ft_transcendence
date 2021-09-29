@@ -103,6 +103,11 @@ then
 		npm install pg --save
 		npm install nodemailer
 		npm install uuid
+		npm install --save multer
+		npm i -D @types/multer
+		#if fail file: npm install --save @ionic-native/core@latest
+		#npm install --save @ionic-native/file
+	
 	fi
 	
 	if [ $frontDependencies = true ]
@@ -112,6 +117,8 @@ then
 		npm install popper.js
 		npm i --save-dev @types/uuid
 		npm install --save @ng-bootstrap/ng-bootstrap
+		npm install speakeasy totp-generator qrcode
+		npm i --save class-validator class-transformer
 		npm audit fix
 	fi
 else

@@ -1,7 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { bottom } from '@popperjs/core';
 import { UserI } from 'src/app/shared/interface/user';
+import { Observable } from 'rxjs';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 
 @Injectable({
@@ -41,12 +41,28 @@ export class HomeService {
 		try{
 			ok = await this.http.post<any>(url, userData).toPromise();
 		}catch(e){
-			console.log("Error from catch: ", e.message);
+			console.log("Error from catch: ", e);
 			//show error message e.message
 		}
 		console.log("User: ", ok);
 		return (this.user);
 	}
+
+	 async uploadImage(image: File): Promise<any> {
+		const url = '/api/user/imageUpload';
+		const body = new FormData();
+		
+        body.append('image', image, image.name);
+		
+		try{
+			console.log("try Image file is: ", image, image.name);
+			return (await this.http.post(url, body, {responseType: "text"}).toPromise());
+		}catch(e){
+			console.log("from catch: ", e);
+		}
+		return (false);
+	  }
+
 	async logoutUser(){
 		const id = this.sQuery.getUser().id;
 		const url = '/api/logout';

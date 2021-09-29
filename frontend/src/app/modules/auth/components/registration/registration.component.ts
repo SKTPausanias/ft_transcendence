@@ -28,9 +28,14 @@ export class RegistrationComponent implements OnInit {
 	async onSubmitRegister(value: any)
 	{
 		this.user.nickname = value.nickname;
-		this.user = await this.authService.registerUser(this.user);
-		this.sQuery.setUser(this.user);
-		this.router.navigateByUrl('/');
+		const user = await this.authService.registerUser(this.user);
+		console.log("User from frontend registration: ", this.user);
+		if (Object.keys(user).length){
+			this.user = user;
+			this.sQuery.setUser(this.user);
+			this.router.navigateByUrl('/');
+		}
+		
 	}
 	nicknameCheckbox(e: any){
 		if (e.target.checked)

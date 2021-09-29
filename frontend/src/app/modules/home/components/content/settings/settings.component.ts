@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LocalStorageQueryService } from 'src/app/shared/service/local-storage-query.service';
 import { UserI } from 'src/app/shared/interface/user';
 import { HomeService } from '../../../home.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -10,13 +11,17 @@ import { HomeService } from '../../../home.service';
 })
 export class SettingsComponent implements OnInit {
 	@ViewChild('factor_input') factorElement: ElementRef<HTMLInputElement>;
-  user: UserI = this.sQuery.getUser();
+	@ViewChild('imageInput') imageFile: ElementRef<HTMLInputElement>;
+  	user: UserI = this.sQuery.getUser();
   constructor(
     private sQuery: LocalStorageQueryService,
-    private homeService: HomeService
+    private homeService: HomeService,
+	private router: Router,
+	//private file: File
   ) { }
   
   ngOnInit(): void {
+	  
 	/* if (this.user.factor_enabled)
 		this.factorElement.nativeElement.checked = true;
 	else
@@ -26,14 +31,26 @@ export class SettingsComponent implements OnInit {
 
 	async onSubmitSettings(value: any)
 	{
+		
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
+		
+		var file = this.imageFile.nativeElement.files?.item(0) as File;
+		if (file && file.size < 4000000){ //manage size and type showing a message inside settings
+			
+			console.log("sneding file to service: ");
+			const res = await this.homeService.uploadImage(file);
+			console.log("Response from upload: ", res);
+			if (res !== false && res != "false")
+			  this.user.avatar = "/assets/uploads/" + res;
+		}
+		//this.file = value.target.files[0];
 		const result = await this.homeService.updateUser(this.user);
 		//if (result)
 		// show popup [updated success X]
 		//else
 		// show popup [error updating X]
-		this.sQuery.setUser(this.user);		
+		this.sQuery.setUser(this.user);
 	}
 
 	factorCheckbox(e: any) {
@@ -41,5 +58,12 @@ export class SettingsComponent implements OnInit {
 			this.user.factor_enabled = true;
 		else
 			this.user.factor_enabled = false;
+	}
+
+	deleteAccount():void {
+		console.log("Deleting account...");
+		this.homeService.deleteUserAccount();
+		this.sQuery.removeUser();
+		this.router.navigateByUrl('/auth');
 	}
 }

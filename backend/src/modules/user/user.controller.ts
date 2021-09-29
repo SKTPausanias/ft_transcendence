@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { users } from 'src/shared/entity/user.entity';
 import { UserService } from './user.service';
 import { CodeI } from './model/code/i2factor';
-import { User } from './model/user/cUser'
+import { User } from './model/user/cUser';
+import { FileInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from 'multer';
 
 
 @Controller('/api/user')
@@ -49,8 +51,7 @@ export class UserController {
 	@Post('/updateUser')
 	async updateUser(@Body() body: User): Promise<boolean>
 	{
-		const data = await this.userService.updateUser(body);
-		return (data);
+		return (await this.userService.updateUser(body));
 	}
 	
 	@Get('/data')
@@ -64,4 +65,25 @@ export class UserController {
 		return (response);
 	}
 
+	@Post('/imageUpload')
+	//@UseInterceptors(FileInterceptor("image", { dest: "../uploads" }))
+	@UseInterceptors(FileInterceptor('image', {
+		limits: {
+			files: UserService.limitFilesHelper(),
+			fileSize: UserService.limitSizeHelper()
+		},
+		storage: diskStorage({
+			destination: UserService.destinationHelper,
+			filename: UserService.fileNemaHelper
+		}),
+		fileFilter: UserService.filterHelper
+	}))
+	async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<string> {
+		if (file !== undefined){
+			console.log("Image in back: ", file);
+			return (await file.originalname);
+		}
+		return ("false");
+		//return (await this.userService.saveImage(file));
+	}
 }
