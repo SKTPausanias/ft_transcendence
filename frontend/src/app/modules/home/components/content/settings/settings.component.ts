@@ -29,23 +29,24 @@ export class SettingsComponent implements OnInit {
 		
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
-		
+		var res: boolean | string = false;
 		var file = this.imageFile.nativeElement.files?.item(0) as File;
 		if (file && file.size < 2000000){
-			const res = await this.homeService.uploadImage(file, this.user.login);
+			res = await this.homeService.uploadImage(file, this.user.login);
 			if (res !== false)
 			  this.user.avatar = "/assets/uploads/" + res;
 		}
 		
-		this.sQuery.setUser(this.user);
 		this.show = true;
 		const result = await this.homeService.updateUser(this.user);
-		if (result.ok == false)
-			this.update_message = "Settings update error";
+		if ( res === false || result.ok === false)
+			this.update_message = "Settings update error. Please check fields and image size[Max 2Mb]";
 			//this.update_message = result.error.message;
-		else
+		else {
+			this.sQuery.setUser(this.user);
 			this.update_message = "Successfully updated";
-		this.sQuery.setUser(this.user);		
+		}
+
 	}
 
 	factorCheckbox(e: any) {
