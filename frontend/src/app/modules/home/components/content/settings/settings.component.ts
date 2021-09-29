@@ -12,13 +12,15 @@ import { Router } from '@angular/router';
 export class SettingsComponent implements OnInit {
 	@ViewChild('factor_input') factorElement: ElementRef<HTMLInputElement>;
 	@ViewChild('imageInput') imageFile: ElementRef<HTMLInputElement>;
-  	user: UserI = this.sQuery.getUser();
-  constructor(
-    private sQuery: LocalStorageQueryService,
-    private homeService: HomeService,
-	private router: Router,
-	//private file: File
-  ) { }
+	user: UserI = this.sQuery.getUser();
+	show : boolean = false;
+	update_message : string = "";
+	constructor(
+		private sQuery: LocalStorageQueryService,
+		private homeService: HomeService,
+		private router: Router,
+		//private file: File
+	) { }
   
   ngOnInit(): void {
 	  
@@ -45,12 +47,19 @@ export class SettingsComponent implements OnInit {
 			  this.user.avatar = "/assets/uploads/" + res;
 		}
 		//this.file = value.target.files[0];
-		const result = await this.homeService.updateUser(this.user);
 		//if (result)
 		// show popup [updated success X]
 		//else
 		// show popup [error updating X]
 		this.sQuery.setUser(this.user);
+		this.show = true;
+		const result = await this.homeService.updateUser(this.user);
+		if (result.ok == false)
+			this.update_message = "Settings update error";
+			//this.update_message = result.error.message;
+		else
+			this.update_message = "Successfully updated";
+		this.sQuery.setUser(this.user);		
 	}
 
 	factorCheckbox(e: any) {
@@ -65,5 +74,9 @@ export class SettingsComponent implements OnInit {
 		this.homeService.deleteUserAccount();
 		this.sQuery.removeUser();
 		this.router.navigateByUrl('/auth');
+	}
+	closeMsg(){
+		this.show = false;
+		this.update_message = "";
 	}
 }

@@ -24,15 +24,17 @@ export class AuthService {
 		const data =  (await this.http.get<any>(url + "?code=" + code).toPromise());
 		return data;
 	}
-	async registerUser(userData: UserI): Promise<UserI>
+	async registerUser(userData: UserI): Promise<any>
 	{
 		const url = '/api/user/registration';
-		try {
-			this.user = await this.http.post<any>(url, userData).toPromise();
-		}catch(e){
-			console.log(e);
+		try{
+			return (await this.http.post<any>(url, userData).toPromise());
 		}
-		return (this.user);
+		catch(e){
+			return e;
+			//console.log("Error from catch: ", e);
+			//show error message e.message
+		}
 	}
 	
 	async sendCode2Factor(userData: UserI): Promise<CodeI>  // change return value to an object data with expiration and validation

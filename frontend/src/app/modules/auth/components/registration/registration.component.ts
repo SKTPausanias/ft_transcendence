@@ -15,6 +15,8 @@ export class RegistrationComponent implements OnInit {
 	user: UserI = this.sQuery.getUser();
 	nickname: string;
 	email: string;
+	show: boolean = false;
+	update_message : string = "";
 	constructor(
 		private sQuery: LocalStorageQueryService,
 		private router: Router,
@@ -28,14 +30,26 @@ export class RegistrationComponent implements OnInit {
 	async onSubmitRegister(value: any)
 	{
 		this.user.nickname = value.nickname;
-		const user = await this.authService.registerUser(this.user);
+		/*const user = await this.authService.registerUser(this.user);
 		console.log("User from frontend registration: ", this.user);
 		if (Object.keys(user).length){
 			this.user = user;
 			this.sQuery.setUser(this.user);
 			this.router.navigateByUrl('/');
-		}
+		}*/
 		
+		const result = await this.authService.registerUser(this.user);
+		if (result.ok == false)
+		{
+			this.show = true;
+			this.update_message = "Registration error";
+		}
+		else
+		{
+			this.user = result;
+			this.sQuery.setUser(this.user);
+			this.router.navigateByUrl('/');
+		}
 	}
 	nicknameCheckbox(e: any){
 		if (e.target.checked)
@@ -67,5 +81,10 @@ export class RegistrationComponent implements OnInit {
 			this.user.factor_enabled = true;
 		else
 			this.user.factor_enabled = false;
+	}
+
+	closeMsg(){
+		this.show = false;
+		this.update_message = "";
 	}
 }
