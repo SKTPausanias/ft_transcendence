@@ -259,6 +259,7 @@ export class UserService {
 		return cb(null, true);
 	}
 	static fileNemaHelper(req, file, cb):void {
+		//console.log("Value of req: ", req);
 		cb(null, file.originalname)
 	}
 

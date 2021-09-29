@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserI } from 'src/app/shared/interface/user';
 import { Observable } from 'rxjs';
@@ -46,14 +46,13 @@ export class HomeService {
 		}
 	}
 
-	 async uploadImage(image: File): Promise<any> {
+	 async uploadImage(image: File, fileName: string): Promise<any> {
 		const url = '/api/user/imageUpload';
 		const body = new FormData();
-		
-        body.append('image', image, image.name);
+
+        body.append('image', image, (fileName + image.name.substring(image.name.indexOf('.'))));
 		
 		try{
-			console.log("try Image file is: ", image, image.name);
 			return (await this.http.post(url, body, {responseType: "text"}).toPromise());
 		}catch(e){
 			console.log("from catch: ", e);

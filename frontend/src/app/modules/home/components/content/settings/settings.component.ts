@@ -19,16 +19,9 @@ export class SettingsComponent implements OnInit {
 		private sQuery: LocalStorageQueryService,
 		private homeService: HomeService,
 		private router: Router,
-		//private file: File
 	) { }
   
   ngOnInit(): void {
-	  
-	/* if (this.user.factor_enabled)
-		this.factorElement.nativeElement.checked = true;
-	else
-	this.factorElement.nativeElement.checked = false;
-  console.log("2 factor: ", this.user.factor_enabled); */
   }
 
 	async onSubmitSettings(value: any)
@@ -38,19 +31,12 @@ export class SettingsComponent implements OnInit {
 		this.user.nickname = value.nickname;
 		
 		var file = this.imageFile.nativeElement.files?.item(0) as File;
-		if (file && file.size < 4000000){ //manage size and type showing a message inside settings
-			
-			console.log("sneding file to service: ");
-			const res = await this.homeService.uploadImage(file);
-			console.log("Response from upload: ", res);
-			if (res !== false && res != "false")
+		if (file && file.size < 2000000){
+			const res = await this.homeService.uploadImage(file, this.user.login);
+			if (res !== false)
 			  this.user.avatar = "/assets/uploads/" + res;
 		}
-		//this.file = value.target.files[0];
-		//if (result)
-		// show popup [updated success X]
-		//else
-		// show popup [error updating X]
+		
 		this.sQuery.setUser(this.user);
 		this.show = true;
 		const result = await this.homeService.updateUser(this.user);
@@ -70,7 +56,6 @@ export class SettingsComponent implements OnInit {
 	}
 
 	deleteAccount():void {
-		console.log("Deleting account...");
 		this.homeService.deleteUserAccount();
 		this.sQuery.removeUser();
 		this.router.navigateByUrl('/auth');

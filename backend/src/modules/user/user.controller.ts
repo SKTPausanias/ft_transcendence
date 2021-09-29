@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseInterceptors, UploadedFile} from '@nestjs/common';
 import { users } from 'src/shared/entity/user.entity';
 import { UserService } from './user.service';
 import { CodeI } from './model/code/i2factor';
 import { User } from './model/user/cUser';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
+import { query } from 'express';
 
 
 @Controller('/api/user')
@@ -66,7 +67,6 @@ export class UserController {
 	}
 
 	@Post('/imageUpload')
-	//@UseInterceptors(FileInterceptor("image", { dest: "../uploads" }))
 	@UseInterceptors(FileInterceptor('image', {
 		limits: {
 			files: UserService.limitFilesHelper(),
@@ -78,12 +78,9 @@ export class UserController {
 		}),
 		fileFilter: UserService.filterHelper
 	}))
-	async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<string> {
-		if (file !== undefined){
-			console.log("Image in back: ", file);
+	async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<any> {
+		if (file !== undefined)
 			return (await file.originalname);
-		}
-		return ("false");
-		//return (await this.userService.saveImage(file));
+		return (false);
 	}
 }
