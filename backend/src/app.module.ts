@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
 import { users } from './shared/entity/user.entity';
 import { code2factor } from './shared/entity/code2factor.entity';
+import { friend } from './shared/entity/friend.entity';
+import { match_history } from './shared/entity/match_history.entity';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { code2factor } from './shared/entity/code2factor.entity';
 		username: 'admin', //admin
 		password: 'admin',		//admin
 		database: 'ft_transcendence', //ft_transcendence
-		entities: [users, code2factor],
+		entities: [users, code2factor, friend, match_history],
 //		autoLoadEntities: true,
 		synchronize: true,
 	}),
