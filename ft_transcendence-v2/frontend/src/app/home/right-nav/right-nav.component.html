@@ -1,0 +1,21 @@
+<div class="bg-dark">
+	<div class="d-flex flex-column align-items-start align-items-start text-white min-vh-100 pt-3 pb-3 px-1">
+		<div class="parent">
+			<div>
+				<img src='{{item.userInfo.avatar}}' class="ico_m img-fluid rounded-circle px-2 ico" alt="">
+			</div>
+			<div *ngIf="item.showInfo">
+				<p id="nickname">{{item.userInfo.nickname}}</p>
+			</div>
+		</div>
+		<div id="sep"></div>
+		<div class="parent" *ngFor="let user of onlineUsers">
+			<div>
+				<img src='{{user.avatar}}' class="ico_m img-fluid rounded-circle px-2 ico" alt="">
+			</div>
+			<div *ngIf="item.showInfo">
+				<p id="nickname">{{user.nickname}}</p>
+			</div>
+		</div>
+	</div>
+</div>

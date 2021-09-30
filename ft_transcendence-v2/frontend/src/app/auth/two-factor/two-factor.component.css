@@ -1,0 +1,33 @@
+.email{
+	color: #673D76;
+	font-weight: 500;
+}
+i{
+	color: #673D76;
+}
+i:hover{
+	cursor: pointer;
+	color: #673D76;
+	font-weight: 700;
+}
+button{
+	margin-left: 20px;
+	margin-right: 20px;
+	border: 1px solid #673D76;
+	background-color: #673D76;
+	border-radius: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 30px;
+	padding-right: 30px;
+	align-items: center;
+	text-align: center;
+	font-weight: 600;
+	color: #ffffff;
+
+}
+button:hover{
+	cursor: pointer;
+	background-color: #673D76;
+	box-shadow: 0px 15px 30px 0px #673D76, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}

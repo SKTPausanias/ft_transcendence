@@ -1,0 +1,19 @@
+
+#sep{
+	text-align: center;
+	width: 100%;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.671);
+}
+.parent{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.parent>div{
+	display: inline-block;
+}
+#nickname{
+	font-size: large;
+}
+#name{
+	font-size: medium;
+}

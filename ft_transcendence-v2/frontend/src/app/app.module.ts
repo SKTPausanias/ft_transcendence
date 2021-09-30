@@ -1,0 +1,60 @@
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppRoutingModule } from './app-routing.module';
+
+import { AppComponent } from './app.component';
+import { SignInComponent } from './auth/sign-in/sign-in.component';
+import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { HomeComponent } from './home/home.component';
+import { LeftNavComponent } from './home/left-nav/left-nav.component';
+import { ContentComponent } from './home/content/content.component';
+import { SettingsComponent } from './home/content/settings/settings.component';
+import { ChatComponent } from './home/content/chat/chat.component';
+import { LiveComponent } from './home/content/live/live.component';
+import { GameComponent } from './home/content/game/game.component';
+import { PlayComponent } from './home/content/play/play.component';
+import { InfoComponent } from './home/content/info/info.component';
+import { RightNavComponent } from './home/right-nav/right-nav.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ConfirmationComponent } from './auth/confirmation/confirmation.component';
+import { NotFoundComponent } from './shared/component/not-found/not-found.component';
+import { LoadingComponent } from './shared/component/loading/loading.component';
+import { AuthComponent } from './auth/auth.component';
+import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    SignInComponent,
+    SignUpComponent,
+    ForgotPasswordComponent,
+    HomeComponent,
+
+	LeftNavComponent,
+	RightNavComponent,
+	ContentComponent,
+	SettingsComponent,
+	ChatComponent,
+	LiveComponent,
+	GameComponent,
+	PlayComponent,
+	InfoComponent,
+	ConfirmationComponent,
+	NotFoundComponent,
+	LoadingComponent,
+ 	AuthComponent,
+  TwoFactorComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+	FormsModule,
+	HttpClientModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

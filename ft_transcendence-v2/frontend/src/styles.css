@@ -1,0 +1,77 @@
+@font-face {
+	font-family: sportsjersey;
+	src: url(assets/fonts/omegle/sportsjersey.ttf	) format("opentype");
+}
+main{
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	overflow: auto; 
+	background: url("./assets/img/bg.png") no-repeat center center fixed;
+	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+}
+.logo {
+	width: 75px;
+	height: auto;
+}
+.center{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 35px;
+	padding-right: 35px;
+}
+.ico_s{
+	width: 50px;
+	height: auto;
+}
+.ico_m{
+	width: 75px;
+	height: auto;
+}
+.ico_l{
+	width: 100px;
+	height: auto;
+}
+.ico_xl{
+	width: 125px;
+	height: auto;
+}
+.ico_xxl{
+	width: 250px;
+	height: auto;
+}
+.box {
+	background-color: rgba(255, 255, 255, 0.85);
+	padding: 35px 75px 35px 75px;
+	border: 2px solid #673D76;
+	border-radius: 20px;
+	box-shadow: 0px 15px 30px 0px #673D76, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	opacity: 1;
+}
+.separator {
+	color: #673D76;
+	display: flex;
+	align-items: center;
+	text-align: center;
+  }
+  
+  .separator::before,
+  .separator::after {
+	content: '';
+	flex: 1;
+	border-bottom: 1px solid #673D76;
+  }
+  
+  .separator:not(:empty)::before {
+	margin-right: .75em;
+  }
+  
+  .separator:not(:empty)::after {
+	margin-left: .75em;
+  }

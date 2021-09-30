@@ -1,0 +1,34 @@
+<app-loading *ngIf='!isLoaded'></app-loading>
+
+<main *ngIf="isLoaded">
+	<div class="d-flex align-items-center min-vh-100">
+		<div class="container text-center">
+			<div class="row justify-content-around mt-5 mb-5 mx-1">
+				<div class="box col-10 col-md-8 col-lg-6 col-xl-5 align-self-center">
+					<div class="text-center">
+						<img class="ico_l img-fluid" src="/assets/img/logo.png" alt="image">
+					</div>
+					<div class="separator mt-3 mb-3">TWO FACTOR VALIDATION</div>
+					<p>
+						We have sent email to <span class="email">{{email}}</span> with validation code. 
+						Please enter it and press validate! Code is valid for next 5 minutes.
+					</p>
+					<form ngNativeValidate class="form-group" #loginForm="ngForm" (ngSubmit)="validate(loginForm.value)">
+						<div class="form-group mb-3">
+							<input 
+							ngModel={{code}} 
+							type="number" 
+							placeholder="Enter validation code" 
+							name="code"
+							class="form-control"
+							required />
+						</div>
+						<button ctype="submit">Validate</button>
+					</form>
+					<div class="separator mt-3 mb-3"></div>
+					<span class="d-flex justify-content-center mt-3"><small>If you didn't receive any email <br><i (click)="resend()">Resend validation code</i></small></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
