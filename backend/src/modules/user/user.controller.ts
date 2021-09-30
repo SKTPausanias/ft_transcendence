@@ -5,8 +5,6 @@ import { CodeI } from './model/code/i2factor';
 import { User } from './model/user/cUser';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
-import { query } from 'express';
-
 
 @Controller('/api/user')
 export class UserController {
