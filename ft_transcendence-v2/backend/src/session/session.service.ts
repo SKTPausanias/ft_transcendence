@@ -56,18 +56,31 @@ export class SessionService {
 			return (Response.makeResponse(500, ErrorParser.parseDbSaveExeption(error)))
 		}
 	}
+	async reNewSession(session: SessionEntity)
+	{
+		if (mDate.expired(session.expiration_time))
+		{
+			await this.sessionRepository.delete(session);
+			return (false);
+		}
+		try {
+			session.expiration_time = mDate.setExpirationTime(this.expires_in);
+			await this.sessionRepository.save(session);
+			return (true);
+		} catch (error) {
+			return (false)
+		}
+	}
 	async getUserInfo(header: any) //body
 	{
 		const token = header.authorization.split(' ')[1];
 		console.log(header);
 		try {
-				const session = await this.sessionRepository.findOne({ relations: ["userID"], where: { token }});
-				if (mDate.expired(session.expiration_time))
-				{
-					await this.sessionRepository.delete(session);
-					return (Response.makeResponse(410, {error : "Gone"}));
-				}
-				return (Response.makeResponse(200, User.getInfo(session.userID)));
+			const session = await this.sessionRepository.findOne({ 
+				relations: ["userID"], where: { token }});
+			if (!this.reNewSession(session))
+				return (Response.makeResponse(410, {error : "Gone"}));
+			return (Response.makeResponse(200, User.getInfo(session.userID)));
 		} catch (error) {
 			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}
@@ -75,16 +88,16 @@ export class SessionService {
 	async getOnlineUsers(header: any){
 		const token = header.authorization.split(' ')[1];
 		try {
-			const session =  await this.sessionRepository.findOne({ where: { token } });
-			if (mDate.expired(session.expiration_time))
+			const session = await this.sessionRepository.findOne({
+				relations: ["userID"], where: { token : token }});
+			if (!this.reNewSession(session))
 				return (Response.makeResponse(410, {error : "Gone"}));
-				const sessions = await this.sessionRepository.find({ 
-					relations: ["userID"], where: { token : Not(token) }});
-				const skip = await this.sessionRepository.findOne({
-					relations: ["userID"], where: { token : token }});
-				return (Response.makeResponse(200, User.getOnlineUserInfo(sessions, skip)))
+			const sessions = await this.sessionRepository.find({ 
+				relations: ["userID"], where: { 
+					userID: Not(session.userID.id)
+				}});
+				return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
 		} catch (error) {
-			console.log(error);
 			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}
 	}

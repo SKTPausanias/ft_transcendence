@@ -66,12 +66,11 @@ export class User implements UserI {
 			avatar : data.avatar,
 			});
 	}
-	static getOnlineUserInfo(data: SessionEntity[], skip: SessionEntity){
+	static getOnlineUserInfo(data: SessionEntity[]){
 		var users: UserInfoI[] = [];
 		data.forEach(element => {
-			if (element.userID.id !== skip.userID.id)
-				if (users.find(user => user.nickname === element.userID.nickname) === undefined)
-					users.push(this.getInfo(element.userID));
+			if (users.find(user => user.nickname === element.userID.nickname) === undefined)
+				users.push(this.getInfo(element.userID));
 		});
 		return (users);
 	}

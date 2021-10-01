@@ -26,6 +26,19 @@ export class MailService {
 			text: "Click this link to complelte!",
 			html: "<b>Click this link to complelte!</b><a href='" + url + "'>confirm your account</a>", // html body
 		}
+		console.log("skipping confirm email send: ", url);
+		//this.send(content);
+	}
+	sendValidationCode(to: string, code:string)
+	{
+		const content =	{
+			from: this.sender,
+			to: to,
+			subject: "✔[PONG] Code Validation",
+			text: "Click this link to complelte!",
+			html: "<h4> Here is your code <h3>" + code + "</h3></h4>", // html body
+		}
+		console.log("skipping two factor email send: ", code);
 		this.send(content);
 	}
 	private send(content: {})

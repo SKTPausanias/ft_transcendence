@@ -21,7 +21,7 @@ import { SessionEntity } from './session/session.entity';
 		port: 5432,
 		username: 'admin', 
 		password: 'admin',		
-		database: 'ft_transcendence_private', 
+		database: 'ft_transcendence', 
 		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity],
 		autoLoadEntities: true,
 		synchronize: true,

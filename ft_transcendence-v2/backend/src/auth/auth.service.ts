@@ -128,7 +128,7 @@ export class AuthService {
 		try {
 			const usr = await this.userService.findByEmail(email);
 			const token = await this.twoFactorService.generateToken(usr);
-			console.log("returning token: ", token);
+			await this.mailService.sendValidationCode(email, token);
 			return (token);
 		} catch (error) {
 			return (error);
