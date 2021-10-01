@@ -11,5 +11,10 @@
 .selected{
 	opacity: 1;
 }
+#sep{
+	text-align: center;
+	width: 100%;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.671);
+}
 
 
