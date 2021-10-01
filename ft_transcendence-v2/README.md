@@ -7,5 +7,5 @@ npm i --save @nestjs/typeorm
 npm i --save @nestjs/serve-static   
 npm i --save nodemailer  
 npm i --save randomstring   
-npm i --save @types/bcrypt  
-npm i --save bcrypt  
+npm i --save @types/bcryptjs  
+npm i --save bcryptjs  
