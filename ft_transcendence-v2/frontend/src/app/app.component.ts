@@ -12,8 +12,8 @@ export class AppComponent {
   constructor(private authService: AuthService,
 				private sQuery: SessionStorageQueryService){
   }
-  @HostListener('window:unload', [ '$event' ])
+/*   @HostListener('window:unload', [ '$event' ])
   async unloadHandler(event: any) {
 	  await this.authService.logout(this.sQuery.getSessionToken());
-  }
+  } */
 }

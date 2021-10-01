@@ -39,7 +39,7 @@ export class MailService {
 			html: "<h4> Here is your code <h3>" + code + "</h3></h4>", // html body
 		}
 		console.log("skipping two factor email send: ", code);
-		this.send(content);
+		//this.send(content);
 	}
 	private send(content: {})
 	{
