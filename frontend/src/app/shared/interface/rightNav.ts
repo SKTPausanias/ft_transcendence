@@ -1,7 +1,6 @@
+import { UserInfoI } from "../user/userI";
 
 export interface RightNavI {
-	userInfo : {
-		nickname: string,
-		avatar: string,
-	}
+	userInfo : UserInfoI;
+	showInfo : boolean;
 }

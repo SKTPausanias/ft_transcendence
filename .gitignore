@@ -1,17 +1,23 @@
 #Backend exluded files
 /backend/*
 !/backend/src
-!/backend/*.json
+!/backend/.env
 #Frontend exluded files
-/frontend/node_modules
-!/frontend/*.json
+/frontend/*
+!/frontend/src
+!/frontend/src
 sendgrid.env
 
 
 #Backend exluded files
 /ft_transcendence-v2/backend/*
-!/ft_transcendence-v2/backend/src
 #Frontend exluded files
 /ft_transcendence-v2/frontend/*
-!/ft_transcendence-v2/frontend/src
 sendgrid.env
+#Old
+/old/backend/*
+!/old/backend/src
+!/old/backend/*.json
+
+/old/frontend/node_modules
+!/old/frontend/*.json

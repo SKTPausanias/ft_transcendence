@@ -1,7 +1,7 @@
 export enum Storage {
 	USER = 'user',
 	SESSION_TOKEN = 'sessionToken',
-	STATUS = 'status',
+	NAV = 'nav',
 }
 export enum UserRole {
 	USER = 'User',

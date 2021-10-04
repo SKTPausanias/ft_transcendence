@@ -1,0 +1,71 @@
+
+.login_btn
+{
+	background-color: #704380;
+	padding: 10px 35px;
+	width: 100%;
+	font-size: 18px;
+	color: #ffffff;
+	border: 2px solid #673D76;
+	border-radius: 10px;
+	font-family: 'sportsjersey', 'arial', sans-serif;
+	letter-spacing: 2px;
+}
+.login_btn:hover
+{
+	background-color: #673D76;
+	color: #ffffff;
+	border: 2px solid #673D76;
+	box-shadow: 0px 15px 30px 0px #673D76, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.form-check-input{
+	border: 1px solid #673D76;
+	box-shadow: 0px 0px 0px 0px;
+}
+.form-check-input:checked[type=checkbox] {
+	background-color: #673D76;
+	box-shadow: 0;
+}
+  .login_42{
+	margin-left: 20px;
+	margin-right: 20px;
+	border: 1px solid #31B1B3;
+	border-radius: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	align-items: center;
+	text-align: center;
+	font-weight: 600;
+}
+.login_42:hover{
+	cursor: pointer;
+	background-color: #31B1B3;
+	box-shadow: 0px 15px 30px 0px #31B1B3, 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.login_42 > div{
+display: inline-block;
+margin-left: 5px;
+margin-right: 5px;
+}
+.login_42 > div > img{
+	width: 25px;
+	height: auto;
+}
+i{
+	color: #673D76;
+}
+i:hover{
+	cursor: pointer;
+	color: #673D76;
+	font-weight: 700;
+}
+.dialog{
+	border: 1px solid red;
+	background-color: white;
+	border-radius: 5px;
+	color: red;
+	padding: 5px;
+}
+.dialog > p{
+	margin: 0;
+}

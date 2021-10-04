@@ -1,36 +1,55 @@
 import { Module } from '@nestjs/common';
-import { HttpModule } from '@nestjs/axios';
+import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './modules/user/user.module';
-import { users } from './shared/entity/user.entity';
-import { code2factor } from './shared/entity/code2factor.entity';
-import { friend } from './shared/entity/friend.entity';
-import { match_history } from './shared/entity/match_history.entity';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
+import { ConfirmationEntity } from './auth/confirmation/confirmation.entity';
+import { TwoFactorEntity } from './auth/two-factor/two-factor.entity';
+import { UserEntity } from './shared/user/user.entity';
+import { SessionModule } from './session/session.module';
+import { SessionEntity } from './session/session.entity';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({isGlobal: true}),
+  imports: [ConfigModule.forRoot(),
 	TypeOrmModule.forRoot({
 		type: 'postgres',
-		//host: '192.168.1.12',
 		host: 'localhost',
 		port: 5432,
-		username: 'admin', //admin
-		password: 'admin',		//admin
-		database: 'ft_transcendence', //ft_transcendence
-		entities: [users, code2factor, friend, match_history],
-//		autoLoadEntities: true,
+		username: 'admin', 
+		password: 'admin',		
+		database: 'ft_transcendence', 
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity],
+		autoLoadEntities: true,
 		synchronize: true,
 	}),
-	HttpModule,
-	UserModule,
-  ],
+ 	ServeStaticModule.forRoot({
+		rootPath: join(__dirname, '..', 'public')
+	  }),
+	  AuthModule,
+	  SessionModule
+	],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-	
-}
+export class AppModule {}
+
+/* 
+	npm i --save @nestjs/config   
+	npm i --save ajv   
+	npm i --save ajv-keywords   
+	npm i --save typeorm postgres pg   
+	npm i --save @nestjs/typeorm   
+	npm i --save @nestjs/serve-static   
+	npm i --save nodemailer   
+	npm i --save randomstring   
+	npm i --save import @nestjs/axios   
+	npm i --save speakeasy 
+	npm i --save qrcode   
+
+
+
+*/
