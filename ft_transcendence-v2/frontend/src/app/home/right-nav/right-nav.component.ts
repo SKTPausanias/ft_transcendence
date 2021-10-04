@@ -12,6 +12,7 @@ export class RightNavComponent implements OnInit {
 	@Input() item: RightNavI;
 	token = this.sQuery.getSessionToken();
 	onlineUsers: any;
+	
 	constructor(private sQuery: SessionStorageQueryService,
 		private authService: AuthService) {
 		

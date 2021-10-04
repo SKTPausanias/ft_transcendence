@@ -48,10 +48,16 @@ export class HomeComponent implements OnInit {
 		this._path = tmpUrl.substring(0, pos >= 0 ? pos : ev.length);
 	}
 	mouseEnter(){
+		var snd = new Audio("../../assets/sounds/hover.wav");
+		snd.volume = 0.05;
+		snd.play();
 		this.rightNavObj.showInfo = true;
 	}
 	
 	mouseLeave(){
+		var snd = new Audio("../../assets/sounds/hover.wav");
+		snd.volume = 0.05;
+		snd.play();
 		this.rightNavObj.showInfo = false;
 	}
 }
