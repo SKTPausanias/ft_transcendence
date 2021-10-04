@@ -154,6 +154,18 @@ export class AuthService {
 			return (error);
 		}
 	}
+	async getQr()
+	{
+		
+		const usr = await this.userService.findByNickname('dbelinsk');
+		try {
+			const qr =  (await this.twoFactorService.generateQr(usr));
+			const qrImg = "<img src=" + qr +">";
+			return (qrImg);
+		} catch (error) {
+			return (error);
+		}
+	}
 }
 /*
 {

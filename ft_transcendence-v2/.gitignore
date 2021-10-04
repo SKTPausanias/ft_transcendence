@@ -6,16 +6,3 @@
 /frontend/node_modules
 !/frontend/*.json
 sendgrid.env
-
-
-#Backend exluded files
-/backend/*
-!/backend/src
-!/backend/*.json
-#Frontend exluded files
-/frontend/node_modules
-!/frontend/*.json
-sendgrid.env
-
-
-ft_transcendence-v2
