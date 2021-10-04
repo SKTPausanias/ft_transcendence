@@ -2,10 +2,16 @@
 /backend/*
 !/backend/src
 !/backend/.env
+!/backend/package.json
+!/backend/tsconfig.*
 #Frontend exluded files
 /frontend/*
 !/frontend/src
-!/frontend/src
+!/frontend/angular.json
+!/frontend/package.json
+!/frontend/tsconfig.app.json
+!/frontend/tsconfig.json
+
 sendgrid.env
 
 
