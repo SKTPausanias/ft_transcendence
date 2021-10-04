@@ -1,5 +1,6 @@
 # ft_transcendence
-npm i --save @nestjs/config   
+npm i --save @nestjs/config  
+npm i --save @nestjs/axios   
 npm i --save ajv  
 npm i --save ajv-keywords  
 npm i --save typeorm postgres pg  
@@ -9,3 +10,5 @@ npm i --save nodemailer
 npm i --save randomstring   
 npm i --save @types/bcryptjs  
 npm i --save bcryptjs  
+npm i --save qrcode    
+npm i --save speakeasy   
