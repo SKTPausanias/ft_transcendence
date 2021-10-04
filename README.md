@@ -3,7 +3,6 @@ transcendence<br/>
 The main purpose of this website is to play pong against other players and show everyone<br/>
 how good you are!<br/>
 
-# Instalation
 # BACKEND
 npm install   
 npm run start:dev   
