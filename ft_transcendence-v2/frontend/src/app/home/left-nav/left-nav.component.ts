@@ -53,7 +53,7 @@ export class LeftNavComponent implements OnInit {
 	conf(): void { this.selectSnd.play();this.navigate(Nav.CONF); }
 	async open(name: string) {
 		var snd = new Audio("../../../assets/sounds/logout.wav");
-		snd.volume = 0.05;
+		snd.volume = 0.1;
 		snd.play();
 		this.modalService.open(this.MODALS[name], { centered: true, animation: true });
 
