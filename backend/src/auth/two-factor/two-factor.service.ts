@@ -1,6 +1,5 @@
 import { Injectable, Res } from '@nestjs/common';
 import * as speakeasy from 'speakeasy'
-import * as totpGenerator from "totp-generator"
 import * as qrCode from "qrcode"
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
