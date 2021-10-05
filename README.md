@@ -5,8 +5,8 @@ how good you are!<br/>
 
 # BACKEND
 npm install   
-npm run start:dev   
+npm run start:dev  
+# FRONTEND
+npm install   
+npm start    
 
-npm install --save @nestjs/typeorm typeorm mysql2<br/>
-npm i --save @nestjs/config<br/>
-npm install pg --save
