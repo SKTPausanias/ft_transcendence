@@ -1,6 +1,5 @@
 import { UserI } from "./iUser";
-import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength } from 'class-validator'
-import { friend } from "src/shared/entity/friend.entity";
+import { IsAlpha, IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
 
 export class User implements UserI {
 
@@ -40,13 +39,6 @@ export class User implements UserI {
 	@IsBoolean()
 	online:			boolean;	
 
-	@IsNumber()
-	victory: 		number;
-
-	@IsNumber()
-	defeat: 		number;
-
-	//friend: friend;
 	constructor (){};
 
 	setUser(data: any)
@@ -62,8 +54,5 @@ export class User implements UserI {
 		this.code2factor = '';
 		this.factor_enabled = false;
 		this.online = false;
-		this.victory = data.victory;
-		this.defeat = data.defeat;
 	}
-
 }

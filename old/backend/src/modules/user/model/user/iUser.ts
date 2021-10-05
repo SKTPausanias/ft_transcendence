@@ -1,4 +1,3 @@
-import { friend } from "src/shared/entity/friend.entity";
 
 export interface UserI {
 	id: 			number;
@@ -14,7 +13,4 @@ export interface UserI {
 	code2factor:	string;
 	factor_enabled:	boolean;
 	online:			boolean;
-	victory:		number;
-	defeat:			number;
-	//friend:			friend;
 }

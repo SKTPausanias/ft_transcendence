@@ -1,5 +1,4 @@
-import { Column, Entity, PrimaryColumn, OneToMany } from "typeorm";
-import { friend } from "./friend.entity";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
 export class users {
@@ -42,13 +41,5 @@ export class users {
 
     @Column()
     online: boolean;
-
-    @Column()
-    victory: number;
-    
-    @Column()
-    defeat: number;
-    //@OneToMany(() => friend, friend => friend.user)
-    //friends: friend;
 }
 

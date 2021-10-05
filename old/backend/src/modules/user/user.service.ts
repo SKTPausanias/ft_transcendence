@@ -118,7 +118,7 @@ export class UserService {
         return (user);
     }
 
-    async updateUser(user: any): Promise<boolean> {		
+    async updateUser(user: any): Promise<boolean> {
         const data = await this.repository.save(user);
 		if (data !== undefined)
 			return (true);

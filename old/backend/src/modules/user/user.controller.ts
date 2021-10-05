@@ -5,6 +5,8 @@ import { CodeI } from './model/code/i2factor';
 import { User } from './model/user/cUser';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
+import { query } from 'express';
+
 
 @Controller('/api/user')
 export class UserController {
@@ -50,6 +52,7 @@ export class UserController {
 	@Post('/updateUser')
 	async updateUser(@Body() body: User): Promise<boolean>
 	{
+		console.log("Updating...");
 		return (await this.userService.updateUser(body));
 	}
 	

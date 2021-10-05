@@ -14,6 +14,4 @@ export interface UserI {
 	code2factor:	string;
 	factor_enabled:	boolean;
 	online:			boolean;
-	victory:		number;
-	defeat:			number;
 }
