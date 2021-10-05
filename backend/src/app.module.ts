@@ -14,14 +14,16 @@ import { SessionModule } from './session/session.module';
 import { SessionEntity } from './session/session.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot(),
+  imports: [ConfigModule.forRoot({
+	  //envFilePath: './.env_test',
+  }),
 	TypeOrmModule.forRoot({
 		type: 'postgres',
-		host: 'localhost',
-		port: 5432,
-		username: 'admin', 
-		password: 'admin',		
-		database: 'ft_transcendence', 
+		host: process.env.DB_HOST,
+		port: Number(process.env.DB_PORT),
+		username: process.env.DB_USER, 
+		password: process.env.DB_PASS,		
+		database: process.env.DB, 
 		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity],
 		autoLoadEntities: true,
 		synchronize: true,

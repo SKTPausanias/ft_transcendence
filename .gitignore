@@ -2,6 +2,7 @@
 /backend/*
 !/backend/src
 !/backend/.env
+!/backend/.env_test
 !/backend/package.json
 !/backend/tsconfig.*
 #Frontend exluded files
