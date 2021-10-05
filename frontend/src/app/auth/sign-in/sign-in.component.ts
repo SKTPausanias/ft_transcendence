@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { SessionStorageQueryService } from 'src/app/shared/service/session-storage-query.service';
 import { AuthService } from '../auth.service';
+import { environment } from 'src/environments/environment'
 
 @Component({
 selector: 'app-sign-in',
@@ -49,7 +50,7 @@ export class SignInComponent implements OnInit {
 	}
 	login42() {
 		this.sQuery.setNavParam({redirectedFrom: 'logIn'});
-		const url = 'https://api.intra.42.fr/oauth/authorize?client_id=54468a192544b06fef8e25a40d1e3d1febb65e21f600d6b57e1068e5aeba9823&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2Fauth&response_type=code';
+		const url = environment.env.ftAuthUrl;
 		window.location.href = url;
 	}
 	showPassword(e: any) {

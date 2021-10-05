@@ -25,8 +25,6 @@ export class AuthComponent implements OnInit {
 		sQuery.removeNavParam();
 		this.code = router.parseUrl(router.url).queryParams.code;
 		this.location.replaceState(this.location.path().split('?')[0], '');
-
-		
 	}
 
 	async ngOnInit(): Promise<void>{
