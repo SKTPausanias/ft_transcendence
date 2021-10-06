@@ -26,10 +26,10 @@
 					<form ngNativeValidate class="form-group" #loginForm="ngForm" (ngSubmit)="signUp(loginForm.value)">
 						<div class="form-group mb-3">
 							<input 
-							ngModel={{user.nickname}} 
+							ngModel={{user.login}} 
 							type="text" 
-							placeholder="Nickname*" 
-							name="nickname"
+							placeholder="Login*" 
+							name="login"
 							class="form-control" required />
 						</div>
 						<div class="row mb-3">

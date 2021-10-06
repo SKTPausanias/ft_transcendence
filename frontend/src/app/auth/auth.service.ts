@@ -9,9 +9,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  async login(nickname: string, password: string){
+  async login(login: string, password: string){
 	  const url = '/api/login'
-	  const body = {nickname, password}
+	  const body = {login, password}
 	  const response = await this.http.post<any>(url, body).toPromise();
 	  return (response);
   }
@@ -24,7 +24,7 @@ export class AuthService {
   {
 	  const url = '/api/confirmation';
 	  const response = await this.http.post<any>(url, code).toPromise();
-	  return (response);
+	  return (response)
   }
   async resendConfirmationEmail(email: string)
   {

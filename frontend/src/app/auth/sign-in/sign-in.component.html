@@ -10,13 +10,13 @@
 
 					<div class="separator mt-3 mb-3">LOG IN</div>
 					<div class="dialog mb-3" *ngIf="inputError"><p *ngFor="let msg of dialogMsg">{{msg}}</p></div>
-					<form ngNativeValidate class="form-group" #loginForm="ngForm" (ngSubmit)="login(loginForm.value)">
+					<form ngNativeValidate class="form-group" #loginForm="ngForm" (ngSubmit)="signIn(loginForm.value)">
 						<div class="form-group mb-3">
 							<input 
-							ngModel={{nickname}} 
+							ngModel={{login}} 
 							type="text" 
-							placeholder="Nickname*" 
-							name="nickname"
+							placeholder="Login*" 
+							name="login"
 							class="form-control" 
 							required />
 						</div>

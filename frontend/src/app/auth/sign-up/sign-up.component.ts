@@ -17,21 +17,15 @@ export class SignUpComponent implements OnInit {
 	
 
 
-	reEmail: string = "belinskisdainis@gmail.com";
-	rePassword: string = "123";
+	reEmail: string;
+	rePassword: string;
 	inputError: boolean;
 	dialogMsg: string[];
 	isLoaded: boolean = false;
 	constructor(private sQuery: SessionStorageQueryService,
 				private authService: AuthService,
 				private router: Router) {
-		this.user.factor_enabled = true;
-		this.user.first_name ="Dainis";
-		this.user.last_name ="Belinskis";
-		this.user.nickname ="dbelinsk";
-		this.user.email ="belinskisdainis@gmail.com";
-		this.user.password ="123";
-		this.user.factor_enabled = true;
+					this.user.factor_enabled = false;
 		}
 
 	ngOnInit(): void {
@@ -45,6 +39,8 @@ export class SignUpComponent implements OnInit {
 		if (this.userInputCheck(data))
 		{
 			this.user = UserClass.getUser(data);
+			console.log("user from signUp: ", this.user);
+			console.log("data: ", data);
 			const resp = await this.authService.signUp(this.user);
 			if (resp.statusCode == 301)
       			this.router.navigateByUrl(resp.data.redirect + "?email=" + resp.data.email);

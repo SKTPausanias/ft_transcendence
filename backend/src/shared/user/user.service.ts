@@ -16,9 +16,9 @@ export class UserService {
 	private userRepository: Repository<UserEntity>,
 	private connection: Connection){}
 
-	async findByNickname(nickname: string): Promise<UserEntity | undefined> {
+	async findByLogin(login: string): Promise<UserEntity | undefined> {
 		try {
-			return await this.userRepository.findOne({ where: { nickname } });
+			return await this.userRepository.findOne({ where: { login } });
 		} catch (error) {
 			throw new Exception(Response.makeResponse(404, {error : "User not found"}))
 		}
@@ -36,9 +36,9 @@ export class UserService {
 			const mr = this.connection.getRepository(SessionEntity);
 
 			const users = await mr.find({ relations: ["userID"], where: {token: session.token}});
-			const realUser = await this.findByNickname(users[0].userID.nickname);
+			const realUser = await this.findByLogin(users[0].userID.login);
 			console.log(users);
-			console.log("--->", realUser.nickname);
+			console.log("--->", realUser.login);
 			const resp =  await this.userRepository.findOne({ where : { sesionID: session.userID } });
 			console.log("user finded by session: ", resp);
 			return resp;

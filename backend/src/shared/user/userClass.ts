@@ -11,6 +11,7 @@ export class User implements UserI {
 	ft_id:			number;
 	first_name: 	string;
 	last_name: 		string;
+	login:			string;
 	nickname:		string;
 	password:		string;
 	email:			string;
@@ -28,6 +29,7 @@ export class User implements UserI {
 		let user: UserI = <UserI>{};
 		user.first_name = data.first_name;
 		user.last_name = data.last_name;
+		user.login = data.login;
 		user.nickname = data.nickname;
 		user.password = data.password;
 		user.email = data.email;
@@ -46,6 +48,7 @@ export class User implements UserI {
 		user.first_name = data.first_name;
 		user.last_name = data.last_name;
 		user.nickname = data.login;
+		user.login = data.login;
 		user.email = data.email;
 		user.avatar = data.image_url;
 		user.role = process.env.ROLE_USER;
@@ -59,6 +62,7 @@ export class User implements UserI {
 	}
 	static getInfo(data: any): UserInfoI{
 		return ({
+			login: data.login,
 			nickname : data.nickname,
 			first_name : data.first_name,
 			last_name : data.last_name,

@@ -32,7 +32,6 @@ import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
     SignUpComponent,
     ForgotPasswordComponent,
     HomeComponent,
-
 	LeftNavComponent,
 	RightNavComponent,
 	ContentComponent,

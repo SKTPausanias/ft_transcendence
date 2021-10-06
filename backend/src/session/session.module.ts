@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HashService } from 'src/shared/hash/hash.service';
 import { UserEntity } from 'src/shared/user/user.entity';
@@ -11,8 +11,8 @@ import { SessionService } from './session.service';
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity])],
     controllers: [SessionController],
     providers: [
-		SessionService, UserService
-	],
+		SessionService, UserService, SessionEntity
+	]
 })
 export class SessionModule {}
 

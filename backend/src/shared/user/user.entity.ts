@@ -20,9 +20,12 @@ export class UserEntity {
     email: string;
 
     @Column({nullable: false, unique: true})
+    login: string;
+
+    @Column({nullable: false, unique: true})
     nickname: string;
 
-	@Column({nullable: true})
+	  @Column({nullable: true})
     password: string;
 
     @Column({nullable: false})

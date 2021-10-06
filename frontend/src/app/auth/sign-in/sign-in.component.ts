@@ -11,7 +11,7 @@ styleUrls: ['./sign-in.component.css'],
 })
 export class SignInComponent implements OnInit {
 	@ViewChild('pass') ePass: ElementRef<HTMLInputElement>;
-	nickname: string;
+	login: string;
 	password: string;
 	isLoaded: boolean = false;
 	dialogMsg: string[];
@@ -30,10 +30,10 @@ export class SignInComponent implements OnInit {
 		else
 			this.isLoaded = true;
 	}
-	async login(data: any) {
+	async signIn(data: any) {
 		this.dialogMsg = [];
 		this.inputError = false;
-		const resp = await this.authService.login(data.nickname, data.password);
+		const resp = await this.authService.login(data.login, data.password);
 		console.log(resp);
 		if (resp.statusCode == 301)
       		this.router.navigateByUrl(resp.data.redirect + "?email=" + resp.data.email);
@@ -45,6 +45,8 @@ export class SignInComponent implements OnInit {
 		else
 		{
 			this.sQuery.setSessionToken(resp.data);
+			//caller to backend getting userInfo
+			//this.sQueri.setUser(this.user o resp....);
 			this.router.navigateByUrl('');
 		}
 	}

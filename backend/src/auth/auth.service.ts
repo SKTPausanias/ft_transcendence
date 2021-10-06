@@ -28,7 +28,7 @@ export class AuthService {
 
 	async login(usrData: any) {
 		try {
-			const resp = await this.userService.findByNickname(usrData.nickname);
+			const resp = await this.userService.findByLogin(usrData.login);
 			if (resp === undefined)
 				return (Response.makeResponse(401, {error : "User or password incorrect"})); 
 			if (resp.ft_id)
@@ -154,10 +154,10 @@ export class AuthService {
 			return (error);
 		}
 	}
-	async getQr()
+	async getQr() //TODO
 	{
 		
-		const usr = await this.userService.findByNickname('dbelinsk');
+		const usr = await this.userService.findByLogin('dbelinsk');
 		try {
 			const qr =  (await this.twoFactorService.generateQr(usr));
 			const qrImg = "<img src=" + qr +">";

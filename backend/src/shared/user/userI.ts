@@ -5,6 +5,7 @@ export interface UserI {
     first_name: string;    
     last_name: string;	
     email: string;
+    login: string;
     nickname: string;
     password: string;
     role: string;
@@ -18,6 +19,7 @@ export interface UserRegI {
 	first_name: string;
 	last_name: string;
 	nickname: string;
+    login: string;
 	email: string;
 	password: string;
 	factor_enabled: boolean;
@@ -27,5 +29,6 @@ export interface UserInfoI {
     last_name: string;	
     email: string;
     nickname: string;
+    login: string;
     avatar: string;
 }

@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfirmationEntity } from './auth/confirmation/confirmation.entity';
 import { TwoFactorEntity } from './auth/two-factor/two-factor.entity';
 import { UserEntity } from './shared/user/user.entity';
 import { SessionModule } from './session/session.module';
 import { SessionEntity } from './session/session.entity';
+import { SettingsModule } from './home/settings/settings.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -32,10 +32,11 @@ import { SessionEntity } from './session/session.entity';
 		rootPath: join(__dirname, '..', 'public')
 	  }),
 	  AuthModule,
-	  SessionModule
+	  SessionModule,
+	  SettingsModule
 	],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}
 
