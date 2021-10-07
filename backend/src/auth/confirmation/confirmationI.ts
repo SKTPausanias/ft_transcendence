@@ -1,4 +1,4 @@
-import { UserEntity } from "../../shared/user/user.entity";
+import { UserEntity } from "../../home/user/user.entity";
 
 export interface ConfirmationI {
     confirmation_nb: string;

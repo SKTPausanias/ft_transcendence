@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { AuthService } from 'src/app/auth/auth.service';
-import { RightNavI } from 'src/app/shared/interface/rightNav';
-import { SessionStorageQueryService } from 'src/app/shared/service/session-storage-query.service';
-
+import { RightNavI } from 'src/app/shared/ft_interfaces'
+import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 @Component({
   selector: 'app-right-nav',
   templateUrl: './right-nav.component.html',
@@ -14,12 +12,12 @@ export class RightNavComponent implements OnInit {
 	onlineUsers: any;
 	
 	constructor(private sQuery: SessionStorageQueryService,
-		private authService: AuthService) {
+		private userServie: UserService) {
 		
 	}
 
 	async ngOnInit(): Promise<void> {
-		const resp = await this.authService.getOnlineUsers(this.token);
+		const resp = await this.userServie.getOnlineUsers(this.token);
 		console.log("online users = ", resp.data);
 		console.log("online show = ", this.item.showInfo);
 		this.onlineUsers = resp.data;

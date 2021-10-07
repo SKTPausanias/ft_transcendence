@@ -3,14 +3,13 @@ import { MailService } from 'src/shared/mail/mail.service';
 import * as randomstring from 'randomstring';
 import { HashService } from 'src/shared/hash/hash.service';
 import { Confirmation } from 'src/auth/confirmation/confirmationC';
-import { UserService } from 'src/shared/user/user.service';
-import { User } from 'src/shared/user/userClass';
+import { UserService } from 'src/home/user/user.service';
+import { User } from 'src/home/user/userClass';
 import { ConfirmService } from './confirmation/confirmation.service';
-import { ErrorParser } from 'src/shared/utils/errorParser';
 import { mDate } from 'src/shared/utils/date';
 import { FtAuthService } from './ft_auth/ft_auth.service';
 import { TwoFactorService } from './two-factor/two-factor.service';
-import { UserRegI } from 'src/shared/user/userI';
+import { UserRegI } from 'src/home/user/userI';
 import { Response } from 'src/shared/response/responseClass';
 import { SessionService } from 'src/session/session.service';
 
@@ -167,14 +166,4 @@ export class AuthService {
 		}
 	}
 }
-/*
-{
-	status : 200		status: 2..			status : !200
-	data {}				data {				data {}
-						redirect,					
-						email
-						...				
-						}						
-			
-}
-*/
+

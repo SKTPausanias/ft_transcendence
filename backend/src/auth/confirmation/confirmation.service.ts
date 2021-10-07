@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ConfirmationEntity } from "src/auth/confirmation/confirmation.entity";
-import { UserEntity } from "src/shared/user/user.entity";
+import { UserEntity } from "src/home/user/user.entity";
 import { ConfirmationI } from "src/auth/confirmation/confirmationI";
 import { Repository } from "typeorm";
 import { Exception } from "src/shared/utils/exception";

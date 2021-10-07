@@ -1,7 +1,7 @@
 //import conf from '../../../ft_config.json';
 
 import { ConfirmationEntity } from "./confirmation.entity";
-import { UserEntity } from "../../shared/user/user.entity";
+import { UserEntity } from "../../home/user/user.entity";
 import { ConfirmationI } from "./confirmationI";
 import { mDate } from "../../shared/utils/date";
 

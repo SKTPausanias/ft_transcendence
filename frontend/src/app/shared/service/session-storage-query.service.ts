@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Storage } from '../enums/eUser';
-import { SessionStorageService } from './session-storage.service';
+import { SessionStorageService } from '../ft_services';
+import { Storage } from '../ft_enums';
 
 @Injectable({
 providedIn: 'root',

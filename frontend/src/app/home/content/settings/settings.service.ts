@@ -1,8 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UserInfoI } from '../../../shared/user/userI';
-import { SessionI } from 'src/app/shared/interface/sessionI';
-import { SessionStorageQueryService } from '../../../shared/service/session-storage-query.service';
+import { UserInfoI, SessionI } from 'src/app/shared/ft_interfaces';
+import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 
 @Injectable({
 providedIn: 'root',
@@ -18,7 +17,7 @@ export class SettingsService {
 
   async getUserInfo(session: SessionI): Promise<any>
   {
-    const url = '/api/settings/userInfo';
+    const url = '/api/users/userInfo';
     const response = await this.http.get<any>(url,{ headers : new HttpHeaders({
       Authorization: 'Bearer ' + session.token})}).toPromise();
     return (response);

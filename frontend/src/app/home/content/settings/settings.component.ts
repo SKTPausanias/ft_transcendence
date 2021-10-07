@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { SessionStorageQueryService } from '../../../shared/service/session-storage-query.service';
-import { UserInfoI } from 'src/app/shared/user/userI';
+import { SessionStorageQueryService } from 'src/app/shared/ft_services';
+import { UserInfoI } from 'src/app/shared/ft_interfaces';
 import { SettingsService } from './settings.service';
 
 

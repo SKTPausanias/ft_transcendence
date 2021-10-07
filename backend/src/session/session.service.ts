@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HashService } from 'src/shared/hash/hash.service';
 import { Response } from 'src/shared/response/responseClass';
-import { UserEntity } from 'src/shared/user/user.entity';
-import { UserService } from 'src/shared/user/user.service';
-import { UserI, UserInfoI } from 'src/shared/user/userI';
+import { UserEntity } from 'src/home/user/user.entity';
+import { UserService } from 'src/home/user/user.service';
 import { ErrorParser } from 'src/shared/utils/errorParser';
 import { Exception } from 'src/shared/utils/exception';
 import { Not, Repository } from 'typeorm';
@@ -13,7 +11,6 @@ import * as randomstring from 'randomstring';
 import { mDate } from 'src/shared/utils/date';
 import { SessionI } from './sessionI';
 import { Session } from './sessionClass';
-import { User } from 'src/shared/user/userClass';
 import { _ } from 'ajv';
 
 @Injectable()
@@ -21,8 +18,7 @@ export class SessionService {
 
 	expires_in: number = 60 * 60 * 2; //2 hours
 	constructor(@InjectRepository(SessionEntity)
-	private sessionRepository: Repository<SessionEntity>,
-	private userService: UserService){}
+	private sessionRepository: Repository<SessionEntity>){}
 
 	async newSession(user: UserEntity){
 
@@ -58,6 +54,8 @@ export class SessionService {
 	}
 	async reNewSession(session: SessionEntity)
 	{
+		if (session === undefined)
+			return (false);
 		if (mDate.expired(session.expiration_time))
 		{
 			await this.sessionRepository.delete(session);
@@ -71,34 +69,37 @@ export class SessionService {
 			return (false)
 		}
 	}
-	async getUserInfo(header: any) //body
+	async findSession(token: string)
 	{
-		const token = header.authorization.split(' ')[1];
-		console.log(header);
+		var session;
 		try {
-			const session = await this.sessionRepository.findOne({ 
-				relations: ["userID"], where: { token }});
-			if (!this.reNewSession(session))
-				return (Response.makeResponse(410, {error : "Gone"}));
-			return (Response.makeResponse(200, User.getInfo(session.userID)));
+			session = await this.sessionRepository.findOne({ where: { token }});
 		} catch (error) {
-			return (Response.makeResponse(401, {error : "Unauthorized"}));
+			return (Response.makeResponse(500, {error : error}))
 		}
+		if (!this.reNewSession(session))
+			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
+		return (session);
 	}
-	async getOnlineUsers(header: any){
-		const token = header.authorization.split(' ')[1];
+	async findSessionWithRelation(token: string)
+	{
+		var session;
 		try {
-			const session = await this.sessionRepository.findOne({
-				relations: ["userID"], where: { token : token }});
-			if (!this.reNewSession(session))
-				return (Response.makeResponse(410, {error : "Gone"}));
-			const sessions = await this.sessionRepository.find({ 
-				relations: ["userID"], where: { 
-					userID: Not(session.userID.id)
-				}});
-				return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
+			session = await this.sessionRepository.findOne({ 
+				relations: ["userID"], where: { token }});
 		} catch (error) {
-			return (Response.makeResponse(401, {error : "Unauthorized"}));
+			return (Response.makeResponse(500, {error : error}))
 		}
+		if (!this.reNewSession(session))
+			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
+		return (session);
+	}
+	async findAllExcept(curentSesion: SessionEntity)
+	{
+		const sessions = await this.sessionRepository.find({ 
+			relations: ["userID"], where: { 
+				userID: Not(curentSesion.userID.id)
+			}});
+		return (sessions);
 	}
 }

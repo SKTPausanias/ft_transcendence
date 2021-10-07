@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth/auth.service';
-import { SessionStorageQueryService } from '../../../shared/service/session-storage-query.service';
+import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 
 @Component({
     selector: 'ngbd-modal-confirm',

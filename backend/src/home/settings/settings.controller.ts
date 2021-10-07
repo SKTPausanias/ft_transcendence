@@ -3,11 +3,7 @@ import { Get, Headers } from '@nestjs/common';
 import { SettingsService } from './settings.service';
 
 
-@Controller('api/settings')
+@Controller('api/users/settings')
 export class SettingsController {
     constructor(private settingService: SettingsService){}
-    @Get('/userInfo')
-	async getUserInfo(@Headers() headers){
-		return (await this.settingService.getUserInfo(headers));
-	}
 }

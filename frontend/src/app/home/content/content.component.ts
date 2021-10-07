@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Nav } from 'src/app/shared/enums/eUser';
+import { Nav } from 'src/app/shared/ft_enums';
 
 
 @Component({

@@ -1,6 +1,6 @@
 import { type } from "os";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "../shared/user/user.entity";
+import { UserEntity } from "../home/user/user.entity";
 
 @Entity('session')
 export class SessionEntity {

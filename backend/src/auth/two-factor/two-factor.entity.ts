@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { UserEntity } from "../../shared/user/user.entity";
+import { UserEntity } from "../../home/user/user.entity";
 
 @Entity('two_factor')
 export class TwoFactorEntity {

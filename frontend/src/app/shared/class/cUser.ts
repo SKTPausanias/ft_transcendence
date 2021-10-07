@@ -1,4 +1,4 @@
-import { UserRegI } from "./userI";
+import { UserRegI } from "../ft_interfaces";
 
 export class UserClass{
 

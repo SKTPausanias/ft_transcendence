@@ -8,10 +8,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfirmationEntity } from './auth/confirmation/confirmation.entity';
 import { TwoFactorEntity } from './auth/two-factor/two-factor.entity';
-import { UserEntity } from './shared/user/user.entity';
-import { SessionModule } from './session/session.module';
+import { UserEntity } from './home/user/user.entity';
 import { SessionEntity } from './session/session.entity';
 import { SettingsModule } from './home/settings/settings.module';
+import { UserModule } from './home/user/user.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -32,8 +32,8 @@ import { SettingsModule } from './home/settings/settings.module';
 		rootPath: join(__dirname, '..', 'public')
 	  }),
 	  AuthModule,
-	  SessionModule,
-	  SettingsModule
+	  SettingsModule,
+	  UserModule
 	],
   controllers: [AppController],
   providers: [AppService]

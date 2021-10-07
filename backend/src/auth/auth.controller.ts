@@ -1,9 +1,9 @@
 import { Controller, Post, Get, Body, Delete, Headers} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from 'src/shared/user/userClass';
+import { User } from 'src/home/user/userClass';
 import { HashService } from 'src/shared/hash/hash.service';
-import { UserService } from 'src/shared/user/user.service';
-import { UserRegI } from 'src/shared/user/userI';
+import { UserService } from 'src/home/user/user.service';
+import { UserRegI } from 'src/home/user/userI';
 
 @Controller('api')
 export class AuthController {

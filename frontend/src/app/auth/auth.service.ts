@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SessionI } from '../shared/interface/sessionI';
+import { SessionI } from 'src/app/shared/ft_interfaces';
 
 @Injectable({
   providedIn: 'root'
@@ -56,13 +56,7 @@ export class AuthService {
 	const response = await this.http.post<any>(url, {code : code, email : email}).toPromise();
 	return (response);
   }
-  async getUserInfo(session: SessionI)
-  {
-	const url = '/api/session/userInfo';
-	const response = await this.http.get<any>(url,{ headers : new HttpHeaders({
-		Authorization: 'Bearer ' + session.token})}).toPromise();
-	return (response);
-  }
+  
 
   async logout(session: SessionI)
   {
@@ -74,11 +68,5 @@ export class AuthService {
   }
   //SHOULD CREATE ANOTHER SERVICE CLASS FOR NEXT FUNCTIONS
 
-  async getOnlineUsers(session: SessionI)
-  {
-	const url = '/api/session/online/Users';
-	const response = await this.http.get<any>(url,{ headers : new HttpHeaders({
-		Authorization: 'Bearer ' + session.token})}).toPromise();
-	return (response);
-  }
+  
 }

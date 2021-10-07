@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TwoFactorEntity } from './two-factor.entity';
 import { mDate } from 'src/shared/utils/date';
-import { UserEntity } from 'src/shared/user/user.entity';
+import { UserEntity } from 'src/home/user/user.entity';
 import { Exception } from 'src/shared/utils/exception';
 import { Response } from 'src/shared/response/responseClass';
 import { ErrorParser } from 'src/shared/utils/errorParser';

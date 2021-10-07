@@ -1,4 +1,4 @@
-import { UserInfoI } from "../user/userI";
+import { UserInfoI } from "../ft_interfaces";
 
 export interface RightNavI {
 	userInfo : UserInfoI;

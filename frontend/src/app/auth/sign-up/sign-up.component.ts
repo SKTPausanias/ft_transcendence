@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
-import { UserClass } from 'src/app/shared/user/userClass';
-import { UserRegI } from 'src/app/shared/user/userI';
-import { SessionStorageQueryService } from 'src/app/shared/service/session-storage-query.service';
+import {  Router } from '@angular/router';
+import { UserClass } from 'src/app/shared/ft_clases';
+import { UserRegI } from 'src/app/shared/ft_interfaces';
+import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { AuthService } from '../auth.service';
 import { environment } from 'src/environments/environment'
 

@@ -1,4 +1,4 @@
-import { UserEntity } from "src/shared/user/user.entity";
+import { UserEntity } from "src/home/user/user.entity";
 
 export interface SessionI {
     token: string; 

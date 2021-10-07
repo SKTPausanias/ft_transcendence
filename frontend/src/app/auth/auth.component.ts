@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { SessionStorageQueryService } from '../shared/service/session-storage-query.service';
+import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { AuthService } from './auth.service';
 
 

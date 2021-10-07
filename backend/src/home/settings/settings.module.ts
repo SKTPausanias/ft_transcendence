@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from 'src/shared/user/user.entity';
-import { UserService } from 'src/shared/user/user.service';
+import { UserEntity } from 'src/home/user/user.entity';
+import { UserService } from 'src/home/user/user.service';
 import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 import { SessionEntity } from 'src/session/session.entity'; 

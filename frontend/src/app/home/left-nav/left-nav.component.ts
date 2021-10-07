@@ -1,8 +1,8 @@
 import { Component, Type, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router, NavigationStart, Event, NavigationEnd, NavigationError } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
-import { Nav } from 'src/app/shared/enums/eUser'
-import { SessionStorageQueryService } from 'src/app/shared/service/session-storage-query.service';
+import { Nav } from 'src/app/shared/ft_enums'
+import { SessionStorageQueryService } from 'src/app/shared/ft_services'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from 'src/app/home/left-nav/logout-modal/logout-modal.component'
 

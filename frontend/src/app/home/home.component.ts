@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { RightNavI } from '../shared/interface/rightNav';
-import { UserInfoI } from '../shared/user/userI';
-import { SessionStorageQueryService } from '../shared/service/session-storage-query.service';
+import { RightNavI } from 'src/app/shared/ft_interfaces'
+import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 
 @Component({
 	selector: 'app-home',
@@ -18,7 +17,8 @@ export class HomeComponent implements OnInit {
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
-	private authService: AuthService
+	private authService: AuthService,
+	private userService: UserService
 	) {
 		this.rightNavObj.showInfo = false;
 	}
@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
 			this.router.navigateByUrl('logIn');
 		else
 		{
-			const resp = await this.authService.getUserInfo(this.session);
+			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
 			{
 				this.sQuery.removeAll();
@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit {
 			}
 			else
 			{
+				this.sQuery.setUser(resp.data);
 				this.rightNavObj.userInfo = resp.data;
 				this.isLoaded = true;
 			}
