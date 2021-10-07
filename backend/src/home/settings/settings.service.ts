@@ -26,11 +26,11 @@ export class SettingsService {
 				return (Response.makeResponse(500, {error : 'unable to delete'}));
 			}
 		}
-		async updateUser(usr: any, header: any){
+		async updateUser(user: any, header: any){
 			const token = header.authorization.split(' ')[1];
 			try {
 				const session = await this.sessionService.findSessionWithRelation(token);
-				const resp = await this.userService.update(session.userID, usr);
+				const resp = await this.userService.update(session.userID, user);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {

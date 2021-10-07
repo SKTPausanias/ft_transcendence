@@ -17,8 +17,12 @@ export class AuthService {
   }
   async signUp(usrData: any){
 		const url = '/api/signUp';
-		const response = await this.http.post<any>(url, usrData).toPromise();
-		return (response);
+		try{
+			return (await this.http.post<any>(url, usrData).toPromise());
+		}
+		catch(e){
+			return (e);
+		}
   }
   async confirm(code:any)
   {

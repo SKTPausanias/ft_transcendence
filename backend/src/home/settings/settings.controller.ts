@@ -4,6 +4,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { SettingsService } from './settings.service';
 import { diskStorage } from 'multer';
 import { Response } from 'src/shared/response/responseClass';
+import { User } from '../user/userClass';
+import { UserI } from '../user/userI';
 
 
 @Controller('api/users/settings')
@@ -14,7 +16,8 @@ export class SettingsController {
 		return await this.settingService.deleteUser(headers);
 	}
 	@Post('/update')
-	async updateUser(@Body() body, @Headers() header){
+	async updateUser(@Body() body : User, @Headers() header){
+		console.log("hola buenos dias");
 		return await this.settingService.updateUser(body, header);
 	}
 	@Post('/imageUpload')

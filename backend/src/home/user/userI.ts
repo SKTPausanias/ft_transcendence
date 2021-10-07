@@ -31,4 +31,5 @@ export interface UserInfoI {
     nickname: string;
     login: string;
     avatar: string;
+    factor_enabled: boolean;
 }

@@ -19,7 +19,7 @@ export class AuthController {
 	}
 	
 	@Post('/signUp')
-	async signUp(@Body() body: UserRegI){
+	async signUp(@Body() body: User){
 		return (await this.authService.signUp(body));
 	}
 	

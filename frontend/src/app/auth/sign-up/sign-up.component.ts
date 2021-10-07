@@ -42,6 +42,7 @@ export class SignUpComponent implements OnInit {
 			console.log("user from signUp: ", this.user);
 			console.log("data: ", data);
 			const resp = await this.authService.signUp(this.user);
+			console.log("resp: ", resp);
 			if (resp.statusCode == 301)
       			this.router.navigateByUrl(resp.data.redirect + "?email=" + resp.data.email);
 			else if (resp.statusCode >= 400)

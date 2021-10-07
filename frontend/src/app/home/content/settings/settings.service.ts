@@ -26,15 +26,13 @@ export class SettingsService {
 	{
 		const url = '/api/users/settings/update';
 
-		const response = await this.http.post<any>(url, userData, {headers: new HttpHeaders({
-			Authorization: 'Bearer ' + session.token})}).toPromise();
-		return (response);
-		/* try{
-			return "";//(await this.http.post<any>(url, userData).toPromise());
+		try{
+			return (await this.http.post<any>(url, userData, {headers: new HttpHeaders({
+				Authorization: 'Bearer ' + session.token})}).toPromise());
 		}
 		catch(e){
 			return e;
-		} */
+		}
 	}
 
 	 async uploadImage(image: File, fileName: string, session: SessionI): Promise<any> {

@@ -25,7 +25,8 @@ export class SettingsComponent implements OnInit {
 		private sQuery: SessionStorageQueryService,
 		private settingService: SettingsService,
 		private router: Router
-		) {	}
+		) {
+		}
 		
   
    ngOnInit(): void {	 
@@ -37,7 +38,6 @@ export class SettingsComponent implements OnInit {
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
 		const result = await this.settingService.updateUser(this.user, this.session);
-		console.log(result);
 		if (result.statusCode == 200)
 		{
 			this.sQuery.setUser(result.data);

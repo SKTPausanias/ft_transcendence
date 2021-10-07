@@ -4,22 +4,44 @@ import e from "express";
 import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
 import { UserI, UserInfoI, UserRegI } from "./userI";
+import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
 
 
 export class User implements UserI {
 
 	ft_id:			number;
+
+	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
 	first_name: 	string;
+
+	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
 	last_name: 		string;
+
+	@MaxLength(12)
+	@MinLength(6)
 	login:			string;
+
+	@Matches(/^[a-zA-Z0-9\-\_]{5,12}$/, { message: 'Invalid nickname' })
+	@MaxLength(12, { message: 'nickname too long: max 12 characters' })
+	@MinLength(5, { message: 'nickname too short: min 5 characters' })
 	nickname:		string;
+
 	password:		string;
+
+	@IsEmail()
 	email:			string;
+
 	status:			number;
+
 	role:			string;
+
 	avatar:			string;
-	factor_enabled:	boolean;	
+
+	@IsBoolean()
+	factor_enabled:	boolean;
+
 	confirmed:		boolean;
+
 	sesionID: 		SessionEntity;
 
 	constructor (){};
@@ -68,6 +90,7 @@ export class User implements UserI {
 			last_name : data.last_name,
 			email : data.email,
 			avatar : data.avatar,
+			factor_enabled : data.factor_enabled
 			});
 	}
 	static getOnlineUserInfo(data: SessionEntity[]){
