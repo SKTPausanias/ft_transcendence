@@ -66,6 +66,13 @@ export class UserService {
 			throw new Exception(Response.makeResponse(500, {error : ErrorParser.parseDbSaveExeption(error)}))
 		}
 	}
+	async update(usrEntity: UserEntity, usr: any): Promise<UserEntity | any>{
+		try {
+			return (await this.userRepository.update(usrEntity, usr));
+		} catch (error) {
+			throw new Exception(Response.makeResponse(500, {error : ErrorParser.parseDbSaveExeption(error)}))
+		}
+	}
 	async deleteUser(usr: any)
 	{
 		try {

@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
 	}
 
 	async ngOnInit(): Promise<void> {
+		console.log("home onInit");
 		this.isLoaded = false;
 		if (this.session === undefined) 
 			this.router.navigateByUrl('logIn');
@@ -49,16 +50,10 @@ export class HomeComponent implements OnInit {
 		this._path = tmpUrl.substring(0, pos >= 0 ? pos : ev.length);
 	}
 	mouseEnter(){
-		var snd = new Audio("../../assets/sounds/hover.wav");
-		snd.volume = 0.05;
-		snd.play();
 		this.rightNavObj.showInfo = true;
 	}
 	
 	mouseLeave(){
-		var snd = new Audio("../../assets/sounds/hover.wav");
-		snd.volume = 0.05;
-		snd.play();
 		this.rightNavObj.showInfo = false;
 	}
 }

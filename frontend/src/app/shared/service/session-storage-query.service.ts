@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SessionStorageService } from '../ft_services';
+import { SessionStorageService } from 'src/app/shared/ft_services';
 import { Storage } from '../ft_enums';
 
 @Injectable({

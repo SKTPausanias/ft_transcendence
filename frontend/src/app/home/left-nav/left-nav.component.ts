@@ -77,8 +77,8 @@ export class LeftNavComponent implements OnInit {
 		this.router.navigateByUrl(path);
 	}
 	mouseEnter(){
-		var snd = new Audio("../../../assets/sounds/hover.wav");
+		/* var snd = new Audio("../../../assets/sounds/hover.wav");
 		snd.volume = 0.05;
-		snd.play();
+		snd.play(); */
 	}
 }

@@ -36,18 +36,7 @@
 								required
 							/>
 					</div>
-					<div class="form-group mb-3">
-						<label for="avatar">Avatar</label>
-						<!--requiredFileType="image/png"-->
-							<input
-								#imageInput
-								name="avatar"
-								type="file"
-								accept="image/*"
-								
-								class="form-control image-upload-container"
-							/>
-					</div>
+					
 					<div class="form-group mb-3">
 						<label for="exampleInputEmail1">Email Address</label>
 						<input
@@ -81,6 +70,22 @@
 					<button type="submit" class="btn_register p-2 px-5 mt-4">Save changes</button>
 					<button class="btn-danger p-2 px-5 m-4" (click)="deleteAccount()">Delete Account</button> 
 				</div>
+			</form>
+			<form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onUploadAvatar(set.value)">
+				<div class="form-group mb-3">
+					<label for="avatar">Avatar</label>
+					<!--requiredFileType="image/png"-->
+						<input
+							#imageInput
+							name="avatar"
+							type="file"
+							accept="image/*"
+							
+							class="form-control image-upload-container"
+						/>
+				</div>
+				<button type="submit" class="btn_register p-2 px-5 mt-4">Upload avatar</button>
+
 			</form>
 		  </div>
 	</div>
