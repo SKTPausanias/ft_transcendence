@@ -22,6 +22,7 @@ export interface UserRegI {
     login: string;
 	email: string;
 	password: string;
+    avatar: string;
 	factor_enabled: boolean;
 }
 export interface UserInfoI {
