@@ -140,8 +140,8 @@ export class SettingsComponent implements OnInit {
 			ret = false;
 		if (values.email != this.settingsPreference.userInfo.email)
 			ret = false;
-		if (values.factor_enabled != this.settingsPreference.userInfo.factor_enabled)
-			ret = false;
+		/* if (values.factor_enabled != this.settingsPreference.userInfo.factor_enabled)
+			ret = false; */
 		return (ret);
 	}
 	showMsg(msg: string, isError: boolean)
