@@ -17,7 +17,6 @@ export class SettingsController {
 	}
 	@Post('/update')
 	async updateUser(@Body() body : User, @Headers() header){
-		console.log("hola buenos dias");
 		return await this.settingService.updateUser(body, header);
 	}
 	@Post('/imageUpload')

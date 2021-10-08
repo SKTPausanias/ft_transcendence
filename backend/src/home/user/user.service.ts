@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SessionEntity } from 'src/session/session.entity';
 import { UserEntity } from 'src/home/user/user.entity';
 import { UserI, UserRegI } from 'src/home/user/userI';
-import { Connection, Not, Repository } from 'typeorm';
+import { Connection, Like, Not, Repository } from 'typeorm';
 import { Response } from '../../shared/response/responseClass';
 import { ErrorParser } from '../../shared/utils/errorParser';
 import { Exception } from '../../shared/utils/exception';
@@ -79,6 +79,18 @@ export class UserService {
 			return (await this.userRepository.remove(usr));
 		} catch (error) {
 			throw new Exception(Response.makeResponse(500, {error : "Can't delete user"}))
+		}
+	}
+
+	async findMatchingPeople(text: any, header: any)
+	{
+		const token = header.authorization.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			return (await this.userRepository.find({where: {login: Like(`%${text}%`)}}));
+		}
+		catch (error) {
+			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}
 	}
 

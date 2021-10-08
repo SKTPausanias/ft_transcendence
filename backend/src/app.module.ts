@@ -12,6 +12,7 @@ import { UserEntity } from './home/user/user.entity';
 import { SessionEntity } from './session/session.entity';
 import { SettingsModule } from './home/settings/settings.module';
 import { UserModule } from './home/user/user.module';
+import { ChatModule } from './home/chat/chat.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -34,7 +35,8 @@ import { UserModule } from './home/user/user.module';
 	  }),
 	  AuthModule,
 	  SettingsModule,
-	  UserModule
+	  UserModule,
+	  ChatModule
 	],
   controllers: [AppController],
   providers: [AppService]

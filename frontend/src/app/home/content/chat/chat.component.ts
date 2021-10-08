@@ -20,7 +20,7 @@ export class ChatComponent implements OnInit {
   }
 
   async onSubmitFriends(val: any): Promise<void> {
-    console.log("Val to query: ", val);
+    console.log("text value:", this.search.nativeElement.value);
     this.users = await this.chatService.getPeople(this.session, this.search.nativeElement.value);
     console.log(this.users);
   }
