@@ -27,6 +27,7 @@ export class SettingsComponent implements OnInit {
 	user: UserInfoI; // = this.sQuery.getUser();
 	code: number;
 	qrButtonValue: string = "Show QR";
+	factor: boolean;
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private settingService: SettingsService,
@@ -37,6 +38,7 @@ export class SettingsComponent implements OnInit {
   
   	ngOnInit(): void {	 
 		this.user = this.settingsPreference.userInfo;
+		this.factor = this.user.factor_enabled;
   	}
 	editAvatar(file: any)
 	{
@@ -75,6 +77,7 @@ export class SettingsComponent implements OnInit {
 	}
 	async onSubmitSettings(value: any)
 	{
+		this.factor = value.factor;
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
 		const result = await this.settingService.updateUser(this.user, this.session);
@@ -119,9 +122,9 @@ export class SettingsComponent implements OnInit {
 
 	factorCheckbox(e: any) {
 		if (e.target.checked)
-			this.user.factor_enabled = true;
+			this.settingsPreference.userInfo.factor_enabled = true;
 		else
-			this.user.factor_enabled = false;
+		this.settingsPreference.userInfo.factor_enabled = false;
 	}
 
 	async deleteAccount(): Promise<void> {
@@ -140,8 +143,8 @@ export class SettingsComponent implements OnInit {
 			ret = false;
 		if (values.email != this.settingsPreference.userInfo.email)
 			ret = false;
-		/* if (values.factor_enabled != this.settingsPreference.userInfo.factor_enabled)
-			ret = false; */
+		if (values.factor != this.factor)
+			ret = false;
 		return (ret);
 	}
 	showMsg(msg: string, isError: boolean)
