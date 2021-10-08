@@ -36,5 +36,14 @@ export class SettingsController {
 			return (await this.settingService.updateUserAvatar(header, file.filename));
 		return (Response.makeResponse(500, {error : "failed to upload avatar"}));
 	}
+	@Get('/sendcode')
+	async sendCode(@Headers() headers){
+		return await this.settingService.sendCode(headers);
+	}
+
+	@Post('/show-qr')
+	async showQr(@Headers() headers, @Body() body: any){
+		return await this.settingService.showQr(headers, body);
+	}
 
 }

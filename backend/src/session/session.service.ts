@@ -77,7 +77,7 @@ export class SessionService {
 		} catch (error) {
 			return (Response.makeResponse(500, {error : error}))
 		}
-		if (!this.reNewSession(session))
+		if (!await this.reNewSession(session))
 			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
 		return (session);
 	}
@@ -90,7 +90,7 @@ export class SessionService {
 		} catch (error) {
 			return (Response.makeResponse(500, {error : error}))
 		}
-		if (!this.reNewSession(session))
+		if (!await this.reNewSession(session))
 			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
 		return (session);
 	}

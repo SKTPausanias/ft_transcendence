@@ -25,7 +25,6 @@ export class SettingsService {
 	async updateUser(userData: UserInfoI, session: SessionI): Promise<any>
 	{
 		const url = '/api/users/settings/update';
-
 		try{
 			return (await this.http.post<any>(url, userData, {headers: new HttpHeaders({
 				Authorization: 'Bearer ' + session.token})}).toPromise());
@@ -41,8 +40,7 @@ export class SettingsService {
         body.append('image', image, (fileName + image.name.substring(image.name.indexOf('.'))));
 		try{
 			return (await this.http.post(url, body, 
-				{responseType: "text",
-				headers: new HttpHeaders({
+				{ headers: new HttpHeaders({
 					Authorization: 'Bearer ' + session.token})
 			}).toPromise());
 		}catch(e){
@@ -50,7 +48,18 @@ export class SettingsService {
 		}
 		return (false);
 	  }
-
+	async sendCode(session: SessionI){
+		const url = 'api/users/settings/sendcode';
+		const response = await this.http.get<any>(url, {headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token})}).toPromise();
+		return (response);
+	}
+	async showQrCode(session: SessionI, code: number){
+		const url = 'api/users/settings/show-qr';
+		const response = await this.http.post<any>(url, {code}, {headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token})}).toPromise();
+		return (response);
+	}
 	/*async logoutUser(){
 		const id = this.sQuery.getUser().id;
 		const url = '/api/logout';
