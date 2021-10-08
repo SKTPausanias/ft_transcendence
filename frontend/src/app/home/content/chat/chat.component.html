@@ -1,1 +1,19 @@
-<p>chat works!</p>
+<div class="container">
+    <form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitFriends(set.value)">
+        <div>
+            <h3>Friends</h3>
+            <div class="form-group mb-3">
+                <label for="login">Search Friends</label>
+                <input
+                    #searchText
+                    type="text"
+                    name="login"
+                    class="form-control"
+                    required
+                />
+                <button type="submit" class="btn_register p-2 px-5 mt-4">Search</button>
+        </div>
+        </div>
+        
+    </form>
+</div>
