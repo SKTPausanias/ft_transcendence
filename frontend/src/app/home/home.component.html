@@ -1,5 +1,5 @@
 <div *ngIf="isLoaded" class="row mx-0">
 	<app-left-nav class="" (newItemEvent)="setFragment($event)"></app-left-nav>
-	 <app-content class="" [path]="_path"></app-content>
-	<app-right-nav class="" (mouseenter) ="mouseEnter() " (mouseleave) ="mouseLeave()" [item]="rightNavObj"></app-right-nav>
+	 <app-content class="" [path]="_path" [contentPreference]="sharedPreference"></app-content>
+	<app-right-nav class="" (mouseenter) ="mouseEnter() " (mouseleave) ="mouseLeave()" [rigtNavPreference]="sharedPreference"></app-right-nav>
 </div>

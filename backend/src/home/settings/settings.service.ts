@@ -7,12 +7,16 @@ import { Response } from 'src/shared/response/responseClass';
 import { SessionService } from 'src/session/session.service';
 import { User } from 'src/home/user/userClass';
 import { UserService } from '../user/user.service';
+import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
+import { MailService } from 'src/shared/mail/mail.service';
 
 @Injectable()
 export class SettingsService {
     constructor(
         private sessionService: SessionService,
-        private userService: UserService
+        private userService: UserService,
+		private twoFactorService: TwoFactorService,
+		private mailService: MailService
         ){}
 		async deleteUser(header: any)
 		{
@@ -34,8 +38,9 @@ export class SettingsService {
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
-				console.log(error);
-				return (Response.makeResponse(500, {error : 'unable to delete'}));
+				if (error.statusCode === 410)
+					return (error);
+				return (Response.makeResponse(500, {error : 'unable to update'}));
 			}
 		}
 		async updateUserAvatar(header: any, fname: string){
@@ -48,9 +53,42 @@ export class SettingsService {
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
-				console.log(error);
+				if (error.statusCode === 410)
+					return (error);
 				return (Response.makeResponse(500, {error : 'unable to delete'}));
 			}
+		}
+		async sendCode(header: any)
+		{
+			try {
+				const token = header.authorization.split(' ')[1];
+				const session = await this.sessionService.findSessionWithRelation(token);
+				const code = await this.twoFactorService.generateToken(session.userID);
+				await this.mailService.sendValidationCode(session.userID.email, code);
+				return (Response.makeResponse(200, {ok : "code successfuly has been sended"}));
+			} catch (error) {
+				if (error.statusCode == 410)
+					return (error);
+				return (Response.makeResponse(500, {error : 'unable to send code'}));
+			}
+				
+		}
+		async showQr(header: any, body: any){
+			try {
+				const token = header.authorization.split(' ')[1];
+				const session = await this.sessionService.findSessionWithRelation(token);
+				const validate = await this.twoFactorService.validateToken(session.userID, body.code)
+				console.log(validate, body.code);
+				if (!validate)
+					return (Response.makeResponse(401, {error : 'Code is not valid!'}));
+				const qr = await this.twoFactorService.generateQr(session.userID);
+				return (Response.makeResponse(200, {qr}));
+			} catch (error) {
+				if (error.statusCode == 410)
+					return (error);
+				return (Response.makeResponse(500, {error : 'unable to show qr'}));
+			}
+				
 		}
 		static filterHelper(req: Request, file, cb):any {
 			//https://gabrieltanner.org/blog/nestjs-file-uploading-using-multer -> this should be on server side

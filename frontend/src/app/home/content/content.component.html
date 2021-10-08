@@ -3,5 +3,5 @@
 	<app-play *ngIf="path == nav.GAME"></app-play>
 	<app-live *ngIf="path == nav.LIVE"></app-live>
 	<app-chat *ngIf="path == nav.CHAT"></app-chat>
-	<app-settings *ngIf="path == nav.CONF"></app-settings>
+	<app-settings *ngIf="path == nav.CONF" [settingsPreference]="contentPreference"></app-settings>
 </div>

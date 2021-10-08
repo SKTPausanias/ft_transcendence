@@ -1,19 +1,19 @@
 <div class="bg-dark">
-	<div class="d-flex flex-column text-white align-items-start min-vh-100 pt-3 pb-3 px-1" [ngClass]="{'align-items-center' : !item.showInfo}">
-		<div class="parent">
+	<div class="d-flex flex-column text-white align-items-start min-vh-100 pt-3 pb-3 px-1" [ngClass]="{'align-items-center' : !rigtNavPreference.expandRightNav}">
+		<div class="parent mx-3">
 			<div>
-				<img src='{{item.userInfo.avatar}}' class="ico_m img-fluid rounded-circle px-2 ico" alt="">
+				<img src='{{rigtNavPreference.userInfo.avatar}}' class="ico_s" alt="">
 			</div>
-			<div *ngIf="item.showInfo">
-				<p id="nickname">{{item.userInfo.nickname}}</p>
+			<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
+				<p id="nickname">{{rigtNavPreference.userInfo.nickname}}</p>
 			</div>
 		</div>
 		<div id="sep"></div>
 		<div class="parent" *ngFor="let user of onlineUsers">
 			<div>
-				<img src='{{user.avatar}}' class="ico_m img-fluid rounded-circle px-2 ico" alt="">
+				<img src='{{user.avatar}}' class="ico_s" alt="">
 			</div>
-			<div *ngIf="item.showInfo">
+			<div *ngIf="rigtNavPreference.expandRightNav">
 				<p id="nickname">{{user.nickname}}</p>
 			</div>
 		</div>

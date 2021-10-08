@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Nav } from 'src/app/shared/ft_enums';
+import { SharedPreferencesI, UserInfoI } from 'src/app/shared/ft_interfaces';
 
 
 @Component({
@@ -9,10 +10,12 @@ import { Nav } from 'src/app/shared/ft_enums';
 })
 export class ContentComponent implements OnInit {
 	@Input() path: string;
+	@Input() contentPreference: SharedPreferencesI;
+
 	nav = Nav;
-	constructor() { }
+	constructor() { 
+	}
 
 	ngOnInit(): void {
-		console.log("ngOnInit content url = : ", this.path);
 	}
 }

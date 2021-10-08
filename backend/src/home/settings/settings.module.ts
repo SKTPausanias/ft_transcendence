@@ -6,12 +6,15 @@ import { SettingsController } from './settings.controller';
 import { SettingsService } from './settings.service';
 import { SessionEntity } from 'src/session/session.entity'; 
 import { SessionService } from 'src/session/session.service';
+import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
+import { MailService } from 'src/shared/mail/mail.service';
+import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity])],
     controllers: [SettingsController],
     providers: [
-		SettingsService, UserService, SessionService
+		SettingsService, UserService, SessionService, TwoFactorService, MailService
 	]
 })
 export class SettingsModule {}

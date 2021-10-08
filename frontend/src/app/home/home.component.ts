@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { RightNavI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
+import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 
 @Component({
 	selector: 'app-home',
@@ -13,18 +13,17 @@ export class HomeComponent implements OnInit {
 	session = this.sQuery.getSessionToken();
 	_path: string = '/';
 	isLoaded = false;
-	rightNavObj: RightNavI = <RightNavI>{};
+	sharedPreference: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
 	private authService: AuthService,
 	private userService: UserService
 	) {
-		this.rightNavObj.showInfo = false;
+		this.sharedPreference.expandRightNav = false;
 	}
 
 	async ngOnInit(): Promise<void> {
-		console.log("home onInit");
 		this.isLoaded = false;
 		if (this.session === undefined) 
 			this.router.navigateByUrl('logIn');
@@ -38,8 +37,7 @@ export class HomeComponent implements OnInit {
 			}
 			else
 			{
-				this.sQuery.setUser(resp.data);
-				this.rightNavObj.userInfo = resp.data;
+				this.sharedPreference.userInfo = resp.data;
 				this.isLoaded = true;
 			}
 		}
@@ -50,10 +48,10 @@ export class HomeComponent implements OnInit {
 		this._path = tmpUrl.substring(0, pos >= 0 ? pos : ev.length);
 	}
 	mouseEnter(){
-		this.rightNavObj.showInfo = true;
+		this.sharedPreference.expandRightNav = true;
 	}
 	
 	mouseLeave(){
-		this.rightNavObj.showInfo = false;
+		this.sharedPreference.expandRightNav = false;
 	}
 }
