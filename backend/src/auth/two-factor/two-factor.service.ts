@@ -69,7 +69,15 @@ export class TwoFactorService {
 			return (verified);
 		} catch (error) {
 			throw new Exception(Response.makeResponse(500, {error : "Can't validate token"}))
+		}	
+	}
+	async removeSecret(user: UserEntity)
+	{
+		try {
+			const secret = await this.twoFactorRepository.findOne({where: {userID: user.id}});
+			await this.twoFactorRepository.remove(secret);
+		} catch (error) {
+			throw new Exception(Response.makeResponse(500, {error : "Can't remove secret"}))
 		}
-		
 	}
 }

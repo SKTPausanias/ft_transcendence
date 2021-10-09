@@ -18,12 +18,12 @@ export class User implements UserI {
 	last_name: 		string;
 
 	@MaxLength(12)
-	@MinLength(6)
+	@MinLength(3)
 	login:			string;
 
-	@Matches(/^[a-zA-Z0-9\-\_]{5,12}$/, { message: 'Invalid nickname' })
+	@Matches(/^[a-zA-Z0-9\-=\_]{3,12}$/, { message: 'Invalid nickname' })
 	@MaxLength(12, { message: 'nickname too long: max 12 characters' })
-	@MinLength(5, { message: 'nickname too short: min 5 characters' })
+	@MinLength(3, { message: 'nickname too short: min 5 characters' })
 	nickname:		string;
 
 	password:		string;

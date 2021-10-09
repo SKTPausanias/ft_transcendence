@@ -9,6 +9,7 @@ import { User } from 'src/home/user/userClass';
 import { UserService } from '../user/user.service';
 import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
 import { MailService } from 'src/shared/mail/mail.service';
+import * as fs from 'fs'
 
 @Injectable()
 export class SettingsService {
@@ -34,8 +35,11 @@ export class SettingsService {
 			const token = header.authorization.split(' ')[1];
 			try {
 				const session = await this.sessionService.findSessionWithRelation(token);
+				if (session.userID.factor_enabled && !user.factor_enabled)
+					await this.twoFactorService.removeSecret(session.userID);
 				const resp = await this.userService.update(session.userID, user);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
+
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)
@@ -49,6 +53,7 @@ export class SettingsService {
 				const session = await this.sessionService.findSessionWithRelation(token);
 				var usr = User.getUser(session.userID);
 				usr.avatar = process.env.BE_URL + '/img/' + fname;
+				this.deleteFile(session.userID.avatar, usr.avatar);
 				const resp = await this.userService.update(session.userID, usr);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
@@ -116,5 +121,17 @@ export class SettingsService {
 		}
 		static limitSizeHelper(): number {
 			return (2000000);
+		}
+		deleteFile(path: string, path2: string){
+			if (path == path2)
+				return ;
+			var del = path.substring(process.env.BE_URL.length);
+			del = process.cwd() + '/public/' + del;
+			try {
+				fs.unlinkSync(del);
+				console.log("DELETED");
+			} catch(err) {
+				console.error(err)
+			}
 		}
 }

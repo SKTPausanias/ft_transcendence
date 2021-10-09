@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { SharedPreferencesI, UserInfoI } from 'src/app/shared/ft_interfaces';
 import { SettingsService } from './settings.service';
+import { mDate } from 'src/app/utils/date';
 
 
 @Component({
@@ -21,13 +22,13 @@ export class SettingsComponent implements OnInit {
 	msgError: boolean;
 	showCodeInput: boolean;
 	showQrImg: boolean;
+	factor: boolean;
 	qrUrl: string;
 	update_message : string = "";
 	session = this.sQuery.getSessionToken();
 	user: UserInfoI; // = this.sQuery.getUser();
 	code: number;
 	qrButtonValue: string = "Show QR";
-	factor: boolean;
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private settingService: SettingsService,
@@ -166,5 +167,8 @@ export class SettingsComponent implements OnInit {
 	closeMsg(){
 		this.showMsgBox = false;
 		this.update_message = "";
+	}
+	avatarUrl(){
+		return (this.settingsPreference.userInfo.avatar + "?rand+\=" + mDate.timeNowInSec());
 	}
 }
