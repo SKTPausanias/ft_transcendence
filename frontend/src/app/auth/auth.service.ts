@@ -70,6 +70,14 @@ export class AuthService {
 	return (response);
 
   }
+  async checkSession(session: SessionI)
+  {
+	const url = '/api/session/check';
+	const response = await this.http.get<any>(url, {headers: new HttpHeaders({
+		Authorization: 'Bearer ' + session.token})}).toPromise();
+	return (response);
+
+  }
   //SHOULD CREATE ANOTHER SERVICE CLASS FOR NEXT FUNCTIONS
 
   

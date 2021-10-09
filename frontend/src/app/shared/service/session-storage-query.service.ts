@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SessionStorageService } from 'src/app/shared/ft_services';
 import { Storage } from '../ft_enums';
+import { SessionI } from '../interface/iSession';
 
 @Injectable({
 providedIn: 'root',
@@ -9,7 +10,7 @@ export class SessionStorageQueryService {
 	constructor(private sessionStorage: SessionStorageService) {}
 
 
-	setSessionToken(session: any) {
+	setSessionToken(session: SessionI) {
 		this.sessionStorage.set(Storage.SESSION_TOKEN, session);
 	}
 	getSessionToken(): any {

@@ -7,6 +7,6 @@ export class mDate{
 		return (this,this.timeNowInSec() + expires_in);
 	}
 	static expired(limit: number){
-		return (this.timeNowInSec() >= limit ? true : false);
+		return (this.timeNowInSec() > limit ? true : false);
 	}
 }

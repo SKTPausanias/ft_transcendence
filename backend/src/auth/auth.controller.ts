@@ -48,8 +48,13 @@ export class AuthController {
 	async logout(@Headers() headers){
 		return (await this.authService.logout(headers.authorization));
 	}
-	@Get('qr')
+	@Get('/session/check')
+	async checkSession(@Headers() headers)
+	{
+		return (await this.authService.checkSession(headers.authorization));
+	}
+	/* @Get('qr')
 	async getQr() {
 	  return await this.authService.getQr();
-	}
+	} */
 }

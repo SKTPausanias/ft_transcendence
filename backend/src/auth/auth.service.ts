@@ -153,7 +153,19 @@ export class AuthService {
 			return (error);
 		}
 	}
-	async getQr() //TODO
+	async checkSession(auth: string)
+	{
+		const token = auth.split(' ')[1];
+		try {
+			const resp = await this.sessionService.findSession(token, false);
+			return (Response.makeResponse(200, {expiration_time: resp.expiration_time}))
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, {error: "Can't check session"}));
+		}
+	}
+	/* async getQr() //TODO
 	{
 		
 		const usr = await this.userService.findByLogin('dbelinsk');
@@ -164,6 +176,6 @@ export class AuthService {
 		} catch (error) {
 			return (error);
 		}
-	}
+	} */
 }
 

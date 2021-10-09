@@ -12,7 +12,7 @@ export const pub = {
 
 export const environment = {
   env: loc,
-  production: false
+  production: false,
 };
 
 
