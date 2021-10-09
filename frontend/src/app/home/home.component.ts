@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
@@ -15,7 +15,8 @@ export class HomeComponent implements OnInit {
 	_path: string = '/';
 	isLoaded = false;
 	sharedPreference: SharedPreferencesI = <SharedPreferencesI>{};
-	sessionWorker = new Worker(new URL('src/app/app.worker', import.meta.url));
+	sessionWorker = new Worker(new URL('src/app/home/home.worker', import.meta.url));
+	flag: boolean;
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
@@ -86,4 +87,37 @@ export class HomeComponent implements OnInit {
 		};
 		this.sessionWorker.postMessage("init");
 	}
+	@HostListener('window:keydown', [ '$event' ])
+	async keydown(event: any) {
+		await this.handleSession();
+	}
+	@HostListener('window:mousemove', [ '$event' ])
+	async mousemove(event: any) {
+		await this.handleSession();
+	}
+  async handleSession(){
+	this.session = this.sQuery.getSessionToken();
+	var margin = 1800; //30min
+	if (this.session !== undefined)
+	{
+		if (mDate.expired(this.session.expiration_time))
+		{
+			this.authService.logout(this.session);
+			this.sQuery.removeAll();
+			this.router.navigateByUrl('logIn');
+		}
+		else if (this.session.expiration_time - mDate.timeNowInSec() <= margin && !this.flag)
+		{
+			this.flag = true;
+			const resp = await this.authService.renewSession(this.session);
+			if (resp.statusCode == 200)
+			{
+				this.session.expiration_time = resp.data.expiration_time;
+				this.sQuery.setSessionToken(this.session);
+				this.flag = false;
+			}
+		}
+	}
+  }
+
 }

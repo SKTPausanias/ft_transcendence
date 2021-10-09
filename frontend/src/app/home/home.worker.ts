@@ -1,6 +1,8 @@
 /// <reference lib="webworker" />
 
-import { mDate } from "./utils/date";
+import { interval } from "rxjs";
+import { mDate } from "../utils/date";
+
 
 
 addEventListener('message', ({ data }) => {

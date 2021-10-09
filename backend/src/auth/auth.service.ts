@@ -157,7 +157,19 @@ export class AuthService {
 	{
 		const token = auth.split(' ')[1];
 		try {
-			const resp = await this.sessionService.findSession(token, false);
+			const resp = await this.sessionService.findSession(token);
+			return (Response.makeResponse(200, {expiration_time: resp.expiration_time}))
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, {error: "Can't check session"}));
+		}
+	}
+	async renewSession(auth: string)
+	{
+		const token = auth.split(' ')[1];
+		try {
+			const resp = await this.sessionService.findSession(token);
 			return (Response.makeResponse(200, {expiration_time: resp.expiration_time}))
 		} catch (error) {
 			if (error.statusCode == 410)

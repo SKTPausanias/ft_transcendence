@@ -16,7 +16,7 @@ import { _ } from 'ajv';
 @Injectable()
 export class SessionService {
 
-	expires_in: number = 10;// 60 * 60 * 2; //2 hours
+	expires_in: number = 60 * 60 * 2; //2 hours
 	constructor(@InjectRepository(SessionEntity)
 	private sessionRepository: Repository<SessionEntity>){}
 
@@ -52,7 +52,7 @@ export class SessionService {
 			return (Response.makeResponse(500, ErrorParser.parseDbSaveExeption(error)))
 		}
 	}
-	async reNewSession(session: SessionEntity, renew: boolean)
+	async reNewSession(session: SessionEntity)
 	{
 		if (session === undefined)
 			return (false);
@@ -61,8 +61,6 @@ export class SessionService {
 			await this.sessionRepository.delete(session);
 			return (false);
 		}
-		if (!renew)
-			return (true);
 		try {
 			session.expiration_time = mDate.setExpirationTime(this.expires_in);
 			await this.sessionRepository.save(session);
@@ -71,7 +69,7 @@ export class SessionService {
 			return (false)
 		}
 	}
-	async findSession(token: string, renew: boolean)
+	async findSession(token: string)
 	{
 		var session;
 		try {
@@ -79,7 +77,7 @@ export class SessionService {
 		} catch (error) {
 			return (Response.makeResponse(500, {error : error}))
 		}
-		if (!await this.reNewSession(session, renew))
+		if (!await this.reNewSession(session))
 			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
 		return (session);
 	}
@@ -92,7 +90,7 @@ export class SessionService {
 		} catch (error) {
 			return (Response.makeResponse(500, {error : error}))
 		}
-		if (!await this.reNewSession(session, true))
+		if (!await this.reNewSession(session))
 			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
 		return (session);
 	}

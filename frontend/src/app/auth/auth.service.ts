@@ -78,6 +78,13 @@ export class AuthService {
 	return (response);
 
   }
+  async renewSession(session: SessionI)
+  {
+	const url = '/api/session/renew';
+	const response = await this.http.get<any>(url, {headers: new HttpHeaders({
+		Authorization: 'Bearer ' + session.token})}).toPromise();
+	return (response);
+  }
   //SHOULD CREATE ANOTHER SERVICE CLASS FOR NEXT FUNCTIONS
 
   

@@ -53,6 +53,11 @@ export class AuthController {
 	{
 		return (await this.authService.checkSession(headers.authorization));
 	}
+	@Get('/session/renew')
+	async renewSession(@Headers() headers)
+	{
+		return (await this.authService.renewSession(headers.authorization));
+	}
 	/* @Get('qr')
 	async getQr() {
 	  return await this.authService.getQr();
