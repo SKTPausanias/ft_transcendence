@@ -26,20 +26,16 @@ export class TwoFactorComponent implements OnInit {
 		}
 
   ngOnInit(): void {
-	  console.log(this.email);
   }
   async resend(){
 	  try {
 		  const resp = await this.authService.generate(this.email);
-		  console.log(resp);
 		  this.code = resp;
 	  } catch (error) {
-		console.log("this is the BOSS");
 	  }
   }
   async validate(val : any){
 	const resp = await this.authService.validate(val.code, this.email);
-	console.log(resp);
 	if (resp.statusCode != 200)
 		console.log("bad code: ", resp)
 	else

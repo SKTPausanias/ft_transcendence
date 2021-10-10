@@ -24,7 +24,6 @@ export class SignInComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		console.log(this.sQuery.getSessionToken());
 		if (this.sQuery.getSessionToken() !== undefined)
 			this.router.navigateByUrl('');
 		else
@@ -34,7 +33,6 @@ export class SignInComponent implements OnInit {
 		this.dialogMsg = [];
 		this.inputError = false;
 		const resp = await this.authService.login(data.login, data.password);
-		console.log(resp);
 		if (resp.statusCode == 301)
       		this.router.navigateByUrl(resp.data.redirect + "?email=" + resp.data.email);
 		else if (resp.statusCode >= 400)
