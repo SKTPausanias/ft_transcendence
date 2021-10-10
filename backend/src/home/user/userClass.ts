@@ -46,7 +46,7 @@ export class User implements UserI {
 
 	constructor (){};
 
-	static getUser(data: UserRegI): UserI
+	static getUser(data: any): UserI
 	{
 		let user: UserI = <UserI>{};
 		user.first_name = data.first_name;
@@ -58,9 +58,13 @@ export class User implements UserI {
 		user.avatar = process.env.AVATAR;
 		user.role = process.env.ROLE_USER;
 		user.factor_enabled = data.factor_enabled;
-		user.confirmed = false
+		if (data.confirmed !== undefined)
+			user.confirmed = data.confirmed;
+		else
+			user.confirmed = false
 		return (user);
 	}
+	
 	static getFtUser(data: any): UserI
 	{
 		let user: UserI = <UserI>{};

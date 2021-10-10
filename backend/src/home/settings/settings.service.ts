@@ -55,6 +55,7 @@ export class SettingsService {
 				usr.avatar = process.env.BE_URL + '/img/' + fname;
 				this.deleteFile(session.userID.avatar, usr.avatar);
 				const resp = await this.userService.update(session.userID, usr);
+				console.log(resp);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
@@ -123,7 +124,7 @@ export class SettingsService {
 			return (2000000);
 		}
 		deleteFile(path: string, path2: string){
-			if (path == path2)
+			if (path == path2 || path.indexOf("default_avatar"))
 				return ;
 			var del = path.substring(process.env.BE_URL.length);
 			del = process.cwd() + '/public/' + del;
