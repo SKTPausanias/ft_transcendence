@@ -1,0 +1,8 @@
+
+.parent{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.parent>div{
+	display: inline-block;
+}

@@ -58,22 +58,22 @@ export class UserService {
 		}
 	}
 
-	async findMatchingPeople(text: any, header: any)
+	async findMatchByLoginNickname(match: string)
 	{
-		const token = header.authorization.split(' ')[1];
 		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			return (await this.userRepository.find({where: {login: Like(`%${text}%`)}}));
+			const resp =  await this.userRepository.find({where: [
+							{ nickname : Like(`%${match}%`)},
+							{ login : Like(`%${match}%`)}]});
+			return (User.getMultipleUserInfo(resp));
 		}
 		catch (error) {
-			return (Response.makeResponse(401, {error : "Unauthorized"}));
+			throw new Exception(Response.makeResponse(500, {error : "Can't find match"}));
 		}
 	}
 
 	async getUserInfo(header: any) //body
 	{
 		const token = header.authorization.split(' ')[1];
-		console.log(header);
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			return (Response.makeResponse(200, User.getInfo(session.userID)));

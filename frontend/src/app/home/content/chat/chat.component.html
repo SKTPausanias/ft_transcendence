@@ -3,12 +3,13 @@
         <div>
             <h3>Friends</h3>
             <div class="form-group mb-3">
-                <label for="login">Search Friends</label>
+                <label for="searchUsers">Search Friends</label>
                 <input
-                    #searchText
+					#searchUsers
                     type="text"
-                    name="login"
+                    name="searchUsers"
                     class="form-control"
+					autocomplete="off"
                     required
                 />
                 <button type="submit" class="btn_register p-2 px-5 mt-4">Search</button>
@@ -16,4 +17,18 @@
         </div>
         
     </form>
+	<div class="parent" *ngFor="let user of users">
+		<div>
+			<img src='{{user.avatar}}' class="ico_s" alt="">
+		</div>
+		<div class="ms-5">
+			<p>{{user.first_name}}</p>
+		</div>
+		<div class="ms-5">
+			<p>{{user.last_name}}</p>
+		</div>
+		<div class="ms-5">
+			<p>{{user.nickname}}</p>
+		</div>
+	</div>
 </div>
