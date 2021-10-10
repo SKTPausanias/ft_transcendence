@@ -6,7 +6,6 @@ function startWork(data: any, work: any)
 {
 	let counter = data.value - mDate.timeNowInSec();
 	let intervalId = setInterval(() => {
-		console.log(counter);
 		if (counter-- <= 0)
 		{
 			postMessage(data);

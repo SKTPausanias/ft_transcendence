@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit {
 	}
 
 	async ngOnInit(): Promise<void> {
-		console.log("Oninit home");
 		this.isLoaded = false;
 		if (this.session === undefined) 
 		{
@@ -38,7 +37,6 @@ export class HomeComponent implements OnInit {
 		else
 		{
 			this.homeService.listenSessionWorker();
-			console.log("started!");
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
 			{

@@ -28,7 +28,6 @@ export class HomeService {
 		 	this.terminateWorker();
 		this.sessionWorker = new Worker(
 				new URL("src/app/home/home.worker", import.meta.url));
-		console.log("LLEGA");
 		this.sessionWorker.onmessage = async ({ data }) => {
 			if (data.type == 'session-handler')
 				await this.sessionHandler(data);
@@ -38,7 +37,6 @@ export class HomeService {
 		};
 		this.sessionWorker.postMessage({type : "session-handler"});
 		this.sessionWorker.postMessage({type : 'activity-handler'});
-		console.log("READY");
 	}
 
 	async sessionHandler(data: any){
