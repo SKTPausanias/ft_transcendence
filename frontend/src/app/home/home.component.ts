@@ -4,6 +4,8 @@ import { AuthService } from '../auth/auth.service';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 import { mDate } from '../utils/date';
+import { environment } from 'src/environments/environment'
+import { HomeService } from './home.service';
 
 @Component({
 	selector: 'app-home',
@@ -15,27 +17,28 @@ export class HomeComponent implements OnInit {
 	_path: string = '/';
 	isLoaded = false;
 	sharedPreference: SharedPreferencesI = <SharedPreferencesI>{};
-	sessionWorker = new Worker(new URL('src/app/home/home.worker', import.meta.url));
-	flag: boolean;
+	
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
-	private authService: AuthService,
-	private userService: UserService
+	private userService: UserService,
+	private homeService: HomeService
 	) {
 		this.sharedPreference.expandRightNav = false;
 	}
 
 	async ngOnInit(): Promise<void> {
+		console.log("Oninit home");
 		this.isLoaded = false;
 		if (this.session === undefined) 
 		{
-			this.sessionWorker.postMessage('stop');
+			await this.homeService.terminateWorker();
 			this.router.navigateByUrl('logIn');
 		}
 		else
 		{
-			await this.listenSessionWorker();
+			this.homeService.listenSessionWorker();
+			console.log("started!");
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
 			{
@@ -61,63 +64,12 @@ export class HomeComponent implements OnInit {
 	mouseLeave(){
 		this.sharedPreference.expandRightNav = false;
 	}
-	listenSessionWorker(){
-		this.sessionWorker.onmessage = async ({ data }) => {
-			if ((this.session = this.sQuery.getSessionToken()) !== undefined)
-			{
-				if (mDate.expired(this.session.expiration_time))
-				{
-					const resp = await this.authService.checkSession(this.session);
-					if (resp.statusCode == 200)
-					{
-						this.session.expiration_time = resp.data.expiration_time;
-						this.sQuery.setSessionToken(this.session);
-						this.sessionWorker.postMessage(this.session.expiration_time);
-					}
-					else
-					{
-						this.authService.logout(this.session);
-						this.sQuery.removeAll();
-						this.router.navigateByUrl("logIn");
-					}
-				}
-				else
-					this.sessionWorker.postMessage(this.session.expiration_time);
-			}
-		};
-		this.sessionWorker.postMessage("init");
-	}
 	@HostListener('window:keydown', [ '$event' ])
 	async keydown(event: any) {
-		await this.handleSession();
+		await this.homeService.listenActivity();
 	}
 	@HostListener('window:mousemove', [ '$event' ])
 	async mousemove(event: any) {
-		await this.handleSession();
+		await this.homeService.listenActivity();
 	}
-  async handleSession(){
-	this.session = this.sQuery.getSessionToken();
-	var margin = 1800; //30min
-	if (this.session !== undefined)
-	{
-		if (mDate.expired(this.session.expiration_time))
-		{
-			this.authService.logout(this.session);
-			this.sQuery.removeAll();
-			this.router.navigateByUrl('logIn');
-		}
-		else if (this.session.expiration_time - mDate.timeNowInSec() <= margin && !this.flag)
-		{
-			this.flag = true;
-			const resp = await this.authService.renewSession(this.session);
-			if (resp.statusCode == 200)
-			{
-				this.session.expiration_time = resp.data.expiration_time;
-				this.sQuery.setSessionToken(this.session);
-				this.flag = false;
-			}
-		}
-	}
-  }
-
 }

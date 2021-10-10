@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from 'src/app/auth/auth.service';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
+import { HomeService } from '../../home.service';
 
 @Component({
     selector: 'ngbd-modal-confirm',
@@ -11,14 +12,9 @@ import { SessionStorageQueryService } from 'src/app/shared/ft_services';
   })
   export class NgbdModalConfirm {
     constructor(public modal: NgbActiveModal,
-                private sQuery: SessionStorageQueryService,
-                private router: Router,
-				private authService: AuthService) {}
+				private homeService: HomeService) {}
     async close(result?: any): Promise<void> {
-		const resp = await this.authService.logout(this.sQuery.getSessionToken());
-		console.log(resp);
-		this.sQuery.removeAll();
-		this.router.navigateByUrl('logIn');
+		await this.homeService.closeSession();
 		this.modal.close();
 
     }

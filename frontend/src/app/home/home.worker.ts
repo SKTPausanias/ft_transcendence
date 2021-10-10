@@ -1,25 +1,32 @@
 /// <reference lib="webworker" />
 
-import { interval } from "rxjs";
 import { mDate } from "../utils/date";
 
+function startWork(data: any, work: any)
+{
+	let counter = data.value - mDate.timeNowInSec();
+	let intervalId = setInterval(() => {
+		console.log(counter);
+		if (counter-- <= 0)
+		{
+			postMessage(data);
+			clearInterval(intervalId)
+		}
+	}, 1000)
+}
 
+function sessionHandler(data: any, work: any){
+	data.value !== undefined ? startWork(data, work) : work(data);
+}
+function activityHandler(data: any, work: any){
+	data.value !== undefined ? startWork(data, work) : work(data);
+}
 
 addEventListener('message', ({ data }) => {
-	var counter: number;
-	if (data == 'init')
-		postMessage("OK");
-	else if (data =='stop')
-		counter = 1;
-	else
-	{
-		counter = data - mDate.timeNowInSec();
-		let intervalId = setInterval(() => {
-			if (counter-- <= 0)
-			{
-				postMessage("finished");
-				clearInterval(intervalId)
-			}
-		}, 1000)
-	}
+	if (data.type == 'session-handler')
+		sessionHandler(data, postMessage);
+	else if (data.type = 'activity-handler')
+		activityHandler(data, postMessage);
 });
+
+

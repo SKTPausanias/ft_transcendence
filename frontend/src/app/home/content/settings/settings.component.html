@@ -17,7 +17,7 @@
 			<div class="col-3 vh-100 p-4 d-flex justify-content-center">
 				<div class="position-relative">
 					<div class="avatar">
-							<img src="{{avatarUrl()}}" alt="" class="">
+							<img src="{{settingsPreference.userInfo.avatar}}" alt="" class="">
 						<div class="edit">
 							<input type="file" style="display: none" #file (change)="editAvatar($event)"/>
 							<button (click)="file.click()">Edit</button>
@@ -95,7 +95,7 @@
 										ngModel={{settingsPreference.userInfo.nickname}}
 										name="nickname"
 										type="text"
-										minlength="5"
+										minlength="3"
 										class="form-control"
 										required
 									/>								

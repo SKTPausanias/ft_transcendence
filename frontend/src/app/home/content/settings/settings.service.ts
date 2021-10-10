@@ -38,7 +38,7 @@ export class SettingsService {
 	 async uploadImage(image: File, fileName: string, session: SessionI): Promise<any> {
 		const url = 'api/users/settings/imageUpload';
 		const body = new FormData();
-        body.append('image', image, (fileName + image.name.substring(image.name.indexOf('.'))));
+        body.append('image', image, (fileName  + mDate.timeNowInSec() + image.name.substring(image.name.indexOf('.'))));
 		try{
 			return (await this.http.post(url, body, 
 				{ headers: new HttpHeaders({
