@@ -47,10 +47,12 @@ export class SignInComponent implements OnInit {
 			this.sQuery.setSessionToken(resp.data);
 			//caller to backend getting userInfo
 			//this.sQueri.setUser(this.user o resp....);
-			this.router.navigateByUrl('');
+			this.ngOnInit();
+			//this.router.navigateByUrl('');
 		}
 	}
 	login42() {
+		this.isLoaded = false;
 		this.sQuery.setNavParam({redirectedFrom: 'logIn'});
 		const url = environment.env.ftAuthUrl;
 		window.location.href = url;

@@ -53,6 +53,7 @@ export class SignUpComponent implements OnInit {
 		}
 	}
 	signUp42() {
+		this.isLoaded = false;
 		this.sQuery.setNavParam({redirectedFrom: 'signUp'});
 		const url = environment.env.ftAuthUrl;
 		window.location.href = url;
