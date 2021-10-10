@@ -3,7 +3,7 @@
 import e from "express";
 import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
-import { UserI, UserInfoI, UserRegI } from "./userI";
+import { UserI, UserInfoI, UserPublicInfoI, UserRegI } from "./userI";
 import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
 
 
@@ -97,11 +97,26 @@ export class User implements UserI {
 			factor_enabled : data.factor_enabled
 			});
 	}
+	static getPublicInfo(data: any): UserPublicInfoI{
+		return ({
+			nickname : data.nickname,
+			first_name : data.first_name,
+			last_name : data.last_name,
+			avatar : data.avatar,
+			});
+	}
+	static getMultipleUserInfo(users: UserEntity[]): UserPublicInfoI[]{
+		var ret: UserPublicInfoI[] = [];
+		users.forEach(element => {
+			ret.push(this.getPublicInfo(element));
+		});
+		return (ret);
+	}
 	static getOnlineUserInfo(data: SessionEntity[]){
-		var users: UserInfoI[] = [];
+		var users: UserPublicInfoI[] = [];
 		data.forEach(element => {
 			if (users.find(user => user.nickname === element.userID.nickname) === undefined)
-				users.push(this.getInfo(element.userID));
+				users.push(this.getPublicInfo(element.userID));
 		});
 		return (users);
 	}
