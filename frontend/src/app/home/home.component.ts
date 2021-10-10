@@ -1,10 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
-import { mDate } from '../utils/date';
-import { environment } from 'src/environments/environment'
 import { HomeService } from './home.service';
 
 @Component({
@@ -39,10 +36,7 @@ export class HomeComponent implements OnInit {
 			this.homeService.listenSessionWorker();
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
-			{
-				this.sQuery.removeAll();
-				this.router.navigateByUrl('logIn');
-			}
+				await this.homeService.closeSession();
 			else
 			{
 				this.sharedPreference.userInfo = resp.data;

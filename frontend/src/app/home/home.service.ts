@@ -95,7 +95,6 @@ export class HomeService {
 	{
 		if (this.sessionWorker !== undefined)
 		{
-			//this.sessionWorker.removeEventListener;
 			this.sessionWorker.terminate();
 			this.activityExpires = undefined;
 		}
