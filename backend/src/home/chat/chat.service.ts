@@ -42,7 +42,10 @@ export class ChatService {
 					{ user_1 : friend.id }
 				]
 			});
-
+			if (test1 !== undefined)
+				console.log("INVITER: NOT ALLOWED TO CONFIRM.");
+			if (test2 !== undefined)
+				console.log("CONFIRMER: BINGO!!! SET CONFIRM TO TRUE & UPDATE THE ROW");
 			console.log("Test1: ", test1);
 			console.log("Test2: ", test2);
 
@@ -57,9 +60,8 @@ export class ChatService {
 			// @Column('boolean', {default: false})
     		// confirmed: boolean;
 			// CREO QUE LAS LINEAS QUE VIENEN FUNCIOANARIA. ASI DE FRONTEND PODRIAMOS LLAMAR A MISMA API
-			//else if (test1 !== undefined) //not valid request, only requested friend can confirm
-			// test1.confirmed = true;
-			// save this.friendRepository.save(test1)
+			//else if (test1 !== undefined)
+			//  NOTHING TO DO THIS IS INVITER
 			//else if (test2 !== undefined)
 			// test2.confirmed = true;
 			// save this.friendRepository.save(test2)
