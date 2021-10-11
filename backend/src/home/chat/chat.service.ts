@@ -31,30 +31,32 @@ export class ChatService {
 			const friend = await this.userService.findByNickname(user.nickname);
 
 			//Mejor llamar findOne
-			const test1 = await this.friendRepository.find({where: [ //where user.id && friend.id
+			const test1 = await this.friendRepository.findOne({where: [ //where user.id && friend.id
 					{ user_1 : session.userID.id },
 					{ user_2 : friend.id }
 				]
 			});
 
-			const test2 = await this.friendRepository.find({where: [ //where user.id && friend.id
+			const test2 = await this.friendRepository.findOne({where: [ //where user.id && friend.id
 					{ user_2 : session.userID.id },
 					{ user_1 : friend.id }
 				]
 			});
-
+			if (test1 !== undefined)
+				console.log("INVITER: NOT ALLOWED TO CONFIRM.");
+			if (test2 !== undefined)
+				console.log("CONFIRMER: BINGO!!! SET CONFIRM TO TRUE & UPDATE THE ROW");
 			console.log("Test1: ", test1);
 			console.log("Test2: ", test2);
 			//Si se llama a findOne la comprobacion !== undefined
-			if (!test1.length && !test2.length)
+			if (test1 === undefined && test2 === undefined)
 				return (await this.friendRepository.save({ user_1: session.userID, user_2: friend }));
 			// SE PUEDE REUTILIZAR ESTE SERVICIO EN MOMENTO CUANDO HAY QUE ACTUALIZAR LA COLUMNA:
 			// @Column('boolean', {default: false})
     		// confirnmed: boolean;
 			// CREO QUE LAS LINEAS QUE VIENEN FUNCIOANARIA. ASI DE FRONTEND PODRIAMOS LLAMAR A MISMA API
 			//else if (test1 !== undefined)
-			// test1.confirmed = true;
-			// save this.friendRepository.save(test1)
+			//  NOTHING TO DO THIS IS INVITER
 			//else if (test2 !== undefined)
 			// test2.confirmed = true;
 			// save this.friendRepository.save(test2)
