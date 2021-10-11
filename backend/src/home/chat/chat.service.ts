@@ -31,13 +31,13 @@ export class ChatService {
 			const friend = await this.userService.findByNickname(user.nickname);
 
 			//Mejor llamar findOne
-			const test1 = await this.friendRepository.find({where: [ //where user.id && friend.id
+			const test1 = await this.friendRepository.findOne({where: [ //where user.id && friend.id
 					{ user_1 : session.userID.id },
 					{ user_2 : friend.id }
 				]
 			});
 
-			const test2 = await this.friendRepository.find({where: [ //where user.id && friend.id
+			const test2 = await this.friendRepository.findOne({where: [ //where user.id && friend.id
 					{ user_2 : session.userID.id },
 					{ user_1 : friend.id }
 				]
@@ -45,14 +45,19 @@ export class ChatService {
 
 			console.log("Test1: ", test1);
 			console.log("Test2: ", test2);
+
 			//Si se llama a findOne la comprobacion !== undefined
-			if (!test1.length && !test2.length)
+			if (test1 === undefined && test2 === undefined)
 				return (await this.friendRepository.save({ user_1: session.userID, user_2: friend }));
+			else if (test1 === undefined && test2 !== undefined && test2.confirmed === false){
+				console.log("Accpeting friendship: ");
+				return (await this.friendRepository.save({ id: test2.id, confirmed: true }));
+			}
 			// SE PUEDE REUTILIZAR ESTE SERVICIO EN MOMENTO CUANDO HAY QUE ACTUALIZAR LA COLUMNA:
 			// @Column('boolean', {default: false})
-    		// confirnmed: boolean;
+    		// confirmed: boolean;
 			// CREO QUE LAS LINEAS QUE VIENEN FUNCIOANARIA. ASI DE FRONTEND PODRIAMOS LLAMAR A MISMA API
-			//else if (test1 !== undefined)
+			//else if (test1 !== undefined) //not valid request, only requested friend can confirm
 			// test1.confirmed = true;
 			// save this.friendRepository.save(test1)
 			//else if (test2 !== undefined)

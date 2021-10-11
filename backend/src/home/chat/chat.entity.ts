@@ -15,5 +15,5 @@ export class FriendEntity {
     user_2: UserEntity;
 
     @Column('boolean', {default: false})
-    confirnmed: boolean;
+    confirmed: boolean;
 }
