@@ -55,4 +55,8 @@ export class ChatComponent implements OnInit {
     console.log("val of user: ", user);
     return (await this.chatService.addFriendShip(user, this.session))
   }
+
+  async removeFriendShip(user: any): Promise<any>{
+    return (await this.chatService.removeFriendShip(user, this.session));
+  }
 }

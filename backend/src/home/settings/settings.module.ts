@@ -9,9 +9,10 @@ import { SessionService } from 'src/session/session.service';
 import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
 import { MailService } from 'src/shared/mail/mail.service';
 import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
+import { FriendEntity } from '../chat/chat.entity';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity])],
     controllers: [SettingsController],
     providers: [
 		SettingsService, UserService, SessionService, TwoFactorService, MailService

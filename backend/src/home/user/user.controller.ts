@@ -12,4 +12,10 @@ export class UserController {
 	async getOnlineUsers(@Headers() headers){
 		return (await this.userService.getOnlineUsers(headers));
 	}
+
+	@Get('/onlineFriends')
+	async getOnlineFriends(@Headers() headers){
+		console.log("llego");
+		return (await this.userService.getOnlineFriends(headers));
+	}
 }

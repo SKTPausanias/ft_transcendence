@@ -18,7 +18,7 @@ export class RightNavComponent implements OnInit {
 	}
 
 	async ngOnInit(): Promise<void> {
-		const resp = await this.userServie.getOnlineUsers(this.token);
+		const resp = await this.userServie.getOnlineFriends(this.token);
 		this.onlineUsers = resp.data;
 	}
 

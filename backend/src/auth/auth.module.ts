@@ -14,9 +14,10 @@ import { TwoFactorService } from './two-factor/two-factor.service';
 import { TwoFactorEntity } from './two-factor/two-factor.entity';
 import { SessionService } from 'src/session/session.service';
 import { SessionEntity } from 'src/session/session.entity';
+import { FriendEntity } from 'src/home/chat/chat.entity';
 
 @Module({
-	imports: [ TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity]), HttpModule],
+	imports: [ TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity]), HttpModule],
     controllers: [AuthController],
     providers: [
 		UserService, ConfirmService, 

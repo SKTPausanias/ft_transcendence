@@ -10,12 +10,15 @@ import { Exception } from '../../shared/utils/exception';
 import { User } from './userClass';
 import { SessionService } from 'src/session/session.service';
 import { toHash } from 'ajv/dist/compile/util';
+import { FriendEntity } from '../chat/chat.entity';
 
 @Injectable()
 export class UserService {
 
 	constructor(@InjectRepository(UserEntity)
 	private userRepository: Repository<UserEntity>,
+	@InjectRepository(FriendEntity)
+	private friendRepository: Repository<FriendEntity>,
 	private connection: Connection,
 	private sessionService: SessionService){}
 
@@ -93,6 +96,24 @@ export class UserService {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const sessions = await this.sessionService.findAllExcept(session);
 			return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
+		} catch (error) {
+			return (Response.makeResponse(401, {error : "Unauthorized"}));
+		}
+	}
+
+	//get all online friends of the user
+	async getOnlineFriends(header: any){
+		const token = header.authorization.split(' ')[1];
+		try {
+			console.log("whatup")
+			const session = await this.sessionService.findSessionWithRelation(token);
+			//session.userID.id
+			const friendsOnline = await this.friendRepository.find({where: [ session.userID.id]});
+			console.log("friends:", friendsOnline[0]); // user_id does not show. tenemos que sacarlo de la relacion de amistad
+			//return friendsOnline;
+			return "";
+			//const sessions = await this.sessionService.findAllExcept(session);
+			//return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
 		} catch (error) {
 			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}

@@ -15,6 +15,15 @@ export class UserService {
 		Authorization: 'Bearer ' + session.token})}).toPromise();
 	return (response);
   }
+
+  async getOnlineFriends(session: SessionI)
+  {
+	const url = '/api/users/onlineFriends';
+	const response = await this.http.get<any>(url,{ headers : new HttpHeaders({
+		Authorization: 'Bearer ' + session.token})}).toPromise();
+	return (response);
+  }
+
   async getUserInfo(session: SessionI)
   {
 	const url = '/api/users/userInfo';

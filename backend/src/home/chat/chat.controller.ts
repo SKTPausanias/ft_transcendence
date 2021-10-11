@@ -14,4 +14,9 @@ export class ChatController {
 	async addFriend(@Body() user: any, @Headers() headers) {
 		return (await this.chatService.addFriend(user, headers));
 	}
+
+	@Post('/removeFriend')
+	async removeFriend(@Body() user: any, @Headers() headers) {
+		return (await this.chatService.removeFriend(user, headers));
+	}
 }
