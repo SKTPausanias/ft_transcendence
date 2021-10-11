@@ -124,7 +124,7 @@ export class SettingsService {
 			return (2000000);
 		}
 		deleteFile(path: string, path2: string){
-			if (path == path2 || path.indexOf("default_avatar"))
+			if (path == path2 || path.indexOf("default_avatar") >= 0)
 				return ;
 			var del = path.substring(process.env.BE_URL.length);
 			del = process.cwd() + '/public/' + del;
