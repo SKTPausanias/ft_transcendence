@@ -48,12 +48,17 @@ export class ChatService {
 				console.log("CONFIRMER: BINGO!!! SET CONFIRM TO TRUE & UPDATE THE ROW");
 			console.log("Test1: ", test1);
 			console.log("Test2: ", test2);
+
 			//Si se llama a findOne la comprobacion !== undefined
 			if (test1 === undefined && test2 === undefined)
 				return (await this.friendRepository.save({ user_1: session.userID, user_2: friend }));
+			else if (test1 === undefined && test2 !== undefined && test2.confirmed === false){
+				console.log("Accpeting friendship: ");
+				return (await this.friendRepository.save({ id: test2.id, confirmed: true }));
+			}
 			// SE PUEDE REUTILIZAR ESTE SERVICIO EN MOMENTO CUANDO HAY QUE ACTUALIZAR LA COLUMNA:
 			// @Column('boolean', {default: false})
-    		// confirnmed: boolean;
+    		// confirmed: boolean;
 			// CREO QUE LAS LINEAS QUE VIENEN FUNCIOANARIA. ASI DE FRONTEND PODRIAMOS LLAMAR A MISMA API
 			//else if (test1 !== undefined)
 			//  NOTHING TO DO THIS IS INVITER
