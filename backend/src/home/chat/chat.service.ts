@@ -42,10 +42,10 @@ export class ChatService {
 					{ user_1 : friend.id }
 				]
 			});
-			if (test1 !== undefined)
+			/*if (test1 !== undefined)
 				console.log("INVITER: NOT ALLOWED TO CONFIRM.");
 			if (test2 !== undefined)
-				console.log("CONFIRMER: BINGO!!! SET CONFIRM TO TRUE & UPDATE THE ROW");
+				console.log("CONFIRMER: BINGO!!! SET CONFIRM TO TRUE & UPDATE THE ROW");*/
 			console.log("Test1: ", test1);
 			console.log("Test2: ", test2);
 

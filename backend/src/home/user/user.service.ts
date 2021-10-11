@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SessionEntity } from 'src/session/session.entity';
 import { UserEntity } from 'src/home/user/user.entity';
-import { UserI, UserRegI } from 'src/home/user/userI';
+import { UserI, UserInfoI, UserRegI } from 'src/home/user/userI';
 import { Connection, Like, Not, Repository } from 'typeorm';
 import { Response } from '../../shared/response/responseClass';
 import { ErrorParser } from '../../shared/utils/errorParser';
@@ -102,16 +102,20 @@ export class UserService {
 	}
 
 	//get all online friends of the user
-	async getOnlineFriends(header: any){
+	async getOnlineFriends(header: any): Promise<any> {
 		const token = header.authorization.split(' ')[1];
 		try {
-			console.log("whatup")
+
+			var users: User[] = [];
 			const session = await this.sessionService.findSessionWithRelation(token);
 			//session.userID.id
 			const friendsOnline = await this.friendRepository.find({where: [ session.userID.id]});
-			console.log("friends:", friendsOnline[0]); // user_id does not show. tenemos que sacarlo de la relacion de amistad
+			console.log("Antes de friends...");
+			
+			console.log("friends:", friendsOnline); // user_id does not show. tenemos que sacarlo de la relacion de amistad
 			//return friendsOnline;
-			return "";
+			//const res = await this.userRepository.find({where: [friendsOnline[0].user_1]})
+			return (users);
 			//const sessions = await this.sessionService.findAllExcept(session);
 			//return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
 		} catch (error) {
