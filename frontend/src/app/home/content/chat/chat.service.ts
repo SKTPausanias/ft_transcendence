@@ -10,7 +10,6 @@ export class ChatService {
   async searchUsers(session: SessionI, val: string): Promise<any> {
     const url = '/api/users/chat/search';
     var searchParams = new HttpParams().set('match', val);
-    console.log(searchParams.get('match'));
     try{
 		return (await this.http.get<any>(url, {headers: new HttpHeaders({
 			Authorization: 'Bearer ' + session.token}),
@@ -22,7 +21,6 @@ export class ChatService {
   liveSearchUsers(session: SessionI, val: string): any {
     const url = '/api/users/chat/search';
     var searchParams = new HttpParams().set('match', val);
-    console.log(searchParams.get('match'));
     try{
 		return (this.http.get<any>(url, {headers: new HttpHeaders({
 			Authorization: 'Bearer ' + session.token}),

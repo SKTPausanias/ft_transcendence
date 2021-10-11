@@ -78,6 +78,8 @@ export class SettingsComponent implements OnInit {
 	}
 	async onSubmitSettings(value: any)
 	{
+		var nickname = this.user.nickname;
+		var email = this.user.email;
 		this.factor = value.factor;
 		this.user.email = value.email;
 		this.user.nickname = value.nickname;
@@ -97,7 +99,11 @@ export class SettingsComponent implements OnInit {
 			this.router.navigateByUrl('logIn');
 		}
 		else
-			console.log("error: ", result);
+		{
+			this.settingsPreference.userInfo.nickname = nickname;
+			this.settingsPreference.userInfo.email = email;
+			this.showMsg("Email or username not availible!", true);
+		}
 	}
 	async onUploadAvatar(value: any){
 		var file = value;//this.imageFile.nativeElement.files?.item(0) as File;

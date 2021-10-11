@@ -25,30 +25,25 @@ export class ChatComponent implements OnInit {
 	  this.initSearchboxListener();
   }
 
-  async onSubmitFriends(val: any): Promise<void> {
-    this.users = await this.chatService.searchUsers(this.session, val.searchUser);
+  async onSubmitFriends(): Promise<void> {
+    this.users = await this.chatService.searchUsers(this.session, this.searchInput.nativeElement.value);
   }
 
   initSearchboxListener(){
-	var oldConsole = console.log;
 	fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
 		map((event: any) => {
 		  return event.target.value;
 		})	//, filter(res => res.length > 2)
   			, debounceTime(1000)
   			, distinctUntilChanged()).subscribe((text: string) => {
-
-				console.log = function (){};
 				if (text.length <= 2)
 					this.users = [];
 				else
 					this.onSearchBoxChange(text).subscribe((res: any)=> {
 						this.users = res;
 					}, (err: any) => {
-						console.log = oldConsole;
 						console.log('error', err);
 					});
-				console.log = oldConsole;
 	  });
   }
   onSearchBoxChange(value: any)
