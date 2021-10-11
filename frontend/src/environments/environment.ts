@@ -13,7 +13,7 @@ export const pub = {
 export const environment = {
   env: loc,
   production: false,
-  inactivity_time: 600,			// 10 min
+  inactivity_time: 6000,			// 10 min
   renew_session_margin: 1800	// 30 min before session expires in backend
 };
 

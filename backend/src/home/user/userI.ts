@@ -1,4 +1,5 @@
 import { SessionEntity } from "src/session/session.entity";
+import { FriendEntity } from "../chat/chat.entity";
 
 export interface UserI {
     ft_id: number;	
@@ -33,6 +34,7 @@ export interface UserInfoI {
     login: string;
     avatar: string;
     factor_enabled: boolean;
+    friends: FriendEntity[];
 }
 export interface UserPublicInfoI {
     first_name: string;    

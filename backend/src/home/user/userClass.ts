@@ -5,6 +5,7 @@ import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
 import { UserI, UserInfoI, UserPublicInfoI, UserRegI } from "./userI";
 import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
+import { FriendEntity } from "../chat/chat.entity";
 
 
 export class User implements UserI {
@@ -43,6 +44,8 @@ export class User implements UserI {
 	confirmed:		boolean;
 
 	sesionID: 		SessionEntity;
+
+	friends:		FriendEntity[];
 
 	constructor (){};
 
@@ -87,6 +90,7 @@ export class User implements UserI {
 		return (user);
 	}
 	static getInfo(data: any): UserInfoI{
+		var aux: FriendEntity[] = [];
 		return ({
 			login: data.login,
 			nickname : data.nickname,
@@ -94,8 +98,9 @@ export class User implements UserI {
 			last_name : data.last_name,
 			email : data.email,
 			avatar : data.avatar,
-			factor_enabled : data.factor_enabled
-			});
+			factor_enabled : data.factor_enabled,
+			friends: aux
+		});
 	}
 	static getPublicInfo(data: any): UserPublicInfoI{
 		return ({
@@ -105,13 +110,14 @@ export class User implements UserI {
 			avatar : data.avatar,
 			});
 	}
-	static getMultipleUserInfo(users: UserEntity[]): UserPublicInfoI[]{
-		var ret: UserPublicInfoI[] = [];
-		users.forEach(element => {
-			ret.push(this.getPublicInfo(element));
-		});
-		return (ret);
-	}
+	static getMultipleUserInfo(users: UserEntity[], user: UserEntity): UserPublicInfoI[]{
+        var ret: UserPublicInfoI[] = [];
+        users.forEach(element => {
+            if (element.id != user.id)
+                ret.push(this.getPublicInfo(element));
+        });
+        return (ret);
+    }
 	static getOnlineUserInfo(data: SessionEntity[]){
 		var users: UserPublicInfoI[] = [];
 		data.forEach(element => {

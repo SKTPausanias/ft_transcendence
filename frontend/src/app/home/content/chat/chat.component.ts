@@ -13,6 +13,7 @@ import { fromEvent } from 'rxjs';
 })
 export class ChatComponent implements OnInit {
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
+  @ViewChild('friendship') frindInput : ElementRef;
 
   users: UserPublicInfoI[];
   session = this.sQuery.getSessionToken();
@@ -48,6 +49,10 @@ export class ChatComponent implements OnInit {
   }
   onSearchBoxChange(value: any)
   {
-	return (this.chatService.liveSearchUsers(this.session, value));
+  	return (this.chatService.liveSearchUsers(this.session, value));
+  }
+  async addFriendShip(user: any): Promise<any>{
+    console.log("val of user: ", user);
+    return (await this.chatService.addFriendShip(user, this.session))
   }
 }

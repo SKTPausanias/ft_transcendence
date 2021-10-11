@@ -1,5 +1,6 @@
 import { SessionEntity } from "src/session/session.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { FriendEntity } from "../chat/chat.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -46,5 +47,10 @@ export class UserEntity {
 		})
     sessions: SessionEntity[];
 
+    @OneToMany(type => FriendEntity, friend => friend.id,
+    {
+      onDelete: "SET NULL"
+    })
+    friends: FriendEntity[];
 }
 

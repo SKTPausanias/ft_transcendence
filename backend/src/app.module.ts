@@ -13,6 +13,7 @@ import { SessionEntity } from './session/session.entity';
 import { SettingsModule } from './home/settings/settings.module';
 import { UserModule } from './home/user/user.module';
 import { ChatModule } from './home/chat/chat.module';
+import { FriendEntity } from './home/chat/chat.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -26,7 +27,7 @@ import { ChatModule } from './home/chat/chat.module';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

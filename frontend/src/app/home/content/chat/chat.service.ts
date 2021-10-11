@@ -29,4 +29,16 @@ export class ChatService {
       return (e);
     }
   }
+  async addFriendShip(user: any, session: SessionI): Promise<any> {
+      const url = '/api/users/chat/addFriend';
+
+      try{
+        return (await this.http.post<any>(url, user, { headers: new HttpHeaders({
+            Authorization: 'Bearer ' + session.token
+          })
+        }).toPromise())
+      } catch(e){
+        return (e);
+      }
+  }
 }

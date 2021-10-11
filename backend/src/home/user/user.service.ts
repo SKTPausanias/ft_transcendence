@@ -26,7 +26,13 @@ export class UserService {
 			throw new Exception(Response.makeResponse(404, {error : "User not found"}))
 		}
 	}
-
+	async findByNickname(nickname: string): Promise<UserEntity | undefined> {
+		try {
+			return await this.userRepository.findOne({ where: { nickname } });
+		} catch (error) {
+			throw new Exception(Response.makeResponse(404, {error : "User not found"}))
+		}
+	}
 	async findByEmail(email: string): Promise<UserEntity | undefined> {
 		try{
 			return await this.userRepository.findOne({ where: { email } });
@@ -58,18 +64,18 @@ export class UserService {
 		}
 	}
 
-	async findMatchByLoginNickname(match: string)
-	{
-		try {
-			const resp =  await this.userRepository.find({where: [
-							{ nickname : Like(`%${match}%`)},
-							{ login : Like(`%${match}%`)}]});
-			return (User.getMultipleUserInfo(resp));
-		}
-		catch (error) {
-			throw new Exception(Response.makeResponse(500, {error : "Can't find match"}));
-		}
-	}
+	async findMatchByLoginNickname(match: string, user: UserEntity)
+    {
+        try {
+            const resp =  await this.userRepository.find({where: [
+                            { nickname : Like(`%${match}%`)},
+                            { login : Like(`%${match}%`)}]});
+            return (User.getMultipleUserInfo(resp, user));
+        }
+        catch (error) {
+            throw new Exception(Response.makeResponse(500, {error : "Can't find match"}));
+        }
+    }
 
 	async getUserInfo(header: any) //body
 	{
