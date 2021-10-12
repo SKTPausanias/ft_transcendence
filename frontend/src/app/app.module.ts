@@ -16,7 +16,7 @@ import { ChatComponent } from './home/content/chat/chat.component';
 import { LiveComponent } from './home/content/live/live.component';
 import { GameComponent } from './home/content/game/game.component';
 import { PlayComponent } from './home/content/play/play.component';
-import { InfoComponent } from './home/content/info/info.component';
+import { DashboardComponent } from './home/content/dashboard/dashboard.component';
 import { RightNavComponent } from './home/right-nav/right-nav.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ConfirmationComponent } from './auth/confirmation/confirmation.component';
@@ -40,7 +40,7 @@ import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
 	LiveComponent,
 	GameComponent,
 	PlayComponent,
-	InfoComponent,
+	DashboardComponent,
 	ConfirmationComponent,
 	NotFoundComponent,
 	LoadingComponent,

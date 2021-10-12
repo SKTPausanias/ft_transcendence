@@ -4,11 +4,11 @@ import { SessionI } from 'src/app/shared/ft_interfaces';
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
+export class DashboardService {
 
   constructor(private http: HttpClient) { }
   async searchUsers(session: SessionI, val: string): Promise<any> {
-    const url = '/api/users/chat/search';
+    const url = '/api/users/dashboard/search';
     var searchParams = new HttpParams().set('match', val);
     try{
 		return (await this.http.get<any>(url, {headers: new HttpHeaders({
@@ -19,7 +19,7 @@ export class ChatService {
     }
   }
   liveSearchUsers(session: SessionI, val: string): any {
-    const url = '/api/users/chat/search';
+    const url = '/api/users/dashboard/search';
     var searchParams = new HttpParams().set('match', val);
     try{
 		return (this.http.get<any>(url, {headers: new HttpHeaders({
@@ -30,7 +30,7 @@ export class ChatService {
     }
   }
   async addFriendShip(user: any, session: SessionI): Promise<any> {
-      const url = '/api/users/chat/addFriend';
+      const url = '/api/users/dashboard/addFriend';
 
       try{
         return (await this.http.post<any>(url, user, { headers: new HttpHeaders({
@@ -43,7 +43,7 @@ export class ChatService {
   }
 
   async removeFriendShip(user: any, session: SessionI): Promise<any> {
-    const url = '/api/users/chat/removeFriend';
+    const url = '/api/users/dashboard/removeFriend';
 
     try{
       return (await this.http.post<any>(url, user, { headers: new HttpHeaders({

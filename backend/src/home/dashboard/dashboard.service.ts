@@ -9,7 +9,7 @@ import { Exception } from 'src/shared/utils/exception';
 import { Response } from 'src/shared/response/responseClass';
 
 @Injectable()
-export class ChatService {
+export class DashboardService {
     constructor(
 		private friensService: FriendService,
         private sessionService: SessionService,

@@ -2,16 +2,16 @@ import { Component, ElementRef, OnInit, ViewChild  } from '@angular/core';
 
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
-import { ChatService } from '../info/info.service';
+import { DashboardService } from './dashboard.service';
 import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
 import { fromEvent } from 'rxjs';
 
 @Component({
-  selector: 'app-info',
-  templateUrl: './info.component.html',
-  styleUrls: ['./info.component.css']
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class InfoComponent implements OnInit {
+export class DashboardComponent implements OnInit {
 
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('friendship') frindInput : ElementRef;
@@ -19,7 +19,7 @@ export class InfoComponent implements OnInit {
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
 	constructor(
-	  private chatService: ChatService,
+	  private dashboardService: DashboardService,
 	  private sQuery: SessionStorageQueryService
 	  ) { }
   
@@ -28,7 +28,7 @@ export class InfoComponent implements OnInit {
 	}
   
 	async onSubmitFriends(): Promise<void> {
-	  this.users = await this.chatService.searchUsers(this.session, this.searchInput.nativeElement.value);
+	  this.users = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
 	}
   
 	initSearchboxListener(){
@@ -51,14 +51,14 @@ export class InfoComponent implements OnInit {
 	
 	onSearchBoxChange(value: any)
 	{
-		return (this.chatService.liveSearchUsers(this.session, value));
+		return (this.dashboardService.liveSearchUsers(this.session, value));
 	}
 	async addFriendShip(user: any): Promise<any>{
 	  console.log("val of user: ", user);
-	  return (await this.chatService.addFriendShip(user, this.session))
+	  return (await this.dashboardService.addFriendShip(user, this.session))
 	}
   
 	async removeFriendShip(user: any): Promise<any>{
-	  return (await this.chatService.removeFriendShip(user, this.session));
+	  return (await this.dashboardService.removeFriendShip(user, this.session));
 	}
 }

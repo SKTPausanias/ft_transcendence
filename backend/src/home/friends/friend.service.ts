@@ -25,9 +25,9 @@ export class FriendService {
 					where: [{user_1: user.id}, {user_2 : user.id}]}
 				)
 				friendship.forEach(element => {
-					if (element.user_1.id != user.id)
+					if (element.user_1.id != user.id && element.confirmed === true)
 						ret.push(User.getPublicInfo(element.user_1));
-					if (element.user_2.id != user.id)
+					if (element.user_2.id != user.id && element.confirmed === true)
 						ret.push(User.getPublicInfo(element.user_2));
 				});
 				return (ret);
