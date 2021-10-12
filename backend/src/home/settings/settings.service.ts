@@ -37,9 +37,11 @@ export class SettingsService {
 				const session = await this.sessionService.findSessionWithRelation(token);
 				if (session.userID.factor_enabled && !user.factor_enabled)
 					await this.twoFactorService.removeSecret(session.userID);
-				const resp = await this.userService.update(session.userID, user);
+				session.userID.factor_enabled = user.factor_enabled;
+				session.userID.email = user.email;
+				session.userID.nickname = user.nickname;
+				await this.userService.save(session.userID);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
-
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)

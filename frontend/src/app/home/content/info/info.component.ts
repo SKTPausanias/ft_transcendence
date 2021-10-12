@@ -48,6 +48,7 @@ export class InfoComponent implements OnInit {
 					  });
 		});
 	}
+	
 	onSearchBoxChange(value: any)
 	{
 		return (this.chatService.liveSearchUsers(this.session, value));
@@ -60,5 +61,4 @@ export class InfoComponent implements OnInit {
 	async removeFriendShip(user: any): Promise<any>{
 	  return (await this.chatService.removeFriendShip(user, this.session));
 	}
-
 }
