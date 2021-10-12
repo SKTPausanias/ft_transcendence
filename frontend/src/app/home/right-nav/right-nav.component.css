@@ -20,3 +20,6 @@
 .rand{
 	background-color: white;
 }
+.offline{
+	opacity: 0.3;
+}

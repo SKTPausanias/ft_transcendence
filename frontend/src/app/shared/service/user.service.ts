@@ -18,7 +18,7 @@ export class UserService {
 
   async getOnlineFriends(session: SessionI)
   {
-	const url = '/api/users/onlineFriends';
+	const url = '/api/users/friends';
 	const response = await this.http.get<any>(url,{ headers : new HttpHeaders({
 		Authorization: 'Bearer ' + session.token})}).toPromise();
 	return (response);

@@ -13,7 +13,7 @@ import { SessionEntity } from './session/session.entity';
 import { SettingsModule } from './home/settings/settings.module';
 import { UserModule } from './home/user/user.module';
 import { ChatModule } from './home/chat/chat.module';
-import { FriendEntity } from './home/chat/chat.entity';
+import { FriendEntity } from './home/friends/friend.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({

@@ -13,9 +13,9 @@ export class UserController {
 		return (await this.userService.getOnlineUsers(headers));
 	}
 
-	@Get('/onlineFriends')
-	async getOnlineFriends(@Headers() headers){
+	@Get('/friends')
+	async getFriends(@Headers() headers){
 		console.log("llego a onlineFriends...");
-		return (await this.userService.getOnlineFriends(headers));
+		return (await this.userService.getFriends(headers));
 	}
 }

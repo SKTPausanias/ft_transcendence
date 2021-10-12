@@ -9,12 +9,15 @@
 			</div>
 		</div>
 		<div id="sep"></div>
-		<div class="parent" *ngFor="let user of onlineUsers">
-			<div>
-				<img src='{{user.avatar}}' class="ico_s" alt="">
-			</div>
-			<div *ngIf="rigtNavPreference.expandRightNav">
-				<p id="nickname">{{user.nickname}}</p>
+		<div *ngFor="let user of onlineUsers" class="mx-3">
+			<div class="parent" [ngClass]="{'offline' : !user.online}">
+
+				<div>
+					<img src='{{user.avatar}}' class="ico_s" alt="">
+				</div>
+				<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
+					<p id="nickname">{{user.nickname}}</p>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -18,10 +18,14 @@ export class SessionService {
 
 	expires_in: number = 60 * 60 * 2; //2 hours
 	constructor(@InjectRepository(SessionEntity)
-	private sessionRepository: Repository<SessionEntity>){}
+	private sessionRepository: Repository<SessionEntity>,
+//	private userService: UserService
+	){}
 
 	async newSession(user: UserEntity){
 
+		user.online = true;
+	//	const usr = await this.userService.save(user);
 		const sessionObj: SessionI = <SessionI>{
 			token: randomstring.generate(50),
 			expiration_time: mDate.setExpirationTime(this.expires_in), // 2 hours;
@@ -46,6 +50,7 @@ export class SessionService {
 
 	async signToken(usr: UserEntity){
 		try {
+			usr.online = true;
 			var	session = await this.newSession(usr);
 			return (Response.makeResponse(200, Session.getSesionToken(session)));
 		} catch (error) {

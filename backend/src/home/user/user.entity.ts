@@ -1,6 +1,6 @@
 import { SessionEntity } from "src/session/session.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { FriendEntity } from "../chat/chat.entity";
+import { FriendEntity } from "../friends/friend.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -40,6 +40,9 @@ export class UserEntity {
 
     @Column({nullable: false})
     confirmed: boolean;
+	
+	@Column({nullable: false, default : false})
+    online: boolean;
 
     @OneToMany(type => SessionEntity, session => session.token,
 		{

@@ -1,5 +1,5 @@
 import { SessionEntity } from "src/session/session.entity";
-import { FriendEntity } from "../chat/chat.entity";
+import { FriendEntity } from "../friends/friend.entity";
 
 export interface UserI {
     ft_id: number;	
@@ -41,4 +41,5 @@ export interface UserPublicInfoI {
     last_name: string;	
     nickname: string;
     avatar: string;
+	online: boolean;
 }

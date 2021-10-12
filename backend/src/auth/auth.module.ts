@@ -14,7 +14,8 @@ import { TwoFactorService } from './two-factor/two-factor.service';
 import { TwoFactorEntity } from './two-factor/two-factor.entity';
 import { SessionService } from 'src/session/session.service';
 import { SessionEntity } from 'src/session/session.entity';
-import { FriendEntity } from 'src/home/chat/chat.entity';
+import { FriendEntity } from 'src/home/friends/friend.entity';
+import { FriendService } from 'src/home/friends/friend.service';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity]), HttpModule],
@@ -23,7 +24,7 @@ import { FriendEntity } from 'src/home/chat/chat.entity';
 		UserService, ConfirmService, 
 		AuthService, HashService, 
 		MailService, FtAuthService, TwoFactorService,
-		SessionService
+		SessionService, FriendService
 	],
 })
 export class AuthModule {}

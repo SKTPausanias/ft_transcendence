@@ -5,7 +5,7 @@ import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
 import { UserI, UserInfoI, UserPublicInfoI, UserRegI } from "./userI";
 import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
-import { FriendEntity } from "../chat/chat.entity";
+import { FriendEntity } from "../friends/friend.entity";
 
 
 export class User implements UserI {
@@ -108,6 +108,7 @@ export class User implements UserI {
 			first_name : data.first_name,
 			last_name : data.last_name,
 			avatar : data.avatar,
+			online: data.online
 			});
 	}
 	static getMultipleUserInfo(users: UserEntity[], user: UserEntity): UserPublicInfoI[]{

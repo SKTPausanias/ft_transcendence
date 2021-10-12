@@ -10,15 +10,15 @@ import { Exception } from '../../shared/utils/exception';
 import { User } from './userClass';
 import { SessionService } from 'src/session/session.service';
 import { toHash } from 'ajv/dist/compile/util';
-import { FriendEntity } from '../chat/chat.entity';
+import { FriendEntity } from '../friends/friend.entity';
+import { FriendService } from '../friends/friend.service';
 
 @Injectable()
 export class UserService {
 
 	constructor(@InjectRepository(UserEntity)
 	private userRepository: Repository<UserEntity>,
-	@InjectRepository(FriendEntity)
-	private friendRepository: Repository<FriendEntity>,
+	private friendService: FriendService,
 	private connection: Connection,
 	private sessionService: SessionService){}
 
@@ -44,7 +44,7 @@ export class UserService {
 		}
 	}
 
-	async save(user: UserRegI): Promise<UserEntity | any>{
+	async save(user: any): Promise<UserEntity | any>{
 		try {
 			return (await this.userRepository.save(user));
 		} catch (error) {
@@ -102,24 +102,15 @@ export class UserService {
 	}
 
 	//get all online friends of the user
-	async getOnlineFriends(header: any): Promise<any> {
-		const token = header.authorization.split(' ')[1];
+	async getFriends(header: any): Promise<any> {
 		try {
-
-			var users: User[] = [];
+			const token = header.authorization.split(' ')[1];
 			const session = await this.sessionService.findSessionWithRelation(token);
-			//session.userID.id
-			const friendsOnline = await this.friendRepository.find({where: [ session.userID.id]});
-			console.log("Antes de friends...");
-			
-			console.log("friends:", friendsOnline); // user_id does not show. tenemos que sacarlo de la relacion de amistad
-			//return friendsOnline;
-			//const res = await this.userRepository.find({where: [friendsOnline[0].user_1]})
-			return (users);
-			//const sessions = await this.sessionService.findAllExcept(session);
-			//return (Response.makeResponse(200, User.getOnlineUserInfo(sessions)))
+			const friends = await this.friendService.findAllFriends(session.userID);
+			console.log(friends);
+			return (Response.makeResponse(200, friends));
 		} catch (error) {
-			return (Response.makeResponse(401, {error : "Unauthorized"}));
+			return (error);
 		}
 	}
 }

@@ -37,8 +37,10 @@ export class AuthService {
 			if (!resp.confirmed)
 				return (Response.makeResponse(301, { redirect: 'confirmation',  email: resp.email} )); 
 			if (resp.factor_enabled)
-				return (Response.makeResponse(301, { redirect: 'twoFactor',  email: resp.email} )); 
-			return (await this.sessionService.signToken(resp));
+				return (Response.makeResponse(301, { redirect: 'twoFactor',  email: resp.email} ));
+			resp.online = true;
+			const usr = await this.userService.save(resp);
+			return (await this.sessionService.signToken(usr));
 		//	(Response.makeResponse(200, User.getInfo(resp)));
 		} catch (error) {
 			return (error);
@@ -54,7 +56,9 @@ export class AuthService {
 				return (Response.makeResponse(301, { redirect: 'twoFactor',  email: usrData.email} ));
 			if (usrData === undefined)				
 				return (Response.makeResponse(401, {error : "User dosn't exist"}));
-			return (await this.sessionService.signToken(usrData));
+			usrData.online = true;
+			const usr = await this.userService.save(usrData);
+			return (await this.sessionService.signToken(usr));
 			//return (Response.makeResponse(200, User.getInfo(usrData)));
 		} catch (error) {
 			return (error);
@@ -78,7 +82,9 @@ export class AuthService {
 		const userData = await this.ftAuthService.getUserData(code);
 		try {
 			const resp = await this.userService.save(User.getFtUser(userData));
-			return (await this.sessionService.signToken(resp));
+			resp.online = true;
+			const usr = await this.userService.save(resp);
+			return (await this.sessionService.signToken(usr));
 			//return (Response.makeResponse(200, User.getInfo(resp)));
 		} catch (Exception) {
 			return (Exception);
@@ -135,9 +141,13 @@ export class AuthService {
 	}
 	async validateToken(email, token: number) {
 		try {
-			const usr = await this.userService.findByEmail(email);
-			if (await this.twoFactorService.validateToken(usr, token))
+			const resp = await this.userService.findByEmail(email);
+			if (await this.twoFactorService.validateToken(resp, token))
+			{
+				resp.online = true;
+				const usr = await this.userService.save(resp);
 				return (await this.sessionService.signToken(usr));
+			}
 				//return (Response.makeResponse(200, User.getInfo(usr)));
 			return (Response.makeResponse(401, {error : "Unauthorized"})); 
 		} catch (error) {
@@ -148,6 +158,9 @@ export class AuthService {
 	{
 		const token = auth.split(' ')[1];
 		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			session.userID.online = false;
+			await this.userService.save(session.userID);
 			return (await this.sessionService.removeByToken(token));
 		} catch (error) {
 			return (error);
