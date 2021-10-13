@@ -6,11 +6,11 @@ export class FriendEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(type => UserEntity, {onDelete:'CASCADE'})
+    @ManyToOne(type => UserEntity, {onDelete:'CASCADE'})
 	@JoinColumn()
     user_1: UserEntity;
 
-    @OneToOne(type => UserEntity, {onDelete:'CASCADE'})
+    @ManyToOne(type => UserEntity, {onDelete:'CASCADE'})
 	@JoinColumn()
     user_2: UserEntity;
 
