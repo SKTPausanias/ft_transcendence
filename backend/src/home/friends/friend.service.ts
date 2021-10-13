@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SessionService } from "src/session/session.service";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
-import { Repository } from "typeorm";
+import { Connection, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
@@ -20,19 +20,31 @@ export class FriendService {
 		async findAllFriends(user: UserEntity): Promise<any>{
 			var ret: UserPublicInfoI[] = [];
 			try {
-				const friendship = await this.friendRepository.find(
+
+				const friendship =  await this.friendRepository.find(
 					{relations: ['user_1', 'user_2'],
-					where: [{user_1: user.id}, {user_2 : user.id}]}
+					where: [{user_1: user.id}, {user_2 : user.id} ]}
 				)
 				friendship.forEach(element => {
 					if (element.user_1.id != user.id && element.confirmed === true)
-						ret.push(User.getPublicInfo(element.user_1));
+					{
+						if (element.user_1.online)
+							ret.unshift(element.user_1);
+						else
+							ret.push(User.getPublicInfo(element.user_1));
+					}
 					if (element.user_2.id != user.id && element.confirmed === true)
-						ret.push(User.getPublicInfo(element.user_2));
+					{
+						if (element.user_2.online)
+							ret.unshift(element.user_2);
+						else
+							ret.push(User.getPublicInfo(element.user_2));
+					}
 				});
 				return (ret);
 
 			} catch (error) {
+				console.log("ERROR");
 				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));
 			}
 		}
