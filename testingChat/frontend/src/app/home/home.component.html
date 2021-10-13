@@ -1,0 +1,29 @@
+<header no-border>
+      <title>Live Chat</title>
+  </header>
+  <content>
+        There are currently <strong>{{users}}</strong> users online. Start
+        chatting!
+    <ul>
+      <li style="list-style-type: none" *ngFor="let message of messages">{{message}}</li> 
+    </ul>
+    
+  </content>
+  <footer>
+   
+      <textarea
+        spellcheck="true"
+        autocomplete="true"
+        autocorrect="true"
+        rows="1"
+        class="chat-input"
+        [(ngModel)]="message"
+        placeholder="type message..."
+        (keyup.enter)="addChat()"
+      >
+      </textarea>
+   
+      <button class="send-chat-button" (click)='addChat()'>Send</button>
+       
+    
+  </footer>
