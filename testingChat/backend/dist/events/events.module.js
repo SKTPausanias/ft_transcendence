@@ -12,7 +12,7 @@ const events_gateway_1 = require("./events.gateway");
 let EventsModule = class EventsModule {
 };
 EventsModule = __decorate([
-    common_1.Module({
+    (0, common_1.Module)({
         providers: [events_gateway_1.EventsGateway]
     })
 ], EventsModule);

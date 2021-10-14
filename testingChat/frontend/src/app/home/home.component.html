@@ -40,3 +40,15 @@
     </div>
   </div>
 </div>
+
+<div class="media w-50 mb-3" *ngFor="let friend of friends" style="border: 1px solid #000000;">
+	<input type="number" [(ngModel)]="pwd" />
+	<div>
+		ID: {{friend.id}}
+	</div>
+	<div>
+		ONLINE: {{friend.status}}
+	</div>
+	<button class="send-chat-button" (click)='initChat(friend.id)'>Start Chat</button>
+</div>
+

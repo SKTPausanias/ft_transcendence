@@ -11,38 +11,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventsGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
+;
+var active = false;
 let EventsGateway = class EventsGateway {
-    constructor() {
-        this.users = 0;
-    }
     async handleConnection(client) {
-        this.users++;
-        console.log("connected new client : [ ", client.id, " ]");
-        this.server.emit('users', this.users);
+        console.log("Client conected: ", client.handshake.headers.authorization);
+        if (client.handshake.headers.authorization.indexOf("AABBCC") < 0)
+            this.handleDisconnect(client);
     }
     async handleDisconnect(client) {
-        this.users--;
-        console.log("client disconected: [ ", client.id, " ]");
-        this.server.emit('users', this.users);
+        console.log("Client disconected: ", client.handshake.headers.authorization);
     }
-    async onChat(client, message) {
-        console.log("[MSG RECIVED] ", client.id, " : ", message);
-        this.server.emit('chat', message);
-        client.broadcast.emit('chat', message);
+    async handshake(client, message) {
+        console.log("MSG From Client: [", client.handshake.headers.authorization, "] : ", message);
+        this.server.emit('test', "this is what Server recived: " + message);
     }
 };
 __decorate([
-    websockets_1.WebSocketServer(),
+    (0, websockets_1.WebSocketServer)(),
     __metadata("design:type", Object)
 ], EventsGateway.prototype, "server", void 0);
 __decorate([
-    websockets_1.SubscribeMessage('chat'),
+    (0, websockets_1.SubscribeMessage)('test'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], EventsGateway.prototype, "onChat", null);
+], EventsGateway.prototype, "handshake", null);
 EventsGateway = __decorate([
-    websockets_1.WebSocketGateway({ cors: true })
+    (0, websockets_1.WebSocketGateway)({ cors: true })
 ], EventsGateway);
 exports.EventsGateway = EventsGateway;
 //# sourceMappingURL=events.gateway.js.map
