@@ -1,29 +1,42 @@
-<header no-border>
-      <title>Live Chat</title>
+<div class="container py-5 px-4">
+  <header class="text-center">
+    <h1 class="display-4 text-white">Chat service</h1>
+    <p class="text-white lead mb-0">Live Chat example using websockets</p>
+    <p>There are currently <b style="color:red">{{users}}</b> connected users to this chat</p>
   </header>
-  <content>
-        There are currently <strong>{{users}}</strong> users online. Start
-        chatting!
-    <ul>
-      <li style="list-style-type: none" *ngFor="let message of messages">{{message}}</li> 
-    </ul>
-    
-  </content>
-  <footer>
+
+  <div class="row rounded-lg overflow-hidden shadow">
+    <!-- Chat Box-->
    
-      <textarea
-        spellcheck="true"
-        autocomplete="true"
-        autocorrect="true"
-        rows="1"
-        class="chat-input"
-        [(ngModel)]="message"
-        placeholder="type message..."
-        (keyup.enter)="addChat()"
-      >
-      </textarea>
-   
-      <button class="send-chat-button" (click)='addChat()'>Send</button>
-       
+    <div class="col-7 px-0">
+      <div class="px-4 py-5 chat-box bg-white">
+        <div class="media w-50 mb-3" *ngFor="let message of messages">
+          <img src="http://localhost:3000/img/default_avatar.png" alt="user" class="roundImg">
+          <div class="media-body ml-3">
+            <div class="bg-light rounded py-2 px-3 mb-2">
+               <p class="text-small mb-0">
+                  Ultraman: <b>{{message.message}} </b> <br/><small class="small font-weight-bold">{{message.date}}</small>
+               </p>
+            </div>
+          </div>
+        </div>
+      </div>
     
-  </footer>
+      <!-- Typing area -->
+        <div class="input-group-append">
+          <input type="text"
+          class="messages-box"
+          spellcheck="true"
+          autocomplete="true"
+          autocorrect="true"
+          row="1"
+          class="chat-input"
+          [(ngModel)]="message"
+          placeholder="type message..."
+          
+        />
+        <button class="send-chat-button" (click)='addChat()'>Send</button>
+        </div>
+    </div>
+  </div>
+</div>
