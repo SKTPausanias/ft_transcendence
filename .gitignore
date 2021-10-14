@@ -27,3 +27,20 @@ sendgrid.env
 
 /old/frontend/node_modules
 !/old/frontend/*.json
+
+
+
+#Backend exluded files
+/testingChat/backend/*
+!/testingChat/backend/src
+!/testingChat/backend/.env
+!/testingChat/backend/.env_test
+!/testingChat/backend/package.json
+!/testingChat/backend/tsconfig.*
+#Frontend exluded files
+/testingChat/frontend/*
+!/testingChat/frontend/src
+!/testingChat/frontend/angular.json
+!/testingChat/frontend/package.json
+!/testingChat/frontend/tsconfig.*
+
