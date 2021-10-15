@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 import { HomeService } from './home.service';
+import { SocketService } from './socket.service';
 
 @Component({
 	selector: 'app-home',
@@ -19,7 +20,8 @@ export class HomeComponent implements OnInit {
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
 	private userService: UserService,
-	private homeService: HomeService
+	private homeService: HomeService,
+	private socketService: SocketService
 	) {
 		this.sharedPreference.expandRightNav = false;
 	}
@@ -34,6 +36,8 @@ export class HomeComponent implements OnInit {
 		else
 		{
 			this.homeService.listenSessionWorker();
+			this.socketService.connect(this.session);
+			
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
 				await this.homeService.closeSession();

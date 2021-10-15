@@ -1,5 +1,4 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-import { setInterval } from 'timers';
   
 interface friendI {id: any, status: Boolean};
 var active = false;

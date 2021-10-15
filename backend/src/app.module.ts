@@ -14,6 +14,7 @@ import { SettingsModule } from './home/settings/settings.module';
 import { UserModule } from './home/user/user.module';
 import { FriendEntity } from './home/friends/friend.entity';
 import { DashboardModule } from './home/dashboard/dashboard.module';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -37,7 +38,8 @@ import { DashboardModule } from './home/dashboard/dashboard.module';
 	  AuthModule,
 	  SettingsModule,
 	  UserModule,
-	  DashboardModule
+	  DashboardModule,
+	  SocketModule
 	],
   controllers: [AppController],
   providers: [AppService]

@@ -107,7 +107,6 @@ export class UserService {
 			const token = header.authorization.split(' ')[1];
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friends = await this.friendService.findAllFriends(session.userID);
-			console.log(friends);
 			return (Response.makeResponse(200, friends));
 		} catch (error) {
 			return (error);
