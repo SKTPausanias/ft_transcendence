@@ -13,11 +13,9 @@ import { SocketService } from '../../socket.service';
   })
   export class NgbdModalConfirm {
     constructor(public modal: NgbActiveModal,
-				private homeService: HomeService,
-				private socketService: SocketService) {}
+				private homeService: HomeService) {}
     async close(result?: any): Promise<void> {
 		await this.homeService.closeSession();
-		this.socketService.disconnect();
 		this.modal.close();
 
     }

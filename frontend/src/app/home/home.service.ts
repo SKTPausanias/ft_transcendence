@@ -4,6 +4,7 @@ import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
 import { SessionStorageQueryService } from "../shared/ft_services";
 import { mDate } from "../utils/date";
+import { SocketService } from "./socket.service";
 
 @Injectable({
 providedIn: "root",
@@ -16,8 +17,10 @@ export class HomeService {
 	activityExpires: number | undefined = mDate.timeNowInSec() + environment.inactivity_time;
 	constructor(private sQuery: SessionStorageQueryService,
 				private authService: AuthService,
-				private router: Router) {}
+				private router: Router, 
+				private socketService: SocketService) {}
 	async closeSession(){
+		this.socketService.disconnect();
 		this.terminateWorker();
 		await this.authService.logout(this.session);
 		this.sQuery.removeAll();
