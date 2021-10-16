@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<div id="sep"></div>
-		<div *ngFor="let user of onlineUsers" class="mx-3">
+		<div *ngFor="let user of rigtNavPreference.friends" class="mx-3">
 			<div class="parent" [ngClass]="{'offline' : !user.online}">
 
 				<div>

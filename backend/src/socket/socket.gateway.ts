@@ -1,9 +1,12 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { FriendService } from 'src/home/friends/friend.service';
+import { UserEntity } from 'src/home/user/user.entity';
+import { User } from 'src/home/user/userClass';
 import { SessionService } from 'src/session/session.service';
+import { SessionI } from 'src/session/sessionI';
 import { wSocket } from 'src/socket/eSocket';
 import { SocketClass } from './cSocket';
-import { wSocketI } from './iSocket';
+import { SessionDataI, wSocketI } from './iSocket';
   
 
 @WebSocketGateway({ cors: true })
@@ -18,33 +21,39 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const token = client.handshake.headers.authorization.split(' ')[1];
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friends = await this.friendService.findAllFriends(session.userID);
-			this.sockets.push(SocketClass.newSocketCLient(client.id, session, friends));
-			console.log("Connected: there are ", this.sockets.length, " client connected");
-			SocketClass.sayHello(this.server, this.sockets, client.id);
+			const sck = new SocketClass(client.id, session, friends);
+			this.sockets.push(sck);
+			sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets);
+			this.server.to(client.id).emit(wSocket.SESSION_INIT, sck.session_data);
+			console.log("Connected: there are ", this.sockets.length, " clients connected");
 		} catch (error) {
 			console.error(error);
 			this.server.emit('force-disconnect');
 		}
 	}
 	async handleDisconnect(client) {
-		SocketClass.sayBye(this.server, this.sockets, client.id);
-		this.sockets = SocketClass.removeSocketClientBySocketId(this.sockets, client.id);
-		console.log("Disconnected: there are ", this.sockets.length, " client connected");
+		var sck = SocketClass.findSocket(this.sockets, client.id);
+		this.sockets = sck.remove(this.sockets);
+		sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets);
+		console.log("Disconnected: there are ", this.sockets.length, " clients connected");
 	}
-	@SubscribeMessage(wSocket.TEST)
+	@SubscribeMessage(wSocket.SESSION_INIT)
 	async handshake(client, message) {
 		console.log(SocketClass.findSocket(this.sockets, client.id).session.userID.nickname, " : ", message);
 
 	}
-	@SubscribeMessage(wSocket.FRIEND_CONNECT)
+	@SubscribeMessage(wSocket.USER_UPDATE)
 	async friendConnect(client, message) {
-		//SocketClass.sayHello(this.server, this.sockets, client.id);
 		console.log(SocketClass.findSocket(this.sockets, client.id).session.userID.nickname, " : ", message);
 	}
-	@SubscribeMessage(wSocket.FRIEND_DISCONNECT)
-	async friendDisonnect(client, message) {
-		//SocketClass.sayBye(this.server, this.sockets, client.id);
-		console.log(SocketClass.findSocket(this.sockets, client.id).session.userID.nickname, " : ", message);
 
+	public emitUserUpdate(action: string, session: SessionI)
+	{
+		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
+		console.log(session.userID.avatar);
+		sck.session_data.friends = sck.session_data.friends;
+		sck.session_data.userInfo = User.getInfo(session.userID);
+		sck.session = session;
+		sck.onChange(action, this.server, this.sockets);
 	}
 }

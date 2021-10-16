@@ -34,7 +34,6 @@ export interface UserInfoI {
     login: string;
     avatar: string;
     factor_enabled: boolean;
-    friends: FriendEntity[];
 }
 export interface UserPublicInfoI {
     first_name: string;    

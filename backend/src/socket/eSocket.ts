@@ -1,5 +1,4 @@
 export enum wSocket {
-	TEST = 'test',
-	FRIEND_CONNECT = 'friend-connect',
-	FRIEND_DISCONNECT = 'friend-disconnect'
+	SESSION_INIT = 'session-init',
+	USER_UPDATE = 'user-update'
 }

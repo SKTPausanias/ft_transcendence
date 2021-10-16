@@ -1,48 +1,53 @@
 import { FriendEntity } from "src/home/friends/friend.entity";
+import { UserEntity } from "src/home/user/user.entity";
+import { User } from "src/home/user/userClass";
+import { UserPublicInfoI } from "src/home/user/userI";
 import { SessionEntity } from "src/session/session.entity";
 import { SessionI } from "src/session/sessionI";
 import { wSocket } from "./eSocket";
-import { wSocketI } from "./iSocket";
+import { SessionDataI, wSocketI } from "./iSocket";
 
-export class SocketClass{
+export class SocketClass implements wSocketI{
 
-	static newSocketCLient(clientId: string, sessionToken: SessionEntity, friends: FriendEntity[]){
-		let socket = <wSocketI>{};
-		socket.socket_id = clientId;
-		socket.session = sessionToken;
-		socket.friends = friends;
-		return (socket)
+	me: UserEntity = <UserEntity>{};
+	socket_id: string;
+	session: SessionI;
+	session_data: SessionDataI = <SessionDataI>{};
+	constructor(clientId: string, session: SessionEntity, friends: UserEntity[]){
+		this.me = session.userID;
+		this.socket_id = clientId;
+		this.session = session;
+		this.session_data.userInfo = User.getInfo(session.userID);
+		this.session_data.friends = friends;
 	}
-	
-	//callback example
-	static remove(sockets: wSocketI[], socket_id: string, callback: (sockets: wSocketI[])  => any) : void{
-		callback (sockets.filter(obj => obj.socket_id !== socket_id));
+
+	remove(sockets: wSocketI[]) : wSocketI[]{
+		const ret = sockets.filter(obj => obj.socket_id !== this.socket_id);
+		const other = this.findSocketByNickname(ret, this.session.userID.nickname);
+		if (other === undefined)
+			this.session.userID.online = false;
+		return (ret);
 	} 
-	static removeSocketClientBySocketId(sockets: wSocketI[], clientId: string){
-		return (sockets.filter(obj => obj.socket_id !== clientId));
+	onChange(action: string, server: any, sockets: wSocketI[]){
+		this.session_data.friends.forEach(element => {
+			var friends = this.findAllSocketsByNickname(sockets, element.nickname);
+			if (friends !== undefined)
+				friends.forEach(friend => {
+					server.to(friend.socket_id).emit(action, this.me.nickname, User.getPublicInfo(this.session.userID));
+				});
+		});
+		this.me = this.session.userID;
+	} 
+	private findSocketByNickname(sockets: wSocketI[], nickname: string){
+		return (sockets.find(sck => sck.session.userID.nickname === nickname));
 	}
-	static findSocket(sockets: wSocketI[], clientId: string){
+	private findAllSocketsByNickname(sockets: wSocketI[], nickname: string){
+		return (sockets.filter(obj => obj.session.userID.nickname.indexOf(nickname) !== -1));
+	}
+	public static findSocket(sockets: wSocketI[], clientId: string){
 		return (sockets.find(sck => sck.socket_id === clientId));
 	}
-	static findSocketBySession(sockets: wSocketI[], id: number){
-		return (sockets.find(sck => sck.session.userID.id === id));
-	}
-	static sayHello(server: any, sockets: wSocketI[], clientId: string)
-	{
-		var sock = this.findSocket(sockets, clientId);
-		sock.friends.forEach(element => {
-			var friend = this.findSocketBySession(sockets, element.id)
-			if (friend !== undefined)
-				server.to(friend.socket_id).emit(wSocket.FRIEND_CONNECT, "your friend [" + sock.session.userID.nickname + "] just connected")
-		});
-	}
-	static sayBye(server: any, sockets: wSocketI[], clientId: string)
-	{
-		var sock = this.findSocket(sockets, clientId);
-		sock.friends.forEach(element => {
-			var friend = this.findSocketBySession(sockets, element.id)
-			if (friend !== undefined)
-				server.to(friend.socket_id).emit(wSocket.FRIEND_DISCONNECT, "your friend [" + sock.session.userID.nickname + "] just disconnected")
-		});
+	public static findSocketBySession(sockets: wSocketI[], token: string){
+		return (sockets.find(sck => sck.session.token === token));
 	}
 }

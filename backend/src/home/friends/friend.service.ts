@@ -27,19 +27,9 @@ export class FriendService {
 				)
 				friendship.forEach(element => {
 					if (element.user_1.id != user.id && element.confirmed === true)
-					{
-						if (element.user_1.online)
-							ret.unshift(element.user_1);
-						else
 							ret.push(User.getPublicInfo(element.user_1));
-					}
 					if (element.user_2.id != user.id && element.confirmed === true)
-					{
-						if (element.user_2.online)
-							ret.unshift(element.user_2);
-						else
 							ret.push(User.getPublicInfo(element.user_2));
-					}
 				});
 				return (ret);
 

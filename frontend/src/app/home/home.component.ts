@@ -2,6 +2,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
+import { UserInfoI, UserPublicInfoI } from '../shared/interface/iUserInfo';
 import { HomeService } from './home.service';
 import { SocketService } from './socket.service';
 
@@ -15,7 +16,7 @@ export class HomeComponent implements OnInit {
 	_path: string = '/';
 	isLoaded = false;
 	sharedPreference: SharedPreferencesI = <SharedPreferencesI>{};
-	
+	friendsOnline: any = [];
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
@@ -23,6 +24,8 @@ export class HomeComponent implements OnInit {
 	private homeService: HomeService,
 	private socketService: SocketService
 	) {
+		this.sharedPreference.userInfo = <UserInfoI>{};
+		this.sharedPreference.friends = [];
 		this.sharedPreference.expandRightNav = false;
 	}
 
@@ -36,8 +39,16 @@ export class HomeComponent implements OnInit {
 		else
 		{
 			this.homeService.listenSessionWorker();
-			this.socketService.connect(this.session);
-			
+			this.socketService.connect(this.session, this.sharedPreference);
+			this.socketService.receivedFilter.subscribe((data : any)=> {
+				this.sharedPreference.userInfo = data.userInfo;
+				this.sharedPreference.friends = data.friends;
+			})
+			if (this.sharedPreference.userInfo !== undefined)
+				this.isLoaded = true;
+			else
+				this.isLoaded = false;
+			/* 
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)
 				await this.homeService.closeSession();
@@ -45,7 +56,7 @@ export class HomeComponent implements OnInit {
 			{
 				this.sharedPreference.userInfo = resp.data;
 				this.isLoaded = true;
-			}
+			} */
 		}
 	}
 	setFragment(ev: any) {

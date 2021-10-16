@@ -85,12 +85,12 @@ export class User implements UserI {
 			if (element == user.nickname)
 				user.role = process.env.ROLE_ADMIN;
 		});
-		user.factor_enabled = true;
+		user.factor_enabled = false;
 		user.confirmed = true;
 		return (user);
 	}
 	static getInfo(data: any): UserInfoI{
-		var aux: FriendEntity[] = [];
+	//	var aux: FriendEntity[] = [];
 		return ({
 			login: data.login,
 			nickname : data.nickname,
@@ -99,7 +99,7 @@ export class User implements UserI {
 			email : data.email,
 			avatar : data.avatar,
 			factor_enabled : data.factor_enabled,
-			friends: aux
+	//		friends: aux
 		});
 	}
 	static getPublicInfo(data: any): UserPublicInfoI{

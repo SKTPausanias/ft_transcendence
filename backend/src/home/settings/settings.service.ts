@@ -10,6 +10,8 @@ import { UserService } from '../user/user.service';
 import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
 import { MailService } from 'src/shared/mail/mail.service';
 import * as fs from 'fs'
+import { SocketGateway } from 'src/socket/socket.gateway';
+import { wSocket } from 'src/socket/eSocket';
 
 @Injectable()
 export class SettingsService {
@@ -17,7 +19,8 @@ export class SettingsService {
         private sessionService: SessionService,
         private userService: UserService,
 		private twoFactorService: TwoFactorService,
-		private mailService: MailService
+		private mailService: MailService,
+		private socketService: SocketGateway
         ){}
 		async deleteUser(header: any)
 		{
@@ -35,13 +38,14 @@ export class SettingsService {
 			const token = header.authorization.split(' ')[1];
 			try {
 				const session = await this.sessionService.findSessionWithRelation(token);
-				if (session.userID.factor_enabled && !user.factor_enabled)
-					await this.twoFactorService.removeSecret(session.userID);
+				/* if (session.userID.factor_enabled && !user.factor_enabled)
+					await this.twoFactorService.removeSecret(session.userID); */
 				session.userID.factor_enabled = user.factor_enabled;
 				session.userID.email = user.email;
 				session.userID.nickname = user.nickname;
 				await this.userService.save(session.userID);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
+				this.socketService.emitUserUpdate(wSocket.USER_UPDATE, updatedUser);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)
@@ -59,6 +63,7 @@ export class SettingsService {
 				const resp = await this.userService.update(session.userID, usr);
 				console.log(resp);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
+				this.socketService.emitUserUpdate(wSocket.USER_UPDATE, updatedUser);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)

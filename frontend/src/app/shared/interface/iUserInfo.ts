@@ -13,4 +13,5 @@ export interface UserPublicInfoI {
 	last_name: string;
 	nickname: string;
 	avatar: string;
+	online: boolean;
 }
