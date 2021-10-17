@@ -25,7 +25,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			this.sockets.push(sck);
 			sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets);
 			this.server.to(client.id).emit(wSocket.SESSION_INIT, sck.session_data);
-			console.log("Connected: there are ", this.sockets.length, " clients connected");
+			console.log("Connected: there are ", this.sockets.length, " clients connected: ", client.id);
 		} catch (error) {
 			console.error(error);
 			this.server.emit('force-disconnect');
@@ -50,7 +50,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	public emitUserUpdate(action: string, session: SessionI)
 	{
 		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		console.log(session.userID.avatar);
 		sck.session_data.friends = sck.session_data.friends;
 		sck.session_data.userInfo = User.getInfo(session.userID);
 		sck.session = session;

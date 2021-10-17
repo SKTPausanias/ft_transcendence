@@ -38,8 +38,7 @@ import { SocketModule } from './socket/socket.module';
 	  AuthModule,
 	  SettingsModule,
 	  UserModule,
-	  DashboardModule,
-	  SocketModule
+	  DashboardModule
 	],
   controllers: [AppController],
   providers: [AppService]

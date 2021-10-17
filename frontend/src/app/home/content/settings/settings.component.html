@@ -23,7 +23,7 @@
 							<button (click)="file.click()">Edit</button>
 						</div>
 					</div>
-					<div *ngIf="factor" class="qr mt-4">
+					<div *ngIf="settingsPreference.userInfo.factor_enabled" class="qr mt-4">
 						<div class="separator my-3">Two Factor</div>
 						<div *ngIf="showQrImg">
 							<img src="{{qrUrl}}" alt="">
@@ -92,7 +92,7 @@
 								<div class="col-6 form-group">
 									<label for="exampleInputEmail1">Nickname</label>
 									<input 
-										ngModel={{settingsPreference.userInfo.nickname}}
+										[(ngModel)]="formNickname"
 										name="nickname"
 										type="text"
 										minlength="3"
@@ -126,7 +126,7 @@
 									type="checkbox"
 									class="form-check-input me-2"
 									(change)="factorCheckbox($event)"
-									[(ngModel)]="settingsPreference.userInfo.factor_enabled"
+									[(ngModel)]="formFactor"
 								/>
 								<label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
 								</div>

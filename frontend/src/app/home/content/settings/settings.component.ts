@@ -22,13 +22,14 @@ export class SettingsComponent implements OnInit {
 	msgError: boolean;
 	showCodeInput: boolean;
 	showQrImg: boolean;
-	factor: boolean;
 	qrUrl: string;
 	update_message : string = "";
 	session = this.sQuery.getSessionToken();
-	user: UserInfoI; // = this.sQuery.getUser();
 	code: number;
 	qrButtonValue: string = "Show QR";
+	formNickname: string;
+	formEmail: string;
+	formFactor: boolean;
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private settingService: SettingsService,
@@ -37,9 +38,10 @@ export class SettingsComponent implements OnInit {
 		}
 		
   
-  	ngOnInit(): void {	 
-		this.user = this.settingsPreference.userInfo;
-		this.factor = this.user.factor_enabled;
+  	ngOnInit(): void {
+		this.formNickname = this.settingsPreference.userInfo.nickname;
+		this.formEmail = this.settingsPreference.userInfo.email;
+		this.formFactor = this.settingsPreference.userInfo.factor_enabled;
   	}
 	editAvatar(file: any)
 	{
@@ -78,18 +80,18 @@ export class SettingsComponent implements OnInit {
 	}
 	async onSubmitSettings(value: any)
 	{
-		var nickname = this.user.nickname;
-		var email = this.user.email;
-		this.factor = value.factor;
-		this.user.email = value.email;
-		this.user.nickname = value.nickname;
-		const result = await this.settingService.updateUser(this.user, this.session);
+		const nickname = this.settingsPreference.userInfo.nickname;
+		const email = this.settingsPreference.userInfo.email;
+		const factor = this.settingsPreference.userInfo.factor_enabled;
+		this.settingsPreference.userInfo.email = value.email;
+		this.settingsPreference.userInfo.nickname = value.nickname;
+		this.settingsPreference.userInfo.factor_enabled = value.factor;
+		const result = await this.settingService.updateUser(this.settingsPreference.userInfo, this.session);
 		if (result.statusCode == 200)
 		{
 			if (result.statusCode == 200)
 			{
-				this.user = result.data;
-				this.settingsPreference.userInfo = this.user;
+				this.settingsPreference.userInfo = result.data;
 				this.showMsg("User setting successfuly updated!", false);
 			}
 		}
@@ -100,20 +102,18 @@ export class SettingsComponent implements OnInit {
 		}
 		else
 		{
-			this.settingsPreference.userInfo.nickname = nickname;
-			this.settingsPreference.userInfo.email = email;
+			this.settingsPreference.userInfo.nickname = this.formNickname = nickname;
+			this.settingsPreference.userInfo.email = this.formEmail = email;
+			this.settingsPreference.userInfo.factor_enabled = this.formFactor = factor;
 			this.showMsg("Email or username not availible!", true);
 		}
 	}
 	async onUploadAvatar(value: any){
-		var file = value;//this.imageFile.nativeElement.files?.item(0) as File;
+		var file = value;
 		try {
-			const result = await this.settingService.uploadImage(file, this.user.login, this.session);		
+			const result = await this.settingService.uploadImage(file, this.settingsPreference.userInfo.login, this.session);		
 			if (result.statusCode == 200)
-			{
-				this.user = result.data;
-				this.settingsPreference.userInfo = this.user;
-			}
+				this.settingsPreference.userInfo = result.data;
 			else if (result.statusCode === 410)
 			{
 				this.sQuery.removeAll();
@@ -129,9 +129,9 @@ export class SettingsComponent implements OnInit {
 
 	factorCheckbox(e: any) {
 		if (e.target.checked)
-			this.settingsPreference.userInfo.factor_enabled = true;
+			this.formFactor = true;
 		else
-		this.settingsPreference.userInfo.factor_enabled = false;
+			this.formFactor = false;
 	}
 
 	async deleteAccount(): Promise<void> {
@@ -150,7 +150,7 @@ export class SettingsComponent implements OnInit {
 			ret = false;
 		if (values.email != this.settingsPreference.userInfo.email)
 			ret = false;
-		if (values.factor != this.factor)
+		if (values.factor != this.settingsPreference.userInfo.factor_enabled)
 			ret = false;
 		return (ret);
 	}
@@ -173,8 +173,5 @@ export class SettingsComponent implements OnInit {
 	closeMsg(){
 		this.showMsgBox = false;
 		this.update_message = "";
-	}
-	avatarUrl(){
-		return (this.settingsPreference.userInfo.avatar + "?rand+\=" + mDate.timeNowInSec());
 	}
 }

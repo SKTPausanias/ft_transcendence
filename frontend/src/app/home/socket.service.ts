@@ -11,7 +11,8 @@ export class SocketService {
 	private socket: Socket;
 	receivedFilter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
-	constructor() {}
+	constructor() {
+	}
 	
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
 		this.receivedFilter = new EventEmitter<any>();

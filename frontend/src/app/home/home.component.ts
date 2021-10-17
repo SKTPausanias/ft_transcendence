@@ -43,11 +43,12 @@ export class HomeComponent implements OnInit {
 			this.socketService.receivedFilter.subscribe((data : any)=> {
 				this.sharedPreference.userInfo = data.userInfo;
 				this.sharedPreference.friends = data.friends;
+				this.isLoaded = true;
 			})
-			if (this.sharedPreference.userInfo !== undefined)
+			/* if (this.sharedPreference.userInfo !== undefined)
 				this.isLoaded = true;
 			else
-				this.isLoaded = false;
+				this.isLoaded = false; */
 			/* 
 			const resp = await this.userService.getUserInfo(this.session);
 			if (resp.statusCode != 200)

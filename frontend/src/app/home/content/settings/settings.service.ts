@@ -27,8 +27,9 @@ export class SettingsService {
 	{
 		const url = '/api/users/settings/update';
 		try{
-			return (await this.http.post<any>(url, userData, {headers: new HttpHeaders({
+			const ret =  (await this.http.post<any>(url, userData, {headers: new HttpHeaders({
 				Authorization: 'Bearer ' + session.token})}).toPromise());
+			return (ret);
 		}
 		catch(e){
 			return e;
