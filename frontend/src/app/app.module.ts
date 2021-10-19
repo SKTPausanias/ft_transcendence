@@ -24,6 +24,7 @@ import { NotFoundComponent } from './shared/component/not-found/not-found.compon
 import { LoadingComponent } from './shared/component/loading/loading.component';
 import { AuthComponent } from './auth/auth.component';
 import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
+import { FriendInvitationComponent } from './home/content/dashboard/notifications/friend-invitation/friend-invitation.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
 	NotFoundComponent,
 	LoadingComponent,
  	AuthComponent,
-  TwoFactorComponent
+  TwoFactorComponent,
+  FriendInvitationComponent
   ],
   imports: [
     BrowserModule,

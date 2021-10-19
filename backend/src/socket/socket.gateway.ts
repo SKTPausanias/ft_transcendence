@@ -1,7 +1,9 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { FriendEntity } from 'src/home/friends/friend.entity';
 import { FriendService } from 'src/home/friends/friend.service';
 import { UserEntity } from 'src/home/user/user.entity';
 import { User } from 'src/home/user/userClass';
+import { UserPublicInfoI } from 'src/home/user/userI';
 import { SessionService } from 'src/session/session.service';
 import { SessionI } from 'src/session/sessionI';
 import { wSocket } from 'src/socket/eSocket';
@@ -21,7 +23,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const token = client.handshake.headers.authorization.split(' ')[1];
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friends = await this.friendService.findAllFriends(session.userID);
-			const sck = new SocketClass(client.id, session, friends);
+			const friendInvitations = await this.friendService.findAllInvitations(session.userID);
+			const sck = new SocketClass(client.id, session, friends, friendInvitations);
 			this.sockets.push(sck);
 			sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets);
 			this.server.to(client.id).emit(wSocket.SESSION_INIT, sck.session_data);
@@ -55,4 +58,32 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		sck.session = session;
 		sck.onChange(action, this.server, this.sockets);
 	}
+	public emitFriendNotification(session: SessionI, newFriendship: UserPublicInfoI)
+	{
+		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
+		sck.emitToOne(wSocket.FRIEND_INVITATION, this.server, this.sockets, newFriendship.nickname, User.getPublicInfo(session.userID));
+	}
+	public emitFriendConfiramtion(session: SessionI, newFriendship: UserPublicInfoI)
+	{
+		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
+		sck.session_data.friends.push(newFriendship);
+		console.log("friend size after confirm: ", sck.session_data.friends.length);
+		sck.emitToOne(wSocket.FRIEND_ACCEPT, this.server, this.sockets, newFriendship.nickname, User.getPublicInfo(session.userID));
+		this.server.to(sck.socket_id).emit(wSocket.FRIEND_ACCEPT, newFriendship);	
+	}
+	public emitFriendRemove(session: SessionI, friend: UserPublicInfoI){
+		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
+		sck.session_data.friends = sck.session_data.friends.filter(obj => obj.nickname !== friend.nickname);
+		sck.emitToOne(wSocket.FRIEND_DELETE, this.server, this.sockets, friend.nickname, User.getPublicInfo(session.userID));
+		this.server.to(sck.socket_id).emit(wSocket.FRIEND_DELETE, friend);	
+	}
+	public emitDeleteAccount(session: SessionI, friends: UserPublicInfoI[]){
+		const sck = SocketClass.findSocketBySession(this.sockets, session.token);
+		sck.onDeleteAccount(this.server, this.sockets, friends);
+		/* sck.emitToOne(wSocket.FRIEND_DELETE, this.server, this.sockets, friend.nickname, User.getPublicInfo(session.userID));
+		this.server.to(sck.socket_id).emit(wSocket.FRIEND_DELETE, friend);	 */
+	}
+
+
+	
 }

@@ -4,5 +4,6 @@ import { UserPublicInfoI } from "./iUserInfo";
 export interface SharedPreferencesI {
 	userInfo : UserInfoI;
 	friends : UserPublicInfoI[];
+	friend_invitation: UserPublicInfoI[];
 	expandRightNav : boolean;
 }

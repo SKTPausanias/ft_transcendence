@@ -1,10 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild  } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild  } from '@angular/core';
 
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from './dashboard.service';
 import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
 import { fromEvent } from 'rxjs';
+import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,12 +13,18 @@ import { fromEvent } from 'rxjs';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
+	@Input() dashboardPreference: SharedPreferencesI;
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('friendship') frindInput : ElementRef;
   
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
+	fInvitation = [
+		{ nickname: "dbelinsk"},
+		{ nickname: "pepe"},
+		{ nickname: "juan"},
+		{ nickname: "carlos"}
+	]
 	constructor(
 	  private dashboardService: DashboardService,
 	  private sQuery: SessionStorageQueryService
@@ -38,7 +45,7 @@ export class DashboardComponent implements OnInit {
 		  })	//, filter(res => res.length > 2)
 				, debounceTime(1000)
 				, distinctUntilChanged()).subscribe((text: string) => {
-				  if (text.length <= 2)
+				  if (text.length <= 0)
 					  this.users = [];
 				  else
 					  this.onSearchBoxChange(text).subscribe((res: any)=> {
@@ -54,7 +61,6 @@ export class DashboardComponent implements OnInit {
 		return (this.dashboardService.liveSearchUsers(this.session, value));
 	}
 	async addFriendShip(user: any): Promise<any>{
-	  console.log("val of user: ", user);
 	  return (await this.dashboardService.addFriendShip(user, this.session))
 	}
   

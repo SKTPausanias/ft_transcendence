@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SharedPreferencesI } from 'src/app/shared/ft_interfaces'
+import { SessionI, SharedPreferencesI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { mDate } from 'src/app/utils/date';
+import { DashboardService } from '../content/dashboard/dashboard.service';
 @Component({
   selector: 'app-right-nav',
   templateUrl: './right-nav.component.html',
@@ -9,11 +10,12 @@ import { mDate } from 'src/app/utils/date';
 })
 export class RightNavComponent implements OnInit {
 	@Input() rigtNavPreference: SharedPreferencesI;
-	token = this.sQuery.getSessionToken();
+	session: SessionI = this.sQuery.getSessionToken();
 	onlineUsers: any;
 	
 	constructor(private sQuery: SessionStorageQueryService,
-		private userServie: UserService) {
+		private userServie: UserService,
+		private dashboardService: DashboardService) {
 		
 	}
 
@@ -21,8 +23,8 @@ export class RightNavComponent implements OnInit {
 		//const resp = await this.userServie.getOnlineFriends(this.token);
 		//this.onlineUsers = resp.data;
 	}
+	async removeFriend(friend: any){
 
-	avatarUrl(){
-		return (this.rigtNavPreference.userInfo.avatar + "?rand+\=" + mDate.timeNowInSec());
+		return (await this.dashboardService.removeFriendShip(friend, this.session))
 	}
 }

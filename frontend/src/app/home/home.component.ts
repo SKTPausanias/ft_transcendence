@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
 		this.sharedPreference.userInfo = <UserInfoI>{};
 		this.sharedPreference.friends = [];
 		this.sharedPreference.expandRightNav = false;
+		this.sharedPreference.friend_invitation = [];
 	}
 
 	async ngOnInit(): Promise<void> {
@@ -43,6 +44,7 @@ export class HomeComponent implements OnInit {
 			this.socketService.receivedFilter.subscribe((data : any)=> {
 				this.sharedPreference.userInfo = data.userInfo;
 				this.sharedPreference.friends = data.friends;
+				this.sharedPreference.friend_invitation = data.friend_invitation;
 				this.isLoaded = true;
 			})
 			/* if (this.sharedPreference.userInfo !== undefined)

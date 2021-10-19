@@ -9,14 +9,15 @@
 			</div>
 		</div>
 		<div id="sep"></div>
-		<div *ngFor="let user of rigtNavPreference.friends" class="mx-3">
-			<div class="parent" [ngClass]="{'offline' : !user.online}">
+		<div *ngFor="let friend of rigtNavPreference.friends" class="mx-3">
+			<div class="parent" [ngClass]="{'offline' : !friend.online}">
 
 				<div>
-					<img src='{{user.avatar}}' class="ico_s" alt="">
+					<img src='{{friend.avatar}}' class="ico_s" alt="">
 				</div>
 				<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
-					<p id="nickname">{{user.nickname}}</p>
+					<p id="nickname">{{friend.nickname}}</p>
+					<button class="btn-danger" (click)="removeFriend(friend)">X</button>
 				</div>
 			</div>
 		</div>

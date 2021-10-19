@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import { SessionI, SharedPreferencesI } from "../shared/ft_interfaces";
 import { environment } from 'src/environments/environment'
 import { wSocket } from 'src/app/shared/ft_enums'
+import { UserPublicInfoI } from "../shared/interface/iUserInfo";
 
 @Injectable({
 	providedIn: "root",
@@ -22,7 +23,11 @@ export class SocketService {
 		this.onDisonnect();
 		this.onForceDisonnect();
 		this.onSessionInit();
-		this.onFriendConnection();	
+		this.onFriendConnection();
+		this.onFriendInvitation();
+		this.onFriendAccept();
+		this.onFriendRemove();
+		this.onDeleteAccount();
 	}
 	public disconnect()
 	{
@@ -70,4 +75,49 @@ export class SocketService {
 			}
 		});
 	}
+	private onFriendInvitation(){
+		this.socket.on(wSocket.FRIEND_INVITATION, (data: any) => {
+			try {
+				this.sharedPreferences.friend_invitation.push(data);
+				this.receivedFilter.emit(this.sharedPreferences);
+			} catch (error) {
+				
+			}
+		})
+	}
+	private onFriendAccept(){
+		this.socket.on(wSocket.FRIEND_ACCEPT, (data: any) => {
+			try {
+				this.sharedPreferences.friend_invitation = 
+					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
+				this.sharedPreferences.friends.push(data);
+				this.sharedPreferences.friends.sort((a, b) => a.online > b.online ? -1 : a.online > b.online ? 1 : 0);
+				this.receivedFilter.emit(this.sharedPreferences);
+			}catch(error){}
+		})
+		
+	}
+	private onFriendRemove(){
+		this.socket.on(wSocket.FRIEND_DELETE, (data: any) => {
+			try {
+				this.sharedPreferences.friend_invitation = 
+					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
+				this.sharedPreferences.friends = 
+					this.sharedPreferences.friends.filter(obj => obj.nickname != data.nickname);
+				this.receivedFilter.emit(this.sharedPreferences);
+			}catch(error){}
+		})
+	}
+	private onDeleteAccount(){
+		this.socket.on(wSocket.USER_DELETE, (remiter: string, data: any) => {
+			try {
+				this.sharedPreferences.friend_invitation = 
+					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
+				this.sharedPreferences.friends = 
+					this.sharedPreferences.friends.filter(obj => obj.nickname != data.nickname);
+				this.receivedFilter.emit(this.sharedPreferences);
+			}catch(error){}
+		})
+	}
+
 }

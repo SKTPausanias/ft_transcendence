@@ -13,6 +13,7 @@ import * as fs from 'fs'
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { wSocket } from 'src/socket/eSocket';
 import { Exception } from 'src/shared/utils/exception';
+import { FriendService } from '../friends/friend.service';
 
 @Injectable()
 export class SettingsService {
@@ -21,14 +22,17 @@ export class SettingsService {
         private userService: UserService,
 		private twoFactorService: TwoFactorService,
 		private mailService: MailService,
-		private socketService: SocketGateway
+		private socketService: SocketGateway,
+		private friendService: FriendService
         ){}
 		async deleteUser(header: any)
 		{
 			const token = header.authorization.split(' ')[1];
 			try {
 				const session = await this.sessionService.findSessionWithRelation(token);
+				const friends = await this.friendService.findAllFriends(session.userID);
 				const resp = await this.userService.deleteUser(session.userID);
+				this.socketService.emitDeleteAccount(session, friends);
 				return (Response.makeResponse(200, {ok : 'deleted'}));
 			} catch (error) {
 				console.log(error);

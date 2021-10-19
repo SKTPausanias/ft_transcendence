@@ -39,6 +39,7 @@ export class FriendService {
 			}
 		}
 		async addFriend(user: UserEntity, friend: UserEntity): Promise<any> {
+			var ret: any;
 			try {
 				const requester = await this.friendRepository.findOne({where: //where user.id && friend.id
 						{ user_1 : user.id, user_2 : friend.id } // AND
@@ -48,9 +49,10 @@ export class FriendService {
 				});
 
 				if (requester === undefined && accepter === undefined)
-					return (await this.friendRepository.save({ user_1: user, user_2: friend }));
+					ret = (await this.friendRepository.save({ user_1: user, user_2: friend }));
 				else if (requester === undefined && accepter !== undefined && accepter.confirmed === false)
-					return (await this.friendRepository.save({ id: accepter.id, confirmed: true }));
+					ret = (await this.friendRepository.save({ id: accepter.id, confirmed: true }));
+				return (ret);
 			}catch (e) {
 				throw new Exception(Response.makeResponse(500, "Can't add/confirm friendship"));
 			}
@@ -66,5 +68,25 @@ export class FriendService {
 		} catch (error) {
 			throw new Exception(Response.makeResponse(500, {error: "Can't remove friendship"}));
 		}
+	}
+	
+	async findAllInvitations(user: UserEntity): Promise<UserPublicInfoI[]>
+	{
+		var ret: UserPublicInfoI[] = [];
+			try {
+
+				const friendship =  await this.friendRepository.find(
+					{relations: ['user_1', 'user_2'],
+					where: [{user_1: user.id}, {user_2 : user.id} ]}
+				)
+				friendship.forEach(element => {
+					if (element.user_1.id != user.id && element.confirmed === false)
+							ret.push(User.getPublicInfo(element.user_1));
+				});
+				return (ret);
+			} catch (error) {
+				console.log("ERROR");
+				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));
+			}
 	}
 }
