@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { SessionEntity } from 'src/session/session.entity';
 import { Response } from 'src/shared/response/responseClass';
 import { SessionService } from 'src/session/session.service';
 import { User } from 'src/home/user/userClass';
@@ -10,9 +7,6 @@ import { UserService } from '../user/user.service';
 import { TwoFactorService } from 'src/auth/two-factor/two-factor.service';
 import { MailService } from 'src/shared/mail/mail.service';
 import * as fs from 'fs'
-import { SocketGateway } from 'src/socket/socket.gateway';
-import { wSocket } from 'src/socket/eSocket';
-import { Exception } from 'src/shared/utils/exception';
 import { FriendService } from '../friends/friend.service';
 
 @Injectable()
