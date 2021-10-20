@@ -99,11 +99,13 @@ export class User implements UserI {
 			email : data.email,
 			avatar : data.avatar,
 			factor_enabled : data.factor_enabled,
+			online: data.online
 	//		friends: aux
 		});
 	}
 	static getPublicInfo(data: any): UserPublicInfoI{
 		return ({
+			login: data.login,
 			nickname : data.nickname,
 			first_name : data.first_name,
 			last_name : data.last_name,

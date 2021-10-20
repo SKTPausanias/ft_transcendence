@@ -30,7 +30,7 @@ export class FriendInvitationComponent implements OnInit {
 		this.pos < 0 ? (this.pos = 0) : 0;
 		if (this.friendPreferneces.friend_invitation.length > 0)
 			return (this.friendPreferneces.friend_invitation[this.pos].nickname)
-		return ("EMTY");
+		return ("");
 	}
 	async accept(){
 		const user = this.friendPreferneces.friend_invitation[this.pos];
@@ -48,7 +48,6 @@ export class FriendInvitationComponent implements OnInit {
 			this.pos = 0;
 	}
 	prev(){
-
 		if (this.pos > 0)
 			this.pos--;
 		else

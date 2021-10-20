@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendEntity } from 'src/home/friends/friend.entity';
 import { FriendService } from 'src/home/friends/friend.service';
 import { UserEntity } from 'src/home/user/user.entity';
+import { UserService } from 'src/home/user/user.service';
 import { SessionEntity } from 'src/session/session.entity';
 import { SessionService } from 'src/session/session.service';
 import { SocketGateway } from './socket.gateway';
@@ -10,6 +11,6 @@ import { SocketService } from './socket.service';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
-	providers : [SocketGateway, SessionService, FriendService, SocketService]
+	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService]
 })
 export class SocketModule {}

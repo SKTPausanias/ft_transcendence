@@ -19,30 +19,27 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleConnection(client) {
 
 		try {
-			const token = client.handshake.headers.authorization.split(' ')[1];
-			const sessionData = await this.socketService.onConnect(token, client.id);
-			await this.socketService.emitToFriends(sessionData);
-			this.server.to(client.id).emit(wSocket.SESSION_INIT, sessionData);
-
-		
-
-
-			
-			
-			/* const sck = new SocketClass(client.id, session, friends, friendInvitations);
-			this.sockets.push(sck); */
-			//sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets);
-			console.log("Connected: there are ", ++this.clientsConnected, " clients connected!: ", client.id);
-		} catch (error) {
-			console.error(error);
-			this.server.emit('force-disconnect');
+			const sessionData = await this.getSessionData(client);
+			await this.socketService.emitToAllFriends(
+				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
+				sessionData.friends, User.getPublicInfo(sessionData.userInfo));
+				this.server.to(client.id).emit(wSocket.SESSION_INIT, sessionData);
+				console.log("Connected: there are ", ++this.clientsConnected, " clients connected!: ", client.id);
+			} catch (error) {
+				console.error(error);
+				this.server.emit('force-disconnect');
+			}
 		}
-	}
 	async handleDisconnect(client) {
-	/* 	var sck = SocketClass.findSocket(this.sockets, client.id);
-		this.sockets = sck.remove(this.sockets);
-		sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets); */
-		console.log("Disconnected: there are ", --this.clientsConnected, " clients connected");
+		const sessionData = await this.getSessionData(client);
+		sessionData.userInfo.online = false;
+		await this.socketService.emitToAllFriends(
+			this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
+			sessionData.friends, User.getPublicInfo(sessionData.userInfo));
+/* 	var sck = SocketClass.findSocket(this.sockets, client.id);
+	this.sockets = sck.remove(this.sockets);
+	sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets); */
+	console.log("Disconnected: there are ", --this.clientsConnected, " clients connected");
 	}
 	@SubscribeMessage(wSocket.SESSION_INIT)
 	async handshake(client, message) {
@@ -51,41 +48,43 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 	@SubscribeMessage(wSocket.USER_UPDATE)
 	async friendConnect(client, message) {
-		//console.log(SocketClass.findSocket(this.sockets, client.id).session.userID.nickname, " : ", message);
+		const sessionData = await this.getSessionData(client);
+		await this.socketService.emitToAllFriends(
+				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login,
+				sessionData.friends, User.getPublicInfo(sessionData.userInfo));
+		await this.socketService.emitToSelf(
+				this.server, wSocket.USER_UPDATE, 
+				sessionData.userInfo.login, sessionData.userInfo);
 	}
-
-	public emitUserUpdate(action: string, session: SessionI)
-	{
-		/* const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		sck.session_data.friends = sck.session_data.friends;
-		sck.session_data.userInfo = User.getInfo(session.userID);
-		sck.session = session;
-		sck.onChange(action, this.server, this.sockets); */
+	@SubscribeMessage(wSocket.FRIEND_INVITATION)
+	async friendInvitation(client, friend) {
+		const sessionData = await this.getSessionData(client);
+		await this.socketService.emitToOneFriend(this.server, wSocket.FRIEND_INVITATION,
+						sessionData.userInfo.login, friend, User.getPublicInfo(sessionData.userInfo));
 	}
-	public emitFriendNotification(session: SessionI, newFriendship: UserPublicInfoI)
-	{
-		/* const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		sck.emitToOne(wSocket.FRIEND_INVITATION, this.server, this.sockets, newFriendship.nickname, User.getPublicInfo(session.userID)); */
+	@SubscribeMessage(wSocket.FRIEND_ACCEPT)
+	async friendAccept(client, friend) {
+		const sessionData = await this.getSessionData(client);
+		await this.socketService.emitToOneFriend(this.server, wSocket.FRIEND_ACCEPT,
+						sessionData.userInfo.login, friend, User.getPublicInfo(sessionData.userInfo));
+		await this.socketService.emitToSelf(this.server, wSocket.FRIEND_ACCEPT,
+				sessionData.userInfo.login, friend);
 	}
-	public emitFriendConfiramtion(session: SessionI, newFriendship: UserPublicInfoI)
-	{
-	/* 	const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		sck.session_data.friends.push(newFriendship);
-		console.log("friend size after confirm: ", sck.session_data.friends.length);
-		sck.emitToOne(wSocket.FRIEND_ACCEPT, this.server, this.sockets, newFriendship.nickname, User.getPublicInfo(session.userID));
-		this.server.to(sck.socket_id).emit(wSocket.FRIEND_ACCEPT, newFriendship);	 */
+	@SubscribeMessage(wSocket.FRIEND_DELETE)
+	async friendDelete(client, friend) {
+		const sessionData = await this.getSessionData(client);
+		await this.socketService.emitToOneFriend(this.server, wSocket.FRIEND_DELETE,
+						sessionData.userInfo.login, friend, User.getPublicInfo(sessionData.userInfo));
+		await this.socketService.emitToSelf(this.server, wSocket.FRIEND_DELETE,
+				sessionData.userInfo.login, friend);
 	}
-	public emitFriendRemove(session: SessionI, friend: UserPublicInfoI){
-		/* const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		sck.session_data.friends = sck.session_data.friends.filter(obj => obj.nickname !== friend.nickname);
-		sck.emitToOne(wSocket.FRIEND_DELETE, this.server, this.sockets, friend.nickname, User.getPublicInfo(session.userID));
-		this.server.to(sck.socket_id).emit(wSocket.FRIEND_DELETE, friend);	*/
-	} 
-	public emitDeleteAccount(session: SessionI, friends: UserPublicInfoI[]){
-		/* const sck = SocketClass.findSocketBySession(this.sockets, session.token);
-		sck.onDeleteAccount(this.server, this.sockets, friends); */
-		/* sck.emitToOne(wSocket.FRIEND_DELETE, this.server, this.sockets, friend.nickname, User.getPublicInfo(session.userID));
-		this.server.to(sck.socket_id).emit(wSocket.FRIEND_DELETE, friend);	 */
+	@SubscribeMessage(wSocket.USER_DELETE)
+	async userDelete(client, data) {
+		await this.socketService.emitToAllFriends(this.server, wSocket.USER_DELETE, data.emiter, data.friends, data.friends)
+	}
+	private async getSessionData(client: any){
+		const token = client.handshake.headers.authorization.split(' ')[1];
+		return (await this.socketService.getSessionData(token, client.id));
 	}
 
 

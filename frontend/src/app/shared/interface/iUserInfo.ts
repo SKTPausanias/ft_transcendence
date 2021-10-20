@@ -9,6 +9,7 @@ export interface UserInfoI {
 	factor_enabled: boolean;
 }
 export interface UserPublicInfoI {
+	login: string,
 	first_name: string;
 	last_name: string;
 	nickname: string;

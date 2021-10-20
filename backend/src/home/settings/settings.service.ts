@@ -16,7 +16,6 @@ export class SettingsService {
         private userService: UserService,
 		private twoFactorService: TwoFactorService,
 		private mailService: MailService,
-		//private socketService: SocketGateway,
 		private friendService: FriendService
         ){}
 		async deleteUser(header: any)
@@ -26,7 +25,6 @@ export class SettingsService {
 				const session = await this.sessionService.findSessionWithRelation(token);
 				const friends = await this.friendService.findAllFriends(session.userID);
 				const resp = await this.userService.deleteUser(session.userID);
-				//this.socketService.emitDeleteAccount(session, friends);
 				return (Response.makeResponse(200, {ok : 'deleted'}));
 			} catch (error) {
 				console.log(error);
@@ -45,7 +43,6 @@ export class SettingsService {
 				session.userID.nickname = user.nickname;
 				await this.userService.save(session.userID);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
-				//this.socketService.emitUserUpdate(wSocket.USER_UPDATE, updatedUser);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)
@@ -62,7 +59,6 @@ export class SettingsService {
 				this.deleteFile(session.userID.avatar, usr.avatar);
 				const resp = await this.userService.update(session.userID, usr);
 				const updatedUser = await this.sessionService.findSessionWithRelation(token);
-				//this.socketService.emitUserUpdate(wSocket.USER_UPDATE, updatedUser);
 				return (Response.makeResponse(200, User.getInfo(updatedUser.userID)));
 			} catch (error) {
 				if (error.statusCode === 410)

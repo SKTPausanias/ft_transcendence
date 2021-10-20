@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { SessionI } from 'src/app/shared/ft_interfaces';
+import { SocketService } from '../../socket.service';
+import { wSocket } from 'src/app/shared/ft_enums';
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+	  		private http: HttpClient,
+			private socketService: SocketService) { }
   async searchUsers(session: SessionI, val: string): Promise<any> {
     const url = '/api/users/dashboard/search';
     var searchParams = new HttpParams().set('match', val);
@@ -31,12 +35,16 @@ export class DashboardService {
   }
   async addFriendShip(user: any, session: SessionI): Promise<any> {
       const url = '/api/users/dashboard/addFriend';
-
       try{
-        return (await this.http.post<any>(url, user, { headers: new HttpHeaders({
+        const ret = (await this.http.post<any>(url, user, { headers: new HttpHeaders({
             Authorization: 'Bearer ' + session.token
           })
         }).toPromise())
+		if (ret && !ret.confirmed)
+			this.socketService.emit(wSocket.FRIEND_INVITATION, user);
+		if (ret && ret.confirmed)
+			this.socketService.emit(wSocket.FRIEND_ACCEPT, user);
+		return (ret);
       } catch(e){
         return (e);
       }
@@ -46,10 +54,12 @@ export class DashboardService {
     const url = '/api/users/dashboard/removeFriend';
 
     try{
-      return (await this.http.post<any>(url, user, { headers: new HttpHeaders({
+      const ret = (await this.http.post<any>(url, user, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token
         })
       }).toPromise())
+	  this.socketService.emit(wSocket.FRIEND_DELETE, user);
+	  return (ret);
     } catch(e){
       return (e);
     }

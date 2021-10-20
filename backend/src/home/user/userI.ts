@@ -34,8 +34,10 @@ export interface UserInfoI {
     login: string;
     avatar: string;
     factor_enabled: boolean;
+	online: boolean;
 }
 export interface UserPublicInfoI {
+	login: string,
     first_name: string;    
     last_name: string;	
     nickname: string;

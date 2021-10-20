@@ -1,8 +1,10 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { wSocket } from 'src/app/shared/ft_enums';
 import { UserInfoI, SessionI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { mDate } from 'src/app/utils/date';
+import { SocketService } from '../../socket.service';
 
 @Injectable({
 providedIn: 'root',
@@ -13,7 +15,8 @@ export class SettingsService {
 
 	constructor(
 		private http: HttpClient,
-		private sQuery: SessionStorageQueryService
+		private sQuery: SessionStorageQueryService,
+		private socketService: SocketService
 	) {}
 
 	async deleteUserAccount(session: SessionI): Promise<any> {
@@ -29,6 +32,7 @@ export class SettingsService {
 		try{
 			const ret =  (await this.http.post<any>(url, userData, {headers: new HttpHeaders({
 				Authorization: 'Bearer ' + session.token})}).toPromise());
+			this.socketService.emit(wSocket.USER_UPDATE);
 			return (ret);
 		}
 		catch(e){
@@ -41,10 +45,12 @@ export class SettingsService {
 		const body = new FormData();
         body.append('image', image, (fileName  + mDate.timeNowInSec() + image.name.substring(image.name.indexOf('.'))));
 		try{
-			return (await this.http.post(url, body, 
+			const ret =  (await this.http.post(url, body, 
 				{ headers: new HttpHeaders({
 					Authorization: 'Bearer ' + session.token})
 			}).toPromise());
+			this.socketService.emit(wSocket.USER_UPDATE);
+			return (ret);
 		}catch(e){
 			console.log("from catch: ", e);
 		}

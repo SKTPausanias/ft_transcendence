@@ -2,7 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { FriendService } from 'src/home/friends/friend.service';
 import { UserService } from 'src/home/user/user.service';
 import { User } from 'src/home/user/userClass';
+import { UserPublicInfoI } from 'src/home/user/userI';
 import { SessionService } from 'src/session/session.service';
+import { wSocket } from './eSocket';
 import { SessionDataI } from './iSocket';
 
 @Injectable()
@@ -12,7 +14,7 @@ export class SocketService {
 				private friendService: FriendService,
 				private userService: UserService){}
 
-	async onConnect(token: string, socket_id: string): Promise<SessionDataI>{
+	async getSessionData(token: string, socket_id: string): Promise<SessionDataI>{
 		var sessionData = <SessionDataI>{}
 		const session = await this.sessionService.findSessionWithRelation(token);
 		session.socket_id = socket_id;
@@ -23,11 +25,29 @@ export class SocketService {
 		return (sessionData);
 	}
 
-	async emitToFriends(session_data: SessionDataI){
-		session_data.friends.forEach(async element =>  {
-			const friend = await this.userService.findByNickname(element.nickname);
-			const friendSession = await this.sessionService.findByUser(friend);
-			console.log("--->", friendSession);
+	async emitToAllFriends(server: any, action: string, emiter: string, recivers: UserPublicInfoI[], data: any){
+		recivers.forEach(async element =>  {
+			const friend = await this.userService.findByLogin(element.login); //UserEntity
+			const friendSession = await this.sessionService.findByUser(friend);		//SesionEntity
+			friendSession.forEach(element => {
+				server.to(element.socket_id).emit(action, emiter, data);
+			});
 		});
 	}
+	async emitToOneFriend(server: any, action: string, emiter: string, reciver: UserPublicInfoI, data: any)
+	{
+		const friend = await this.userService.findByLogin(reciver.login);
+		const friendSession = await this.sessionService.findByUser(friend);
+		friendSession.forEach(element => {
+			server.to(element.socket_id).emit(action, emiter, data);
+		});
+	}
+	async emitToSelf(server: any, action: string, emiter: string, data: any){
+		const me = await this.userService.findByLogin(emiter);
+		const selfSession = await this.sessionService.findByUser(me);
+		selfSession.forEach(element => {
+			server.to(element.socket_id).emit(action, emiter, data);
+		});
+	}
+	
 }

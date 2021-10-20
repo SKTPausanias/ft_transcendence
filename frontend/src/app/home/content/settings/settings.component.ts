@@ -4,6 +4,8 @@ import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { SharedPreferencesI, UserInfoI } from 'src/app/shared/ft_interfaces';
 import { SettingsService } from './settings.service';
 import { mDate } from 'src/app/utils/date';
+import { SocketService } from '../../socket.service';
+import { wSocket } from 'src/app/shared/ft_enums';
 
 
 @Component({
@@ -33,7 +35,8 @@ export class SettingsComponent implements OnInit {
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private settingService: SettingsService,
-		private router: Router
+		private router: Router,
+		private socketService: SocketService
 		) {
 		}
 		
@@ -137,6 +140,10 @@ export class SettingsComponent implements OnInit {
 	async deleteAccount(): Promise<void> {
 		if (confirm('Are you sure you want to delete your account? You won\'t get it back!')) {
 			const resp = await this.settingService.deleteUserAccount(this.session);
+			if (resp.statusCode == 200)
+				this.socketService.emit(wSocket.USER_DELETE, {
+					emiter : this.settingsPreference.userInfo.login,
+					friends : this.settingsPreference.friends});
 			this.sQuery.removeAll();
 			this.router.navigateByUrl('logIn');
 		}

@@ -23,7 +23,7 @@ export class SocketService {
 		this.onDisonnect();
 		this.onForceDisonnect();
 		this.onSessionInit();
-		this.onFriendConnection();
+		this.onUserUpdate();
 		this.onFriendInvitation();
 		this.onFriendAccept();
 		this.onFriendRemove();
@@ -64,10 +64,12 @@ export class SocketService {
 			this.receivedFilter.emit(data);
 		});
 	}
-	private onFriendConnection(){
+	private onUserUpdate(){
 		this.socket.on(wSocket.USER_UPDATE, (emiter: any, data: any) => {
 			try {
-				this.sharedPreferences.friends = this.sharedPreferences.friends.map(obj => obj.nickname === emiter ? data : obj);
+				if (this.sharedPreferences.userInfo.login === emiter)
+					this.sharedPreferences.userInfo = data;
+				this.sharedPreferences.friends = this.sharedPreferences.friends.map(obj => obj.login === emiter ? data : obj);
 				this.sharedPreferences.friends.sort((a, b) => a.online > b.online ? -1 : a.online > b.online ? 1 : 0);
 				this.receivedFilter.emit(this.sharedPreferences);
 			} catch (error) {
@@ -76,9 +78,11 @@ export class SocketService {
 		});
 	}
 	private onFriendInvitation(){
-		this.socket.on(wSocket.FRIEND_INVITATION, (data: any) => {
+		this.socket.on(wSocket.FRIEND_INVITATION, (emiter: string, data: any) => {
 			try {
-				this.sharedPreferences.friend_invitation.push(data);
+				const invitations = this.sharedPreferences.friend_invitation.filter(obj => obj.login.indexOf(data.login) !== -1);
+				if (!invitations.length)
+					this.sharedPreferences.friend_invitation.push(data);
 				this.receivedFilter.emit(this.sharedPreferences);
 			} catch (error) {
 				
@@ -86,7 +90,7 @@ export class SocketService {
 		})
 	}
 	private onFriendAccept(){
-		this.socket.on(wSocket.FRIEND_ACCEPT, (data: any) => {
+		this.socket.on(wSocket.FRIEND_ACCEPT, (emiter: string, data: any) => {
 			try {
 				this.sharedPreferences.friend_invitation = 
 					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
@@ -98,26 +102,40 @@ export class SocketService {
 		
 	}
 	private onFriendRemove(){
-		this.socket.on(wSocket.FRIEND_DELETE, (data: any) => {
+		this.socket.on(wSocket.FRIEND_DELETE, (emiter: string, data: any) => {
+			
 			try {
 				this.sharedPreferences.friend_invitation = 
-					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
+					this.sharedPreferences.friend_invitation.filter(obj => obj.login != data.login);
 				this.sharedPreferences.friends = 
-					this.sharedPreferences.friends.filter(obj => obj.nickname != data.nickname);
+					this.sharedPreferences.friends.filter(obj => obj.login != data.login);
 				this.receivedFilter.emit(this.sharedPreferences);
 			}catch(error){}
 		})
 	}
 	private onDeleteAccount(){
-		this.socket.on(wSocket.USER_DELETE, (remiter: string, data: any) => {
+		this.socket.on(wSocket.USER_DELETE, (emiter: string, data: any) => {
 			try {
 				this.sharedPreferences.friend_invitation = 
-					this.sharedPreferences.friend_invitation.filter(obj => obj.nickname != data.nickname);
+					this.sharedPreferences.friend_invitation.filter(obj => obj.login != emiter);
 				this.sharedPreferences.friends = 
-					this.sharedPreferences.friends.filter(obj => obj.nickname != data.nickname);
+					this.sharedPreferences.friends.filter(obj => obj.login != emiter);
 				this.receivedFilter.emit(this.sharedPreferences);
 			}catch(error){}
 		})
 	}
+
+	emit(action: string, data?: any){
+		data ? this.socket.emit(action, data) : this.socket.emit(action);
+	}
+/* 	emitWithData()
+	emitUserUpdate(){
+		this.socket.emit(wSocket.USER_UPDATE);
+	}
+
+	emitFriendInvitation(user: any){
+		this.socket.emit(wSocket.FRIEND_INVITATION, user);
+	} */
+
 
 }
