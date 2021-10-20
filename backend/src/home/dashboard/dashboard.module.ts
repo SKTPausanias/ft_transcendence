@@ -9,12 +9,13 @@ import { SessionService } from 'src/session/session.service';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { SocketService } from 'src/socket/socket.service';
 
 @Module({
     imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
     controllers: [DashboardController],
     providers: [
-		DashboardService, UserService, SessionService, FriendService, SocketGateway
+		DashboardService, UserService, SessionService, FriendService
 	]
 })
 export class DashboardModule {}

@@ -12,12 +12,13 @@ import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
+import { SocketService } from 'src/socket/socket.service';
 
 @Module({
     imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity])],
     controllers: [SettingsController],
     providers: [
-		SettingsService, UserService, SessionService, TwoFactorService, MailService, FriendService, SocketGateway
+		SettingsService,UserService, SessionService, TwoFactorService, MailService, FriendService, SocketGateway, SocketService
 	]
 })
 export class SettingsModule {}

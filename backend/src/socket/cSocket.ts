@@ -68,4 +68,9 @@ export class SocketClass implements wSocketI{
 	public static findSocketBySession(sockets: wSocketI[], token: string){
 		return (sockets.find(sck => sck.session.token === token));
 	}
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	
 }

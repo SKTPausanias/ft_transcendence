@@ -47,7 +47,14 @@ export class SessionService {
 
 		}
 	}
-
+	async save(session: SessionEntity)
+	{
+		try {
+			return (await this.sessionRepository.save(session));
+		} catch (error) {
+			throw new Exception(Response.makeResponse(500, {error: "Failed to save"}))
+		}
+	}
 	async signToken(usr: UserEntity){
 		try {
 			usr.online = true;
@@ -106,5 +113,15 @@ export class SessionService {
 				userID: Not(curentSesion.userID.id)
 			}});
 		return (sessions);
+	}
+
+	async findByUser(user: UserEntity){
+		try {
+			const resp = await this.sessionRepository.find({where: {userID: user}});
+			return (resp);
+		} catch (error) {
+			throw new Exception(Response.makeResponse(410, {error : "Can't find user"}));
+
+		}
 	}
 }

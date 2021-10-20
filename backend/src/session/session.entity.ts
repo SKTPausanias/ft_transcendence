@@ -18,5 +18,8 @@ export class SessionEntity {
 	@JoinColumn({ name: 'user_id' })
     userID: UserEntity;
 	
+	@Column({nullable: true})
+	socket_id: string;
+	
 }
 

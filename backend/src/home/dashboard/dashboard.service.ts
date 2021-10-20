@@ -16,7 +16,7 @@ export class DashboardService {
 		private friensService: FriendService,
         private sessionService: SessionService,
         private userService: UserService,
-		private socketGateway: SocketGateway
+		//private socketGateway: SocketGateway
         ){}
 	async searchUser(match: string, header: any)
 	{
@@ -34,14 +34,14 @@ export class DashboardService {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friend = await this.userService.findByNickname(user.nickname);
 			const ret =  await this.friensService.addFriend(session.userID, friend);
-			if (ret !== undefined && !ret.confirmed)
+			/* if (ret !== undefined && !ret.confirmed)
 				this.socketGateway.emitFriendNotification(session, friend);
 			else if (ret !== undefined && ret.confirmed)//accept
 			{
 				this.socketGateway.emitFriendConfiramtion(session, friend);
 				//this.socketGateway.emitFriendNotification(session, friend, false);
 				//await this.socketGateway.emitTest(session, friend, true);
-			}
+			} */
 			return (ret);
 		} catch (error) {
 			return (error);
@@ -55,8 +55,8 @@ export class DashboardService {
 			const session = await this.sessionService.findSessionWithRelation(token);	
 			const friend = await this.userService.findByNickname(user.nickname);
 			const ret = await this.friensService.removeFriend(session.userID, friend);
-			if (ret !== undefined)
-				this.socketGateway.emitFriendRemove(session, friend);
+			/* if (ret !== undefined)
+				this.socketGateway.emitFriendRemove(session, friend); */
 			return (ret);
 		} catch (error) {
 			return (error);
