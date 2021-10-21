@@ -1,13 +1,15 @@
-<div class="d-flex justify-content-center">
-	<p>{{getInvitation()}}</p>
-</div>
-<div class="d-flex justify-content-center mt-2">
-	<button (click)="accept()" class="btn btn-success me-2">Accept</button>
-	<button (click)="decline()"class="btn btn-danger" >Decline</button>
-</div>
-<div class="d-flex justify-content-center mt-4">
-	<button (click)="prev()" class="btn btn-primary" ><<</button>
-	<button (click)="next()" class="btn btn-warning me-2">>></button>
+<div *ngIf="friendPreferneces.friend_invitation.length  > 0" id="friend-invitation">
+    <div class="d-flex justify-content-center">
+        <p>{{getInvitation()}}</p>
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+        <button (click)="accept()" class="btn btn-success me-2">Accept</button>
+        <button (click)="decline()"class="btn btn-danger" >Decline</button>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+        <button (click)="prev()" class="btn btn-primary" ><<</button>
+        <button (click)="next()" class="btn btn-warning me-2">>></button>
+    </div>
 </div>
 
 <!-- <div class="row notification-box">
