@@ -143,6 +143,10 @@ export class SocketService {
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
+
+	public getSocket():Socket {
+		return this.socket;
+	}
 /* 	emitWithData()
 	emitUserUpdate(){
 		this.socket.emit(wSocket.USER_UPDATE);

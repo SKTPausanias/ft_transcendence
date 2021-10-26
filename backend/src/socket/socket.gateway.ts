@@ -102,4 +102,31 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		//await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_MESSAGE,
 		//		sessionData.userInfo.login, sessionData.friends, data.message);
 	}
+
+	@SubscribeMessage(wSocket.GAME_POSITION)
+	async moveBall(client, data)
+	{
+		//const sessionData = await this.getSessionData(client);
+		switch(data.direction) {
+            case "left":
+                data.x -= 5;
+               this.server.emit(wSocket.GAME_POSITION, data);
+                break;
+            case "right":
+                data.x += 5;
+               this.server.emit(wSocket.GAME_POSITION, data);
+                break;
+            case "up":
+                data.y -= 5;
+               this.server.emit(wSocket.GAME_POSITION, data);
+                break;
+            case "down":
+                data.y += 5;
+               this.server.emit(wSocket.GAME_POSITION, data);
+                break;
+			default:
+				this.server.emit(wSocket.GAME_POSITION, data);
+				break;
+        }
+	}
 }
