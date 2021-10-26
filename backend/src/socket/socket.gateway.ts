@@ -7,12 +7,15 @@ import { SessionI } from 'src/session/sessionI';
 import { wSocket } from 'src/socket/eSocket';
 import { SocketClass } from './cSocket';
 import { SocketService } from './socket.service';
+import { UserService } from 'src/home/user/user.service';
   
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
-	constructor(private socketService: SocketService){}
+	constructor(private socketService: SocketService,
+		private userService: UserService,
+		){}
 	//sockets: wSocketI[] = [];
 	clientsConnected = 0;
 	@WebSocketServer() server;
@@ -86,7 +89,17 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const token = client.handshake.headers.authorization.split(' ')[1];
 		return (await this.socketService.getSessionData(token, client.id));
 	}
-
-
 	
+	@SubscribeMessage(wSocket.CHAT_MESSAGE)
+	async chatMessage(client, data) {
+		const sessionData = await this.getSessionData(client);
+		console.log(sessionData.userInfo.login, " : ", data.message);
+		console.log(data.reciever);
+		//const friend = await this.userService.findByNickname(user.nickname); // sacar amigo para llamar a la funcion de emitToOneFriend
+		const friend = await this.userService.findByNickname(data.reciever);
+		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, friend, data.message);
+		//this.server.emit(wSocket.CHAT_MESSAGE, sessionData.userInfo.login, message);
+		//await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_MESSAGE,
+		//		sessionData.userInfo.login, sessionData.friends, data.message);
+	}
 }

@@ -6,4 +6,5 @@ export interface SharedPreferencesI {
 	friends : UserPublicInfoI[];
 	friend_invitation: UserPublicInfoI[];
 	expandRightNav : boolean;
+	chat_messages : string[];
 }

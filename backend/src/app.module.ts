@@ -15,7 +15,8 @@ import { UserModule } from './home/user/user.module';
 import { FriendEntity } from './home/friends/friend.entity';
 import { DashboardModule } from './home/dashboard/dashboard.module';
 import { SocketModule } from './socket/socket.module';
-
+import { ChatEntity } from './home/chat/chat.entity';
+import { MessageEntity } from './home/chat/message.entity';
 @Module({
   imports: [ConfigModule.forRoot({
 	isGlobal: true,
@@ -28,7 +29,7 @@ import { SocketModule } from './socket/socket.module';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

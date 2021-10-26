@@ -7,5 +7,6 @@ export enum wSocket {
 	USER_DELETE = 'user-delete',
 	FRIEND_INVITATION = 'friend-invitation',
 	FRIEND_DELETE = 'friend-delete',
-	FRIEND_ACCEPT = 'friend-accept'
+	FRIEND_ACCEPT = 'friend-accept',
+	CHAT_MESSAGE = 'chat-message',
 }

@@ -1,7 +1,8 @@
 import { SessionEntity } from "src/session/session.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
 import { FriendEntity } from "../friends/friend.entity";
-
+import { ChatEntity } from "../chat/chat.entity";
+import { MessageEntity } from "../chat/message.entity";
 @Entity('users')
 export class UserEntity {
 
@@ -55,5 +56,14 @@ export class UserEntity {
       onDelete: "SET NULL"
     })
     friends: FriendEntity[];
+
+    @ManyToMany(() => ChatEntity, (chat) => chat.users)
+    chats: ChatEntity[];
+
+    @OneToMany(type => MessageEntity, message => message.user)
+    messages: MessageEntity[];
+
+    /*@ManyToMany(() => ChatEntity, (chat) => chat.user_messages)
+    chat_messages: ChatEntity[];*/
 }
 

@@ -11,12 +11,14 @@ import { UserPublicInfoI } from "../shared/interface/iUserInfo";
 export class SocketService {
 	private socket: Socket;
 	receivedFilter: EventEmitter<any>;
+	chatFilter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor() {
 	}
 	
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
 		this.receivedFilter = new EventEmitter<any>();
+		this.chatFilter = new EventEmitter<any>();
 		this.sharedPreferences = sharedPreference;
 		this.init(session);
 		this.onConnect();
@@ -28,6 +30,7 @@ export class SocketService {
 		this.onFriendAccept();
 		this.onFriendRemove();
 		this.onDeleteAccount();
+		this.onChatMessage();
 	}
 	public disconnect()
 	{
@@ -121,6 +124,18 @@ export class SocketService {
 				this.sharedPreferences.friends = 
 					this.sharedPreferences.friends.filter(obj => obj.login != emiter);
 				this.receivedFilter.emit(this.sharedPreferences);
+			}catch(error){}
+		})
+	}
+
+	private onChatMessage(){
+		this.socket.on(wSocket.CHAT_MESSAGE, (emiter: string, data: any) => {
+			try {
+				console.log("data recieved:", data);
+				console.log("emiter:", emiter);
+				//this.sharedPreferences.chat_messages.push(data); si descomento no llega al subscribe
+				//console.log("data sent", this.sharedPreferences);
+				this.chatFilter.emit(data);
 			}catch(error){}
 		})
 	}

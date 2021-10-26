@@ -1,1 +1,22 @@
-<h3>CHAT WORKS!</h3>
+<div class="chat-messages">
+  <div class="chat-messages-show-container">
+    <ul class="chat-messages-show-list" id="message-list">
+    </ul>
+  </div>
+  <div class="chat-messages-create-container"> 
+    <input class="chat-messages-create-input" type="text" [(ngModel)]="message">
+    <button  class="chat-messages-create-button" (click)="sendMessage()"> Send </button>
+  </div>
+  <div class="friend-list">
+    <ul class="friend-list-list">
+      <li class="friend-list-item" *ngFor="let friend of chatPreference.friends">
+        <div class="friend-list-item-container">
+          <div class="friend-list-item-name">
+            {{friend.nickname}}
+            <button (click)="selectChat(friend.nickname)"> Chat </button>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
