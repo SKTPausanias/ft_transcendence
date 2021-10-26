@@ -7,7 +7,7 @@ export class ChatEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     name_chat: string;
 
     @Column()

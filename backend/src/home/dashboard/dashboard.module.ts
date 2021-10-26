@@ -10,12 +10,14 @@ import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
 import { SocketGateway } from 'src/socket/socket.gateway';
 import { SocketService } from 'src/socket/socket.service';
+import { ChatEntity } from '../chat/chat.entity';
+import { ChatService } from '../chat/chat.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity])],
     controllers: [DashboardController],
     providers: [
-		DashboardService, UserService, SessionService, FriendService
+		DashboardService, UserService, SessionService, FriendService, ChatService
 	]
 })
 export class DashboardModule {}

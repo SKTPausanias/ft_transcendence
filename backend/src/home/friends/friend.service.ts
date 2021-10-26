@@ -4,6 +4,8 @@ import { SessionService } from "src/session/session.service";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
 import { Connection, Repository } from "typeorm";
+import { ChatEntity } from "../chat/chat.entity";
+import { ChatService } from "../chat/chat.service";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
@@ -14,6 +16,7 @@ import { FriendEntity } from "./friend.entity";
 export class FriendService {
 	constructor(
 		@InjectRepository(FriendEntity) private friendRepository: Repository<FriendEntity>,
+		private chatService : ChatService,
        // private sessionService: SessionService,
         //private userService: UserService
         ){}
@@ -51,7 +54,10 @@ export class FriendService {
 				if (requester === undefined && accepter === undefined)
 					ret = (await this.friendRepository.save({ user_1: user, user_2: friend }));
 				else if (requester === undefined && accepter !== undefined && accepter.confirmed === false)
+				{
 					ret = (await this.friendRepository.save({ id: accepter.id, confirmed: true }));
+					await this.chatService.saveChat("private", [user, friend]);
+				}
 				return (ret);
 			}catch (e) {
 				throw new Exception(Response.makeResponse(500, "Can't add/confirm friendship"));
