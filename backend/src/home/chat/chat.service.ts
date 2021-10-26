@@ -20,4 +20,8 @@ export class ChatService {
 		this.myChat.password = '123';
 		return await this.chatRepository.save(this.myChat);
 	}
+	async saveMessage(): Promise<any> {
+		console.log("Im in message saving component");
+		return("");
+	}
 }

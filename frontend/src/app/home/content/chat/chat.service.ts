@@ -14,21 +14,20 @@ export class ChatService {
 		private socketService: SocketService) { }
   
   async sendMessage(message: string, session: SessionI, reciever: string) {
-    /*const url = '/api/users/chat/sendMessage';
+    const url = '/api/users/chat/saveMessage';
     try{
       const ret = (await this.http.post<any>(url, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token
         })
-      }).toPromise())
+      }).toPromise());
+
+      this.socketService.emit(wSocket.CHAT_MESSAGE, {
+        message: message,
+        reciever: reciever});
+      return (ret);
     }
     catch(e){
       return (e);
-    }*/
-    this.socketService.emit(wSocket.CHAT_MESSAGE, {
-      message: message,
-      reciever: reciever});
-    /*this.socketService.emit(wSocket.USER_DELETE, {
-      emiter : this.settingsPreference.userInfo.login,
-      friends : this.settingsPreference.friends});*/
+    }
   }
 }

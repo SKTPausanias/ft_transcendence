@@ -17,6 +17,7 @@ import { DashboardModule } from './home/dashboard/dashboard.module';
 import { SocketModule } from './socket/socket.module';
 import { ChatEntity } from './home/chat/chat.entity';
 import { MessageEntity } from './home/chat/message.entity';
+import { ChatModule } from './home/chat/chat.module';
 @Module({
   imports: [ConfigModule.forRoot({
 	isGlobal: true,
@@ -40,7 +41,8 @@ import { MessageEntity } from './home/chat/message.entity';
 	  SettingsModule,
 	  UserModule,
 	  DashboardModule,
-	  SocketModule
+	  SocketModule,
+	  ChatModule
 	],
   controllers: [AppController],
   providers: [AppService]
