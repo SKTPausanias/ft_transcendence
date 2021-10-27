@@ -12,12 +12,14 @@ import { FriendService } from '../friends/friend.service';
 import { ChatEntity } from '../chat/chat.entity';
 import { ChatService } from '../chat/chat.service';
 import { ChatController } from './chat.controller';
+import { MessageEntity } from './message.entity';
+import { DashboardService } from '../dashboard/dashboard.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity, ChatEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity, ChatEntity, MessageEntity])],
     controllers: [ChatController],
     providers: [
-		UserService, SessionService, TwoFactorService, MailService, FriendService, ChatService
+		SessionService, FriendService, ChatService, UserService
 	]
 })
 export class ChatModule {}

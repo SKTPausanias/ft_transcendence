@@ -53,6 +53,7 @@ export class ChatComponent implements OnInit {
 
   async selectChat(nickname: string) {
     this.reciever = nickname;
+    console.log("friends: ", this.chatPreference.friends);
     console.log("selected friend", this.reciever);
   }
 }

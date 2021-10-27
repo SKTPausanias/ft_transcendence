@@ -18,15 +18,16 @@ import { FriendEntity } from 'src/home/friends/friend.entity';
 import { FriendService } from 'src/home/friends/friend.service';
 import { ChatEntity } from 'src/home/chat/chat.entity';
 import { ChatService } from 'src/home/chat/chat.service';
+import { MessageEntity } from 'src/home/chat/message.entity';
 
 @Module({
-	imports: [ TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity]), HttpModule],
+	imports: [TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity]), HttpModule],
     controllers: [AuthController],
     providers: [
 		UserService, ConfirmService, 
 		AuthService, HashService, 
 		MailService, FtAuthService, TwoFactorService,
-		SessionService, FriendService, ChatService,
-	],
+		SessionService, FriendService, ChatService
+	]
 })
 export class AuthModule {}
