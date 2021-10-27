@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { SessionEntity } from 'src/session/session.entity';
 import { UserEntity } from 'src/home/user/user.entity';
-import { UserI, UserInfoI, UserRegI } from 'src/home/user/userI';
-import { Connection, Like, Not, Repository } from 'typeorm';
+import { Connection, Like, Repository } from 'typeorm';
 import { Response } from '../../shared/response/responseClass';
 import { ErrorParser } from '../../shared/utils/errorParser';
 import { Exception } from '../../shared/utils/exception';
 import { User } from './userClass';
 import { SessionService } from 'src/session/session.service';
-import { toHash } from 'ajv/dist/compile/util';
-import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
 
 @Injectable()

@@ -1,5 +1,4 @@
 import { SessionEntity } from "src/session/session.entity";
-import { FriendEntity } from "../friends/friend.entity";
 
 export interface UserI {
     ft_id: number;	

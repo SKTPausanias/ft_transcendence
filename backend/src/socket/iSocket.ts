@@ -1,6 +1,5 @@
 import { SessionEntity } from "src/session/session.entity";
 import { UserInfoI, UserPublicInfoI } from "src/home/user/userI"
-import { FriendEntity } from "src/home/friends/friend.entity";
 
 export interface wSocketI {
 	socket_id: string,

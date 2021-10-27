@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 import { Response } from 'src/shared/response/responseClass';
 import { SessionService } from 'src/session/session.service';
 import { User } from 'src/home/user/userClass';
@@ -79,7 +78,6 @@ export class SettingsService {
 					return (error);
 				return (Response.makeResponse(500, {error : 'unable to send code'}));
 			}
-				
 		}
 		async showQr(header: any, body: any){
 			try {

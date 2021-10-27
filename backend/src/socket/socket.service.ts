@@ -4,7 +4,6 @@ import { UserService } from 'src/home/user/user.service';
 import { User } from 'src/home/user/userClass';
 import { UserPublicInfoI } from 'src/home/user/userI';
 import { SessionService } from 'src/session/session.service';
-import { wSocket } from './eSocket';
 import { SessionDataI } from './iSocket';
 
 @Injectable()

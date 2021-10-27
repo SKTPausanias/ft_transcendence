@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { SessionEntity } from 'src/session/session.entity';
 import { SessionService } from 'src/session/session.service';
 import { ChatEntity } from '../chat/chat.entity';

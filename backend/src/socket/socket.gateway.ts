@@ -1,11 +1,6 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
-import { FriendService } from 'src/home/friends/friend.service';
 import { User } from 'src/home/user/userClass';
-import { UserPublicInfoI } from 'src/home/user/userI';
-import { SessionService } from 'src/session/session.service';
-import { SessionI } from 'src/session/sessionI';
 import { wSocket } from 'src/socket/eSocket';
-import { SocketClass } from './cSocket';
 import { SocketService } from './socket.service';
 import { UserService } from 'src/home/user/user.service';
   

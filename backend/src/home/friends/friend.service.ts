@@ -1,13 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { SessionService } from "src/session/session.service";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
-import { Connection, Repository } from "typeorm";
-import { ChatEntity } from "../chat/chat.entity";
+import { Repository } from "typeorm";
 import { ChatService } from "../chat/chat.service";
 import { UserEntity } from "../user/user.entity";
-import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { FriendEntity } from "./friend.entity";
@@ -17,8 +14,9 @@ export class FriendService {
 	constructor(
 		@InjectRepository(FriendEntity) private friendRepository: Repository<FriendEntity>,
 		private chatService : ChatService,
-       // private sessionService: SessionService,
-        //private userService: UserService
+        /*@Inject(forwardRef(() => UserService))
+		private userService: UserService,*/
+       	//private sessionService: SessionService,
         ){}
 		async findAllFriends(user: UserEntity): Promise<any>{
 			var ret: UserPublicInfoI[] = [];

@@ -1,10 +1,7 @@
-//import conf from '../../../ft_config.json';
-
-import e from "express";
 import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
-import { UserI, UserInfoI, UserPublicInfoI, UserRegI } from "./userI";
-import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
+import { UserI, UserInfoI, UserPublicInfoI} from "./userI";
+import { Matches, IsEmail, IsBoolean, MaxLength, MinLength, } from 'class-validator'
 import { FriendEntity } from "../friends/friend.entity";
 
 

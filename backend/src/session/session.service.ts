@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'src/shared/response/responseClass';
 import { UserEntity } from 'src/home/user/user.entity';
-import { UserService } from 'src/home/user/user.service';
 import { ErrorParser } from 'src/shared/utils/errorParser';
 import { Exception } from 'src/shared/utils/exception';
 import { Not, Repository } from 'typeorm';
@@ -19,7 +18,8 @@ export class SessionService {
 	expires_in: number = 60 * 60 * 2; //2 hours
 	constructor(@InjectRepository(SessionEntity)
 	private sessionRepository: Repository<SessionEntity>,
-//	private userService: UserService
+	/*@Inject(forwardRef(() => UserService)) //import decorator and function
+	private userService: UserService*/
 	){}
 
 	async newSession(user: UserEntity){

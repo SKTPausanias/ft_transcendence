@@ -1,5 +1,4 @@
-import { type } from "os";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { UserEntity } from "../home/user/user.entity";
 
 @Entity('session')

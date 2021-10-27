@@ -1,14 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { SessionService } from 'src/session/session.service';
-import { Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
-import { FriendEntity } from '../friends/friend.entity'
 import { FriendService } from '../friends/friend.service';
-import { Exception } from 'src/shared/utils/exception';
-import { Response } from 'src/shared/response/responseClass';
-import { SocketGateway } from 'src/socket/socket.gateway';
-import { wSocket } from 'src/socket/eSocket';
 
 @Injectable()
 export class DashboardService {
@@ -49,6 +42,5 @@ export class DashboardService {
 		} catch (error) {
 			return (error);
 		}
-		return ("");
     }
 }
