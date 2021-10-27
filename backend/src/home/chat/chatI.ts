@@ -1,6 +1,8 @@
+import { UserEntity } from "../user/user.entity";
+import { ChatEntity } from "./chat.entity";
+
 export interface messageI {
-    chat_id: number,
-    name_chat: string,
     message: string,
-    userID: any,
+    userId: UserEntity,
+    chatId: ChatEntity,
 }

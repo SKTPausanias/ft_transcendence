@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
@@ -18,7 +18,8 @@ export class ChatService {
 		@InjectRepository(ChatEntity) private chatRepository: Repository<ChatEntity>,
 		@InjectRepository(MessageEntity) private messageRepository: Repository<MessageEntity>,
 		private sessionService: SessionService,
-		//private userService: UserService
+		@Inject(forwardRef(() => UserService))
+		private userService: UserService,
         ){}
 
 	async saveChat(type_chat : string, users : UserEntity[], name_chat? : string): Promise<any> {
@@ -39,23 +40,20 @@ export class ChatService {
 	}
 	async saveMessage(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1];
-		var message: messageI = <messageI>{};
+		var eMsg = new MessageEntity();
 		try {
+
 			const session = await this.sessionService.findSessionWithRelation(token);
-			//const friend = await this.userService.findByNickname(body.receiver);
-			//console.log("Friend: ", friend);
-			//console.log("session token: ", session);
-			message.userID = session.userID.id;
-			message.message = body.message;
-			message.chat_id = 1;
-			//userService.findByNickName(nickname).id... 11_10
-			// user.id + _ + friend_id
-			//const chat = ChatRepositoryfindChat(user.id + _ + friend_id)
-			//findChat(friend.id + _ + user.id)
-			//message.chatID = 
-			console.log("session: ", session);
-			
-			//await this.messageRepository.save(message);
+			const friend = await this.userService.findByNickname(body.receiver);
+			eMsg.message = body.message;
+			eMsg.user = session.userID;
+			var name_chat = session.userID.id + '_' + friend.id;
+			var name_chat2 = friend.id + '_' + session.userID.id;
+
+			const chat = await this.chatRepository.findOne({
+				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }] }); // this is an OR
+			eMsg.chat = chat;
+			const ret = await this.messageRepository.save(eMsg);
 			return(Response.makeResponse(200, {ok: "hola desde el backend"}));
 		} catch (error) {
 			if (error.statusCode == 410)

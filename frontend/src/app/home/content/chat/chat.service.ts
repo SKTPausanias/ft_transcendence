@@ -15,12 +15,12 @@ export class ChatService {
 		private socketService: SocketService,
     ) { }
   
-  async sendMessage(message: string, session: SessionI, reciever: string): Promise<any> {
+  async sendMessage(message: string, session: SessionI, receiver: string): Promise<any> {
     const url = '/api/users/chat/saveMessage';
     console.log("Calling backend saveMessage...", session);
     var body: messageI = <messageI>{};
     body.message = message;
-    body.receiver = reciever;
+    body.receiver = receiver;
     /* Need to set/pass as argument of this function the following parameters:  
     body.chatID = chatID;
     body.userID = this.user.id;
@@ -36,7 +36,7 @@ export class ChatService {
       console.log("Message from chat: ", ret);
       this.socketService.emit(wSocket.CHAT_MESSAGE, {
         message: message,
-        reciever: reciever});
+        receiver: receiver});
         return (ret);
       }
       catch(e){

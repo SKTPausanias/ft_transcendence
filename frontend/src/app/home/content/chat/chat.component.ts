@@ -14,7 +14,7 @@ export class ChatComponent implements OnInit {
   message = "";
   recievedMessage = "";
 	session = this.sQuery.getSessionToken();
-  reciever = "";
+  receiver = "";
 
 	constructor(
     private chatService: ChatService,
@@ -41,7 +41,7 @@ export class ChatComponent implements OnInit {
 
   async sendMessage() {
     console.log("mensaje: ", this.message);
-    await this.chatService.sendMessage(this.message, this.session, this.reciever);
+    await this.chatService.sendMessage(this.message, this.session, this.receiver);
     const element = document.createElement('li');
     element.innerHTML = this.message;
     element.style.background = '#C3FDB8';
@@ -52,8 +52,8 @@ export class ChatComponent implements OnInit {
   }
 
   async selectChat(nickname: string) {
-    this.reciever = nickname;
+    this.receiver = nickname;
     console.log("friends: ", this.chatPreference.friends);
-    console.log("selected friend", this.reciever);
+    console.log("selected friend", this.receiver);
   }
 }
