@@ -49,6 +49,7 @@ export class ChatService {
 			const friend = await this.userService.findByNickname(body.receiver);
 			eMsg.message = body.message;
 			eMsg.user = session.userID;
+			eMsg.date = body.timestamp;
 			var name_chat = session.userID.id + '_' + friend.id;
 			var name_chat2 = friend.id + '_' + session.userID.id;
 

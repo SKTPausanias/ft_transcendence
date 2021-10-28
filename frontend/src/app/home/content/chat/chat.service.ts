@@ -15,12 +15,13 @@ export class ChatService {
 		private socketService: SocketService,
     ) { }
   
-  async sendMessage(message: string, session: SessionI, receiver: string): Promise<any> {
+  async sendMessage(message: string, session: SessionI, receiver: string, timestamp: number): Promise<any> {
     const url = '/api/users/chat/saveMessage';
     console.log("Calling backend saveMessage...", session);
     var body: messageI = <messageI>{};
     body.message = message;
     body.receiver = receiver;
+    body.timestamp = timestamp;
     /* Need to set/pass as argument of this function the following parameters:  
     body.chatID = chatID;
     body.userID = this.user.id;

@@ -3,4 +3,5 @@ export interface messageI {
     message: string,
     userID: any,
     receiver: string,
+    timestamp: number
   }
