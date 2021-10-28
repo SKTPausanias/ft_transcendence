@@ -45,4 +45,22 @@ export class ChatService {
       return (e);
     }
   }
+
+  async getMessages(session: SessionI, receiver: string): Promise<any> {
+    const url = '/api/users/chat/getMessages';
+    console.log("Calling backend getMessages...", session);
+    var body = { receiver: receiver };
+    try{
+      const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      console.log("Message from chat: ", ret);
+      return (ret);
+      }
+      catch(e){
+      console.log("Message error...");
+      return (e);
+    }
+  }
 }

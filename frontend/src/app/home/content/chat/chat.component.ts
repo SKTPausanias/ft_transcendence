@@ -14,7 +14,7 @@ import { mDate } from 'src/app/utils/date';
 })
 export class ChatComponent implements OnInit {
   @Input() chatPreference: SharedPreferencesI
-  messages: messageI[] = <messageI[]>{};//must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
+  messages: any[];//must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
   message = "";
   recievedMessage = "";
 	session = this.sQuery.getSessionToken();
@@ -64,7 +64,9 @@ export class ChatComponent implements OnInit {
   async selectChat(friend: any) {
     this.receiver = friend.nickname;
     this.friendChat = friend;
-    console.log("friends: ", this.chatPreference.friends);
-    console.log("selected friend", this.receiver);
+    this.messages = (await this.chatService.getMessages(this.session, this.receiver)).data.messages;
+    console.log("messages are: ", this.messages);
+    /*console.log("friends: ", this.chatPreference.friends);
+    console.log("selected friend", this.receiver);*/
   }
 }
