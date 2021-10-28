@@ -7,6 +7,7 @@ import { MessageEntity } from "./message.entity";
 import { Response } from 'src/shared/response/responseClass';
 import { UserService } from "../user/user.service";
 import { SessionService } from "src/session/session.service";
+import { UserPublicInfoI } from "../user/userI";
 
 @Injectable()
 export class ChatService {
@@ -18,10 +19,10 @@ export class ChatService {
 		//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
 		@Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
 		private userService: UserService,
-        ){}
+	) { }
 
-		//This function saves oneToOne chats when friendship is accepted from both users. Look at friend.service
-	async saveChat(type_chat : string, users : UserEntity[], name_chat? : string): Promise<any> {
+	//This function saves oneToOne chats when friendship is accepted from both users. Look at friend.service
+	async saveChat(type_chat: string, users: UserEntity[], name_chat?: string): Promise<any> {
 		try {
 			this.myChat.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
 			this.myChat.type_chat = type_chat;
@@ -32,7 +33,7 @@ export class ChatService {
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
-			return (Response.makeResponse(500, {error : 'unable to save chat'}));
+			return (Response.makeResponse(500, { error: 'unable to save chat' }));
 		}
 	}
 
@@ -54,14 +55,36 @@ export class ChatService {
 			var name_chat2 = friend.id + '_' + session.userID.id;
 
 			const chat = await this.chatRepository.findOne({
-				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }] }); // this is an OR
+				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
+			}); // this is an OR
 			eMsg.chat = chat;
 			const ret = await this.messageRepository.save(eMsg);
-			return(Response.makeResponse(200, {ok: "Message has been saved"}));
+			return (Response.makeResponse(200, { ok: "Message has been saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
-			return (Response.makeResponse(500, {error : 'Unable to save message'}));
+			return (Response.makeResponse(500, { error: 'Unable to save message' }));
+		}
+	}
+
+	async getMessages(body: any, header: string): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const friend = await this.userService.findByNickname(body.receiver);
+			console.log("friend:", friend);
+			const name_chat = session.userID.id + '_' + friend.id;
+			const name_chat2 = friend.id + '_' + session.userID.id;
+			const chat = await this.chatRepository.findOne({
+				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
+			}); // this is an OR
+			// find all messages from chat with relations
+			const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } });
+			return (Response.makeResponse(200, { messages: messages }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
 		}
 	}
 }
