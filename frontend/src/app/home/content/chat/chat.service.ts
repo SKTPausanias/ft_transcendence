@@ -3,7 +3,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SessionI } from 'src/app/shared/ft_interfaces';
 import { SocketService } from '../../socket.service';
 import { wSocket } from 'src/app/shared/ft_enums';
-import { messageI } from 'src/app/shared/interface/iChat';
+import { messageI, MessagesI } from 'src/app/shared/interface/iChat';
+import { Messages } from 'src/app/shared/class/cMessages';
 
 
 @Injectable({
@@ -50,17 +51,22 @@ export class ChatService {
     const url = '/api/users/chat/getMessages';
     console.log("Calling backend getMessages...", session);
     var body = { receiver: receiver };
+    var messages:Messages;
+
     try{
       const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token
         })
       }).toPromise());
-      console.log("Message from chat: ", ret);
-      return (ret);
+        if (ret.statusCode == 200){
+          messages = new Messages(ret.data.messages[0]);
+          console.log("Message from chat Interface: ", messages);
+        }
+        return (ret.data.messages);
       }
       catch(e){
-      console.log("Message error...");
-      return (e);
+        console.log("Message error...");
+        return (e);
     }
   }
 }

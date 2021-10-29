@@ -7,6 +7,8 @@ import { UserService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { messageI } from 'src/app/shared/interface/iChat';
 import { mDate } from 'src/app/utils/date';
+
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -20,6 +22,7 @@ export class ChatComponent implements OnInit {
 	session = this.sQuery.getSessionToken();
   receiver = "";
   friendChat: UserPublicInfoI = <UserPublicInfoI>{};
+  msgTime: string = new Date(1635433636000).toLocaleString();
   
 
 	constructor(
@@ -47,7 +50,6 @@ export class ChatComponent implements OnInit {
 
   async sendMessage() {
     this.message = this.message.trim();
-    console.log("mensaje: ", this.message);
     if (this.message.length) {
       await this.chatService.sendMessage(this.message, this.session, this.receiver, mDate.timeNowInSec());
       mDate.timeNowInSec()
@@ -64,9 +66,13 @@ export class ChatComponent implements OnInit {
   async selectChat(friend: any) {
     this.receiver = friend.nickname;
     this.friendChat = friend;
-    this.messages = (await this.chatService.getMessages(this.session, this.receiver)).data.messages;
-    console.log("messages are: ", this.messages);
+    this.messages = (await this.chatService.getMessages(this.session, this.receiver));
+    /* this.messages.forEach(element => {
+      element.date = this.msgTime.setSeconds(element.date).toString();
+    }) */
+   // console.log("messages are: ", this.messages);
     /*console.log("friends: ", this.chatPreference.friends);
     console.log("selected friend", this.receiver);*/
   }
+  
 }
