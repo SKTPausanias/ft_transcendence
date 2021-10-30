@@ -12,5 +12,5 @@ export interface messageI {
     message: string,
     date: number,
     msgDateString: string,
-    friend: UserPublicInfoI
+    friend: UserPublicInfoI,
   }

@@ -7,7 +7,7 @@ import { UserService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { messageI } from 'src/app/shared/interface/iChat';
 import { mDate } from 'src/app/utils/date';
-
+import { Messages } from 'src/app/shared/class/cMessages';
 
 @Component({
   selector: 'app-chat',
@@ -16,11 +16,12 @@ import { mDate } from 'src/app/utils/date';
 })
 export class ChatComponent implements OnInit {
   @Input() chatPreference: SharedPreferencesI
-  messages: any[];//must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
+  messages: Messages[] = [];
+  //must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
   message = "";
   recievedMessage = "";
 	session = this.sQuery.getSessionToken();
-  receiver = "";
+  receiver : UserPublicInfoI = <UserPublicInfoI>{};
   friendChat: UserPublicInfoI = <UserPublicInfoI>{};
   msgTime: string = new Date(1635433636000).toLocaleString();
   
@@ -36,13 +37,7 @@ export class ChatComponent implements OnInit {
       (data : any) => {
         if (data) {
           console.log("data from subscribe: ", data);
-          this.recievedMessage = data;
-          const element = document.createElement('li');
-          element.innerHTML = this.recievedMessage;
-          element.style.background = 'white';
-          element.style.padding = '10px 25px';
-          element.style.margin = '10px';
-          document.getElementById('message-list')?.appendChild(element)
+          this.messages.push(data);
         }
       }
     );
@@ -52,27 +47,17 @@ export class ChatComponent implements OnInit {
     this.message = this.message.trim();
     if (this.message.length) {
       await this.chatService.sendMessage(this.message, this.session, this.receiver, mDate.timeNowInSec());
-      mDate.timeNowInSec()
-      /*const element = document.createElement('li');
-      element.innerHTML = this.message;
-      element.style.background = '#C3FDB8';
-      element.style.padding = '10px 25px';
-      element.style.margin = '10px';
-      document.getElementById('message-list')?.appendChild(element);*/
       this.message = "";
     }
   }
 
   async selectChat(friend: any) {
-    this.receiver = friend.nickname;
+    this.receiver = friend;
     this.friendChat = friend;
-    this.messages = (await this.chatService.getMessages(this.session, this.receiver));
-    /* this.messages.forEach(element => {
-      element.date = this.msgTime.setSeconds(element.date).toString();
-    }) */
-   // console.log("messages are: ", this.messages);
-    /*console.log("friends: ", this.chatPreference.friends);
-    console.log("selected friend", this.receiver);*/
+    //delete messages from messages array
+    this.messages = [];
+    // get messages from DB and save to messages array
+    this.messages = await this.chatService.getMessages(this.session, this.receiver);
   }
   
 }

@@ -11,6 +11,9 @@ export class Messages implements MessagesI{
     constructor(value: any){
         this.message = value.message;
         this.msgDateString = new Date(value.date * 1000).toString();
+        this.date = value.date;
+        this.friend = <UserPublicInfoI>{};
+        this.friend = value.friend;
         //TODO: from interface to retrieve data from backend on getMessages 
     }
 }
