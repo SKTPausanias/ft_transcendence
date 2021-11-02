@@ -22,8 +22,8 @@
                 <div class="user_info">
                   <span>{{friend.nickname}}</span>
                 </div>
-                <button class=" btn">
-                  <span (click)="selectChat(friend)" class="fa fa-comment-dots"></span>
+                <button class="btn" (click)="selectChat(friend)">
+                  <span class="fa fa-comment-dots"></span>
                 </button>
             </div>
           </li>
@@ -46,8 +46,8 @@
                 <span>Chat with {{friendChat.nickname}}</span>
               </div>
               <div class="video_cam">
-                <span><i class="fas fa-video"></i></span>
-                <span><i class="fas fa-phone"></i></span>
+                <span><i class="fas fa-user-circle"></i></span>
+                <span><i class="fas fa-ban"></i></span>
               </div>
             </div>
             <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
@@ -83,12 +83,12 @@
             </div>
           </div>
             
-          <div class="card-footer">
-            <div class="input-group">
-              <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
-              <div class="input-group-append">
-                <span class="input-group-text send_btn" (click)="sendMessage()"><i class="fas fa-location-arrow"></i></span>
-              </div>
+        </div>
+        <div class="card-footer">
+          <div class="input-group">
+            <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
+            <div class="input-group-append">
+              <span class="input-group-text send_btn" (click)="sendMessage()"><i class="fas fa-location-arrow"></i></span>
             </div>
           </div>
         </div>
