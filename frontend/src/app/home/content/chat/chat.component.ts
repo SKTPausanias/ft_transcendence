@@ -3,9 +3,7 @@ import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { ChatService } from './chat.service';
 import { SocketService } from '../../socket.service';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
-import { UserService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
-import { messageI } from 'src/app/shared/interface/iChat';
 import { mDate } from 'src/app/utils/date';
 import { Messages } from 'src/app/shared/class/cMessages';
 
@@ -46,7 +44,7 @@ export class ChatComponent implements OnInit {
   async sendMessage() {
     this.message = this.message.trim();
     if (this.message.length) {
-      await this.chatService.sendMessage(this.message, this.session, this.receiver, mDate.timeNowInSec());
+      await this.chatService.sendMessage(this.message, this.session, this.receiver, mDate.timeNowInSec(), this.chatPreference.userInfo.nickname);
       this.message = "";
     }
   }

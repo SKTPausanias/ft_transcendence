@@ -17,10 +17,11 @@ export class ChatService {
 		private socketService: SocketService,
     ) { }
   
-  async sendMessage(message: string, session: SessionI, receiver: UserPublicInfoI, timestamp: number): Promise<any> {
+  async sendMessage(message: string, session: SessionI, receiver: UserPublicInfoI, timestamp: number, nickname: string): Promise<any> {
     const url = '/api/users/chat/saveMessage';
     console.log("Calling backend saveMessage...", session);
-    var objMessage = new Messages({ message: message, date: timestamp, friend : receiver });
+    var objMessage = new Messages();
+    objMessage.setMessage({ message: message, date: timestamp, user : receiver, owner: nickname })
     var body: messageI = <messageI>{};
 
     body.message = message;
@@ -53,7 +54,7 @@ export class ChatService {
     //console.log("Calling backend getMessages...", session);
     var body = { receiver: receiver.nickname };
     var messages: Messages[] = [];
-    var aux : MessagesI[] = [];
+    
 
     try{
       const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
@@ -62,14 +63,15 @@ export class ChatService {
       }).toPromise());
         if (ret.statusCode == 200){
           //messages = new Messages(ret.data.messages);
-          console.log("Messages from chat ret: ", ret.data.messages);
+          console.log("Messages from chat ret: ", ret.data);
           //aux = ret.data.messages;
           // for each message in ret.data.messages, create a new Messages object and push it into messages array
           //convert aux
           for (let i = 0; i < ret.data.messages.length; i++)
           {
-            var value = { message: ret.data.messages[i].message, date: ret.data.messages[i].date, friend : ret.data.messages[i].user };
-            messages.push(new Messages(value));
+            var tmp: Messages = new Messages();
+            tmp.setMessage({ message: ret.data.messages[i].message, date: ret.data.messages[i].date, user : ret.data.messages[i].user, owner: ret.data.messages[i].user.nickname });
+            messages.push(tmp);
           }
           console.log("Messages from chat on var messages: ", messages);
         }

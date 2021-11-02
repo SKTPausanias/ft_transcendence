@@ -12,5 +12,6 @@ export interface messageI {
     message: string,
     date: number,
     msgDateString: string,
-    friend: UserPublicInfoI,
+    owner: string,
+    user: UserPublicInfoI,
   }
