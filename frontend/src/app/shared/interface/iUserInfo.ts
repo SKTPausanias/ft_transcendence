@@ -6,6 +6,7 @@ export interface UserInfoI {
 	login: string;
 	email: string;
 	avatar: string;
+	online: boolean;
 	factor_enabled: boolean;
 }
 export interface UserPublicInfoI {

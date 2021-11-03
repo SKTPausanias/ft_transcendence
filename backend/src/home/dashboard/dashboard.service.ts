@@ -15,7 +15,8 @@ export class DashboardService {
 		try {
             const token = header.authorization.split(' ')[1];
             const session = await this.sessionService.findSessionWithRelation(token);
-            return (await this.userService.findMatchByLoginNickname(match, session.userID));
+            //return (await this.userService.findMatchByLoginNickname(match, session.userID));
+			return (await this.userService.findMatchByNickname(match, session.userID));
         } catch (error) {
                 return (error);
         }

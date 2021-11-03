@@ -63,6 +63,18 @@ export class UserService {
 		}
 	}
 
+	async findMatchByNickname(match: string, user: UserEntity)
+    {
+        try {
+            const resp =  await this.userRepository.find({where: [
+                            { nickname : Like(`%${match}%`)}]});
+            return (User.getMultipleUserInfo(resp, user));
+        }
+        catch (error) {
+            throw new Exception(Response.makeResponse(500, {error : "Can't find match"}));
+        }
+    }
+
 	async findMatchByLoginNickname(match: string, user: UserEntity)
     {
         try {

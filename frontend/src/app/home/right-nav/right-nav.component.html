@@ -17,7 +17,9 @@
 				</div>
 				<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
 					<p id="nickname">{{friend.nickname}}</p>
-					<button class="btn-danger" (click)="removeFriend(friend)">X</button>
+					<button class="btn-danger" (click)="removeFriend(friend)">
+						<i data-mdb-toggle="tooltip" title="Remove Friendship" class="fa fa-trash-alt"></i>
+					</button>
 				</div>
 			</div>
 		</div>
