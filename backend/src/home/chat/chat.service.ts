@@ -37,6 +37,25 @@ export class ChatService {
 		}
 	}
 
+	async saveChatGroup(body: any, header: string): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			if (body.chat_type != "group")
+				this.myChat.name_chat = body.members[0].id + '_' + body.members[1].id;
+			else
+				this.myChat.name_chat = body.chat_name;
+			this.myChat.type_chat = body.chat_type;
+			this.myChat.users = body.members;
+			this.myChat.password = '123'; // this must be created in the frontend
+			await this.chatRepository.save(this.myChat); // what kind of response do we need??
+			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'unable to save chat' }));
+		}
+	}
+
 	/*
 	* When a message comes from the frontend chat, we need to check if emiter and receiver has a chat oneToOne created
 	* if is correct, we save the message, chatID which both user belong and the id of the user propietary

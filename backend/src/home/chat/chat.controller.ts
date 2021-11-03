@@ -13,4 +13,10 @@ export class ChatController {
     async getMessages(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.getMessages(body, headers.authorization));
     }
+
+    @Post('/saveChat')
+    async saveChat(@Body() body, @Headers() headers): Promise<any>{
+        console.log("body", body);
+        return (await this.chatService.saveChatGroup(body, headers.authorization));
+    }
 }
