@@ -11,7 +11,8 @@ import { UserPublicInfoI } from "../user/userI";
 
 @Injectable()
 export class ChatService {
-	private myChat = new ChatEntity();
+	private chatData = new ChatEntity();
+	private users: UserEntity[] = [];
 	constructor(
 		@InjectRepository(ChatEntity) private chatRepository: Repository<ChatEntity>,
 		@InjectRepository(MessageEntity) private messageRepository: Repository<MessageEntity>,
@@ -24,11 +25,11 @@ export class ChatService {
 	//This function saves oneToOne chats when friendship is accepted from both users. Look at friend.service
 	async saveChat(type_chat: string, users: UserEntity[], name_chat?: string): Promise<any> {
 		try {
-			this.myChat.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
-			this.myChat.type_chat = type_chat;
-			this.myChat.users = users;
-			this.myChat.password = '123'; // this must be created in the frontend
-			await this.chatRepository.save(this.myChat); // what kind of response do we need??
+			this.chatData.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
+			this.chatData.type_chat = type_chat;
+			this.chatData.users = users;
+			this.chatData.password = '123'; // this must be created in the frontend
+			await this.chatRepository.save(this.chatData); // what kind of response do we need??
 			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)
@@ -39,15 +40,24 @@ export class ChatService {
 
 	async saveChatGroup(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1];
+		
 		try {
-			if (body.chat_type != "groups")
-				this.myChat.name_chat = body.members[0].id + '_' + body.members[1].id;
+			if (body.chat_type != "group")
+				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
-				this.myChat.name_chat = body.chat_name;
-			this.myChat.type_chat = body.chat_type;//groups
-			this.myChat.users = body.members;
-			this.myChat.password = '123'; // this must be created in the frontend
-			await this.chatRepository.save(this.myChat); // what kind of response do we need??
+				this.chatData.name_chat = body.chat_name;
+			this.chatData.users = [];
+			this.chatData.type_chat = body.chat_type;//group
+			//body.members.forEach(async element => {
+			for (var i = 0; i < body.members.length; i++) {
+				let usr = await this.userService.findByNickname(body.members[i]);
+				if (usr !== undefined)
+					this.chatData.users.push(usr);
+			};
+			//this.chatData.users = this.users;
+			console.log("chatData: ", await this.chatData);
+			this.chatData.password = '123'; // this must be created in the frontend
+			await this.chatRepository.insert(this.chatData); // what kind of response do we need??
 			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)

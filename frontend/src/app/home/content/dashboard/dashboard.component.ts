@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 	showUsers: boolean = false; //Values must be assigned in the constructor function...
 	showSelect: boolean = false;
-	grpUsers: UserPublicInfoI[];
+	grpUsers: string[];
 
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
@@ -38,8 +38,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	}
 	
 	ngAfterViewInit() {
-		this.grpUsers.push(this.dashboardPreference.userInfo);
-		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + ": Owner\n";
+		this.grpUsers.push(this.dashboardPreference.userInfo.nickname);
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0] + ": Owner\n";
 
 	}
   
@@ -83,10 +83,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	addToGroup(user: any){
 		this.selectGroup.nativeElement.removeAttribute("hidden");
 		this.selectGroup.nativeElement.parentElement?.removeAttribute("hidden");
-		console.log("User to a group: ", user.nickname);
-		if (!this.grpUsers.find(search => (search.nickname == user.nickname))) {
-			this.grpUsers.push(user);
-			console.log("element: ", this.selectGroup);
+		if (!this.grpUsers.find(search => (search == user.nickname))) {
+			this.grpUsers.push(user.nickname);
 			this.selectGroup.nativeElement.innerHTML += user.nickname + "\n";
 		}
 		
@@ -95,11 +93,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	async createGroupChat(): Promise<void>{
 		if (this.chatName.nativeElement.value != "" && this.grpUsers.length > 1) {
 			var obj = {
-				chat_type: "groups",
+				chat_type: "group",
 				members: this.grpUsers,
 				chat_name: this.chatName.nativeElement.value
 			}
 			var ret = (await this.dashboardService.createGroupChat(this.session, obj));
+			ret.statusCode == 500 ? alert(ret.data.error) : null;
+			console.log(ret);
 		}
 		else
 			console.log("Create a chatGroup is not possible", ret);
@@ -110,11 +110,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.showUsers = false;
 		this.users = []
 		this.grpUsers = [];
-		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.grpUsers.push(this.dashboardPreference.userInfo.nickname);
 		this.selectGroup.nativeElement.innerHTML = "";
 		this.searchInput.nativeElement.value = "";
-		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + " Owner\n";
+		this.chatName.nativeElement.value = "";
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0] + " Owner\n";
 		this.selectGroup.nativeElement.setAttribute("hidden","hidden");
 		this.selectGroup.nativeElement.parentElement?.setAttribute("hidden","hidden");
+		this.initSearchboxListener();
 	}
 }

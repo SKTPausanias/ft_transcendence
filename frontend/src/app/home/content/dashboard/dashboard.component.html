@@ -31,13 +31,13 @@
 												<div class="user_info">
 													<span>{{user.nickname}}</span>
 												</div>
-												<div class="ms-5">
-													<button (click)="addFriendShip(user)">
+												<div class="ms-3">
+													<button class="btn" (click)="addFriendShip(user)">
 														<i data-mdb-toggle="tooltip" title="Request a friendship" class="fa fa-user-plus"></i>
 													</button>
 												</div>
-												<div class="ms-5">
-													<button (click)="addToGroup(user)">
+												<div class="ms-3">
+													<button class="btn" (click)="addToGroup(user)">
 														<i data-mdb-toggle="tooltip" title="Add user to a group" class="fa fa-users"></i>
 													</button>
 												</div>
@@ -50,6 +50,9 @@
 								</div>
 							</div>
 						<!-- </div> -->
+					</div>
+					<div class="card-footer">
+						<button class='btn-danger' (click)='clean()'> cancel</button>
 					</div>
 				</div>
 			</div>
@@ -68,7 +71,6 @@
 			/>
 			<button (click)="createGroupChat()">Create</button>
 		</div>
-		<button class='btn-danger' (click)='clean()'> cancel</button>
     </form>
 	
 		

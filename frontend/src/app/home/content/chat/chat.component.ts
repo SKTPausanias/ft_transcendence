@@ -14,10 +14,13 @@ import { Messages } from 'src/app/shared/class/cMessages';
 })
 export class ChatComponent implements OnInit {
   @ViewChild('msgBox') msgBoxElement: ElementRef;
+  @Input() chatPreference: SharedPreferencesI
+  
   identifier: string = "";
   length: number = 0;
-
-  @Input() chatPreference: SharedPreferencesI
+  showPrivate: boolean = true;
+  showChat: boolean = false;
+  channels: any[] = [];
   messages: Messages[] = [];
   //must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
   message = "";
@@ -45,7 +48,6 @@ export class ChatComponent implements OnInit {
     );
 	}
 
-
   async sendMessage() {
     this.message = this.message.trim();
     if (this.message.length) {
@@ -58,6 +60,7 @@ export class ChatComponent implements OnInit {
     
     this.receiver = friend;
     this.friendChat = friend;
+    this.showChat = true;
     //delete messages from messages array
     this.messages = [];
     // get messages from DB and save to messages array
@@ -74,5 +77,19 @@ export class ChatComponent implements OnInit {
     pepe?.scrollIntoView();
     
     return (true);
+  }
+  playPong(friend: any){
+    alert("You're gonna dare your friend " + friend.nickname);
+  }
+
+  getPrivates(){
+    this.showPrivate = true;
+  }
+  getChannels(){
+    this.showPrivate = false;
+    this.showChat = false;
+  }
+  closeChat(){
+    this.showChat = false;
   }
 }

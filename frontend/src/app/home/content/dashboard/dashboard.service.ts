@@ -67,6 +67,7 @@ export class DashboardService {
 
   async createGroupChat(session: SessionI, groupInfo: any): Promise<any> {
     const url = '/api/users/chat/saveChatGroup';
+    console.log("data from body: ", groupInfo);
     try{
       const ret = (await this.http.post<any>(url, groupInfo, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token

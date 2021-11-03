@@ -11,7 +11,7 @@
           </div>
         </div>
         <div class="card-body contacts_body">
-          <ul class="contacts">
+          <ul *ngIf="showPrivate == true" class="contacts">
             <li class="active" *ngFor="let friend of chatPreference.friends">
               <div class="d-flex bd-highlight">
                 <div class="img_cont">
@@ -25,16 +25,37 @@
                 <button class="btn" (click)="selectChat(friend)">
                   <span class="fa fa-comment-dots"></span>
                 </button>
+                <button class="btn" (click)="playPong(friend)">
+                  <span class="fa fa-table-tennis"></span>
+                </button>
             </div>
           </li>
           </ul>
+          <ul *ngIf="showPrivate == false" class="contacts">
+            <li class="active" *ngFor="let channel of channels">
+              <div class="d-flex bd-highlight">
+                <div class="img_cont">
+                  <img src="http://localhost:3000/img/default_avatar.png" class="rounded-circle user_img">
+                </div>
+                <div class="user_info">
+                  <span>{{channel.nameChat}}</span>
+                </div>
+                <button class="btn" (click)="selectChat(channel.nameChat)">
+                  <span class="fa fa-comment-dots"></span>
+                </button>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div class="card-footer"></div>
+        <div class="card-footer">
+          <button class="btn" (click)="getPrivates()"><i class="fas fa-user-lock"> Private</i></button>
+          <button class="btn" (click)="getChannels()"><i class="fas fa-users"> Channels</i></button>
+        </div>
       </div>
     </div>
 
 
-  <div *ngIf="friendChat.nickname" class="col-md-8 col-xl-6 chat">
+  <div *ngIf="showChat == true" class="col-md-8 col-xl-6 chat">
         <div class="card">
           <div class="card-header msg_head">
             <div class="d-flex bd-highlight">
@@ -47,7 +68,10 @@
               </div>
               <div class="video_cam">
                 <span><i class="fas fa-user-circle"></i></span>
-                <span><i class="fas fa-ban"></i></span>
+                <span><i class="fas fa-user-times"></i></span>
+                <span (click)='playPong(friendChat)'><i class="fas fa-table-tennis"></i></span>
+                <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
+               
               </div>
             </div>
             <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
