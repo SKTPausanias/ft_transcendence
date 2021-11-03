@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild  } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild  } from '@angular/core';
 
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
@@ -12,26 +12,35 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 	@Input() dashboardPreference: SharedPreferencesI;
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('friendship') frindInput : ElementRef;
-  
+	@ViewChild('grpUsers') selectGroup: ElementRef<HTMLInputElement>; // object can be a basic object or specific type of HTML...
+	@ViewChild('nChatElement') chatName: ElementRef<HTMLInputElement>;
+
+	showUsers: boolean = false; //Values must be assigned in the constructor function...
+	showSelect: boolean = false;
+	grpUsers: UserPublicInfoI[];
+
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
-	fInvitation = [
-		{ nickname: "dbelinsk"},
-		{ nickname: "pepe"},
-		{ nickname: "juan"},
-		{ nickname: "carlos"}
-	]
+
 	constructor(
 	  private dashboardService: DashboardService,
 	  private sQuery: SessionStorageQueryService
-	  ) { }
+	  ) {
+		  this.grpUsers = [];
+	  }
   
 	ngOnInit() {
 		this.initSearchboxListener();
+	}
+	
+	ngAfterViewInit() {
+		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + ": Owner\n";
+
 	}
   
 	async onSubmitFriends(): Promise<void> {
@@ -45,11 +54,14 @@ export class DashboardComponent implements OnInit {
 		  })	//, filter(res => res.length > 2)
 				, debounceTime(1000)
 				, distinctUntilChanged()).subscribe((text: string) => {
-				  if (text.length <= 0)
+				  if (text.length <= 0){
 					  this.users = [];
+					  this.showUsers = false;
+				  }
 				  else
 					  this.onSearchBoxChange(text).subscribe((res: any)=> {
 						  this.users = res;
+						  this.showUsers = (this.users.length) ? true : false;
 					  }, (err: any) => {
 						  console.log('error', err);
 					  });
@@ -57,7 +69,7 @@ export class DashboardComponent implements OnInit {
 	}
 	
 	onSearchBoxChange(value: any)
-	{
+	{	
 		return (this.dashboardService.liveSearchUsers(this.session, value));
 	}
 	async addFriendShip(user: any): Promise<any>{
@@ -66,5 +78,43 @@ export class DashboardComponent implements OnInit {
   
 	async removeFriendShip(user: any): Promise<any>{
 	  return (await this.dashboardService.removeFriendShip(user, this.session));
+	}
+
+	addToGroup(user: any){
+		this.selectGroup.nativeElement.removeAttribute("hidden");
+		this.selectGroup.nativeElement.parentElement?.removeAttribute("hidden");
+		console.log("User to a group: ", user.nickname);
+		if (!this.grpUsers.find(search => (search.nickname == user.nickname))) {
+			this.grpUsers.push(user);
+			console.log("element: ", this.selectGroup);
+			this.selectGroup.nativeElement.innerHTML += user.nickname + "\n";
+		}
+		
+	}
+
+	async createGroupChat(): Promise<void>{
+		if (this.chatName.nativeElement.value != "" && this.grpUsers.length > 1) {
+			var obj = {
+				chat_type: "groups",
+				members: this.grpUsers,
+				chat_name: this.chatName.nativeElement.value
+			}
+			var ret = (await this.dashboardService.createGroupChat(this.session, obj));
+		}
+		else
+			console.log("Create a chatGroup is not possible", ret);
+		this.clean();
+	}
+
+	clean(){
+		this.showUsers = false;
+		this.users = []
+		this.grpUsers = [];
+		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.selectGroup.nativeElement.innerHTML = "";
+		this.searchInput.nativeElement.value = "";
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + " Owner\n";
+		this.selectGroup.nativeElement.setAttribute("hidden","hidden");
+		this.selectGroup.nativeElement.parentElement?.setAttribute("hidden","hidden");
 	}
 }

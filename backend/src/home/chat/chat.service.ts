@@ -40,11 +40,11 @@ export class ChatService {
 	async saveChatGroup(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1];
 		try {
-			if (body.chat_type != "group")
+			if (body.chat_type != "groups")
 				this.myChat.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
 				this.myChat.name_chat = body.chat_name;
-			this.myChat.type_chat = body.chat_type;
+			this.myChat.type_chat = body.chat_type;//groups
 			this.myChat.users = body.members;
 			this.myChat.password = '123'; // this must be created in the frontend
 			await this.chatRepository.save(this.myChat); // what kind of response do we need??

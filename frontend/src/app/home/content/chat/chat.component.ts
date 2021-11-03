@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { ChatService } from './chat.service';
 import { SocketService } from '../../socket.service';
@@ -13,6 +13,10 @@ import { Messages } from 'src/app/shared/class/cMessages';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
+  @ViewChild('msgBox') msgBoxElement: ElementRef;
+  identifier: string = "";
+  length: number = 0;
+
   @Input() chatPreference: SharedPreferencesI
   messages: Messages[] = [];
   //must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
@@ -41,6 +45,7 @@ export class ChatComponent implements OnInit {
     );
 	}
 
+
   async sendMessage() {
     this.message = this.message.trim();
     if (this.message.length) {
@@ -50,12 +55,24 @@ export class ChatComponent implements OnInit {
   }
 
   async selectChat(friend: any) {
+    
     this.receiver = friend;
     this.friendChat = friend;
     //delete messages from messages array
     this.messages = [];
     // get messages from DB and save to messages array
     this.messages = await this.chatService.getMessages(this.session, this.receiver);
+    //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
+    this.identifier = this.messages[this.messages.length - 1 ].date.toString();
+    this.length = this.messages.length - 1;
+    //msgBox.child[this.messages[this.messages.size - 1]].id == messages.timeStamp scrollDown();
   }
   
+  scrollDown(){
+    var pepe = document.getElementById(this.identifier);
+    console.log('pepeElement: ', pepe );
+    pepe?.scrollIntoView();
+    
+    return (true);
+  }
 }

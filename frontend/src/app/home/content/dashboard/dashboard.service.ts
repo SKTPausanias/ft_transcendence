@@ -64,4 +64,17 @@ export class DashboardService {
       return (e);
     }
   }
+
+  async createGroupChat(session: SessionI, groupInfo: any): Promise<any> {
+    const url = '/api/users/chat/saveChatGroup';
+    try{
+      const ret = (await this.http.post<any>(url, groupInfo, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise())
+    return (ret);
+    } catch(e){
+      return (e);
+    }
+  }
 }

@@ -1,23 +1,79 @@
 <div class="container">
     <form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitFriends()">
         <div>
-            <h3>Friends</h3>
-            <div class="form-group mb-3">
-                <label for="searchUsers">Search Friends</label>
+            <h3>Home</h3>
+            <div class="input-group mb-3 card-header">
                 <input
 					#searchUsers
+					placeholder="Search friends..."
                     type="text"
                     name="searchUsers"
-                    class="form-control"
+                    class="form-control search"
 					autocomplete="off"
                     required
                 />
-                <button type="submit" class="btn_register p-2 px-5 mt-4">Search</button>
-        </div>
-        </div>
-        
+				<div class="input-group-prepend">
+					<button type="submit" class="input-group-text search_btn"><i class="fas fa-search"></i></button>
+				</div>
+				<div *ngIf='showUsers' class='container-fluid card h-100'>
+					<div class="row justify-content-left">
+						<!-- <div class="col-md-4 col-xl-3 chat"> -->
+							<div class="mb-sm-3 mb-md-0 contacts_card">
+								<div class="contacts_body">
+									<ul class="contacts">
+										<li class="active" *ngFor="let user of users">
+											<div class="d-flex bd-highlight">
+												<div class="img_cont">
+													<img src={{user.avatar}} class="rounded-circle user_img">
+													<span *ngIf="user.online" class="online_icon"></span>
+													<span *ngIf="!user.online" class="online_icon offline"></span>
+												</div>
+												<div class="user_info">
+													<span>{{user.nickname}}</span>
+												</div>
+												<div class="ms-5">
+													<button (click)="addFriendShip(user)">
+														<i data-mdb-toggle="tooltip" title="Request a friendship" class="fa fa-user-plus"></i>
+													</button>
+												</div>
+												<div class="ms-5">
+													<button (click)="addToGroup(user)">
+														<i data-mdb-toggle="tooltip" title="Add user to a group" class="fa fa-users"></i>
+													</button>
+												</div>
+												<!-- <button class="btn" (click)="selectChat(user)">
+												<span class="fa fa-comment-dots"></span>
+												</button> -->
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						<!-- </div> -->
+					</div>
+				</div>
+			</div>
+    	</div>
+		<div hidden="hidden">
+			<textarea #grpUsers name="grpUser" rows="10" cols="30" disabled="true" hidden="hidden"></textarea>
+			<br>
+			<input
+			#nChatElement
+			placeholder="Name chat..."
+			type="text"
+			name="nameChat"
+			class="input-control"
+			autocomplete="off"
+			required
+			/>
+			<button (click)="createGroupChat()">Create</button>
+		</div>
+		<button class='btn-danger' (click)='clean()'> cancel</button>
     </form>
-	<div class="parent" *ngFor="let user of users">
+	
+		
+        
+	<!-- <div class="parent" *ngFor="let user of users">
 		<div>
 			<img src='{{user.avatar}}' class="ico_s" alt="">
 		</div>
@@ -31,11 +87,11 @@
 			<p>{{user.nickname}}</p>
 		</div>
 		<div class="ms-5">
-			<button (click)="addFriendShip(user)">add</button>
+			<button (click)="addFriendShip(user)"><i class="fa fa-user-plus"></i></button>
 		</div>
 		<div class="ms-5">
 			<button (click)="removeFriendShip(user)">Delete</button>
 		</div>
-	</div>
+	</div> -->
 </div>
 <app-friend-invitation [friendPreferneces]="dashboardPreference"></app-friend-invitation>
