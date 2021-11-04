@@ -54,7 +54,7 @@ export class FriendService {
 				else if (requester === undefined && accepter !== undefined && accepter.confirmed === false)
 				{
 					ret = (await this.friendRepository.save({ id: accepter.id, confirmed: true }));
-					await this.chatService.saveChat("private", [user, friend]);
+					//await this.chatService.saveChat("private", [user, friend]);
 				}
 				return (ret);
 			}catch (e) {

@@ -25,7 +25,7 @@ export class ChatService {
 	) { }
 
 	//This function saves oneToOne chats when friendship is accepted from both users. Look at friend.service
-	async saveChat(type_chat: string, users: UserEntity[], name_chat?: string): Promise<any> {
+	/* async saveChat(type_chat: string, users: UserEntity[], name_chat?: string): Promise<any> {
 		try {
 			this.chatData.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
 			this.chatData.type_chat = type_chat;
@@ -41,28 +41,32 @@ export class ChatService {
 				return (error);
 			return (Response.makeResponse(500, { error: 'unable to save chat' }));
 		}
-	}
+	} */
 
 	async saveChatGroup(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1];
 		
+		const token = header.split(' ')[1];
 		try {
 			if (body.chat_type != "group")
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
 				this.chatData.name_chat = body.chat_name;
-			//this.chatData.users = [];
-			this.chatData.type_chat = body.chat_type;//group
-			//body.members.forEach(async element => {
+			
+			this.chatData.type_chat = body.chat_type;
 			this.chatData.password = '123'; // this must be created in the frontend
 			console.log("chatData: ", await this.chatData);
+
 			const ret = await this.chatRepository.insert(this.chatData); // what kind of response do we need??
-			for (var i = 0; i < body.members.length; i++) {
-				let usr = await this.userService.findByNickname(body.members[i]);
+			
+			body.members.forEach(async user => {
+				let usr;
+				if (body.chat_type != "group")
+					usr = await this.userService.findByNickname(user.nickname);////////
+				else
+					usr = await this.userService.findByNickname(user);
 				if (usr !== undefined && ret !== undefined)
 					await this.chatUserRepository.insert({owner: true,  user: usr, chat: this.chatData});
-					
-			};
+			});
 			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)

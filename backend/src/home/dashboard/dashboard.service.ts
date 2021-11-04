@@ -2,13 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { SessionService } from 'src/session/session.service';
 import { UserService } from '../user/user.service';
 import { FriendService } from '../friends/friend.service';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class DashboardService {
     constructor(
 		private friensService: FriendService,
         private sessionService: SessionService,
-        private userService: UserService
+        private userService: UserService,
+		private chatService : ChatService
         ){}
 	async searchUser(match: string, header: any)
 	{
@@ -27,6 +29,12 @@ export class DashboardService {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friend = await this.userService.findByNickname(user.nickname);
 			const ret =  await this.friensService.addFriend(session.userID, friend);
+			
+			if (ret !== undefined && ret.confirmed == true){
+				console.log("Entering to save group...");
+				await this.chatService.saveChatGroup({chat_type: "private", members: [session.userID, friend]}, header.authorization);
+				console.log("Accepted: ", ret);
+			}
 			return (ret);
 		} catch (error) {
 			return (error);

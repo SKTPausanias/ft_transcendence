@@ -42,8 +42,9 @@ export class DashboardService {
         }).toPromise())
 		if (ret && !ret.confirmed)
 			this.socketService.emit(wSocket.FRIEND_INVITATION, user);
-		if (ret && ret.confirmed)
+		if (ret && ret.confirmed){
 			this.socketService.emit(wSocket.FRIEND_ACCEPT, user);
+    }
 		return (ret);
       } catch(e){
         return (e);
