@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 	showUsers: boolean = false; //Values must be assigned in the constructor function...
 	showSelect: boolean = false;
-	grpUsers: string[];
+	grpUsers: UserPublicInfoI[]; //userPublicInfo
 
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
@@ -38,8 +38,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	}
 	
 	ngAfterViewInit() {
-		this.grpUsers.push(this.dashboardPreference.userInfo.nickname);
-		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0] + ": Owner\n";
+		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + ": Owner\n";
 
 	}
   
@@ -83,8 +83,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	addToGroup(user: any){
 		this.selectGroup.nativeElement.removeAttribute("hidden");
 		this.selectGroup.nativeElement.parentElement?.removeAttribute("hidden");
-		if (!this.grpUsers.find(search => (search == user.nickname))) {
-			this.grpUsers.push(user.nickname);
+		if (!this.grpUsers.find(search => (search.nickname == user.nickname))) {
+			this.grpUsers.push(user);
 			this.selectGroup.nativeElement.innerHTML += user.nickname + "\n";
 		}
 		
@@ -98,7 +98,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 				chat_name: this.chatName.nativeElement.value
 			}
 			var ret = (await this.dashboardService.createGroupChat(this.session, obj));
-			ret.statusCode == 500 ? alert(ret.data.error) : null;
+			ret.statusCode != 200 ? alert(ret.data.error) : null;
 			console.log(ret);
 		}
 		else
@@ -110,11 +110,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.showUsers = false;
 		this.users = []
 		this.grpUsers = [];
-		this.grpUsers.push(this.dashboardPreference.userInfo.nickname);
+		this.grpUsers.push(this.dashboardPreference.userInfo);
 		this.selectGroup.nativeElement.innerHTML = "";
 		this.searchInput.nativeElement.value = "";
 		this.chatName.nativeElement.value = "";
-		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0] + " Owner\n";
+		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + " Owner\n";
 		this.selectGroup.nativeElement.setAttribute("hidden","hidden");
 		this.selectGroup.nativeElement.parentElement?.setAttribute("hidden","hidden");
 		this.initSearchboxListener();

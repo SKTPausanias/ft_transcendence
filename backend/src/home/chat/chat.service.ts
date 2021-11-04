@@ -44,26 +44,20 @@ export class ChatService {
 	} */
 
 	async saveChatGroup(body: any, header: string): Promise<any> {
-		
 		const token = header.split(' ')[1];
 		try {
 			if (body.chat_type != "group")
-				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
+			this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
-				this.chatData.name_chat = body.chat_name;
-			
+			this.chatData.name_chat = body.chat_name;
+			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
+				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
 			this.chatData.type_chat = body.chat_type;
 			this.chatData.password = '123'; // this must be created in the frontend
 			console.log("chatData: ", await this.chatData);
-
 			const ret = await this.chatRepository.insert(this.chatData); // what kind of response do we need??
-			
 			body.members.forEach(async user => {
-				let usr;
-				if (body.chat_type != "group")
-					usr = await this.userService.findByNickname(user.nickname);////////
-				else
-					usr = await this.userService.findByNickname(user);
+				let usr = await this.userService.findByNickname(user.nickname);
 				if (usr !== undefined && ret !== undefined)
 					await this.chatUserRepository.insert({owner: true,  user: usr, chat: this.chatData});
 			});
@@ -73,7 +67,6 @@ export class ChatService {
 				return (error);
 			return (Response.makeResponse(500, { error: 'unable to save chat' }));
 		}
-		
 	}
 
 	/*
