@@ -18,4 +18,10 @@ export class ChatController {
     async saveChat(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.saveChatGroup(body, headers.authorization));
     }
+
+    @Get('/getChatGroups')
+    async getChatGroups(@Headers() headers): Promise<any>{
+        console.log("hoaa", headers.authorization);
+        return (await this.chatService.getChatGroups(headers.authorization));
+    }
 }
