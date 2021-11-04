@@ -16,7 +16,6 @@ export class ChatController {
 
     @Post('/saveChatGroup')
     async saveChat(@Body() body, @Headers() headers): Promise<any>{
-        console.log("body", body);
         return (await this.chatService.saveChatGroup(body, headers.authorization));
     }
 }

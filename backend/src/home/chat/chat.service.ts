@@ -8,14 +8,16 @@ import { Response } from 'src/shared/response/responseClass';
 import { UserService } from "../user/user.service";
 import { SessionService } from "src/session/session.service";
 import { UserPublicInfoI } from "../user/userI";
+import { ChatUsersEntity } from "./chatUsers.entity";
 
 @Injectable()
 export class ChatService {
 	private chatData = new ChatEntity();
-	private users: UserEntity[] = [];
+	
 	constructor(
 		@InjectRepository(ChatEntity) private chatRepository: Repository<ChatEntity>,
 		@InjectRepository(MessageEntity) private messageRepository: Repository<MessageEntity>,
+		@InjectRepository(ChatUsersEntity) private chatUserRepository: Repository<ChatUsersEntity>,
 		private sessionService: SessionService,
 		//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
 		@Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
@@ -27,9 +29,12 @@ export class ChatService {
 		try {
 			this.chatData.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
 			this.chatData.type_chat = type_chat;
-			this.chatData.users = users;
+			//this.chatData.chats = users;
 			this.chatData.password = '123'; // this must be created in the frontend
-			await this.chatRepository.save(this.chatData); // what kind of response do we need??
+			await this.chatRepository.insert(this.chatData); // what kind of response do we need??
+			users.forEach(async user => {
+				await this.chatUserRepository.insert({owner: true, user: user, chat: this.chatData});
+			});
 			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)
@@ -46,24 +51,25 @@ export class ChatService {
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
 				this.chatData.name_chat = body.chat_name;
-			this.chatData.users = [];
+			//this.chatData.users = [];
 			this.chatData.type_chat = body.chat_type;//group
 			//body.members.forEach(async element => {
+			this.chatData.password = '123'; // this must be created in the frontend
+			console.log("chatData: ", await this.chatData);
+			const ret = await this.chatRepository.insert(this.chatData); // what kind of response do we need??
 			for (var i = 0; i < body.members.length; i++) {
 				let usr = await this.userService.findByNickname(body.members[i]);
-				if (usr !== undefined)
-					this.chatData.users.push(usr);
+				if (usr !== undefined && ret !== undefined)
+					await this.chatUserRepository.insert({owner: true,  user: usr, chat: this.chatData});
+					
 			};
-			//this.chatData.users = this.users;
-			console.log("chatData: ", await this.chatData);
-			this.chatData.password = '123'; // this must be created in the frontend
-			await this.chatRepository.insert(this.chatData); // what kind of response do we need??
 			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'unable to save chat' }));
 		}
+		
 	}
 
 	/*

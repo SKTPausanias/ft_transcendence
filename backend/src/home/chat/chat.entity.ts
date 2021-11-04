@@ -1,10 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { MessageEntity } from "../chat/message.entity";
+import { ChatUsersEntity } from "./chatUsers.entity";
 
 @Entity('chat')
 export class ChatEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
     @Column({ unique: true })
@@ -16,7 +17,9 @@ export class ChatEntity {
     @Column()
     password: string;
 
-    @ManyToMany(() => UserEntity, (user) => user.chats)
+    @OneToMany(() => ChatUsersEntity, (chatUser) => chatUser.chat)
+    chats: ChatUsersEntity[];
+    /* @ManyToMany(() => UserEntity, (user) => user.chats)
     @JoinTable(
         {
             name: 'chat_users',
@@ -24,7 +27,7 @@ export class ChatEntity {
             inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' }
         }
     )
-    users: UserEntity[];
+    users: UserEntity[]; */
 
     @OneToMany(type => MessageEntity, message => message.chat)
     messages: MessageEntity[];

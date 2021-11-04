@@ -19,9 +19,10 @@ import { FriendService } from 'src/home/friends/friend.service';
 import { ChatEntity } from 'src/home/chat/chat.entity';
 import { ChatService } from 'src/home/chat/chat.service';
 import { MessageEntity } from 'src/home/chat/message.entity';
+import { ChatUsersEntity } from 'src/home/chat/chatUsers.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity]), HttpModule],
+	imports: [TypeOrmModule.forFeature([UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity]), HttpModule],
     controllers: [AuthController],
     providers: [
 		UserService, ConfirmService, 

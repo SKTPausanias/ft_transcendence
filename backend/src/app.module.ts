@@ -18,6 +18,7 @@ import { SocketModule } from './socket/socket.module';
 import { ChatEntity } from './home/chat/chat.entity';
 import { MessageEntity } from './home/chat/message.entity';
 import { ChatModule } from './home/chat/chat.module';
+import { ChatUsersEntity } from './home/chat/chatUsers.entity';
 @Module({
   imports: [ConfigModule.forRoot({
 	isGlobal: true,
@@ -30,7 +31,7 @@ import { ChatModule } from './home/chat/chat.module';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),
