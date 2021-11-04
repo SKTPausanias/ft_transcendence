@@ -24,38 +24,18 @@ export class ChatService {
 		private userService: UserService,
 	) { }
 
-	//This function saves oneToOne chats when friendship is accepted from both users. Look at friend.service
-	/* async saveChat(type_chat: string, users: UserEntity[], name_chat?: string): Promise<any> {
-		try {
-			this.chatData.name_chat = name_chat ? name_chat : users[0].id + '_' + users[1].id;
-			this.chatData.type_chat = type_chat;
-			//this.chatData.chats = users;
-			this.chatData.password = '123'; // this must be created in the frontend
-			await this.chatRepository.insert(this.chatData); // what kind of response do we need??
-			users.forEach(async user => {
-				await this.chatUserRepository.insert({owner: true, user: user, chat: this.chatData});
-			});
-			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'unable to save chat' }));
-		}
-	} */
-
 	async saveChatGroup(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1];
+		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			if (body.chat_type != "group")
-			this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
+				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			else
-			this.chatData.name_chat = body.chat_name;
+				this.chatData.name_chat = body.chat_name;
 			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
 				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
 			this.chatData.type_chat = body.chat_type;
 			this.chatData.password = '123'; // this must be created in the frontend
-			console.log("chatData: ", await this.chatData);
-			const ret = await this.chatRepository.insert(this.chatData); // what kind of response do we need??
+			const ret = await this.chatRepository.insert(this.chatData);
 			body.members.forEach(async user => {
 				let usr = await this.userService.findByNickname(user.nickname);
 				if (usr !== undefined && ret !== undefined)
@@ -74,7 +54,7 @@ export class ChatService {
 	* if is correct, we save the message, chatID which both user belong and the id of the user propietary
 	*/
 	async saveMessage(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1];
+		const token = header.split(' ')[1]; //must check is session is active before continue
 		var eMsg = new MessageEntity();
 		try {
 
@@ -100,7 +80,7 @@ export class ChatService {
 	}
 
 	async getMessages(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1];
+		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friend = await this.userService.findByNickname(body.receiver);
@@ -121,7 +101,7 @@ export class ChatService {
 	}
 
 	async getChatGroups(header: any): Promise<any> {
-		const token = header.split(' ')[1];
+		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			console.log("session:", session);
