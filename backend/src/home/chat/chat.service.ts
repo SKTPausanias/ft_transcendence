@@ -126,4 +126,20 @@ export class ChatService {
 			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
 		}
 	}
+
+	async getChatGroups(header: any): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			console.log("session:", session);
+			//find all chats where type_chat = group 
+			const chats = await this.chatRepository.find({ where: { type_chat: 'group' }});
+			console.log("chats:", chats);
+			return (Response.makeResponse(200, { chats: chats }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
 }

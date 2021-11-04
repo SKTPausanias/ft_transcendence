@@ -82,4 +82,25 @@ export class ChatService {
         return (e);
     }
   }
+
+  async getChatGroups(session: SessionI): Promise<any> {
+    const url = '/api/users/chat/getChatGroups';
+    //console.log("Calling backend getChatGroups...", session);
+    //var body = {};
+    var channels: any[] = [];
+    try{
+      const ret = (await this.http.get<any>(url, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+        if (ret.statusCode == 200){
+          channels = ret.data.chats;
+        }
+        return (channels);
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
 }

@@ -85,9 +85,12 @@ export class ChatComponent implements OnInit {
   getPrivates(){
     this.showPrivate = true;
   }
-  getChannels(){
+
+  async getChatGroups(){
     this.showPrivate = false;
     this.showChat = false;
+    this.channels = await this.chatService.getChatGroups(this.session);
+    console.log("channels: ", this.channels);
   }
   closeChat(){
     this.showChat = false;

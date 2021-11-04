@@ -38,7 +38,7 @@
                   <img src="http://localhost:3000/img/default_avatar.png" class="rounded-circle user_img">
                 </div>
                 <div class="user_info">
-                  <span>{{channel.nameChat}}</span>
+                  <span>{{channel.name_chat}}</span>
                 </div>
                 <button class="btn" (click)="selectChat(channel.nameChat)">
                   <span class="fa fa-comment-dots"></span>
@@ -49,7 +49,7 @@
         </div>
         <div class="card-footer">
           <button class="btn" (click)="getPrivates()"><i class="fas fa-user-lock"> Private</i></button>
-          <button class="btn" (click)="getChannels()"><i class="fas fa-users"> Channels</i></button>
+          <button class="btn" (click)="getChatGroups()"><i class="fas fa-users"> Channels</i></button>
         </div>
       </div>
     </div>
