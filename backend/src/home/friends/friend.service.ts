@@ -52,10 +52,7 @@ export class FriendService {
 				if (requester === undefined && accepter === undefined)
 					ret = (await this.friendRepository.save({ user_1: user, user_2: friend }));
 				else if (requester === undefined && accepter !== undefined && accepter.confirmed === false)
-				{
 					ret = (await this.friendRepository.save({ id: accepter.id, confirmed: true }));
-					//await this.chatService.saveChat("private", [user, friend]);
-				}
 				return (ret);
 			}catch (e) {
 				throw new Exception(Response.makeResponse(500, "Can't add/confirm friendship"));

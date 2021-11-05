@@ -22,7 +22,7 @@
                 <div class="user_info">
                   <span>{{friend.nickname}}</span>
                 </div>
-                <button class="btn" (click)="selectChat(friend)">
+                <button class="btn" data-mdb-toggle="tooltip" title="Open chat" (click)="selectChat(friend)">
                   <span class="fa fa-comment-dots"></span>
                 </button>
                 <button class="btn" (click)="playPong(friend)">
@@ -31,6 +31,7 @@
             </div>
           </li>
           </ul>
+          <!---->
           <ul *ngIf="showPrivate == false" class="contacts">
             <li class="active" *ngFor="let channel of channels">
               <div class="d-flex bd-highlight">
@@ -40,7 +41,7 @@
                 <div class="user_info">
                   <span>{{channel.name_chat}}</span>
                 </div>
-                <button class="btn" (click)="selectChat(channel.nameChat)">
+                <button class="btn" data-mdb-toggle="tooltip" title="Open chat" (click)="selectChat(channel.nameChat)">
                   <span class="fa fa-comment-dots"></span>
                 </button>
               </div>
@@ -54,7 +55,7 @@
       </div>
     </div>
 
-
+<!-- Following is the chat component of One on One conversations: should be different than the group ones-->
   <div *ngIf="showChat == true" class="col-md-8 col-xl-6 chat">
         <div class="card">
           <div class="card-header msg_head">
@@ -71,7 +72,6 @@
                 <span><i class="fas fa-user-times"></i></span>
                 <span (click)='playPong(friendChat)'><i class="fas fa-table-tennis"></i></span>
                 <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
-               
               </div>
             </div>
             <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>

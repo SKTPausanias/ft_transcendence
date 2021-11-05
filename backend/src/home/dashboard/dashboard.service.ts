@@ -31,9 +31,7 @@ export class DashboardService {
 			const ret =  await this.friensService.addFriend(session.userID, friend);
 			
 			if (ret !== undefined && ret.confirmed == true){
-				console.log("Entering to save group...");
-				await this.chatService.saveChatGroup({chat_type: "private", members: [session.userID, friend]}, header.authorization);
-				console.log("Accepted: ", ret);
+				await this.chatService.saveChatGroup({chat_type: "oneToOne", members: [session.userID, friend]}, header.authorization);
 			}
 			return (ret);
 		} catch (error) {

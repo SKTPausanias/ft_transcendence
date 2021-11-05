@@ -17,7 +17,7 @@ export class ChatComponent implements OnInit {
   @Input() chatPreference: SharedPreferencesI
   
   identifier: string = "";
-  length: number = 0;
+  //length: number = 0;
   showPrivate: boolean = true;
   showChat: boolean = false;
   channels: any[] = [];
@@ -57,7 +57,7 @@ export class ChatComponent implements OnInit {
   }
 
   async selectChat(friend: any) {
-    
+    //this.closeChat();
     this.receiver = friend;
     this.friendChat = friend;
     this.showChat = true;
@@ -66,8 +66,9 @@ export class ChatComponent implements OnInit {
     // get messages from DB and save to messages array
     this.messages = await this.chatService.getMessages(this.session, this.receiver);
     //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
-    this.identifier = this.messages[this.messages.length - 1 ].date.toString();
-    this.length = this.messages.length - 1;
+    if (this.messages.length)
+      this.identifier = this.messages[this.messages.length - 1 ].date.toString();
+   
     //msgBox.child[this.messages[this.messages.size - 1]].id == messages.timeStamp scrollDown();
   }
   
@@ -84,11 +85,12 @@ export class ChatComponent implements OnInit {
 
   getPrivates(){
     this.showPrivate = true;
+    //this.closeChat();
   }
 
   async getChatGroups(){
     this.showPrivate = false;
-    this.showChat = false;
+    //this.closeChat();
     this.channels = await this.chatService.getChatGroups(this.session);
     console.log("channels: ", this.channels);
   }

@@ -24,11 +24,21 @@ export class ChatService {
 		private userService: UserService,
 	) { }
 
+	async queryOneChat(users: any[]): Promise<any>{
+		return (await this.chatRepository.findOne({
+			where: [
+				{name_chat: users[0].id + '_' + users[1].id}, //Or expresion searching for prevous existing chat OneOnOne
+				{name_chat: users[1].id + '_' + users[0].id}]
+			}));
+	}
 	async saveChatGroup(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
-			if (body.chat_type != "group")
+			if (body.chat_type == "oneToOne") {
+				if (this.queryOneChat(body.members) !== undefined)
+					return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
+			}
 			else
 				this.chatData.name_chat = body.chat_name;
 			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
@@ -84,7 +94,6 @@ export class ChatService {
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friend = await this.userService.findByNickname(body.receiver);
-			console.log("friend:", friend);
 			const name_chat = session.userID.id + '_' + friend.id;
 			const name_chat2 = friend.id + '_' + session.userID.id;
 			const chat = await this.chatRepository.findOne({
@@ -104,10 +113,8 @@ export class ChatService {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
-			console.log("session:", session);
 			//find all chats where type_chat = group 
 			const chats = await this.chatRepository.find({ where: { type_chat: 'group' }});
-			console.log("chats:", chats);
 			return (Response.makeResponse(200, { chats: chats }));
 		} catch (error) {
 			if (error.statusCode == 410)
