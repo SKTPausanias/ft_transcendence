@@ -25,6 +25,7 @@ export class ChatService {
 	) { }
 
 	async queryOneChat(users: any[]): Promise<any>{
+		
 		return (await this.chatRepository.findOne({
 			where: [
 				{name_chat: users[0].id + '_' + users[1].id}, //Or expresion searching for prevous existing chat OneOnOne
@@ -35,8 +36,9 @@ export class ChatService {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			if (body.chat_type == "oneToOne") {
-				if (this.queryOneChat(body.members) !== undefined)
-					return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
+				if (await this.queryOneChat(body.members) !== undefined){
+					return (Response.makeResponse(200, { ok: "Chat oneOnOne was restored" }));
+				}
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			}
 			else
