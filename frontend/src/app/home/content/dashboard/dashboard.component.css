@@ -7,6 +7,16 @@
 	display: inline-block;
 }
 
+.hideComponent{
+	display: none;
+}
+
+.notConfirmed {
+	border-color: red
+}
+.passConfirmed {
+	border-color: green
+}
 .chat-messages-show-container{
 	background: #c3c3c3;
 	height: 300px;

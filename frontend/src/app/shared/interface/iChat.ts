@@ -15,3 +15,10 @@ export interface messageI {
     owner: string,
     user: UserPublicInfoI,
   }
+
+  export interface ChannelI {
+    name: string,
+    type: string
+    protected: boolean,
+    password: string
+  }

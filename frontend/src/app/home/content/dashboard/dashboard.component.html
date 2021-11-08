@@ -1,7 +1,23 @@
 <div class="container">
-    <form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitFriends()">
+	<h3>Home</h3>
+	<!-- Navigation tabs: if notification is received, must enable tab in some other color, maybe with a green circle on it-->
+	<ul class="nav nav-tabs">
+		<li class="nav-item">
+		  <button #friendTab class="nav-link" [ngClass]="{'active': showFriends}" aria-current="page" (click)="selectTab('friendTab')">Friends</button>
+		</li>
+		<li class="nav-item">
+			<button #channelTab class="nav-link" [ngClass]="{'active': showChannels}" aria-current="page" (click)="selectTab('channelTab')">Channels</button>
+		</li>
+		<li class="nav-item">
+			<button #scoreTab class="nav-link" aria-current="page">Scores</button>
+		</li>
+		<li class="nav-item">
+			<button #notificationTab class="nav-link disabled" aria-current="page" tabindex="-1" aria-disabled="true">Notifications</button>
+		</li>
+	</ul>
+    <form ngNativeValidate [ngClass]="{'hideComponent' : !showFriends}" class="form-group hideComponent" #set="ngForm" (ngSubmit)="onSubmitFriends()">
         <div>
-            <h3>Home</h3>
+            
             <div class="input-group mb-3 card-header">
                 <input
 					#searchUsers
@@ -15,6 +31,7 @@
 				<div class="input-group-prepend">
 					<button type="submit" class="input-group-text search_btn"><i class="fas fa-search"></i></button>
 				</div>
+				
 				<div *ngIf='showUsers' class='container-fluid card h-100'>
 					<div class="row justify-content-left">
 						<!-- <div class="col-md-4 col-xl-3 chat"> -->
@@ -54,7 +71,7 @@
 					<div class="card-footer">
 						<button class='btn-danger' (click)='clean()'> cancel</button>
 					</div>
-				</div>
+				</div>				
 			</div>
     	</div>
 		<div hidden="hidden">
@@ -72,6 +89,69 @@
 			<button (click)="createGroupChat()">Create</button>
 		</div>
     </form>
+	<form ngNativeValidate [ngClass]="{'hideComponent' : !showChannels}" class="form-group hideComponent" #set="ngForm" (ngSubmit)="onSubmitChannel()">
+		<div class="container-fluid mt-2">
+			<div class="row mt-5">
+				<div>
+					<div class="col-5 form-group">
+						<label for="channelName">Channel Name</label>
+						<input
+							type="text"
+							name="channelName"
+							class="form-control"
+							[(ngModel)]="channelInfo.name"
+							placeholder="Type channel name..."
+							required
+						/>
+					</div>
+					<div class="col-5 form-group">
+						<label for="type">Select Type</label>
+						<select
+							#chanType
+							class="form-select form-select-sm mb-3"
+							aria-label=".form-select-sm example"
+							(change)="selectType($event.target)"
+							required
+							>
+							<option disabled selected value> -- Select an option -- </option>
+							<option value="public">Public</option>
+							<option value="private">Private</option>
+						</select>
+					</div>
+				</div>
+				<div>
+					<div class="form-check form-switch">
+						<input #target class="form-check-input" type="checkbox" (change)="passCheckBox(target)">
+						<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+					</div>
+					<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+						<label for="pass">Password</label>
+						<input
+							[(ngModel)]="pass"
+							[ngClass]="{'passConfirmed': passConfirm&& (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+							type="password"
+							name="pass"
+							minlength="6"
+							class="form-control"
+						/>
+					</div>
+					<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+						<label for="pass">Confirm Password</label>
+						<input
+							#confirmPass
+							type="password"
+							name="pass"
+							minlength="6"
+							class="form-control"
+							[ngClass]="{'passConfirmed': passConfirm && (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+							(keyup)="checkPass(confirmPass.value)"
+						/>
+					</div>
+				</div>
+			</div>						
+			<button type="submit" class="mt-5 btn">Create a channel</button>
+		</div>
+	</form>
 	
 		
         

@@ -6,6 +6,7 @@ import { DashboardService } from './dashboard.service';
 import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
 import { fromEvent } from 'rxjs';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { ChannelI } from 'src/app/shared/interface/iChat';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,15 +15,27 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 	@Input() dashboardPreference: SharedPreferencesI;
+	/* View components for nav tabs */
+	@ViewChild('friendTab') tFriend: ElementRef<HTMLInputElement>;
+	@ViewChild('channelTab') tChannel: ElementRef<HTMLInputElement>;
+	@ViewChild('scoreTab') tScore: ElementRef<HTMLInputElement>;
+	@ViewChild('notificationTab') tNotification: ElementRef<HTMLInputElement>
+	/* End nav component view */
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('friendship') frindInput : ElementRef;
 	@ViewChild('grpUsers') selectGroup: ElementRef<HTMLInputElement>; // object can be a basic object or specific type of HTML...
 	@ViewChild('nChatElement') chatName: ElementRef<HTMLInputElement>;
 
+	showFriends: boolean = true;
+	showChannels: boolean = false;
 	showUsers: boolean = false; //Values must be assigned in the constructor function...
 	showSelect: boolean = false;
-	grpUsers: UserPublicInfoI[]; //userPublicInfo
 
+	pass: string;
+	passConfirm: boolean = false;
+
+	channelInfo: ChannelI = <ChannelI>{};
+	grpUsers: UserPublicInfoI[]; //userPublicInfo
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
 
@@ -35,6 +48,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   
 	ngOnInit() {
 		this.initSearchboxListener();
+		this.channelInfo.protected = false;
 	}
 	
 	ngAfterViewInit() {
@@ -104,6 +118,48 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		else
 			console.log("Create a chatGroup is not possible", ret);
 		this.clean();
+	}
+
+	selectTab(name: string):void {
+		switch (name){
+			case "friendTab":
+				console.log("friend tab selectd");
+				this.showFriends = true;
+				this.showChannels = false;
+				break ;
+			case "channelTab":
+				console.log("channel tab selected");
+				this.showFriends = false;
+				this.showChannels = true;
+				break;
+		}
+	}
+
+	passCheckBox(e: any): void {
+		this.channelInfo.protected = e.checked;
+		
+	}
+	checkPass(value: string): boolean {
+		console.log("value: ", value, ", pass: ", this.pass);
+		if (this.pass === value)
+		{
+			console.log("pass are conincident: ", value);
+			this.channelInfo.password = this.pass;
+			this.passConfirm = true;
+			return (true);
+		}
+		this.passConfirm = false;
+		return (false);
+	}
+
+	selectType(type: any):void {
+		this.channelInfo.type = type.value;
+	}
+
+	async onSubmitChannel():Promise<void>{
+		//creates a public Channel with no users attached to it because is public and will emmit to all users connected to it
+		console.log(this.channelInfo);
+
 	}
 
 	clean(){
