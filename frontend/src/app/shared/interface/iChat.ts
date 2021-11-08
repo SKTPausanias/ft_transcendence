@@ -17,8 +17,9 @@ export interface messageI {
   }
 
   export interface ChannelI {
-    name: string,
-    type: string
+    name_chat: string,
+    chat_type: string
     protected: boolean,
-    password: string
+    password: string,
+    members: UserPublicInfoI[]
   }

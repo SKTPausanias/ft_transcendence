@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	ngAfterViewInit() {
 		this.grpUsers.push(this.dashboardPreference.userInfo);
 		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + ": Owner\n";
-
+		this.channelInfo.members = this.grpUsers;
 	}
   
 	async onSubmitFriends(): Promise<void> {
@@ -108,8 +108,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		if (this.chatName.nativeElement.value != "" && this.grpUsers.length > 1) {
 			var obj = {
 				chat_type: "group",
+				password: "",
 				members: this.grpUsers,
-				chat_name: this.chatName.nativeElement.value
+				name_chat: this.chatName.nativeElement.value
 			}
 			var ret = (await this.dashboardService.createGroupChat(this.session, obj));
 			ret.statusCode != 200 ? alert(ret.data.error) : null;
@@ -140,10 +141,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		
 	}
 	checkPass(value: string): boolean {
-		console.log("value: ", value, ", pass: ", this.pass);
 		if (this.pass === value)
 		{
-			console.log("pass are conincident: ", value);
+			console.log("pass matches: ", value);
 			this.channelInfo.password = this.pass;
 			this.passConfirm = true;
 			return (true);
@@ -153,12 +153,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	}
 
 	selectType(type: any):void {
-		this.channelInfo.type = type.value;
+		this.channelInfo.chat_type = type.value;
 	}
 
 	async onSubmitChannel():Promise<void>{
 		//creates a public Channel with no users attached to it because is public and will emmit to all users connected to it
-		console.log(this.channelInfo);
+		if (this.passConfirm && this.channelInfo.password.length >= 6) {
+			console.log(this.channelInfo);
+			const ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
+			console.log("channel ret: ", ret);
+		}
+		else
+			console.log("Not a valid channel: ", this.channelInfo);
 
 	}
 

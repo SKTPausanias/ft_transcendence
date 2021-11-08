@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { SessionI } from 'src/app/shared/ft_interfaces';
 import { SocketService } from '../../socket.service';
 import { wSocket } from 'src/app/shared/ft_enums';
+import { ChannelI } from 'src/app/shared/interface/iChat';
 @Injectable({
   providedIn: 'root'
 })
@@ -71,6 +72,20 @@ export class DashboardService {
     console.log("data from body: ", groupInfo);
     try{
       const ret = (await this.http.post<any>(url, groupInfo, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise())
+    return (ret);
+    } catch(e){
+      return (e);
+    }
+  }
+
+  async addChannel(session: SessionI, channelInfo: ChannelI): Promise<any> {
+    const url = '/api/users/chat/saveChatGroup';
+    console.log("data from body: ", channelInfo);
+    try{
+      const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token
         })
       }).toPromise())
