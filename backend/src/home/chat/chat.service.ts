@@ -33,6 +33,7 @@ export class ChatService {
 			}));
 	}
 	async saveChatGroup(body: any, header: string): Promise<any> {
+		console.log("Data from channel body: ", body);
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			if (body.chat_type == "oneToOne") {
@@ -42,11 +43,11 @@ export class ChatService {
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
 			}
 			else
-				this.chatData.name_chat = body.chat_name;
+				this.chatData.name_chat = body.name_chat;
 			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
 				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
 			this.chatData.type_chat = body.chat_type;
-			this.chatData.password = '123'; // this must be created in the frontend
+			this.chatData.password = body.password; // this must be created in the frontend
 			const ret = await this.chatRepository.insert(this.chatData);
 			body.members.forEach(async user => {
 				let usr = await this.userService.findByNickname(user.nickname);
