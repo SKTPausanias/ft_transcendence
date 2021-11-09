@@ -92,6 +92,29 @@ export class ChatService {
 		}
 	}
 
+	async saveGroupMessage(body:any, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		var eMsg = new MessageEntity();
+		console.log("Data from channel body save group message: ", body);
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			eMsg.message = body.message;
+			eMsg.user = session.userID;
+			eMsg.date = body.timestamp;
+			const chat = await this.chatRepository.findOne({
+				where: { name_chat: body.receiver.name_chat }
+			});
+			eMsg.chat = chat;
+			const ret = await this.messageRepository.save(eMsg);
+			return (Response.makeResponse(200, { ok: "Message has been saved" }));
+		}
+		catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to save message' }));
+		}
+	}
+
 	async getMessages(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
@@ -103,9 +126,40 @@ export class ChatService {
 				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
 			}); // this is an OR
 			// find all messages from chat with relations
-			const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } });
+			//get messages from chat in order 
+			const messages = await this.messageRepository.find({
+				relations: ['user'],
+				where: { chat: chat },
+				order: { date: "ASC" }
+			});
+			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
+			console.log("Messages in backend getMessages(): ", messages);
 			return (Response.makeResponse(200, { messages: messages }));
 		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
+		}
+	}
+
+	async getGroupMessages(body : any, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		console.log("body: ", body);
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const chat = await this.chatRepository.findOne({
+				where: { name_chat: body.channel.name_chat }
+			});
+			const messages = await this.messageRepository.find({
+				relations: ['user'],
+				where: { chat: chat },
+				order: { date: "ASC" }
+			});
+			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
+			console.log("messages in getGroupMessages: ", messages);
+			return (Response.makeResponse(200, { messages: messages }));
+		}
+		catch (error) {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
@@ -123,6 +177,17 @@ export class ChatService {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
+
+	async findChatByName(chat_name: string): Promise<any> {
+		try {
+			const chat = await this.chatRepository.findOne({ where: { name_chat: chat_name } });
+			return (Response.makeResponse(200, { chat: chat }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get chat' }));
 		}
 	}
 }

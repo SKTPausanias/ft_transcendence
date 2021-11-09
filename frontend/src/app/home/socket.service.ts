@@ -31,6 +31,7 @@ export class SocketService {
 		this.onFriendRemove();
 		this.onDeleteAccount();
 		this.onChatMessage();
+		this.onGroupChatMessage();
 	}
 	public disconnect()
 	{
@@ -130,6 +131,18 @@ export class SocketService {
 
 	private onChatMessage(){
 		this.socket.on(wSocket.CHAT_MESSAGE, (emiter: string, data: any) => {
+			try {
+				console.log("data recieved:", data);
+				console.log("emiter:", emiter);
+				//this.sharedPreferences.chat_messages.push(data); si descomento no llega al subscribe
+				//console.log("data sent", this.sharedPreferences);
+				this.chatFilter.emit(data);
+			}catch(error){}
+		})
+	}
+
+	private onGroupChatMessage(){
+		this.socket.on(wSocket.CHAT_GROUP_MESSAGE, (emiter: string, data: any) => {
 			try {
 				console.log("data recieved:", data);
 				console.log("emiter:", emiter);

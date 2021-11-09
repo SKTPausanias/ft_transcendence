@@ -33,6 +33,7 @@ export class SocketService {
 			});
 		});
 	}
+
 	async emitToOneFriend(server: any, action: string, emiter: string, reciver: UserPublicInfoI, data: any)
 	{
 		const friend = await this.userService.findByLogin(reciver.login);
