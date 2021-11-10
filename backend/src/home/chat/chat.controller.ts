@@ -9,9 +9,19 @@ export class ChatController {
         return (await this.chatService.saveMessage(body, headers.authorization));
     }
 
+    @Post('/saveGroupMessage')
+    async saveGroupMessage(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.saveGroupMessage(body, headers.authorization));
+    }
+
     @Post('/getMessages')
     async getMessages(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.getMessages(body, headers.authorization));
+    }
+
+    @Post('/getGroupMessages')
+    async getGroupMessages(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.getGroupMessages(body, headers.authorization));
     }
 
     @Post('/saveChatGroup')
