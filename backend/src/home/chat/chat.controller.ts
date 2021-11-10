@@ -24,4 +24,10 @@ export class ChatController {
         console.log("hoaa", headers.authorization);
         return (await this.chatService.getChatGroups(headers.authorization));
     }
+
+    @Post('/addChannel')
+    async addChannel(@Body() body, @Headers() headers): Promise<any> {
+        console.log("Body: ", body);
+        return (await this.chatService.saveChatGroup(body, headers.authorization));
+    }
 }
