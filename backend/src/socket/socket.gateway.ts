@@ -101,21 +101,11 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage(wSocket.CHAT_GROUP_MESSAGE)
 	async chatGroupMessage(client, data) {
-		console.log("client:", client);
 		const sessionData = await this.getSessionData(client);
-		console.log(sessionData.userInfo.login, " : ", data);
-		
-		/*await this.socketService.emitToAllFriends(
-			this.server, wSocket.CHAT_GROUP_MESSAGE, sessionData.userInfo.login,
-			sessionData.friends, data.message);
-		await this.socketService.emitToSelf(this.server, wSocket.CHAT_GROUP_MESSAGE, sessionData.userInfo.login, data.message);*/
+		data.userInfo = User.getPublicInfo(sessionData.userInfo);
 		var recievers = await this.userService.getAllInChannel(data.channel.name_chat);
-		console.log("recievers:", recievers);
-		//console.log(recievers);
-		//var ret: UserPublicInfoI[] = [];
-		//recivers = this.userService.
-		//await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_GROUP_MESSAGE,
-		//		sessionData.userInfo.login, , data.message);
+		await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_GROUP_MESSAGE,
+			sessionData.userInfo.login, recievers, data);
 	}
 
 	@SubscribeMessage(wSocket.GAME_POSITION)

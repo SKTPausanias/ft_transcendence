@@ -183,7 +183,7 @@ export class ChatService {
 	async findChatByName(chat_name: string): Promise<any> {
 		try {
 			const chat = await this.chatRepository.findOne({ where: { name_chat: chat_name } });
-			return (Response.makeResponse(200, { chat: chat }));
+			return (chat);
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);

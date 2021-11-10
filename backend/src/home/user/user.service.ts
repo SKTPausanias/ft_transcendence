@@ -17,7 +17,8 @@ export class UserService {
 
 	constructor(@InjectRepository(UserEntity)
 	private userRepository: Repository<UserEntity>,
-	//private chat_userRepository: Repository<ChatUsersEntity>,
+	@InjectRepository(ChatUsersEntity)
+	private chat_userRepository: Repository<ChatUsersEntity>,
 	private friendService: FriendService,
 	private connection: Connection,
 	private sessionService: SessionService,
@@ -129,15 +130,11 @@ export class UserService {
 	async getAllInChannel(name_chat : string): Promise<UserPublicInfoI[]> {
 		try {
 			const chat = await this.chatService.findChatByName(name_chat);
-			//find all user_ids related with chat_id in chat_user table
-			//const chat_users = this.chat_userRepository.find({where: {chat_id: chat.id}});
-			//console.log(chat_users);
-			//const usersID = await this..find({ relations: ['user'], where: { chat: chat } });
-			//const users = await this.userRepository.find({where: {chat_id: chat.id}});
+			const chat_users = await this.chat_userRepository.find({relations: ["chat", "user"] , where: {chat}});
 			var ret: UserPublicInfoI[] = [];
-			/*users.forEach(element => {
-				ret.push(User.getPublicInfo(element));
-			});*/
+			chat_users.forEach(element => {
+				ret.push(User.getPublicInfo(element.user));
+			});
 			return (ret);
 		} catch (error) {
 			throw new Exception(Response.makeResponse(500, {error : "Can't get users"}));

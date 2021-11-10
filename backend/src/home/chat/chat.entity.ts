@@ -19,15 +19,6 @@ export class ChatEntity {
 
     @OneToMany(() => ChatUsersEntity, (chatUser) => chatUser.chat)
     chats: ChatUsersEntity[];
-    /* @ManyToMany(() => UserEntity, (user) => user.chats)
-    @JoinTable(
-        {
-            name: 'chat_users',
-            joinColumn: { name: 'chat_id', referencedColumnName: 'id' },
-            inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' }
-        }
-    )
-    users: UserEntity[]; */
 
     @OneToMany(type => MessageEntity, message => message.chat)
     messages: MessageEntity[];
