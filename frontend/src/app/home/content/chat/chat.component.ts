@@ -74,7 +74,11 @@ export class ChatComponent implements OnInit {
     //delete messages from messages array
     this.messages = [];
     // get messages from DB and save to messages array
-    this.messages = await this.chatService.getMessages(this.session, this.receiver);
+    var ret = await this.chatService.friendIsBlocked(this.session, this.friendChat);
+    //access blocked status
+    console.log("ret: ", ret.data.blocked);
+    if (ret.data.blocked == false)
+      this.messages = await this.chatService.getMessages(this.session, this.receiver);
     //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
     if (this.messages.length)
       this.identifier = this.messages[this.messages.length - 1 ].date.toString();
