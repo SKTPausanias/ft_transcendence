@@ -31,7 +31,6 @@ export class ChatController {
 
     @Get('/getChatGroups')
     async getChatGroups(@Headers() headers): Promise<any>{
-        console.log("hoaa", headers.authorization);
         return (await this.chatService.getChatGroups(headers.authorization));
     }
 
@@ -39,5 +38,10 @@ export class ChatController {
     async addChannel(@Body() body, @Headers() headers): Promise<any> {
         console.log("Body: ", body);
         return (await this.chatService.saveChatGroup(body, headers.authorization));
+    }
+    @Post('banuser')
+    async banUser(@Body() body, @Headers() headers): Promise<any> {
+        //console.log('Body is: ', body);
+        return (await this.chatService.banUser(body.members, headers.authorization));
     }
 }

@@ -25,13 +25,14 @@ export class ChatService {
 	) { }
 
 	async queryOneChat(users: any[]): Promise<any>{
-		
+		console.log("members of body: ", users);
 		return (await this.chatRepository.findOne({
 			where: [
 				{name_chat: users[0].id + '_' + users[1].id}, //Or expresion searching for prevous existing chat OneOnOne
 				{name_chat: users[1].id + '_' + users[0].id}]
 			}));
 	}
+
 	async saveChatGroup(body: any, header: string): Promise<any> {
 		console.log("Data from channel body: ", body);
 		const token = header.split(' ')[1]; //must check is session is active before continue
@@ -177,6 +178,24 @@ export class ChatService {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
+
+	async banUser(members: any[], header: string){
+		const token = header.split(' ')[1];
+		var users: any[] = [];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			/* await members.forEach( async element => { */
+			for (var i = 0; i < members.length; i++)
+				users.push(await this.userService.findByNickname(members[i].nickname));
+			const ret = await this.queryOneChat(users);
+			console.log("members to ban: ", ret);
+			//if (ret !== undefined)
+				//return (await this.chatUserRepository.save({muted: true});
+
+		} catch (error) {
+			
 		}
 	}
 

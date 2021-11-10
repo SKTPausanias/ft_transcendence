@@ -11,6 +11,10 @@
 	display: none;
 }
 
+.disabled {
+	display: none;
+}
+
 .notConfirmed {
 	border-color: red
 }

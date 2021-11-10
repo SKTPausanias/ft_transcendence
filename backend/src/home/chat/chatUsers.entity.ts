@@ -16,4 +16,7 @@ export class ChatUsersEntity {
     @Column()
     owner: boolean;
 
+    @Column({default : false})
+    muted: boolean;
+
 }

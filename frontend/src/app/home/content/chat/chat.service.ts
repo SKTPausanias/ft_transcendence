@@ -160,4 +160,18 @@ export class ChatService {
         return (e);
     }
   }
+
+  async banUser(session: SessionI, members: UserPublicInfoI[]): Promise<any>{
+    const url = '/api/users/chat/banUser';
+    try{
+      return (await this.http.post<any>(url, {'members': members}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
 }

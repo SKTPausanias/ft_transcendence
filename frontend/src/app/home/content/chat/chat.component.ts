@@ -6,6 +6,7 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { Messages } from 'src/app/shared/class/cMessages';
+import { ChannelI } from 'src/app/shared/interface/iChat';
 
 @Component({
   selector: 'app-chat',
@@ -116,6 +117,12 @@ export class ChatComponent implements OnInit {
     console.log("channels: ", this.channels);
   }
   
+  async banUser(friend: any): Promise<void>{
+    var members: UserPublicInfoI[] = [];
+    members.push(this.chatPreference.userInfo);
+    members.push(this.friendChat);
+    await this.chatService.banUser(this.session, members);
+  }
   closeChat(){
     this.showChat = false;
   }
