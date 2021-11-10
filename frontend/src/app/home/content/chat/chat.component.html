@@ -87,7 +87,7 @@
         <div *ngFor="let msg of messages">
           <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
             <div class="img_cont_msg">
-              <img src={{friendChat.avatar}} class="rounded-circle user_img_msg">
+              <img src={{msg.user.avatar}} class="rounded-circle user_img_msg">
             </div>
             <div id="{{msg.date}}" class="msg_cotainer">
               {{msg.message}}
