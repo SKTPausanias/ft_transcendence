@@ -54,11 +54,11 @@ export class ChatService {
 				if (usr !== undefined && ret !== undefined)
 					await this.chatUserRepository.insert({owner: true,  user: usr, chat: this.chatData});
 			});
-			return (Response.makeResponse(200, { ok: "Chat oneOnOne was saved" }));
+			return (Response.makeResponse(200, { ok: "Successful operation" }));
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
-			return (Response.makeResponse(500, { error: 'unable to save chat' }));
+			return (Response.makeResponse(500, { error: 'unable to create' }));
 		}
 	}
 
@@ -171,7 +171,7 @@ export class ChatService {
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			//find all chats where type_chat = group 
-			const chats = await this.chatRepository.find({ where: { type_chat: 'group' }});
+			const chats = await this.chatRepository.find({ where: [{ type_chat: 'public' }, { type_chat: 'private' }]});
 			return (Response.makeResponse(200, { chats: chats }));
 		} catch (error) {
 			if (error.statusCode == 410)

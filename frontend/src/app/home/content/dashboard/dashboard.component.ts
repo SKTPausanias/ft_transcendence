@@ -16,20 +16,20 @@ import { ChannelI } from 'src/app/shared/interface/iChat';
 export class DashboardComponent implements OnInit, AfterViewInit {
 	@Input() dashboardPreference: SharedPreferencesI;
 	/* View components for nav tabs */
-	@ViewChild('friendTab') tFriend: ElementRef<HTMLInputElement>;
-	@ViewChild('channelTab') tChannel: ElementRef<HTMLInputElement>;
-	@ViewChild('scoreTab') tScore: ElementRef<HTMLInputElement>;
-	@ViewChild('notificationTab') tNotification: ElementRef<HTMLInputElement>
+	//@ViewChild('friendTab') tFriend: ElementRef<HTMLInputElement>;
+	//@ViewChild('channelTab') tChannel: ElementRef<HTMLInputElement>;
+	//@ViewChild('scoreTab') tScore: ElementRef<HTMLInputElement>;
+	//@ViewChild('notificationTab') tNotification: ElementRef<HTMLInputElement>
+	//@ViewChild('friendship') frindInput : ElementRef;
+	//showSelect: boolean = false;
 	/* End nav component view */
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
-	@ViewChild('friendship') frindInput : ElementRef;
 	@ViewChild('grpUsers') selectGroup: ElementRef<HTMLInputElement>; // object can be a basic object or specific type of HTML...
 	@ViewChild('nChatElement') chatName: ElementRef<HTMLInputElement>;
 
 	showFriends: boolean = true;
 	showChannels: boolean = false;
 	showUsers: boolean = false; //Values must be assigned in the constructor function...
-	showSelect: boolean = false;
 
 	pass: string;
 	passConfirm: boolean = false;
@@ -106,8 +106,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 	async createGroupChat(): Promise<void>{
 		if (this.chatName.nativeElement.value != "" && this.grpUsers.length > 1) {
-			var obj = {
-				chat_type: "group",
+			var obj = {//this must be a channelI object
+				chat_type: "private",
 				password: "",
 				members: this.grpUsers,
 				name_chat: this.chatName.nativeElement.value
@@ -121,15 +121,27 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.clean();
 	}
 
+	async onSubmitChannel():Promise<void>{
+		/** creates a public Channel with no users attached to it because it is public
+		 ** and will emmit to all users connected to it (think about this...)
+		 ** Don't call to service if fields aren't right filled*/
+		if (this.passConfirm && this.channelInfo.password.length >= 6) {
+			console.log(this.channelInfo);
+			const ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
+			console.log("channel ret: ", ret);
+		}
+		else
+			console.log("Not a valid channel: ", this.channelInfo);
+
+	}
+
 	selectTab(name: string):void {
 		switch (name){
 			case "friendTab":
-				console.log("friend tab selectd");
 				this.showFriends = true;
 				this.showChannels = false;
 				break ;
 			case "channelTab":
-				console.log("channel tab selected");
 				this.showFriends = false;
 				this.showChannels = true;
 				break;
@@ -140,6 +152,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.channelInfo.protected = e.checked;
 		
 	}
+
 	checkPass(value: string): boolean {
 		if (this.pass === value)
 		{
@@ -154,18 +167,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
 	selectType(type: any):void {
 		this.channelInfo.chat_type = type.value;
-	}
-
-	async onSubmitChannel():Promise<void>{
-		//creates a public Channel with no users attached to it because is public and will emmit to all users connected to it
-		if (this.passConfirm && this.channelInfo.password.length >= 6) {
-			console.log(this.channelInfo);
-			const ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
-			console.log("channel ret: ", ret);
-		}
-		else
-			console.log("Not a valid channel: ", this.channelInfo);
-
 	}
 
 	clean(){

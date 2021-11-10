@@ -30,8 +30,6 @@ export class ChatComponent implements OnInit {
 	session = this.sQuery.getSessionToken();
   receiver : UserPublicInfoI = <UserPublicInfoI>{};
   friendChat: UserPublicInfoI = <UserPublicInfoI>{};
-  msgTime: string = new Date(1635433636000).toLocaleString();
-  
 
 	constructor(
     private chatService: ChatService,

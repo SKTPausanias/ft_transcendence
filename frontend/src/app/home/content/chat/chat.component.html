@@ -53,13 +53,14 @@
       </div>
     </div>
   </div>
+  <!-- Content of chnnaels chat: public/private/channels -->
   <div *ngIf="showGroupChat == true" class="col-md-8 col-xl-6 chat">
     <div class="card">
       <div class="card-header msg_head">
         <div class="d-flex bd-highlight">
           <div class="img_cont">
-            <img src={{friendChat.avatar}} class="rounded-circle user_img">
-            <span class="online_icon"></span>
+            <i class="fas fa-broadcast-tower"></i>
+            <img src='http://localhost:3000/img/default_avatar.png' class="rounded-circle user_img">
           </div>
           <div class="user_info">
             <span>{{channel.name_chat}}</span>
@@ -90,13 +91,13 @@
             </div>
             <div id="{{msg.date}}" class="msg_cotainer">
               {{msg.message}}
-              <span class="msg_time"> {{msgTime}} </span>
+              <span class="msg_time"> {{msg.msgDateString}} </span>
             </div>
           </div>
           <div *ngIf="msg.owner == chatPreference.userInfo.nickname" class="d-flex justify-content-end mb-4">
             <div id="{{msg.date}}" class="msg_cotainer_send">
               {{msg.message}}
-              <span class="msg_time_send"> {{msgTime}} </span>
+              <span class="msg_time_send"> {{msg.msgDateString}} </span>
             </div>
             <div class="img_cont_msg">
               <img src={{chatPreference.userInfo.avatar}} class="rounded-circle user_img_msg">
@@ -153,13 +154,13 @@
             </div>
             <div id="{{msg.date}}" class="msg_cotainer">
               {{msg.message}}
-              <span class="msg_time"> {{msgTime}} </span>
+              <span class="msg_time"> {{msg.msgDateString}} </span>
             </div>
           </div>
           <div *ngIf="msg.owner == chatPreference.userInfo.nickname" class="d-flex justify-content-end mb-4">
             <div id="{{msg.date}}" class="msg_cotainer_send">
               {{msg.message}}
-              <span class="msg_time_send"> {{msgTime}} </span>
+              <span class="msg_time_send"> {{msg.msgDateString}} </span>
             </div>
             <div class="img_cont_msg">
               <img src={{chatPreference.userInfo.avatar}} class="rounded-circle user_img_msg">
