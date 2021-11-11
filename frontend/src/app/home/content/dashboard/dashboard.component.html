@@ -3,202 +3,221 @@
 	<!-- Navigation tabs: if notification is received, must enable tab in some other color, maybe with a green circle on it-->
 	<ul class="nav nav-tabs">
 		<li class="nav-item">
-		  <button #friendTab class="nav-link" [ngClass]="{'active': showFriends}" aria-current="page" (click)="selectTab('friendTab')">Friends</button>
+			<button #friendTab class="nav-link" [ngClass]="{'active': navOptionTab==0}" aria-current="page"
+				(click)="selectTab('friendTab')">Friends</button>
 		</li>
 		<li class="nav-item">
-			<button #channelTab class="nav-link" [ngClass]="{'active': showChannels}" aria-current="page" (click)="selectTab('channelTab')">Channels</button>
+			<button #channelTab class="nav-link" [ngClass]="{'active': navOptionTab==1}" aria-current="page"
+				(click)="selectTab('channelTab')">Channels</button>
 		</li>
 		<li class="nav-item">
 			<button #scoreTab class="nav-link" aria-current="page">Scores</button>
 		</li>
 		<li class="nav-item">
-			<button #notificationTab class="nav-link disabled" aria-current="page" tabindex="-1" aria-disabled="true">Notifications</button>
+			<button #notificationTab class="nav-link disabled" aria-current="page" tabindex="-1"
+				aria-disabled="true">Notifications</button>
 		</li>
 	</ul>
-    <form ngNativeValidate [ngClass]="{'hideComponent' : !showFriends}" class="form-group hideComponent" #set="ngForm" (ngSubmit)="onSubmitFriends()">
-        <div>
-            <div class="input-group mb-3 card-header">
-                <input
-					#searchUsers
-					placeholder="Search friends..."
-                    type="text"
-                    name="searchUsers"
-                    class="form-control search"
-					autocomplete="off"
-                    required
-                />
-				<div class="input-group-prepend">
-					<button type="submit" class="input-group-text search_btn"><i class="fas fa-search"></i></button>
-				</div>
-				
-				<div *ngIf='showUsers' class='container-fluid card h-100'>
+
+	<div class="input-group">
+		<input #searchUsers placeholder="Search friends..." type="text" name="searchUsers" class="form-control search"
+			autocomplete="off" required />
+		<div class="input-group-prepend">
+			<button type="submit" class="input-group-text search_btn"><i class="fas fa-search"></i></button>
+		</div>
+	</div>
+
+	<form ngNativeValidate [ngClass]="{'hideComponent' : navOptionTab!=0}" class="form-group hideComponent" #set="ngForm"
+		(ngSubmit)="onSubmitFriends()">
+			<div *ngIf="showUsers" class="input-group mb-3 mt-5 card-header">
+				<div class='container-fluid card h-100'>
 					<div class="row justify-content-left">
 						<!-- <div class="col-md-4 col-xl-3 chat"> -->
-							<div class="mb-sm-3 mb-md-0 contacts_card">
-								<div class="contacts_body">
-									<ul class="contacts">
-										<li class="active" *ngFor="let user of users">
-											<div class="d-flex bd-highlight">
-												<div class="img_cont">
-													<img src={{user.avatar}} class="rounded-circle user_img">
-													<span *ngIf="user.online" class="online_icon"></span>
-													<span *ngIf="!user.online" class="online_icon offline"></span>
-												</div>
-												<div class="user_info">
-													<span>{{user.nickname}}</span>
-												</div>
-												<div class="ms-3">
-													<button class="btn" (click)="addFriendShip(user)">
-														<i data-mdb-toggle="tooltip" title="Request a friendship" class="fa fa-user-plus"></i>
-													</button>
-												</div>
-												<div class="ms-3">
-													<button class="btn" (click)="addToGroup(user)">
-														<i data-mdb-toggle="tooltip" title="Add user to a group" class="fa fa-users"></i>
-													</button>
-												</div>
-												<!-- <button class="btn" (click)="selectChat(user)">
-												<span class="fa fa-comment-dots"></span>
-												</button> -->
+						<div class="mb-sm-3 mb-md-0 contacts_card">
+							<div class="contacts_body">
+								<ul class="contacts">
+									<li class="active" *ngFor="let user of users">
+										<div class="d-flex bd-highlight">
+											<div class="img_cont">
+												<img src={{user.avatar}} class="rounded-circle user_img">
+												<span *ngIf="user.online" class="online_icon"></span>
+												<span *ngIf="!user.online" class="online_icon offline"></span>
 											</div>
-										</li>
-									</ul>
-								</div>
+											<div class="user_info">
+												<span>{{user.nickname}}</span>
+											</div>
+											<div class="ms-3">
+												<button class="btn" (click)="addFriendShip(user)">
+													<i data-mdb-toggle="tooltip" title="Request a friendship"
+														class="fa fa-user-plus"></i>
+												</button>
+											</div>
+											<div class="ms-3">
+												<button class="btn" (click)="addToGroup(user)">
+													<i data-mdb-toggle="tooltip" title="Add user to a group"
+														class="fa fa-users"></i>
+												</button>
+											</div>
+										</div>
+									</li>
+								</ul>
 							</div>
-						<!-- </div> -->
+						</div>
 					</div>
 					<div class="card-footer">
 						<button class='btn-danger' (click)='clean()'> cancel</button>
 					</div>
-				</div>				
+				</div>
 			</div>
-    	</div>
+		
 		<div hidden="hidden">
 			<textarea #grpUsers name="grpUser" rows="10" cols="30" disabled="true" hidden="hidden"></textarea>
 			<br>
-			<input
-			#nChatElement
-			placeholder="Name chat..."
-			type="text"
-			name="nameChat"
-			class="input-control"
-			autocomplete="off"
-			required
-			/>
+			<input #nChatElement placeholder="Name chat..." type="text" name="nameChat" class="input-control"
+				autocomplete="off" required />
 			<button (click)="createGroupChat()">Create</button>
 		</div>
-    </form>
-	<form ngNativeValidate [ngClass]="{'hideComponent' : !showChannels}" class="form-group hideComponent" #set="ngForm" (ngSubmit)="onSubmitChannel()">
+	</form>
+
+	<!-- Tab Channel form: it contains create new Channel, add/remove members and remove/add/config password -->
+	<form ngNativeValidate [ngClass]="{'hideComponent' : navOptionTab!=1}" class="form-group hideComponent" #set="ngForm" (ngSubmit)="onSubmitChannel()">
 		<div class="container-fluid mt-2">
-			<!---->
+			<!-- Lateral pane navigation with the channel options -->
 			<div class="row mt-5">
 				<div class='col-2'>
-				<div class="d-flex flex-column flex-shrink-0 bg-light" style="width: 4.5rem;">
-					<ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
-						<li class="nav-item">
-							<div class="nav-link py-3 border-bottom" [ngClass]="{'active': true}"> <!-- Condition must be boolean based-->
-								<span class='fa fa-plus'></span>
-							</div>
-						</li>
-						<li class="nav-item">
-							<div class="nav-link py-3 border-bottom">
-								<span class='fa fa-users'></span>
-							</div>
-						</li>
-						<li class="nav-item">
-							<div class="nav-link py-3 border-bottom">
-								<span class='fa fa-edit'></span>
-							</div>
-						</li>
-					</ul>
+					<div class="d-flex flex-column flex-shrink-0 bg-light" style="width: 4.5rem;">
+						<ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+							<li class="nav-item">
+								<div class="nav-link py-3 border-bottom" [ngClass]="{'active': navOptionPane==0}" (click)="optionPaneNav(0)">
+									<span class='fa fa-plus'></span>
+								</div>
+							</li>
+							<li class="nav-item">
+								<div class="nav-link py-3 border-bottom" [ngClass]="{'active': navOptionPane==1}" (click)="optionPaneNav(1)">
+									<span class='fa fa-users'></span>
+								</div>
+							</li>
+							<li class="nav-item">
+								<div class="nav-link py-3 border-bottom" [ngClass]="{'active': navOptionPane==2}" (click)="optionPaneNav(2)">
+									<span class='fa fa-edit'></span>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
-			</div>
 
-			<!---->
-			<div class='col-8 card'>
-				<div>
-					<div class="col-5 form-group">
-						<label for="channelName">Channel Name</label>
-						<input
-							type="text"
-							name="channelName"
-							class="form-control"
-							[(ngModel)]="channelInfo.name_chat"
-							placeholder="Type channel name..."
-							required
-						/>
+				<!-- Pannel from Channel => Add new CHANNEL or GROUP -->
+				<div class='col-8 card' *ngIf="navOptionPane==0">
+					<div>
+						<div class="col-5 form-group">
+							<label for="channelName">Channel Name</label>
+							<input type="text" name="channelName" class="form-control"
+								[(ngModel)]="channelInfo.name_chat" placeholder="Type channel name..." required />
+						</div>
+						<div class="col-5 form-group">
+							<label for="type">Select Type</label>
+							<select #chanType class="form-select form-select-sm mb-3"
+								aria-label=".form-select-sm example" (change)="selectType($event.target)" required>
+								<option disabled selected value> -- Select an option -- </option>
+								<option value="public">Public</option>
+								<option value="private">Private</option>
+							</select>
+						</div>
 					</div>
-					<div class="col-5 form-group">
-						<label for="type">Select Type</label>
-						<select
-							#chanType
-							class="form-select form-select-sm mb-3"
-							aria-label=".form-select-sm example"
-							(change)="selectType($event.target)"
-							required
-							>
-							<option disabled selected value> -- Select an option -- </option>
-							<option value="public">Public</option>
-							<option value="private">Private</option>
-						</select>
+					<div>
+						<div class="form-check form-switch">
+							<input #target class="form-check-input" type="checkbox" (change)="passCheckBox(target)">
+							<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+						</div>
+						<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+							<label for="pass">Password</label>
+							<input [(ngModel)]="pass"
+								[ngClass]="{'passConfirmed': passConfirm&& (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+								type="password" name="pass" minlength="6" class="form-control" />
+						</div>
+						<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+							<label for="pass">Confirm Password</label>
+							<input #confirmPass type="password" name="pass" minlength="6" class="form-control"
+								[ngClass]="{'passConfirmed': passConfirm && (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+								(keyup)="checkPass(confirmPass.value)" />
+						</div>
+						<button type="submit" class="mt-5 btn">Create a channel</button>
 					</div>
 				</div>
-				<div>
-					<div class="form-check form-switch">
-						<input #target class="form-check-input" type="checkbox" (change)="passCheckBox(target)">
-						<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+
+				<!-- Panel from Channels => nav addMembers -->
+				<div class='col-8 card' *ngIf="navOptionPane==1">
+					<div>
+						<h4>Add Members</h4>
+						<div class="col-5 form-group">
+							<label for="type">Select Channel</label>
+							<select class="form-select form-select-sm mb-3 selectpicker" aria-label=".form-select-sm example"
+								(change)="selectChannel($event.target)" required>
+								<option disabled selected value> -- Select a channel -- </option>
+								<option *ngFor="let channel of channels" value={{channel.name_chat}}>{{channel.name_chat}}</option>
+							</select>
+						</div>
+						<div class="row">
+							<div class="col">
+								<select multiple class="form-select form-select-sm mb-3" aria-label=".form-select-sm example"
+									(change)="selectMembers($event.target)" required>
+									<option disabled selected value> -- Channel members -- </option>
+									<option *ngFor="let member of members" value={{member.nickname}}>{{member.nickname}}</option>
+								</select>
+								<div class="btn btn-minus">
+									<span><i class="fa fa-minus"></i></span>
+								</div>
+							</div>
+							<div class="col">
+								<select multiple class="form-select form-select-sm mb-3" aria-label=".form-select-sm example"
+									(change)="selectMembers($event.target)" required>
+									<option disabled selected value> -- Select new member -- </option>
+									<option *ngFor="let user of users" value={{user.nickname}}>{{user.nickname}}</option>
+								</select>
+								<div class="btn">
+									<span><i class="fa fa-plus"></i></span>
+								</div>
+							</div>
+						</div>
+						<button type="submit" class="mt-5 btn">Update</button>
 					</div>
-					<div class="col-5 form-group" [ngClass]="{'disabled': !target.checked}">
-						<label for="pass">Password</label>
-						<input
-							[(ngModel)]="pass"
-							[ngClass]="{'passConfirmed': passConfirm&& (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
-							type="password"
-							name="pass"
-							minlength="6"
-							class="form-control"
-						/>
+				
+				</div>
+				<!-- Panel from Channels => nav Config password -->
+				<div class='col-8 card' *ngIf="navOptionPane==2">
+					<div>
+						<h4>Add/Modify/Remove Pass</h4>
+						<div class="col-5 form-group">
+							<label for="type">Select Channel</label>
+							<select #chanType class="form-select form-select-sm mb-3"
+								aria-label=".form-select-sm example" (change)="selectChannel($event.target)" required>
+								<option disabled selected value> -- Select an option -- </option>
+								<option *ngFor="let channel of channels" value={{channel.name_chat}}>{{channel.name_chat}}</option>
+							</select>
+						</div>
+						<div>
+							<div class="form-check form-switch">
+								<input #target class="form-check-input" type="checkbox" (change)="passCheckBox(target)">
+								<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+							</div>
+							<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+								<label for="pass">Password</label>
+								<input [(ngModel)]="pass"
+									[ngClass]="{'passConfirmed': passConfirm&& (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+									type="password" name="pass" minlength="6" class="form-control" />
+							</div>
+							<div class="col-5 form-group" [ngClass]="{'hideComponent': !target.checked}">
+								<label for="pass">Confirm Password</label>
+								<input #confirmPass type="password" name="pass" minlength="6" class="form-control"
+									[ngClass]="{'passConfirmed': passConfirm && (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
+									(keyup)="checkPass(confirmPass.value)" />
+							</div>
+						</div>
+						<button type="submit" class="mt-5 btn">Update</button>
 					</div>
-					<div class="col-5 form-group" [ngClass]="{'disabled': !target.checked}">
-						<label for="pass">Confirm Password</label>
-						<input
-							#confirmPass
-							type="password"
-							name="pass"
-							minlength="6"
-							class="form-control"
-							[ngClass]="{'passConfirmed': passConfirm && (confirmPass.value.length>=6), notConfirmed: !passConfirm || (confirmPass.value.length<6)}"
-							(keyup)="checkPass(confirmPass.value)"
-						/>
-					</div>
-				</div>				
-					<button type="submit" class="mt-5 btn">Create a channel</button>
 				</div>
 			</div>
 		</div>
 	</form>
-	
-		
-        
-	<!-- <div class="parent" *ngFor="let user of users">
-		<div>
-			<img src='{{user.avatar}}' class="ico_s" alt="">
-		</div>
-		<div class="ms-5">
-			<p>{{user.first_name}}</p>
-		</div>
-		<div class="ms-5">
-			<p>{{user.last_name}}</p>
-		</div>
-		<div class="ms-5">
-			<p>{{user.nickname}}</p>
-		</div>
-		<div class="ms-5">
-			<button (click)="addFriendShip(user)"><i class="fa fa-user-plus"></i></button>
-		</div>
-		<div class="ms-5">
-			<button (click)="removeFriendShip(user)">Delete</button>
-		</div>
-	</div> -->
 </div>
 <app-friend-invitation [friendPreferneces]="dashboardPreference"></app-friend-invitation>

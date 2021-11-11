@@ -7,6 +7,9 @@ import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
 import { fromEvent } from 'rxjs';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { ChannelI } from 'src/app/shared/interface/iChat';
+import { ChatService } from '../chat/chat.service';
+import { viewClassName } from '@angular/compiler';
+import { NavChannel, TabDash } from 'src/app/shared/enums/eChannel';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,20 +18,13 @@ import { ChannelI } from 'src/app/shared/interface/iChat';
 })
 export class DashboardComponent implements OnInit, AfterViewInit {
 	@Input() dashboardPreference: SharedPreferencesI;
-	/* View components for nav tabs */
-	//@ViewChild('friendTab') tFriend: ElementRef<HTMLInputElement>;
-	//@ViewChild('channelTab') tChannel: ElementRef<HTMLInputElement>;
-	//@ViewChild('scoreTab') tScore: ElementRef<HTMLInputElement>;
-	//@ViewChild('notificationTab') tNotification: ElementRef<HTMLInputElement>
-	//@ViewChild('friendship') frindInput : ElementRef;
-	//showSelect: boolean = false;
-	/* End nav component view */
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('grpUsers') selectGroup: ElementRef<HTMLInputElement>; // object can be a basic object or specific type of HTML...
 	@ViewChild('nChatElement') chatName: ElementRef<HTMLInputElement>;
+	@ViewChild('target') checkBox: ElementRef<HTMLInputElement>;
 
-	showFriends: boolean = true;
-	showChannels: boolean = false;
+	navOptionTab: number = TabDash.PEOPLE; //0=people; 1=channel; 2=scores; 3=notifications
+	navOptionPane: number = NavChannel.ADDCHANNEL; //0:createChannel; 1=addMembers; 3=configChannel
 	showUsers: boolean = false; //Values must be assigned in the constructor function...
 
 	pass: string;
@@ -38,10 +34,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	grpUsers: UserPublicInfoI[]; //userPublicInfo
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
+	channels: any[] = [];
+	members: UserPublicInfoI[] = [];
 
 	constructor(
 	  private dashboardService: DashboardService,
-	  private sQuery: SessionStorageQueryService
+	  private sQuery: SessionStorageQueryService,
+	  private chatService: ChatService
 	  ) {
 		  this.grpUsers = [];
 	  }
@@ -109,6 +108,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 			var obj = {//this must be a channelI object
 				chat_type: "private",
 				password: "",
+				protected: false,
 				members: this.grpUsers,
 				name_chat: this.chatName.nativeElement.value
 			}
@@ -124,7 +124,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	async onSubmitChannel():Promise<void>{
 		/** creates a public Channel with no users attached to it because it is public
 		 ** and will emmit to all users connected to it (think about this...)
-		 ** Don't call to service if fields aren't right filled*/
+		 ** Don't call to service if its fields aren't right filled*/
 		if (this.passConfirm && this.channelInfo.password.length >= 6) {
 			console.log(this.channelInfo);
 			const ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
@@ -138,19 +138,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	selectTab(name: string):void {
 		switch (name){
 			case "friendTab":
-				this.showFriends = true;
-				this.showChannels = false;
+				this.navOptionTab = TabDash.PEOPLE;
 				break ;
 			case "channelTab":
-				this.showFriends = false;
-				this.showChannels = true;
+				this.navOptionTab = TabDash.CHANNEL;
 				break;
 		}
 	}
 
 	passCheckBox(e: any): void {
 		this.channelInfo.protected = e.checked;
-		
 	}
 
 	checkPass(value: string): boolean {
@@ -168,7 +165,26 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	selectType(type: any):void {
 		this.channelInfo.chat_type = type.value;
 	}
+	
+	async selectChannel(channel: any): Promise<void> {
+		this.channelInfo = this.channels.find(element => element.name_chat == channel.value);
+		if (this.navOptionPane == NavChannel.SETUP)
+			this.checkBox.nativeElement.checked = this.channelInfo.protected;
+		else if (this.navOptionPane == NavChannel.ADDMEMBER){
+			console.log("Getting chat users...");
+			this.members = (await this.chatService.getChatUsers(this.session, this.channelInfo)).data.users;
+		}
+		console.log("Channel name: ",this.channelInfo);
+	}
+	selectMembers(user: any): void {
+		console.log("Select members active...");
+	}
 
+	async optionPaneNav(type: number):Promise<void> {
+		if (type == NavChannel.ADDMEMBER || type == NavChannel.SETUP)
+			this.channels = await this.chatService.getChatGroups(this.session);
+		this.navOptionPane = type;
+	}
 	clean(){
 		this.showUsers = false;
 		this.users = []

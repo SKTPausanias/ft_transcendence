@@ -11,9 +11,12 @@
 	display: none;
 }
 
-.disabled {
-	display: none;
-}
+.btn-holder {
+	position: relative;
+	bottom: 20px;
+	justify-content: center;
+	display: flex;
+  }
 
 .notConfirmed {
 	border-color: red
@@ -132,6 +135,23 @@ border-radius: 0 0 15px 15px !important;
   /* Darker background on mouse-over */
   .btn:hover {
 	background-color: RoyalBlue;
+  }
+  .btn-minus {
+	background-color: rgb(233, 29, 29); /* Blue background */
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: 15px;
+	border: none; /* Remove borders */
+	color: white; /* White text */
+	padding: 12px 16px; /* Some padding */
+	text-align: center;
+	font-size: 18px; /* Set a font size */
+	cursor: pointer; /* Mouse pointer on hover */
+  }
+  
+  /* Darker background on mouse-over */
+  .btn-minus:hover {
+	background-color: rgb(173, 43, 61);
   }
 .attach_btn{
 border-radius: 15px 0 0 15px !important;

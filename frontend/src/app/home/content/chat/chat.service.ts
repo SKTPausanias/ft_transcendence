@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SessionI } from 'src/app/shared/ft_interfaces';
 import { SocketService } from '../../socket.service';
 import { wSocket } from 'src/app/shared/ft_enums';
-import { messageI, MessagesI } from 'src/app/shared/interface/iChat';
+import { ChannelI, messageI, MessagesI } from 'src/app/shared/interface/iChat';
 import { Messages } from 'src/app/shared/class/cMessages';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 
@@ -154,6 +154,20 @@ export class ChatService {
           channels = ret.data.chats;
         }
         return (channels);
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
+
+  async getChatUsers(session: SessionI, chatInfo: ChannelI): Promise<any>{
+    const url = '/api/users/chat/getChatUsers';
+    try{
+      return (await this.http.post<any>(url, chatInfo, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
       }
       catch(e){
         console.log("Message error...");

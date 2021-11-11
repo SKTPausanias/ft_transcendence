@@ -44,4 +44,10 @@ export class ChatController {
         //console.log('Body is: ', body);
         return (await this.chatService.banUser(body.members, headers.authorization));
     }
+    @Post('getChatUsers')
+    async getChatUsers(@Body() body, @Headers() headers): Promise<any>
+    {
+        console.log("ChatInfo: ", body);
+        return (await this.chatService.getChatUsers(body, headers.authorization));
+    }
 }

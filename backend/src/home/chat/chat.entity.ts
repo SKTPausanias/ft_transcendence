@@ -17,6 +17,9 @@ export class ChatEntity {
     @Column()
     password: string;
 
+    @Column({default: false})
+    protected: boolean;
+
     @OneToMany(() => ChatUsersEntity, (chatUser) => chatUser.chat)
     chats: ChatUsersEntity[];
 

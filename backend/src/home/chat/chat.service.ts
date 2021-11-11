@@ -49,6 +49,7 @@ export class ChatService {
 				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
 			this.chatData.type_chat = body.chat_type;
 			this.chatData.password = body.password; // this must be created in the frontend
+			this.chatData.protected = body.protected;
 			const ret = await this.chatRepository.insert(this.chatData);
 			body.members.forEach(async user => {
 				let usr = await this.userService.findByNickname(user.nickname);
@@ -181,6 +182,30 @@ export class ChatService {
 		}
 	}
 
+	async getChatUsers(body: any, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+
+			var retUsers: UserPublicInfoI[] = [];
+			
+			const chat = await this.chatRepository.findOne({where: { id: body.id}});
+			
+			const users = await this.chatUserRepository.find({relations: ['user'], where: {'chat': chat}});
+			
+			for (var i = 0; i < users.length; i++)
+				retUsers.push(users[i].user);
+			
+			return (Response.makeResponse(200, { users: retUsers }));
+		} catch (error) {
+			console.log("Error.---");
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+		
+	}
+
 	async banUser(members: any[], header: string){
 		const token = header.split(' ')[1];
 		var users: any[] = [];
@@ -192,7 +217,7 @@ export class ChatService {
 			const ret = await this.queryOneChat(users);
 			console.log("members to ban: ", ret);
 			//if (ret !== undefined)
-				//return (await this.chatUserRepository.save({muted: true});
+				//return (await this.chatUserRepository.save({muted: true} where: {user[1].id && ret.id});
 
 		} catch (error) {
 			
