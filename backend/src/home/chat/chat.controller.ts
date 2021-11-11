@@ -50,4 +50,9 @@ export class ChatController {
         console.log("ChatInfo: ", body);
         return (await this.chatService.getChatUsers(body, headers.authorization));
     }
+
+    @Post('/friendIsBlocked')
+    async friendIsBlocked(@Body() body, @Headers() headers): Promise<any> {
+        return (await this.chatService.friendIsBlocked(body.friend, headers.authorization));
+    }
 }

@@ -135,7 +135,7 @@ export class ChatService {
 				order: { date: "ASC" }
 			});
 			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
-			console.log("Messages in backend getMessages(): ", messages);
+			//console.log("Messages in backend getMessages(): ", messages);
 			return (Response.makeResponse(200, { messages: messages }));
 		} catch (error) {
 			if (error.statusCode == 410)
@@ -146,7 +146,7 @@ export class ChatService {
 
 	async getGroupMessages(body : any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
-		console.log("body: ", body);
+		//console.log("body: ", body);
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const chat = await this.chatRepository.findOne({
@@ -158,7 +158,7 @@ export class ChatService {
 				order: { date: "ASC" }
 			});
 			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
-			console.log("messages in getGroupMessages: ", messages);
+			//console.log("messages in getGroupMessages: ", messages);
 			return (Response.makeResponse(200, { messages: messages }));
 		}
 		catch (error) {
@@ -216,13 +216,39 @@ export class ChatService {
 				users.push(await this.userService.findByNickname(members[i].nickname));
 			const ret = await this.queryOneChat(users);
 			console.log("members to ban: ", ret);
-			//if (ret !== undefined)
-				//return (await this.chatUserRepository.save({muted: true} where: {user[1].id && ret.id});
-
+			if (ret !== undefined)
+			{
+				await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: true});
+				return (Response.makeResponse(200, { ok: "User has been banned" }));
+			}
 		} catch (error) {
-			
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to ban user' }));
 		}
 	}
+
+	async friendIsBlocked(friend: any, header: string) {
+		const token = header.split(' ')[1];
+		//console.log("body in friend Is blocked: ", friend);
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const friendObj = await this.userService.findByNickname(friend.nickname);
+			const name_chat = session.userID.id + '_' + friendObj.id;
+			const name_chat2 = friendObj.id + '_' + session.userID.id;
+			const chat = await this.chatRepository.findOne({
+				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
+			});
+			const chatUser = await this.chatUserRepository.findOne({ where: { user: friendObj, chat: chat } });
+			//console.log("chatUser", chatUser);
+			return (Response.makeResponse(200, { blocked: chatUser.muted }));
+		}
+		catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to check friend' }));
+		}
+}
 
 	async findChatByName(chat_name: string): Promise<any> {
 		try {

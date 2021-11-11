@@ -188,4 +188,18 @@ export class ChatService {
         return (e);
     }
   }
+
+  async friendIsBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
+    const url = '/api/users/chat/friendIsBlocked';
+    try{
+      return (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
 }
