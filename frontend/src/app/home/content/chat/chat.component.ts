@@ -22,6 +22,8 @@ export class ChatComponent implements OnInit {
   showPrivate: boolean = true;
   showChat: boolean = false;
   showGroupChat: boolean = false;
+  friendIsBlocked: boolean = false;
+  imBlocked: boolean = false;
   channels: any[] = [];
   channel: any;
   messages: Messages[] = [];
@@ -44,6 +46,17 @@ export class ChatComponent implements OnInit {
         if (data) {
           console.log("data from subscribe: ", data);
           this.messages.push(data);
+        }
+      }
+    );
+    this.socketService.chatBlockFilter.subscribe(
+      (data : any) => {
+        if (data != undefined) {
+          console.log("data from subscribe: ", data);
+          if (data == false)
+            this.imBlocked = true;
+          else
+            this.imBlocked = false;
         }
       }
     );
@@ -73,11 +86,13 @@ export class ChatComponent implements OnInit {
     this.showGroupChat = false;
     //delete messages from messages array
     this.messages = [];
-    // get messages from DB and save to messages array
-    var ret = await this.chatService.friendIsBlocked(this.session, this.friendChat);
+    ////var ret = await this.chatService.friendIsBlocked(this.session, this.friendChat); ??
+    ////this.friendIsBlocked = ret.data.blocked; ??
+    console.log("friendIsBlocked: ", this.friendIsBlocked);
+
+    ////await this.chatService.imNotBlocked(this.session, this.friendChat)
     //access blocked status
-    console.log("ret: ", ret.data.blocked);
-    if (ret.data.blocked == false)
+    if (this.friendIsBlocked == false && this.imBlocked == false)
       this.messages = await this.chatService.getMessages(this.session, this.receiver);
     //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
     if (this.messages.length)
@@ -121,12 +136,21 @@ export class ChatComponent implements OnInit {
     console.log("channels: ", this.channels);
   }
   
-  async banUser(friend: any): Promise<void>{
+  async blockUser(friend: any): Promise<void>{
     var members: UserPublicInfoI[] = [];
+    this.messages = [];
     members.push(this.chatPreference.userInfo);
     members.push(this.friendChat);
-    await this.chatService.banUser(this.session, members);
+    await this.chatService.blockUser(this.session, members, this.friendIsBlocked);
+    if (this.friendIsBlocked == true)
+    {
+      this.friendIsBlocked = false;
+      this.messages = await this.chatService.getMessages(this.session, this.receiver);
+    }
+    else
+      this.friendIsBlocked = true;
   }
+
   closeChat(){
     this.showChat = false;
   }

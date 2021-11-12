@@ -175,10 +175,28 @@ export class ChatService {
     }
   }
 
-  async banUser(session: SessionI, members: UserPublicInfoI[]): Promise<any>{
-    const url = '/api/users/chat/banUser';
+  async blockUser(session: SessionI, members: UserPublicInfoI[], friendIsBlocked: boolean): Promise<any>{
+    const url = '/api/users/chat/blockUser';
     try{
-      return (await this.http.post<any>(url, {'members': members}, { headers: new HttpHeaders({
+      const ret = (await this.http.post<any>(url, {'members': members, 'isBlocked': friendIsBlocked}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      this.socketService.emit(wSocket.CHAT_BLOCK_USER, {
+        members: members,
+        isBlocked: friendIsBlocked});
+      return (ret);
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
+
+  async friendIsBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
+    const url = '/api/users/chat/friendIsBlocked';
+    try{
+      return (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token
         })
       }).toPromise());
@@ -189,8 +207,8 @@ export class ChatService {
     }
   }
 
-  async friendIsBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
-    const url = '/api/users/chat/friendIsBlocked';
+  async imNotBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
+    const url = '/api/users/chat/imNotBlocked';
     try{
       return (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
           Authorization: 'Bearer ' + session.token

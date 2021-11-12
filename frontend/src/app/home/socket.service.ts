@@ -12,6 +12,7 @@ export class SocketService {
 	private socket: Socket;
 	receivedFilter: EventEmitter<any>;
 	chatFilter: EventEmitter<any>;
+	chatBlockFilter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor() {
 	}
@@ -19,6 +20,7 @@ export class SocketService {
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
 		this.receivedFilter = new EventEmitter<any>();
 		this.chatFilter = new EventEmitter<any>();
+		this.chatBlockFilter = new EventEmitter<any>();
 		this.sharedPreferences = sharedPreference;
 		this.init(session);
 		this.onConnect();
@@ -32,6 +34,7 @@ export class SocketService {
 		this.onDeleteAccount();
 		this.onChatMessage();
 		this.onGroupChatMessage();
+		this.onChatBlockUser();
 	}
 	public disconnect()
 	{
@@ -150,6 +153,17 @@ export class SocketService {
 				//console.log("data sent", this.sharedPreferences);
 				this.chatFilter.emit(data);
 			}catch(error){}
+		})
+	}
+
+	private onChatBlockUser(){
+		this.socket.on(wSocket.CHAT_BLOCK_USER, (emiter: string, data: any) => {
+			try {
+				console.log("data recieved onChatBlockUser:", data);
+				console.log("emiter:", emiter);
+				this.chatBlockFilter.emit(data);
+			}
+			catch(error){}
 		})
 	}
 

@@ -132,7 +132,7 @@
             <span><i class="fas fa-user-circle"></i></span>
             <span><i class="fas fa-user-times"></i></span>
             <span (click)='playPong(friendChat)'><i class="fas fa-table-tennis"></i></span>
-            <span (click)='banUser(friendChat)'><i class="fas fa-ban"></i></span>
+            <span (click)='blockUser(friendChat)'><i class="fas fa-ban"></i></span>
             <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
           </div>
         </div>
@@ -147,7 +147,7 @@
         </div>
       </div>
       <!--Messages from friends or groups, to the left go friends messages and then the messages from user-->
-      <div #msgBox class="card-body msg_card_body">
+      <div #msgBox *ngIf="friendIsBlocked == false && imBlocked == false" class="card-body msg_card_body">
         <div *ngFor="let msg of messages">
           <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
             <div class="img_cont_msg">
@@ -169,15 +169,29 @@
           </div>
         </div>
         <!--  <div hidden="hidden" *ngIf='length && scrollDown()'></div> -->      
-      </div>
-      <div class="card-footer">
-        <div class="input-group">
-          <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
-          <div class="input-group-append">
-            <span class="input-group-text send_btn" (click)="sendMessage()"><i class="fas fa-location-arrow"></i></span>
+        <div class="card-footer">
+          <div class="input-group">
+            <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
+            <div class="input-group-append">
+              <span class="input-group-text send_btn" (click)="sendMessage()"><i class="fas fa-location-arrow"></i></span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <!-- else print out user is blocked->-->
+      <div *ngIf="friendIsBlocked == true" class="card-body msg_card_body">
+        <div class="d-flex justify-content-center mb-4">
+          <div>
+            <span>{{friendChat.nickname}} is blocked</span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="imBlocked == true" class="card-body msg_card_body">
+        <div class="d-flex justify-content-center mb-4">
+          <div>
+            <span>{{friendChat.nickname}} blocked you </span>
+          </div>
+        </div>
+      </div>
   </div>
 </div>

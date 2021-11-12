@@ -39,10 +39,10 @@ export class ChatController {
         console.log("Body: ", body);
         return (await this.chatService.saveChatGroup(body, headers.authorization));
     }
-    @Post('banuser')
+    @Post('blockUser')
     async banUser(@Body() body, @Headers() headers): Promise<any> {
         //console.log('Body is: ', body);
-        return (await this.chatService.banUser(body.members, headers.authorization));
+        return (await this.chatService.blockUser(body, headers.authorization));
     }
     @Post('getChatUsers')
     async getChatUsers(@Body() body, @Headers() headers): Promise<any>

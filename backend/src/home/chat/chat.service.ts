@@ -206,19 +206,23 @@ export class ChatService {
 		
 	}
 
-	async banUser(members: any[], header: string){
+	async blockUser(body: any, header: string){
 		const token = header.split(' ')[1];
+		console.log("body: ", body);
 		var users: any[] = [];
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			/* await members.forEach( async element => { */
-			for (var i = 0; i < members.length; i++)
-				users.push(await this.userService.findByNickname(members[i].nickname));
+			for (var i = 0; i < body.members.length; i++)
+				users.push(await this.userService.findByNickname(body.members[i].nickname));
 			const ret = await this.queryOneChat(users);
-			console.log("members to ban: ", ret);
+			//console.log("members to ban: ", ret);
 			if (ret !== undefined)
 			{
-				await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: true});
+				if (body.isBlocked == false)
+					await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: true});
+				else
+					await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: false});
 				return (Response.makeResponse(200, { ok: "User has been banned" }));
 			}
 		} catch (error) {

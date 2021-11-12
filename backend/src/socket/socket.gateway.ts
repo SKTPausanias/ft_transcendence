@@ -108,6 +108,15 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			sessionData.userInfo.login, recievers, data.message);
 	}
 
+	@SubscribeMessage(wSocket.CHAT_BLOCK_USER)
+	async chatBlockUser(client, data) {
+		const sessionData = await this.getSessionData(client);
+		const friend = await this.userService.findByNickname(data.members[1].nickname);
+		console.log(sessionData.userInfo.login, " : ", data);
+		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_BLOCK_USER,
+			sessionData.userInfo.login, friend, data.isBlocked);
+	}
+
 	@SubscribeMessage(wSocket.GAME_POSITION)
 	async moveBall(client, data)
 	{
