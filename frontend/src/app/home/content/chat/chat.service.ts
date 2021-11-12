@@ -79,7 +79,6 @@ export class ChatService {
 
   async getMessages(session: SessionI, receiver: UserPublicInfoI): Promise<any> {
     const url = '/api/users/chat/getMessages';
-    //console.log("Calling backend getMessages...", session);
     var body = { receiver: receiver.nickname };
     var messages: Messages[] = [];
     
@@ -90,7 +89,6 @@ export class ChatService {
         })
       }).toPromise());
         if (ret.statusCode == 200){
-          //messages = new Messages(ret.data.messages);
           console.log("Messages from chat ret: ", ret.data);
           //aux = ret.data.messages;
           // for each message in ret.data.messages, create a new Messages object and push it into messages array
@@ -113,7 +111,6 @@ export class ChatService {
 
   async getGroupMessages(session: SessionI, channel : any) : Promise<any> {
     const url = '/api/users/chat/getGroupMessages';
-    //console.log("Calling backend getGroupMessages...", session);
     var body = { channel: channel };
     var messages: Messages[] = [];
 
@@ -142,8 +139,25 @@ export class ChatService {
 
   async getChatGroups(session: SessionI): Promise<any> {
     const url = '/api/users/chat/getChatGroups';
-    //console.log("Calling backend getChatGroups...", session);
-    //var body = {};
+    var channels: any[] = [];
+    try{
+      const ret = (await this.http.get<any>(url, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+        if (ret.statusCode == 200){
+          channels = ret.data.chats;
+        }
+        return (channels);
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
+
+  async getOwnChannels(session: SessionI): Promise<any>{
+    const url = '/api/users/chat/getOwnChannels';
     var channels: any[] = [];
     try{
       const ret = (await this.http.get<any>(url, { headers: new HttpHeaders({

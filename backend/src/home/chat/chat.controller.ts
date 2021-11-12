@@ -4,6 +4,7 @@ import { ChatService } from "./chat.service";
 @Controller('/api/users/chat')
 export class ChatController {
     constructor(private chatService: ChatService){}
+    
     @Post('/saveMessage')
     async saveMessage(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.saveMessage(body, headers.authorization));
@@ -36,7 +37,6 @@ export class ChatController {
 
     @Post('/addChannel')
     async addChannel(@Body() body, @Headers() headers): Promise<any> {
-        console.log("Body: ", body);
         return (await this.chatService.saveChatGroup(body, headers.authorization));
     }
     @Post('blockUser')
@@ -45,14 +45,26 @@ export class ChatController {
         return (await this.chatService.blockUser(body, headers.authorization));
     }
     @Post('getChatUsers')
-    async getChatUsers(@Body() body, @Headers() headers): Promise<any>
-    {
-        console.log("ChatInfo: ", body);
+    async getChatUsers(@Body() body, @Headers() headers): Promise<any> {
         return (await this.chatService.getChatUsers(body, headers.authorization));
+    }
+    @Get('getOwnChannels')
+    async getOwnChannels(@Headers() headers): Promise<any> {
+        return (await this.chatService.getOwnChannels(headers.authorization));
     }
 
     @Post('/friendIsBlocked')
     async friendIsBlocked(@Body() body, @Headers() headers): Promise<any> {
         return (await this.chatService.friendIsBlocked(body.friend, headers.authorization));
     }
+
+    @Post('/updatePassChannel')
+    async updateChannel(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.updatePassChannel(body, headers.authorization));
+    }
+    @Post('/updateMembersChannel')
+    async updateMembersChannel(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.updateMembersChannel(body, headers.authorization));
+    }
+    
 }

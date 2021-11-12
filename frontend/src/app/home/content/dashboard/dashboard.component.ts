@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild  } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ViewChildren  } from '@angular/core';
 
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
@@ -20,8 +20,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	@Input() dashboardPreference: SharedPreferencesI;
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	@ViewChild('grpUsers') selectGroup: ElementRef<HTMLInputElement>; // object can be a basic object or specific type of HTML...
-	@ViewChild('nChatElement') chatName: ElementRef<HTMLInputElement>;
-	@ViewChild('target') checkBox: ElementRef<HTMLInputElement>;
+	@ViewChild('nChatElement') chatNameElement: ElementRef<HTMLInputElement>;
+	@ViewChild('target') checkBoxElement: ElementRef<HTMLInputElement>;
+	@ViewChild('checkBoxPass') checkBoxPassElement: ElementRef<HTMLInputElement>;
+	@ViewChild('confirmPass') confirmPassElement: ElementRef<HTMLInputElement>;
+	@ViewChild('confirmPass2') confirmPass2Element: ElementRef<HTMLInputElement>;
+	@ViewChild('chanType') chanTypeElement: ElementRef<HTMLSelectElement>;
+	@ViewChild('selectChann') selectChanElement: ElementRef<HTMLSelectElement>;
+	@ViewChild('selectChannPass') selectChanPassElement: ElementRef<HTMLSelectElement>;
+	
 
 	navOptionTab: number = TabDash.PEOPLE; //0=people; 1=channel; 2=scores; 3=notifications
 	navOptionPane: number = NavChannel.ADDCHANNEL; //0:createChannel; 1=addMembers; 3=configChannel
@@ -36,13 +43,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	session = this.sQuery.getSessionToken();
 	channels: any[] = [];
 	members: UserPublicInfoI[] = [];
+	membersToDelete: UserPublicInfoI[] = [];
 
 	constructor(
 	  private dashboardService: DashboardService,
 	  private sQuery: SessionStorageQueryService,
 	  private chatService: ChatService
 	  ) {
-		  this.grpUsers = [];
+			this.grpUsers = [];
+			this.channelInfo.protected = false;
+			this.channelInfo.password = "";
+			this.channelInfo.name_chat = "";
 	  }
   
 	ngOnInit() {
@@ -58,6 +69,33 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   
 	async onSubmitFriends(): Promise<void> {
 	  this.users = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
+	}
+
+	async onSubmitChannel(event: any):Promise<void> {
+		console.log("WTF: ", event.submitter.name);
+		switch (event.submitter.name){
+			case 'createChannel':
+				if (!this.channelInfo.protected || this.passConfirm && this.channelInfo.password.length >= 6){
+					var ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
+					ret.statusCode != 200?console.log("operation: ", ret.data.error) : null;
+				}
+				break ;
+			case 'updateChannel':
+				console.log("Users to add: ", this.grpUsers);
+				console.log("Chats: ", this.channels);
+				console.log("members: ", this.members);
+																/*Channel with members to add, grpusers with members to delete */
+				await this.dashboardService.updateMembersChannel(this.session, this.channelInfo, this.grpUsers);
+				break ;
+			case 'setPass':
+				console.log("channel Info: ", this.channelInfo);
+				await this.dashboardService.updatePassChannel(this.session, this.channelInfo);
+				this.clean();
+				this.navOptionTab = TabDash.PEOPLE;
+				this.navOptionPane = NavChannel.ADDCHANNEL;
+				break ;
+		}
+		this.members = [];
 	}
   
 	initSearchboxListener(){
@@ -81,10 +119,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		});
 	}
 	
-	onSearchBoxChange(value: any)
-	{	
+	onSearchBoxChange(value: any) {	
 		return (this.dashboardService.liveSearchUsers(this.session, value));
 	}
+
 	async addFriendShip(user: any): Promise<any>{
 	  return (await this.dashboardService.addFriendShip(user, this.session))
 	}
@@ -100,17 +138,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 			this.grpUsers.push(user);
 			this.selectGroup.nativeElement.innerHTML += user.nickname + "\n";
 		}
-		
 	}
 
 	async createGroupChat(): Promise<void>{
-		if (this.chatName.nativeElement.value != "" && this.grpUsers.length > 1) {
+		if (this.chatNameElement.nativeElement.value != "" && this.grpUsers.length > 1) {
 			var obj = {//this must be a channelI object
 				chat_type: "private",
 				password: "",
 				protected: false,
 				members: this.grpUsers,
-				name_chat: this.chatName.nativeElement.value
+				name_chat: this.chatNameElement.nativeElement.value
 			}
 			var ret = (await this.dashboardService.createGroupChat(this.session, obj));
 			ret.statusCode != 200 ? alert(ret.data.error) : null;
@@ -121,39 +158,39 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.clean();
 	}
 
-	async onSubmitChannel():Promise<void>{
-		/** creates a public Channel with no users attached to it because it is public
-		 ** and will emmit to all users connected to it (think about this...)
-		 ** Don't call to service if its fields aren't right filled*/
-		if (this.passConfirm && this.channelInfo.password.length >= 6) {
-			console.log(this.channelInfo);
-			const ret = await this.dashboardService.addChannel(this.session, this.channelInfo);
-			console.log("channel ret: ", ret);
-		}
-		else
-			console.log("Not a valid channel: ", this.channelInfo);
-
-	}
-
 	selectTab(name: string):void {
+		
 		switch (name){
 			case "friendTab":
 				this.navOptionTab = TabDash.PEOPLE;
+				this.navOptionPane = 0;
 				break ;
 			case "channelTab":
+				this.cleanAddChannel();
 				this.navOptionTab = TabDash.CHANNEL;
+				break;
+			case "scoresTab":
+				this.navOptionTab = TabDash.SCORE;
+				this.navOptionPane = NavChannel.ADDCHANNEL;
 				break;
 		}
 	}
 
 	passCheckBox(e: any): void {
+		console.log("Protected = ", e.checked);
 		this.channelInfo.protected = e.checked;
+		if (e.checked == false){
+			this.channelInfo.password ="";
+			this.pass = "";
+			this.confirmPassElement.nativeElement.value = "";
+		}
 	}
 
 	checkPass(value: string): boolean {
+		console.log("Checking pass...");
 		if (this.pass === value)
 		{
-			console.log("pass matches: ", value);
+			console.log("coincidence...");
 			this.channelInfo.password = this.pass;
 			this.passConfirm = true;
 			return (true);
@@ -166,33 +203,98 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.channelInfo.chat_type = type.value;
 	}
 	
-	async selectChannel(channel: any): Promise<void> {
+	async selectGroupChat(channel: any): Promise<void> {
+		console.log("WTF2: ", channel);
+		this.membersToDelete = [];
+		this.grpUsers = []; this.grpUsers.push(this.dashboardPreference.userInfo);
 		this.channelInfo = this.channels.find(element => element.name_chat == channel.value);
 		if (this.navOptionPane == NavChannel.SETUP)
-			this.checkBox.nativeElement.checked = this.channelInfo.protected;
+			this.checkBoxElement.nativeElement.checked = this.channelInfo.protected;
 		else if (this.navOptionPane == NavChannel.ADDMEMBER){
 			console.log("Getting chat users...");
 			this.members = (await this.chatService.getChatUsers(this.session, this.channelInfo)).data.users;
 		}
-		console.log("Channel name: ",this.channelInfo);
 	}
 	selectMembers(user: any): void {
 		console.log("Select members active...");
 	}
 
 	async optionPaneNav(type: number):Promise<void> {
-		if (type == NavChannel.ADDMEMBER || type == NavChannel.SETUP)
-			this.channels = await this.chatService.getChatGroups(this.session);
 		this.navOptionPane = type;
+		if (type == NavChannel.ADDCHANNEL)
+			this.cleanAddChannel();
+		if (type == NavChannel.ADDMEMBER || type == NavChannel.SETUP){
+			this.cleanAddMembers();
+			this.channels = await this.chatService.getOwnChannels(this.session);
+		}
+	}
+	addMember(addUsers: any): void {
+		
+		console.log("before in members", this.members)
+		for (var i = 0; i < addUsers.length; i++){
+			var user = this.users.find(pred => pred.nickname == addUsers[i].value);
+			var match = this.grpUsers.find(pred => pred.nickname == addUsers[i].value);
+			if (user !== undefined && match === undefined) {
+				this.members.push(user);
+				this.membersToDelete = this.membersToDelete.filter(pred => pred.nickname !== user?.nickname);
+			}
+			this.grpUsers = this.members;
+		}
+		console.log("after", this.members)
+		
+		console.log("deleteing: ", this.membersToDelete)
+
+	}
+
+	delMember(delUsers: any): void {
+		console.log("before", this.members)
+		for (var i = 0; i < delUsers.length; i++){
+			var user = this.users.find(pred => pred.nickname == delUsers[i].value);
+			//var match = this.grpUsers.find(pred => pred.nickname == delUsers[i].value);
+			if (user !== undefined /* && match !== undefined */){
+				this.members = this.members.filter(pred => pred.nickname !== user?.nickname);
+				this.membersToDelete.push(user);
+			}
+			this.grpUsers = this.members;
+		}
+		console.log("deleteing: ", this.membersToDelete)
+		console.log(delUsers);
+	}
+
+	cleanAddChannel(){
+		this.channelInfo = <ChannelI>{};
+		this.channelInfo.name_chat = "";
+		this.channelInfo.password = "";
+		this.channelInfo.protected = false;
+		this.channelInfo.members = [];
+		this.members = [];
+		this.channels = [];
+		this.grpUsers = [];
+		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.channelInfo.members = this.grpUsers;
+		this.searchInput.nativeElement.value = "";
+		this.chanTypeElement.nativeElement.selectedIndex = 0;
+		this.checkBoxElement.nativeElement.checked = false;
+		this.confirmPassElement.nativeElement.value = "";
+		this.pass = "";
+	}
+	cleanAddMembers(){
+		this.cleanAddChannel();
+		this.membersToDelete = [];
+		this.selectChanPassElement.nativeElement.selectedIndex = 0;
+		this.checkBoxPassElement.nativeElement.checked = false;
+		this.confirmPass2Element.nativeElement.value = "";
 	}
 	clean(){
+		this.pass = "";
 		this.showUsers = false;
 		this.users = []
 		this.grpUsers = [];
 		this.grpUsers.push(this.dashboardPreference.userInfo);
+		this.channelInfo.members = this.grpUsers;
 		this.selectGroup.nativeElement.innerHTML = "";
 		this.searchInput.nativeElement.value = "";
-		this.chatName.nativeElement.value = "";
+		this.chatNameElement.nativeElement.value = "";
 		this.selectGroup.nativeElement.innerHTML += this.grpUsers[0].nickname + " Owner\n";
 		this.selectGroup.nativeElement.setAttribute("hidden","hidden");
 		this.selectGroup.nativeElement.parentElement?.setAttribute("hidden","hidden");
