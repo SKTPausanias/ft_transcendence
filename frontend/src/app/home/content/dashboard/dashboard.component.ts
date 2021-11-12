@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	session = this.sQuery.getSessionToken();
 	channels: any[] = [];
 	members: UserPublicInfoI[] = [];
+	membersToDelete: UserPublicInfoI[] = [];
 
 	constructor(
 	  private dashboardService: DashboardService,
@@ -83,6 +84,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 				console.log("Users to add: ", this.grpUsers);
 				console.log("Chats: ", this.channels);
 				console.log("members: ", this.members);
+																/*Channel with members to add, grpusers with members to delete */
+				await this.dashboardService.updateMembersChannel(this.session, this.channelInfo, this.grpUsers);
 				break ;
 			case 'setPass':
 				console.log("channel Info: ", this.channelInfo);
@@ -200,8 +203,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 		this.channelInfo.chat_type = type.value;
 	}
 	
-	async selectChannel(channel: any): Promise<void> {
+	async selectGroupChat(channel: any): Promise<void> {
 		console.log("WTF2: ", channel);
+		this.membersToDelete = [];
+		this.grpUsers = []; this.grpUsers.push(this.dashboardPreference.userInfo);
 		this.channelInfo = this.channels.find(element => element.name_chat == channel.value);
 		if (this.navOptionPane == NavChannel.SETUP)
 			this.checkBoxElement.nativeElement.checked = this.channelInfo.protected;
@@ -223,6 +228,38 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 			this.channels = await this.chatService.getOwnChannels(this.session);
 		}
 	}
+	addMember(addUsers: any): void {
+		
+		console.log("before in members", this.members)
+		for (var i = 0; i < addUsers.length; i++){
+			var user = this.users.find(pred => pred.nickname == addUsers[i].value);
+			var match = this.grpUsers.find(pred => pred.nickname == addUsers[i].value);
+			if (user !== undefined && match === undefined) {
+				this.members.push(user);
+				this.membersToDelete = this.membersToDelete.filter(pred => pred.nickname !== user?.nickname);
+			}
+			this.grpUsers = this.members;
+		}
+		console.log("after", this.members)
+		
+		console.log("deleteing: ", this.membersToDelete)
+
+	}
+
+	delMember(delUsers: any): void {
+		console.log("before", this.members)
+		for (var i = 0; i < delUsers.length; i++){
+			var user = this.users.find(pred => pred.nickname == delUsers[i].value);
+			//var match = this.grpUsers.find(pred => pred.nickname == delUsers[i].value);
+			if (user !== undefined /* && match !== undefined */){
+				this.members = this.members.filter(pred => pred.nickname !== user?.nickname);
+				this.membersToDelete.push(user);
+			}
+			this.grpUsers = this.members;
+		}
+		console.log("deleteing: ", this.membersToDelete)
+		console.log(delUsers);
+	}
 
 	cleanAddChannel(){
 		this.channelInfo = <ChannelI>{};
@@ -243,6 +280,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	}
 	cleanAddMembers(){
 		this.cleanAddChannel();
+		this.membersToDelete = [];
 		this.selectChanPassElement.nativeElement.selectedIndex = 0;
 		this.checkBoxPassElement.nativeElement.checked = false;
 		this.confirmPass2Element.nativeElement.value = "";

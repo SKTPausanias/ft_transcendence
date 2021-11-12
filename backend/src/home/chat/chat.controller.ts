@@ -61,5 +61,9 @@ export class ChatController {
     async updateChannel(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.updatePassChannel(body, headers.authorization));
     }
+    @Post('/updateMembersChannel')
+    async updateMembersChannel(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.updateMembersChannel(body, headers.authorization));
+    }
     
 }

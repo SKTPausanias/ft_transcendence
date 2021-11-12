@@ -262,9 +262,27 @@ export class ChatService {
 	async updatePassChannel(channelInfo: any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
-			const register = await this.chatRepository.findOne({where: {name_chat: channelInfo.name_chat}});
-			const ret = await this.chatRepository.update(register, {password: channelInfo.password, protected: channelInfo.protected});
+			const register = await this.chatRepository.findOne({where: {name_chat: channelInfo.name_chat}}); 
+			const ret = await this.chatRepository.update(register, {password: channelInfo.password, protected: channelInfo.protected});//maybe we can solve this in one call: where id or chatName;
 			return (Response.makeResponse(200, { ok: "Successful operation", result: ret }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'unable to create' }));
+		}
+	}
+
+	async updateMembersChannel(content: any, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		try {
+			console.log("ChannelInfo content: ", content);
+			const register = await this.chatRepository.findOne({where: {name_chat: content.channelInfo.name_chat}});
+			console.log("Chat to modify their members: ", register);
+			//if member exist on chat_user and is selected to be delete, we should delete it
+			//if member is a new member of the group, we should insert
+			//two member object have to come in the body, newMembers[] deleteMembers[]
+			//iterate them en delete or insert when have to. 
+			return (Response.makeResponse(200, { ok: "Successful operation" }));
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
