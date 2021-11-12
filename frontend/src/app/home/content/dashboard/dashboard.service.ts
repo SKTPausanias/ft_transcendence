@@ -95,4 +95,17 @@ export class DashboardService {
       return (e);
     }
   }
+
+  async updatePassChannel(session: SessionI, channelInfo: ChannelI): Promise<any> {
+    const url = '/api/users/chat/updatePassChannel';
+    console.log('data to be updated: ', channelInfo);
+    try {
+      const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
+        Authorization: 'Bearer ' + session.token
+      })
+    }).toPromise())
+    } catch (e) {
+      return (e);
+    }
+  }
 }

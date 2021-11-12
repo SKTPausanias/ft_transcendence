@@ -9,6 +9,7 @@ import { UserService } from "../user/user.service";
 import { SessionService } from "src/session/session.service";
 import { UserPublicInfoI } from "../user/userI";
 import { ChatUsersEntity } from "./chatUsers.entity";
+import { User } from "../user/userClass";
 
 @Injectable()
 export class ChatService {
@@ -34,7 +35,6 @@ export class ChatService {
 	}
 
 	async saveChatGroup(body: any, header: string): Promise<any> {
-		console.log("Data from channel body: ", body);
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			if (body.chat_type == "oneToOne") {
@@ -128,7 +128,7 @@ export class ChatService {
 				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
 			}); // this is an OR
 			// find all messages from chat with relations
-			//get messages from chat in order 
+			// get messages from chat in order 
 			const messages = await this.messageRepository.find({
 				relations: ['user'],
 				where: { chat: chat },
@@ -146,7 +146,6 @@ export class ChatService {
 
 	async getGroupMessages(body : any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
-		//console.log("body: ", body);
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const chat = await this.chatRepository.findOne({
@@ -157,8 +156,6 @@ export class ChatService {
 				where: { chat: chat },
 				order: { date: "ASC" }
 			});
-			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
-			//console.log("messages in getGroupMessages: ", messages);
 			return (Response.makeResponse(200, { messages: messages }));
 		}
 		catch (error) {
@@ -181,6 +178,21 @@ export class ChatService {
 			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
 		}
 	}
+	async getOwnChannels(header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const chatUsers = await this.chatUserRepository.find({relations: ['chat'], where: {user: session.userID}});
+			var chats: any[] = [];
+			for (var i = 0; i < chatUsers.length; i++)
+				chatUsers[i].chat.type_chat != 'oneToOne'? chats.push(chatUsers[i].chat) : null;
+			return (Response.makeResponse(200, { chats: chats }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
 
 	async getChatUsers(body: any, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
@@ -194,7 +206,7 @@ export class ChatService {
 			const users = await this.chatUserRepository.find({relations: ['user'], where: {'chat': chat}});
 			
 			for (var i = 0; i < users.length; i++)
-				retUsers.push(users[i].user);
+				retUsers.push(User.getPublicInfo(users[i].user));
 			
 			return (Response.makeResponse(200, { users: retUsers }));
 		} catch (error) {
@@ -211,7 +223,6 @@ export class ChatService {
 		var users: any[] = [];
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
-			/* await members.forEach( async element => { */
 			for (var i = 0; i < members.length; i++)
 				users.push(await this.userService.findByNickname(members[i].nickname));
 			const ret = await this.queryOneChat(users);
@@ -230,7 +241,6 @@ export class ChatService {
 
 	async friendIsBlocked(friend: any, header: string) {
 		const token = header.split(' ')[1];
-		//console.log("body in friend Is blocked: ", friend);
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const friendObj = await this.userService.findByNickname(friend.nickname);
@@ -240,7 +250,6 @@ export class ChatService {
 				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
 			});
 			const chatUser = await this.chatUserRepository.findOne({ where: { user: friendObj, chat: chat } });
-			//console.log("chatUser", chatUser);
 			return (Response.makeResponse(200, { blocked: chatUser.muted }));
 		}
 		catch (error) {
@@ -248,7 +257,20 @@ export class ChatService {
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to check friend' }));
 		}
-}
+	}
+
+	async updatePassChannel(channelInfo: any, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		try {
+			const register = await this.chatRepository.findOne({where: {name_chat: channelInfo.name_chat}});
+			const ret = await this.chatRepository.update(register, {password: channelInfo.password, protected: channelInfo.protected});
+			return (Response.makeResponse(200, { ok: "Successful operation", result: ret }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'unable to create' }));
+		}
+	}
 
 	async findChatByName(chat_name: string): Promise<any> {
 		try {
