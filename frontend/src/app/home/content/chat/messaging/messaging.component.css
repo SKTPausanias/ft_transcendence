@@ -1,0 +1,125 @@
+.info{
+	width: 100%;
+	max-width: 100%;
+	height: 10vh;
+	border-bottom: 1px solid #857c7c;
+	line-height: 10vh;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin: 0;
+}
+.info>div:first-child{
+	display: flex;
+	justify-content: start;
+	margin: auto;
+}
+.info>div:last-child{
+	display: flex;
+	justify-content: end;
+	margin: auto;
+}
+.info>div:last-child>span{
+	margin: 0 10px 0 10px;
+	color: #9e9e9e;
+}
+.info>div:last-child>span:hover{
+	cursor: pointer;
+	color: #ffffff;
+}
+.msg-list{
+	padding-bottom: 10px;
+	height: 75vh;
+}
+
+.msg-ctn{
+	margin: 10px;
+	padding: 10px;
+	width: fit-content;
+	max-width: 50%;
+	border-radius: 15px;
+}
+.sender{
+	display: flex;
+	align-items: center;
+}
+.sender p{
+	margin-top: auto;
+	margin-bottom: auto;
+	text-align: left;
+	margin-left: 10px;
+	font-size: 16px;
+	font-weight: bold;
+}
+.msg{
+	text-align: left;
+	font-size: 15px;
+	color: #ffffff;
+	padding: 10px 30px 10px 10px;
+}
+.time-stamp{
+	text-align: right;
+	font-size: 10px;
+	font-style: italic;
+	color: #cfcfcf;
+}
+.bg-me{
+	background-color: #21a700;
+}
+.bg-other{
+	background-color: #008697;
+}
+
+.scrool{
+	overflow-y: scroll;
+	max-height: 75vh;
+	height: 75vh;
+	
+}
+.scrool::-webkit-scrollbar {
+	width: 20px;
+
+}
+.scrool::-webkit-scrollbar-thumb {
+	border: 8px solid rgba(0, 0, 0, 0);
+	background-clip: padding-box;
+	border-radius: 9999px;
+	background-color: #857c7c;
+}
+.msg-action{
+	margin-left: 2%;
+	width: 96%;
+	max-width: 96%;
+	border: 1px solid #857c7c;
+	border-radius: 20px;
+	background-color: #474747;
+	position:absolute;
+	bottom:10px;
+}
+.msg-action textarea{
+	width: 100%;
+    overflow: hidden;
+	outline: none;
+	border: none;
+	background: none;
+	color: #ffffff;
+	margin: auto;
+    resize: none;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+.btn-send{
+	display: flex;
+	border-left: 1px solid #857c7c;
+	border-radius: 20px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	align-items: center;
+	justify-content:center;
+}
+
+.btn-send:hover{
+	cursor: pointer;
+	background-color: #857c7c;
+}

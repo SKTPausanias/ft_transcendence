@@ -1,0 +1,32 @@
+<div class='info row'>
+	<div class="col-6">
+		<h4>{{identity}}</h4>
+	</div> 
+	<div class="col-6">
+		<span class="fa fa-user-circle fa-lg"></span>
+		<span class="fa fa-user-times fa-lg"></span>
+		<span class="fa fa-table-tennis  fa-lg"></span>
+		<span class="fa fa-ban fa-lg"></span>
+		<span class="fa fa-sign-out-alt fa-lg"></span>
+	</div> 
+</div>
+<div class='msg-list scrool'> 
+	<div *ngFor="let item of msgList;" class="msg-ctn bg-me" [ngClass]="{'bg-other' : item.from != 'me'}">
+		<div class="sender">
+			<img class="ico_xs img-fluid" src="/assets/img/logo.png" alt="image">
+			<p>{{item.from}}</p>
+		</div>
+		<div class="msg" innerText={{item.msg}}></div>
+		<div class="time-stamp">
+			15/12/2020 16:33
+		</div>
+	</div>
+</div>
+<div class='msg-action row'> 
+	<div class="col-11 ps-0 pe-0">
+		<textarea type="text" [(ngModel)]="msg"></textarea>
+	</div>
+	<div class="col-1 btn-send" (click)="send()">
+		<span class="fa fa-paper-plane fa-lg"></span>
+	</div>
+</div>
