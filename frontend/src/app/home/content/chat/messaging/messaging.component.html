@@ -1,8 +1,8 @@
 <div class='info row'>
-	<div class="col-6">
+	<div class="col-6 d-flex justify-content-start">
 		<h4>{{identity}}</h4>
 	</div> 
-	<div class="col-6">
+	<div class="col-6 d-flex justify-content-end">
 		<span class="fa fa-user-circle fa-lg"></span>
 		<span class="fa fa-user-times fa-lg"></span>
 		<span class="fa fa-table-tennis  fa-lg"></span>
@@ -10,16 +10,22 @@
 		<span class="fa fa-sign-out-alt fa-lg"></span>
 	</div> 
 </div>
-<div class='msg-list scrool'> 
-	<div *ngFor="let item of msgList;" class="msg-ctn bg-me" [ngClass]="{'bg-other' : item.from != 'me'}">
-		<div class="sender">
-			<img class="ico_xs img-fluid" src="/assets/img/logo.png" alt="image">
+<div class='msg-list scrool' #scrollframe> 
+	<div *ngFor="let item of msgList;" class="msg-ctn" #scroolMsg>
+		<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.from != 'me'}">
+			<img class="ico_s img-fluid" src="/assets/img/logo.png" alt="image">
+			<div>
+				<div  class="msg" innerText={{item.msg}}></div>
+				<div class="time-stamp justify-content-start"><b>{{item.from}}</b>15/12/2020 16:33</div>
+			</div>
+		</div>
+			
+		<!-- <div class="sender">
 			<p>{{item.from}}</p>
 		</div>
-		<div class="msg" innerText={{item.msg}}></div>
 		<div class="time-stamp">
 			15/12/2020 16:33
-		</div>
+		</div> -->
 	</div>
 </div>
 <div class='msg-action row'> 
