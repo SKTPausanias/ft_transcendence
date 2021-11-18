@@ -1,4 +1,9 @@
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { Messages } from "src/app/shared/class/cMessages";
+import { SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { SessionStorageQueryService } from "src/app/shared/ft_services";
+import { mDate } from "src/app/utils/date";
+import { ChatService } from "../chat.service";
 
  interface ms{
 	from: String,
@@ -10,44 +15,49 @@ import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildre
   styleUrls: ["./messaging.component.css"],
 })
 export class MessagingComponent implements OnInit {
-	@Input() identity: String;
+	@Input() msgPreference: SharedPreferencesI;
+	@Input() identity: any;
+	@Input() messages: Messages[];
+	@Input() isChannel: boolean | undefined;
 	@ViewChild('scrollframe', {static: false}) scrollFrame: ElementRef;
 	@ViewChildren('scroolMsg') itemElements: QueryList<any>;
 	private scrollContainer: any;
 
-	msg: String = '';
-	msgList: ms[] = [
-		{from: 'me', msg: "Hello Juan"},
-		{from: 'me', msg: "How are you?"},
-		{from: 'Juan', msg: "Hi Dainis"},
-		{from: 'Juan', msg: "I'm fine thank you"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'Juan', msg: "And how are you?"},
-		{from: 'me', msg: "I'm verry well!I'm verry well!I'm verry well!I'm verry well!I'm verry well!I'm verry well!I'm verry well!"},
-	];
-	constructor() {}
+	msg: string = '';
+	session = this.sQuery.getSessionToken();
+	name: string = '';
 
-	ngOnInit(): void {
+	constructor(
+		private chatService: ChatService,
+		private sQuery: SessionStorageQueryService
+	) {}
+
+	async ngOnInit(): Promise<void> {
+		this.isChannel ? (this.name = this.identity.name_chat) : (this.name = this.identity.nickname);
+		console.log(this.identity);
 		var element = document.getElementById("oMsg");
 		if(element != null && element != undefined)
 			element.scrollTop = element.scrollHeight;
+			console.log(this.isChannel);
+		
+
 	}
 	ngAfterViewInit() {
 		this.scrollContainer = this.scrollFrame.nativeElement;
 		this.itemElements.changes.subscribe(_ => this.onItemElementsChanged());
 		this.scrollToBottom();
 	}
-	send(){
-		var trmMsg = this.msg.trim();
-		if (trmMsg.length <= 0 )
+	async send(){
+		this.msg = this.msg.trim();
+		if (this.msg.length <= 0 )
 			return ;
-		console.log("sending msg: |", trmMsg, "|");
-		this.msgList.push({from: 'me', msg: trmMsg});
+		if (this.isChannel)
+			await this.chatService.sendGroupMessage(this.msg, this.session, this.identity, mDate.timeNowInSec(), this.msgPreference.userInfo.nickname, this.msgPreference.userInfo);
+		else
+			await this.chatService.sendMessage(this.msg, this.session, this.identity, mDate.timeNowInSec(), this.msgPreference.userInfo.nickname);
+
+		//console.log("sending msg: |", trmMsg, "|");
+		//this.msgList.push({from: 'me', msg: trmMsg});
 		this.msg = '';
 	}
 	private onItemElementsChanged(): void {
@@ -57,8 +67,7 @@ export class MessagingComponent implements OnInit {
 	private scrollToBottom(): void {
 		this.scrollContainer.scroll({
 		  top: this.scrollContainer.scrollHeight,
-		  left: 0,
-		  behavior: 'smooth'
+		  left: 0
 		});
 	  }
 }

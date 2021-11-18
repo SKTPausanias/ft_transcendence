@@ -1,38 +1,43 @@
-<div class='info row'>
-	<div class="col-6 d-flex justify-content-start">
-		<h4>{{identity}}</h4>
-	</div> 
-	<div class="col-6 d-flex justify-content-end">
-		<span class="fa fa-user-circle fa-lg"></span>
-		<span class="fa fa-user-times fa-lg"></span>
-		<span class="fa fa-table-tennis  fa-lg"></span>
-		<span class="fa fa-ban fa-lg"></span>
-		<span class="fa fa-sign-out-alt fa-lg"></span>
-	</div> 
-</div>
-<div class='msg-list scrool' #scrollframe> 
-	<div *ngFor="let item of msgList;" class="msg-ctn" #scroolMsg>
-		<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.from != 'me'}">
-			<img class="ico_s img-fluid" src="/assets/img/logo.png" alt="image">
-			<div>
-				<div  class="msg" innerText={{item.msg}}></div>
-				<div class="time-stamp justify-content-start"><b>{{item.from}}</b>15/12/2020 16:33</div>
+<div class="main-ctn">
+	<div class='info row'>
+		<div class="col-6 d-flex justify-content-start">
+			<img *ngIf='!isChannel' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
+			<h4><i *ngIf='isChannel' class="fa fa-hashtag"></i> {{name}}</h4>
+		</div> 
+		<div class="col-6 d-flex justify-content-end">
+			<span class="fa fa-user-circle fa-lg"></span>
+			<span class="fa fa-user-times fa-lg"></span>
+			<span class="fa fa-table-tennis  fa-lg"></span>
+			<span class="fa fa-ban fa-lg"></span>
+			<span class="fa fa-sign-out-alt fa-lg"></span>
+		</div> 
+	</div>
+	<div class='msg-list scrool' #scrollframe> 
+		<div *ngFor="let item of messages;" class="msg-ctn" #scroolMsg>
+			<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.owner != msgPreference.userInfo.nickname}">
+				<img *ngIf='!isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
+				<img *ngIf='isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{item.user.avatar}}" alt="image">
+				<img *ngIf='item.owner == msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{msgPreference.userInfo.avatar}}" alt="image">
+				<div>
+					<div  class="msg" innerText={{item.message}}></div>
+					<div class="time-stamp justify-content-start"><b>{{item.owner}}</b>{{item.msgDateString}}</div>
+				</div>
 			</div>
+				
+			<!-- <div class="sender">
+				<p>{{item.from}}</p>
+			</div>
+			<div class="time-stamp">
+				15/12/2020 16:33
+			</div> -->
 		</div>
-			
-		<!-- <div class="sender">
-			<p>{{item.from}}</p>
+	</div>
+	<div class='msg-action row'> 
+		<div class="col-11 ps-0 pe-0">
+			<textarea type="text" [(ngModel)]="msg"></textarea>
 		</div>
-		<div class="time-stamp">
-			15/12/2020 16:33
-		</div> -->
-	</div>
-</div>
-<div class='msg-action row'> 
-	<div class="col-11 ps-0 pe-0">
-		<textarea type="text" [(ngModel)]="msg"></textarea>
-	</div>
-	<div class="col-1 btn-send" (click)="send()">
-		<span class="fa fa-paper-plane fa-lg"></span>
+		<div class="col-1 btn-send" (click)="send()">
+			<span class="fa fa-paper-plane fa-lg"></span>
+		</div>
 	</div>
 </div>

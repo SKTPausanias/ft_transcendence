@@ -10,18 +10,16 @@
 				</div>
 				
 				<div *ngIf="showChannels">
-					<p class="item" *ngFor="let item of channs" (click)="setIndentifier('# ' + item)">
-						<i class="fa fa-hashtag"></i> {{item}}
+					<p class="item" *ngFor="let item of channels" (click)="selectChatRoom(item, true)">
+						<i class="fa fa-hashtag"></i> {{item.name_chat}}
 					</p>
+					<div class="mt-1">
+						<button class="fa-btn">
+							<span class="fa fa-plus fa-icon"> </span>
+							<p>Add channel</p>
+						</button>
+					</div>
 				</div>
-
-				<div class="mt-1">
-					<button class="fa-btn">
-						<span class="fa fa-plus fa-icon"> </span>
-						<p>Add channel</p>
-					</button>
-			</div>
-				
 			</div>
 			<div>
 				<div class="room-ctn">
@@ -31,22 +29,23 @@
 					<p class="mb-1">Dirrect messages</p>
 				</div>
 				<div *ngIf="showDM">
-					<div class="item" *ngFor="let item of directMsg" (click)="setIndentifier(item)">
-						<img class="ico_xs img-fluid" src="/assets/img/logo.png" alt="image">
-						{{item}}
+					<div class="item" *ngFor="let item of friends" (click)="selectChatRoom(item, false)">
+						<img class="ico_xs img-fluid" src="{{item.avatar}}" alt="image">
+						{{item.nickname}}
 					</div>
-				</div>
-				<div class="mt-1">
+					<div class="mt-1">
 						<button class="fa-btn">
 							<span class="fa fa-user-plus fa-icon"> </span>
 							<p>Add friend to chat</p>
 						</button>
+					</div>
 				</div>
+				
 			</div>
 		</div>
 		<div class="col-10 right-container">
-			<app-messaging *ngIf="identifier.length > 0" [identity]='identifier'></app-messaging>
-			<div *ngIf="!identifier.length">
+			<app-messaging *ngIf="showMsgFragment" [identity]='identifier' [msgPreference]='chatPreference' [messages]='messages' [isChannel]='isChannel'></app-messaging>
+			<div *ngIf="!showMsgFragment">
 				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>
 			</div>
 		</div>

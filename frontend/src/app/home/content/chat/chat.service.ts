@@ -49,11 +49,12 @@ export class ChatService {
     }
   }
   
-  async sendGroupMessage(message: string, session: SessionI, channel: any, timestamp: number, nickname: string): Promise<any> {
+  async sendGroupMessage(message: string, session: SessionI, channel: any, timestamp: number, nickname: string, user: UserPublicInfoI): Promise<any> {
     const url = '/api/users/chat/saveGroupMessage';
     console.log("Calling backend saveGroupMessage...", session);
     var objMessage = new Messages();
     objMessage.setMessage({ message: message, date: timestamp, owner: nickname })
+	objMessage.user = user;
     var body: messageI = <messageI>{};
 
     body.message = message;
