@@ -42,14 +42,17 @@ export class ChatService {
 					return (Response.makeResponse(200, { ok: "Chat oneOnOne was restored" }));
 				}
 				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
+				console.log("name_chat: ", this.chatData.name_chat);
 			}
 			else
 				this.chatData.name_chat = body.name_chat;
 			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
 				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
 			this.chatData.type_chat = body.chat_type;
-			this.chatData.password = body.password; // this must be created in the frontend
-			this.chatData.protected = body.protected;
+			//this.chatData.password = body.password; // this must be created in the frontend -- undefined if is one to one after adding friendship?
+			//this.chatData.protected = body.protected;
+			this.chatData.password = "";
+			this.chatData.protected = false;
 			const ret = await this.chatRepository.insert(this.chatData);
 			body.members.forEach(async user => {
 				let usr = await this.userService.findByNickname(user.nickname);
@@ -244,6 +247,25 @@ export class ChatService {
 		}
 	}
 
+	async iAmBlocked(friend: any, header: string){
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const friendObj = await this.userService.findByNickname(friend.nickname);
+			const name_chat = session.userID.id + '_' + friendObj.id;
+			const name_chat2 = friendObj.id + '_' + session.userID.id;
+			const chat = await this.chatRepository.findOne({
+				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
+			});
+			const chatUser = await this.chatUserRepository.findOne({ where: { user: session.userID, chat: chat } });
+			return (Response.makeResponse(200, { blocked: chatUser.muted }));		}
+		catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to check friend' }));
+		}
+	}
+
 	async friendIsBlocked(friend: any, header: string) {
 		const token = header.split(' ')[1];
 		try {
@@ -303,6 +325,40 @@ export class ChatService {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to get chat' }));
+		}
+	}
+
+	async isMuted(body: any, header: string): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const chat = await this.chatRepository.findOne({ where: { name_chat: body.channel.name_chat } });
+			const chatUser = await this.chatUserRepository.findOne({ where: { user: session.userID, chat: chat } });
+			return (Response.makeResponse(200, { muted: chatUser.muted }));
+		}
+		catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to check if user muted' }));
+		}
+	}
+
+	async muteUserGroup(body: any, header: string): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const user = await this.userService.findByNickname(body.user.nickname);
+			const chat = await this.chatRepository.findOne({ where: { name_chat: body.channel.name_chat } });
+			const chatUser = await this.chatUserRepository.findOne({ where: { user: user, chat: chat } });
+			if (chatUser.muted == false)
+				await this.chatUserRepository.update({ user: user, chat: chat }, { muted: true });
+			else
+				await this.chatUserRepository.update({ user: user, chat: chat }, { muted: false });
+			return (Response.makeResponse(200, { ok: "User has been muted" }));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to mute user' }));
 		}
 	}
 }

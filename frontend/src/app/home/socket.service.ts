@@ -13,6 +13,7 @@ export class SocketService {
 	receivedFilter: EventEmitter<any>;
 	chatFilter: EventEmitter<any>;
 	chatBlockFilter: EventEmitter<any>;
+	chatMuteFilter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor() {
 	}
@@ -21,6 +22,7 @@ export class SocketService {
 		this.receivedFilter = new EventEmitter<any>();
 		this.chatFilter = new EventEmitter<any>();
 		this.chatBlockFilter = new EventEmitter<any>();
+		this.chatMuteFilter = new EventEmitter<any>();
 		this.sharedPreferences = sharedPreference;
 		this.init(session);
 		this.onConnect();
@@ -35,6 +37,7 @@ export class SocketService {
 		this.onChatMessage();
 		this.onGroupChatMessage();
 		this.onChatBlockUser();
+		this.onChatMuteUser();
 	}
 	public disconnect()
 	{
@@ -162,6 +165,17 @@ export class SocketService {
 				console.log("data recieved onChatBlockUser:", data);
 				console.log("emiter:", emiter);
 				this.chatBlockFilter.emit(data);
+			}
+			catch(error){}
+		})
+	}
+
+	private onChatMuteUser(){
+		this.socket.on(wSocket.CHAT_MUTE_USER, (emiter: string, data: any) => {
+			try {
+				console.log("data recieved onChatMuteUser:", data);
+				console.log("emiter:", emiter);
+				this.chatMuteFilter.emit(data);
 			}
 			catch(error){}
 		})
