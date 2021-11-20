@@ -1,12 +1,10 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
-import { ChatService } from './chat.service';
 import { SocketService } from '../../socket.service';
-import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
-import { Messages } from 'src/app/shared/class/cMessages';
-import { ChannelI } from 'src/app/shared/interface/iChat';
+import { ChatService } from './chat.service';
 
 @Component({
   selector: 'app-chat',
@@ -15,64 +13,61 @@ import { ChannelI } from 'src/app/shared/interface/iChat';
 })
 export class ChatComponent implements OnInit {
 	@Input() chatPreference: SharedPreferencesI;
+	privateRooms: ChatRoomI[] = [];
+	groupRooms: ChatRoomI[] = [];
 	showChannels: boolean = true;
 	showDM : boolean = true;
 	showMsgFragment = false;
-	imBlocked: boolean = false;
-	isChannel: boolean | undefined = undefined;
-	identifier: any;
-	channs: String[] = ["random-chanel", "info", "tournoments","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff","other_stuff"]
-	directMsg: String[] = ["Juan", "Pepe", "Paco","Fran" ];
 	channels: any[] = [];
-	messages: Messages[] = [];
+	messages: any[] = [];
 	session = this.sQuery.getSessionToken();
 	friends: UserPublicInfoI[] = [];
-	constructor(private chatService: ChatService,
+	subscription: any;
+	prefSubscription: any;
+	constructor(
 		private sQuery: SessionStorageQueryService,
-		private socketService: SocketService
+		private socketService: SocketService,
+		private chatService: ChatService
 	){
 	}
   
   async ngOnInit(){
-	  console.log(this.chatPreference)
-	  this.friends = this.chatPreference.friends;
-
-	this.channels = await this.chatService.getChatGroups(this.session);
-	this.socketService.chatFilter.subscribe(
-		(data : any) => {
-		  if (data) {
-			console.log("data from subscribe: ", data);
-			this.messages.push(data);
-		  }
-		}
-	  );
-	  this.socketService.chatBlockFilter.subscribe(
-		(data : any) => {
-		  if (data != undefined) {
-			console.log("data from subscribe: ", data);
-			if (data == false)
-			  this.imBlocked = true;
-			else
-			  this.imBlocked = false;
-		  }
-		}
-	  );
+	this.subscription = this.socketService.chatEmiter.subscribe((data : any)=> {
+		if (data.action == 'open')
+			this.selectChatRoom(data.room);
+		else
+			this.chatService.chatFragmentEmmiter.emit(data);
+	});
+	/* this.prefSubscription = this.chatService.prefEmiter.subscribe((data =>{
+		this.chatPreference.chat = data;
+	})) */
+	if (this.chatPreference.chat.active_room != undefined)
+		this.selectChatRoom(this.chatPreference.chat.active_room);
   }
-
+  ngOnDestroy() {
+	this.subscription.unsubscribe();
+	//this.prefSubscription.unsubscribe();
+  }
   hideShowChannels(){
 	this.showChannels ? (this.showChannels = false) : (this.showChannels = true);
   }
   hideShowDM(){
 	this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
-  async selectChatRoom(item: any, isChannel: boolean){
-	if (isChannel)
-		this.messages = await this.chatService.getGroupMessages(this.session, item);
-	else
-		this.messages = await this.chatService.getMessages(this.session, item);
-
-	this.identifier = item;
+  selectChatRoom(item: any){
+	this.chatPreference.chat.active_room = item;
 	this.showMsgFragment = true;
-	this.isChannel = isChannel;
+	this.chatService.chatFragmentEmmiter.emit({action : "room-change"});
+  }
+
+  getPrivateRooms(){
+	return (this.chatPreference.chat.rooms.filter(room => room.img != undefined))
+  }
+  getGroupRooms(){
+	return (this.chatPreference.chat.rooms.filter(room => room.img == undefined))
+  }
+  isSelected(room: ChatRoomI)
+  {
+	return (this.chatPreference.chat.active_room != undefined && room.id == this.chatPreference.chat.active_room.id)
   }
 }

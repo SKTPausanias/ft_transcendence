@@ -1,9 +1,8 @@
 import { SessionEntity } from "src/session/session.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
-import { FriendEntity } from "../friends/friend.entity";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ChatEntity } from "../chat/chat.entity";
-import { MessageEntity } from "../chat/message.entity";
-import { ChatUsersEntity } from "../chat/chatUsers.entity";
+import { FriendEntity } from "../friends/friend.entity";
+
 @Entity('users')
 export class UserEntity {
 
@@ -58,10 +57,7 @@ export class UserEntity {
     })
     friends: FriendEntity[];
 
-    @OneToMany(() => ChatEntity, (chat) => chat.chats)
-    chats: ChatUsersEntity[];
-
-    @OneToMany(type => MessageEntity, message => message.user)
-    messages: MessageEntity[];
+	@Column("int", { array: true , nullable: true})
+	active_chat_rooms: number[];
 }
 

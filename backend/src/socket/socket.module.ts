@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatEntity } from 'src/home/chat/chat.entity';
+import { ChatGateway } from 'src/home/chat/chat.gateway';
 import { ChatService } from 'src/home/chat/chat.service';
-import { ChatUsersEntity } from 'src/home/chat/chatUsers.entity';
 import { MessageEntity } from 'src/home/chat/message.entity';
 import { FriendEntity } from 'src/home/friends/friend.entity';
 import { FriendService } from 'src/home/friends/friend.service';
@@ -14,7 +14,7 @@ import { SocketGateway } from './socket.gateway';
 import { SocketService } from './socket.service';
 
 @Module({
-	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity])],
-	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService]
+	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity])],
+	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService, ChatGateway]
 })
 export class SocketModule {}

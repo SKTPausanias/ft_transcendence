@@ -8,10 +8,9 @@
 						</button>
 						<p>Channels</p>
 				</div>
-				
 				<div *ngIf="showChannels">
-					<p class="item" *ngFor="let item of channels" (click)="selectChatRoom(item, true)">
-						<i class="fa fa-hashtag"></i> {{item.name_chat}}
+					<p class="item" *ngFor="let room of getGroupRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+						<i class="fa fa-hashtag"></i> {{room.name}}
 					</p>
 					<div class="mt-1">
 						<button class="fa-btn">
@@ -29,9 +28,9 @@
 					<p class="mb-1">Dirrect messages</p>
 				</div>
 				<div *ngIf="showDM">
-					<div class="item" *ngFor="let item of friends" (click)="selectChatRoom(item, false)">
-						<img class="ico_xs img-fluid" src="{{item.avatar}}" alt="image">
-						{{item.nickname}}
+					<div class="item" *ngFor="let room of getPrivateRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+							<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+							<span style="white-space: pre-line;">{{room.name}}</span>
 					</div>
 					<div class="mt-1">
 						<button class="fa-btn">
@@ -44,7 +43,7 @@
 			</div>
 		</div>
 		<div class="col-10 right-container">
-			<app-messaging *ngIf="showMsgFragment" [identity]='identifier' [msgPreference]='chatPreference' [messages]='messages' [isChannel]='isChannel'></app-messaging>
+			<app-messaging *ngIf="showMsgFragment" [msgPreference]='chatPreference'></app-messaging>
 			<div *ngIf="!showMsgFragment">
 				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>
 			</div>

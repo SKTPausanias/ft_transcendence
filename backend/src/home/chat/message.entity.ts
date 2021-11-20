@@ -1,22 +1,27 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, JoinColumn, ManyToOne, OneToOne } from "typeorm";
 import { UserEntity } from "../user/user.entity";
-import { ChatEntity } from "../chat/chat.entity";
+import { UserPublicInfoI } from "../user/userI";
+import { ChatEntity } from "./chat.entity";
 
 @Entity('message')
 export class MessageEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @ManyToOne(type => UserEntity, user => user.messages)
-    user: UserEntity;
+	@Column({nullable: false})
+	message: string;
 
-    @ManyToOne(type => ChatEntity, chat => chat.messages)
+	@Column({nullable: false})
+	date: string;
+
+	@ManyToOne(type => UserEntity)
+    owner: UserEntity;
+
+	@ManyToOne(type => ChatEntity, chat => chat.id,
+		{
+			onDelete: "CASCADE"
+		})
     chat: ChatEntity;
-
-    @Column()
-    message: string;
-
-    @Column()
-    date: number;
+	
 
 }

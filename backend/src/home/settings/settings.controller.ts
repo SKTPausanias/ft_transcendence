@@ -1,10 +1,12 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Get, Headers } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SettingsService } from './settings.service';
 import { diskStorage } from 'multer';
 import { Response } from 'src/shared/response/responseClass';
 import { User } from '../user/userClass';
+import { UserI } from '../user/userI';
+
 
 @Controller('api/users/settings')
 export class SettingsController {

@@ -4,7 +4,6 @@ import { SessionEntity } from 'src/session/session.entity';
 import { SessionService } from 'src/session/session.service';
 import { ChatEntity } from '../chat/chat.entity';
 import { ChatService } from '../chat/chat.service';
-import { ChatUsersEntity } from '../chat/chatUsers.entity';
 import { MessageEntity } from '../chat/message.entity';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
@@ -13,10 +12,10 @@ import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity])],
-    controllers: [UserController],
-    providers: [
-    UserService, SessionService, FriendService, ChatService
-  ]
+imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
+  controllers: [UserController],
+  providers: [
+	UserService, SessionService, FriendService
+]
 })
 export class UserModule {}

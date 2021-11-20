@@ -15,10 +15,10 @@ import { UserModule } from './home/user/user.module';
 import { FriendEntity } from './home/friends/friend.entity';
 import { DashboardModule } from './home/dashboard/dashboard.module';
 import { SocketModule } from './socket/socket.module';
+import { ChatModule } from './home/chat/chat.module';
 import { ChatEntity } from './home/chat/chat.entity';
 import { MessageEntity } from './home/chat/message.entity';
-import { ChatModule } from './home/chat/chat.module';
-import { ChatUsersEntity } from './home/chat/chatUsers.entity';
+
 @Module({
   imports: [ConfigModule.forRoot({
 	isGlobal: true,
@@ -31,7 +31,7 @@ import { ChatUsersEntity } from './home/chat/chatUsers.entity';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

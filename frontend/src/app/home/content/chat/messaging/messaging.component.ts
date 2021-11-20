@@ -1,7 +1,9 @@
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
-import { Messages } from "src/app/shared/class/cMessages";
-import { SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { SocketService } from "src/app/home/socket.service";
+import { wSocket } from "src/app/shared/ft_enums";
+import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
+import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { mDate } from "src/app/utils/date";
 import { ChatService } from "../chat.service";
 
@@ -16,9 +18,6 @@ import { ChatService } from "../chat.service";
 })
 export class MessagingComponent implements OnInit {
 	@Input() msgPreference: SharedPreferencesI;
-	@Input() identity: any;
-	@Input() messages: Messages[];
-	@Input() isChannel: boolean | undefined;
 	@ViewChild('scrollframe', {static: false}) scrollFrame: ElementRef;
 	@ViewChildren('scroolMsg') itemElements: QueryList<any>;
 	private scrollContainer: any;
@@ -26,19 +25,23 @@ export class MessagingComponent implements OnInit {
 	msg: string = '';
 	session = this.sQuery.getSessionToken();
 	name: string = '';
-
+	messages: MessagesI[] = [];
+	members: UserPublicInfoI[];
+	room: ChatRoomI;
+	subscription: any;
 	constructor(
-		private chatService: ChatService,
-		private sQuery: SessionStorageQueryService
+		private sQuery: SessionStorageQueryService,
+		private socketService: SocketService,
+		private chatService: ChatService
 	) {}
 
 	async ngOnInit(): Promise<void> {
-		this.isChannel ? (this.name = this.identity.name_chat) : (this.name = this.identity.nickname);
-		console.log(this.identity);
-		var element = document.getElementById("oMsg");
-		if(element != null && element != undefined)
-			element.scrollTop = element.scrollHeight;
-			console.log(this.isChannel);
+		this.subscription = this.chatService.chatFragmentEmmiter.subscribe((data : any)=> {
+			this.chatFragmentEmitterHandler(data);
+		});
+		this.room = this.msgPreference.chat.active_room;
+		this.members =  this.room.members;
+		this.socketService.emit(wSocket.ON_All_MSG, {room: this.room});
 		
 
 	}
@@ -47,27 +50,43 @@ export class MessagingComponent implements OnInit {
 		this.itemElements.changes.subscribe(_ => this.onItemElementsChanged());
 		this.scrollToBottom();
 	}
+	ngOnDestroy() {
+		this.subscription.unsubscribe();
+	  }
 	async send(){
 		this.msg = this.msg.trim();
 		if (this.msg.length <= 0 )
 			return ;
-		if (this.isChannel)
-			await this.chatService.sendGroupMessage(this.msg, this.session, this.identity, mDate.timeNowInSec(), this.msgPreference.userInfo.nickname, this.msgPreference.userInfo);
-		else
-			await this.chatService.sendMessage(this.msg, this.session, this.identity, mDate.timeNowInSec(), this.msgPreference.userInfo.nickname);
-
-		//console.log("sending msg: |", trmMsg, "|");
-		//this.msgList.push({from: 'me', msg: trmMsg});
+		this.room = this.msgPreference.chat.active_room;
+		this.socketService.emit(wSocket.ON_NEW_MSG, {room: this.room, msg: this.msg});
 		this.msg = '';
 	}
 	private onItemElementsChanged(): void {
-		console.log("detected");
 		this.scrollToBottom();
-	  }
+	}
 	private scrollToBottom(): void {
 		this.scrollContainer.scroll({
 		  top: this.scrollContainer.scrollHeight,
 		  left: 0
 		});
-	  }
+	}
+	private chatFragmentEmitterHandler(data: any)
+	{
+		if (data.action == 'room-change')
+			this.onRoomChange();
+		else if (data.action == 'loadAllMsg')
+			this.messages = data.messages;
+		else if (data.action == 'newMsg')
+			this.messages.push(data.messages);
+	}
+	private onRoomChange(){
+		this.room = this.msgPreference.chat.active_room;
+		this.socketService.emit(wSocket.ON_All_MSG, {room: this.room});
+	}
+	isPrivateRoom(){
+		return (this.msgPreference.chat.active_room.img != undefined);
+	}
+	getImage(){
+		return (this.msgPreference.chat.active_room.img);
+	}
 }

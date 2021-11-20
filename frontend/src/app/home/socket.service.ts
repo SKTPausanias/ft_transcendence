@@ -4,6 +4,7 @@ import { SessionI, SharedPreferencesI } from "../shared/ft_interfaces";
 import { environment } from 'src/environments/environment'
 import { wSocket } from 'src/app/shared/ft_enums'
 import { UserPublicInfoI } from "../shared/interface/iUserInfo";
+import { Router } from "@angular/router";
 
 @Injectable({
 	providedIn: "root",
@@ -11,16 +12,14 @@ import { UserPublicInfoI } from "../shared/interface/iUserInfo";
 export class SocketService {
 	private socket: Socket;
 	receivedFilter: EventEmitter<any>;
-	chatFilter: EventEmitter<any>;
-	chatBlockFilter: EventEmitter<any>;
+	chatEmiter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
-	constructor() {
+	constructor(private router: Router) {
 	}
 	
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
 		this.receivedFilter = new EventEmitter<any>();
-		this.chatFilter = new EventEmitter<any>();
-		this.chatBlockFilter = new EventEmitter<any>();
+		this.chatEmiter = new EventEmitter<any>();
 		this.sharedPreferences = sharedPreference;
 		this.init(session);
 		this.onConnect();
@@ -32,9 +31,10 @@ export class SocketService {
 		this.onFriendAccept();
 		this.onFriendRemove();
 		this.onDeleteAccount();
-		this.onChatMessage();
-		this.onGroupChatMessage();
-		this.onChatBlockUser();
+		this.onStartChat();
+		this.onChatLoadAllMessages();
+		this.onNewChatMsg();
+		this.onJoinRoom();
 	}
 	public disconnect()
 	{
@@ -73,6 +73,7 @@ export class SocketService {
 	}
 	private onUserUpdate(){
 		this.socket.on(wSocket.USER_UPDATE, (emiter: any, data: any) => {
+			console.log("on update", data);
 			try {
 				if (this.sharedPreferences.userInfo.login === emiter)
 					this.sharedPreferences.userInfo = data;
@@ -132,48 +133,66 @@ export class SocketService {
 		})
 	}
 
-	private onChatMessage(){
-		this.socket.on(wSocket.CHAT_MESSAGE, (emiter: string, data: any) => {
+	private onStartChat(){
+		this.socket.on(wSocket.ON_START, (emiter: string, data: any) => {
 			try {
-				console.log("data recieved:", data);
-				console.log("emiter:", emiter);
-				//this.sharedPreferences.chat_messages.push(data); si descomento no llega al subscribe
-				//console.log("data sent", this.sharedPreferences);
-				this.chatFilter.emit(data);
+				//console.log(emiter, ":", data);
+				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
+					this.sharedPreferences.chat.rooms.push(data);
+				this.sharedPreferences.chat.active_room = data;
+				this.receivedFilter.emit(this.sharedPreferences);
+				this.chatEmiter.emit({action: 'open', room : data});
+
+			}catch(error){}
+		})
+	}
+	/* private onStartChat(){
+		this.socket.on(wSocket.CHAT_ON_START, (emiter: string, data: any) => {
+			try {
+				console.log(data);
+				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
+					this.sharedPreferences.chat.rooms.push(data);
+				this.sharedPreferences.chat.active_room = data;
+				this.receivedFilter.emit(this.sharedPreferences);
+				this.chatEmiter.emit(data);
+
+			}catch(error){}
+		})
+	} */
+	
+	private onChatLoadAllMessages(){
+		this.socket.on(wSocket.ON_All_MSG, (emiter: string, data: any) => {
+			try {
+				console.log(data);
+				this.chatEmiter.emit({action : 'loadAllMsg' , messages: data});
 			}catch(error){}
 		})
 	}
 
-	private onGroupChatMessage(){
-		this.socket.on(wSocket.CHAT_GROUP_MESSAGE, (emiter: string, data: any) => {
+
+
+
+	private onNewChatMsg(){
+		this.socket.on(wSocket.ON_NEW_MSG, (emiter: string, data: any) => {
 			try {
-				console.log("data recieved:", data);
-				console.log("emiter:", emiter);
-				//this.sharedPreferences.chat_messages.push(data); si descomento no llega al subscribe
-				//console.log("data sent", this.sharedPreferences);
-				this.chatFilter.emit(data);
+				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
+					this.socket.emit(wSocket.ON_JOIN_ROOM, data.chatId);
+				this.chatEmiter.emit({action : 'newMsg' , messages: data});
 			}catch(error){}
 		})
 	}
-
-	private onChatBlockUser(){
-		this.socket.on(wSocket.CHAT_BLOCK_USER, (emiter: string, data: any) => {
+	
+	private onJoinRoom(){
+		this.socket.on(wSocket.ON_JOIN_ROOM, (emiter: string, data: any) => {
 			try {
-				console.log("data recieved onChatBlockUser:", data);
-				console.log("emiter:", emiter);
-				this.chatBlockFilter.emit(data);
-			}
-			catch(error){}
+				this.sharedPreferences.chat.rooms.push(data);
+			}catch(error){}
 		})
 	}
-
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
-
-	public getSocket():Socket {
-		return this.socket;
-	}
+	
 /* 	emitWithData()
 	emitUserUpdate(){
 		this.socket.emit(wSocket.USER_UPDATE);

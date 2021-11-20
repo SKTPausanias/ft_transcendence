@@ -1,22 +1,22 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { ChatGateway } from 'src/home/chat/chat.gateway';
 import { User } from 'src/home/user/userClass';
 import { wSocket } from 'src/socket/eSocket';
 import { SocketService } from './socket.service';
-import { UserService } from 'src/home/user/user.service';
   
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(private socketService: SocketService,
-		private userService: UserService,
-		){}
+				private chatGateway: ChatGateway){}
 	//sockets: wSocketI[] = [];
 	clientsConnected = 0;
 	@WebSocketServer() server;
 	async handleConnection(client) {
 
 		try {
+			this.chatGateway.init(this.server);
 			const sessionData = await this.getSessionData(client);
 			await this.socketService.emitToAllFriends(
 				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
@@ -84,63 +84,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const token = client.handshake.headers.authorization.split(' ')[1];
 		return (await this.socketService.getSessionData(token, client.id));
 	}
+
 	
-	@SubscribeMessage(wSocket.CHAT_MESSAGE)
-	async chatMessage(client, data) {
-		const sessionData = await this.getSessionData(client);
-		console.log(sessionData.userInfo.login, " : ", data);
-		console.log(data.receiver);
-		//const friend = await this.userService.findByNickname(user.nickname); // sacar amigo para llamar a la funcion de emitToOneFriend
-		const friend = await this.userService.findByNickname(data.receiver);
-		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, friend, data.message);
-		await this.socketService.emitToSelf(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, data.message);
-		//this.server.emit(wSocket.CHAT_MESSAGE, sessionData.userInfo.login, message);
-		//await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_MESSAGE,
-		//		sessionData.userInfo.login, sessionData.friends, data.message);
-	}
-
-	@SubscribeMessage(wSocket.CHAT_GROUP_MESSAGE)
-	async chatGroupMessage(client, data) {
-		const sessionData = await this.getSessionData(client);
-		//data.userInfo = User.getPublicInfo(sessionData.userInfo);
-		var recievers = await this.userService.getAllInChannel(data.channel.name_chat);
-		await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_GROUP_MESSAGE,
-			sessionData.userInfo.login, recievers, data.message);
-	}
-
-	@SubscribeMessage(wSocket.CHAT_BLOCK_USER)
-	async chatBlockUser(client, data) {
-		const sessionData = await this.getSessionData(client);
-		const friend = await this.userService.findByNickname(data.members[1].nickname);
-		console.log(sessionData.userInfo.login, " : ", data);
-		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_BLOCK_USER,
-			sessionData.userInfo.login, friend, data.isBlocked);
-	}
-
-	@SubscribeMessage(wSocket.GAME_POSITION)
-	async moveBall(client, data)
-	{
-		//const sessionData = await this.getSessionData(client);
-		switch(data.direction) {
-            case "left":
-                data.x -= 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "right":
-                data.x += 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "up":
-                data.y -= 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "down":
-                data.y += 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-			default:
-				this.server.emit(wSocket.GAME_POSITION, data);
-				break;
-        }
-	}
+	
 }

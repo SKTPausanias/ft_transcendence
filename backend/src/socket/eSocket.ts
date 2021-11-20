@@ -5,8 +5,6 @@ export enum wSocket {
 	FRIEND_INVITATION = 'friend-invitation',
 	FRIEND_DELETE = 'friend-delete',
 	FRIEND_ACCEPT = 'friend-accept',
-	CHAT_MESSAGE = 'chat-message',
-	CHAT_GROUP_MESSAGE = 'chat-group-message',
-	CHAT_BLOCK_USER = 'chat-block-user',
-	GAME_POSITION = 'game-position'
+	CHAT_ON_START = 'chat-on-start',
+	CHAT_ON_MSG = 'chat-on-msg'
 }

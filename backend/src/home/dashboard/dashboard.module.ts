@@ -8,16 +8,14 @@ import { SessionEntity } from 'src/session/session.entity';
 import { SessionService } from 'src/session/session.service';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
-import { ChatEntity } from '../chat/chat.entity';
-import { ChatService } from '../chat/chat.service';
-import { MessageEntity } from '../chat/message.entity';
-import { ChatUsersEntity } from '../chat/chatUsers.entity';
+import { SocketGateway } from 'src/socket/socket.gateway';
+import { SocketService } from 'src/socket/socket.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
     controllers: [DashboardController],
     providers: [
-		DashboardService, UserService, SessionService, FriendService, ChatService
+		DashboardService, UserService, SessionService, FriendService
 	]
 })
 export class DashboardModule {}

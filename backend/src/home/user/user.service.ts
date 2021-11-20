@@ -1,30 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SessionEntity } from 'src/session/session.entity';
 import { UserEntity } from 'src/home/user/user.entity';
-import { Connection, Like, Repository } from 'typeorm';
+import { UserI, UserInfoI, UserRegI } from 'src/home/user/userI';
+import { Connection, Like, Not, Repository } from 'typeorm';
 import { Response } from '../../shared/response/responseClass';
 import { ErrorParser } from '../../shared/utils/errorParser';
 import { Exception } from '../../shared/utils/exception';
 import { User } from './userClass';
 import { SessionService } from 'src/session/session.service';
 import { FriendService } from '../friends/friend.service';
-import { UserPublicInfoI } from './userI';
-import { ChatService } from '../chat/chat.service';
-import { ChatUsersEntity } from '../chat/chatUsers.entity';
 
 @Injectable()
 export class UserService {
 
 	constructor(@InjectRepository(UserEntity)
 	private userRepository: Repository<UserEntity>,
-	@InjectRepository(ChatUsersEntity)
-	private chat_userRepository: Repository<ChatUsersEntity>,
 	private friendService: FriendService,
 	private connection: Connection,
-	private sessionService: SessionService,
-	private chatService: ChatService){}
+	private sessionService: SessionService){}
 
-	async findByLogin(login: string): Promise<UserEntity | undefined> {
+	async findById(id: number): Promise<UserEntity | undefined> {
+		try {
+			return await this.userRepository.findOne({ where: { id } });
+		} catch (error) {
+			throw new Exception(Response.makeResponse(404, {error : "User not found"}))
+		}
+	}async findByLogin(login: string): Promise<UserEntity | undefined> {
 		try {
 			return await this.userRepository.findOne({ where: { login } });
 		} catch (error) {
@@ -68,18 +70,6 @@ export class UserService {
 			throw new Exception(Response.makeResponse(500, {error : "Can't delete user"}))
 		}
 	}
-
-	async findMatchByNickname(match: string, user: UserEntity)
-    {
-        try {
-            const resp =  await this.userRepository.find({where: [
-                            { nickname : Like(`%${match}%`)}]});
-            return (User.getMultipleUserInfo(resp, user));
-        }
-        catch (error) {
-            throw new Exception(Response.makeResponse(500, {error : "Can't find match"}));
-        }
-    }
 
 	async findMatchByLoginNickname(match: string, user: UserEntity)
     {
@@ -126,18 +116,17 @@ export class UserService {
 			return (error);
 		}
 	}
-
-	async getAllInChannel(name_chat : string): Promise<UserPublicInfoI[]> {
-		try {
-			const chat = await this.chatService.findChatByName(name_chat);
-			const chat_users = await this.chat_userRepository.find({relations: ["chat", "user"] , where: {chat}});
-			var ret: UserPublicInfoI[] = [];
-			chat_users.forEach(element => {
-				ret.push(User.getPublicInfo(element.user));
-			});
-			return (ret);
-		} catch (error) {
-			throw new Exception(Response.makeResponse(500, {error : "Can't get users"}));
-		}
+	async activateRoom(users: UserEntity[], roomId: number){
+		users.forEach(async user => {
+			if (user.active_chat_rooms)
+			{
+				if (user.active_chat_rooms.find(room => room == roomId) === undefined)
+					user.active_chat_rooms.push(roomId);
+			}
+			else
+				user.active_chat_rooms = [roomId];
+			await this.save(user);
+		});
+		
 	}
 }

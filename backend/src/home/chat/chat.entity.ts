@@ -1,28 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, JoinColumn, ManyToOne } from "typeorm";
 import { UserEntity } from "../user/user.entity";
-import { MessageEntity } from "../chat/message.entity";
-import { ChatUsersEntity } from "./chatUsers.entity";
+import { MessageEntity } from "./message.entity";
 
 @Entity('chat')
 export class ChatEntity {
     @PrimaryGeneratedColumn('increment')
     id: number;
 
-    @Column({ unique: true })
-    name_chat: string;
+	@Column({nullable: true, unique: true})
+	name: string;
+	
+	@ManyToMany(type => UserEntity)
+	@JoinTable()
+    members: UserEntity[];
+	
 
-    @Column()
-    type_chat: string;
-
-    @Column()
-    password: string;
-
-    @Column({default: false})
-    protected: boolean;
-
-    @OneToMany(() => ChatUsersEntity, (chatUser) => chatUser.chat)
-    chats: ChatUsersEntity[];
-
-    @OneToMany(type => MessageEntity, message => message.chat)
-    messages: MessageEntity[];
 }

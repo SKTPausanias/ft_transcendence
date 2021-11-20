@@ -1,5 +1,7 @@
 import { SessionEntity } from "src/session/session.entity";
 import { UserInfoI, UserPublicInfoI } from "src/home/user/userI"
+import { FriendEntity } from "src/home/friends/friend.entity";
+import { ChatRoomI } from "src/home/chat/iChat";
 
 export interface wSocketI {
 	socket_id: string,
@@ -17,7 +19,9 @@ export interface wSocketI {
 export interface SessionDataI {
 	userInfo : UserInfoI;
 	friends : UserPublicInfoI[];
-	friend_invitation: UserPublicInfoI[]
+	friend_invitation: UserPublicInfoI[];
+	activeChatRooms: ChatRoomI[];
+
 
 }
 

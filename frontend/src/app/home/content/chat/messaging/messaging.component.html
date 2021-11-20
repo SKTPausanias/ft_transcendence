@@ -1,8 +1,12 @@
 <div class="main-ctn">
 	<div class='info row'>
 		<div class="col-6 d-flex justify-content-start">
-			<img *ngIf='!isChannel' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
-			<h4><i *ngIf='isChannel' class="fa fa-hashtag"></i> {{name}}</h4>
+			<img *ngIf='isPrivateRoom()' class="ico_s img-fluid" src="{{getImage()}}" alt="image">
+			<h4>
+				<i *ngIf='!isPrivateRoom()' class="fa fa-hashtag me-2"></i> 
+				 <b>{{msgPreference.chat.active_room.name}}</b>
+				 <b class="fa fa-caret-down ms-2"></b>
+			</h4>
 		</div> 
 		<div class="col-6 d-flex justify-content-end">
 			<span class="fa fa-user-circle fa-lg"></span>
@@ -14,22 +18,15 @@
 	</div>
 	<div class='msg-list scrool' #scrollframe> 
 		<div *ngFor="let item of messages;" class="msg-ctn" #scroolMsg>
-			<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.owner != msgPreference.userInfo.nickname}">
-				<img *ngIf='!isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
-				<img *ngIf='isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{item.user.avatar}}" alt="image">
-				<img *ngIf='item.owner == msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{msgPreference.userInfo.avatar}}" alt="image">
+			<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.owner.nickname != msgPreference.userInfo.nickname}">
+				<!-- <img *ngIf='!isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
+				<img *ngIf='isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{item.user.avatar}}" alt="image"> -->
+				<img class="ico_s img-fluid" src="{{item.owner.avatar}}" alt="image">
 				<div>
 					<div  class="msg" innerText={{item.message}}></div>
-					<div class="time-stamp justify-content-start"><b>{{item.owner}}</b>{{item.msgDateString}}</div>
+					<div class="time-stamp justify-content-start"><b>{{item.owner.nickname}}</b>{{item.timeStamp}}</div>
 				</div>
 			</div>
-				
-			<!-- <div class="sender">
-				<p>{{item.from}}</p>
-			</div>
-			<div class="time-stamp">
-				15/12/2020 16:33
-			</div> -->
 		</div>
 	</div>
 	<div class='msg-action row'> 
@@ -40,4 +37,5 @@
 			<span class="fa fa-paper-plane fa-lg"></span>
 		</div>
 	</div>
+	
 </div>

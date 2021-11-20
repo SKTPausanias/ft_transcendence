@@ -11,16 +11,12 @@ import { MailService } from 'src/shared/mail/mail.service';
 import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
-import { ChatEntity } from '../chat/chat.entity';
-import { ChatService } from '../chat/chat.service';
-import { MessageEntity } from '../chat/message.entity';
-import { ChatUsersEntity } from '../chat/chatUsers.entity';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity])],
     controllers: [SettingsController],
     providers: [
-		SettingsService,UserService, SessionService, TwoFactorService, MailService, FriendService, ChatService
+		SettingsService,UserService, SessionService, TwoFactorService, MailService, FriendService
 	]
 })
 export class SettingsModule {}

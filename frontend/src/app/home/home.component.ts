@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 import { UserInfoI, UserPublicInfoI } from '../shared/interface/iUserInfo';
+import { ChatService } from './content/chat/chat.service';
 import { HomeService } from './home.service';
 import { SocketService } from './socket.service';
 
@@ -22,12 +23,17 @@ export class HomeComponent implements OnInit {
 	private sQuery: SessionStorageQueryService,
 	private userService: UserService,
 	private homeService: HomeService,
-	private socketService: SocketService
+	private socketService: SocketService,
+	private chatService: ChatService
 	) {
 		this.sharedPreference.userInfo = <UserInfoI>{};
 		this.sharedPreference.friends = [];
 		this.sharedPreference.expandRightNav = false;
 		this.sharedPreference.friend_invitation = [];
+		this.sharedPreference.chat = {
+			active_room: undefined,
+			rooms: []
+		};
 	}
 
 	async ngOnInit(): Promise<void> {
@@ -45,21 +51,12 @@ export class HomeComponent implements OnInit {
 				this.sharedPreference.userInfo = data.userInfo;
 				this.sharedPreference.friends = data.friends;
 				this.sharedPreference.friend_invitation = data.friend_invitation;
+				if (data.activeChatRooms !== undefined)
+					this.sharedPreference.chat.rooms = data.activeChatRooms;
+				if (data.chats !== undefined)
+					this.sharedPreference.chat = data.chat;
 				this.isLoaded = true;
 			})
-			/* if (this.sharedPreference.userInfo !== undefined)
-				this.isLoaded = true;
-			else
-				this.isLoaded = false; */
-			/* 
-			const resp = await this.userService.getUserInfo(this.session);
-			if (resp.statusCode != 200)
-				await this.homeService.closeSession();
-			else
-			{
-				this.sharedPreference.userInfo = resp.data;
-				this.isLoaded = true;
-			} */
 		}
 	}
 	setFragment(ev: any) {
