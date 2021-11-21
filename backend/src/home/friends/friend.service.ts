@@ -12,11 +12,8 @@ import { FriendEntity } from "./friend.entity";
 
 @Injectable()
 export class FriendService {
-	constructor(
-		@InjectRepository(FriendEntity) private friendRepository: Repository<FriendEntity>,
-       // private sessionService: SessionService,
-        //private userService: UserService
-        ){}
+	constructor(	@InjectRepository(FriendEntity) 
+		private friendRepository: Repository<FriendEntity>){}
 		async findAllFriends(user: UserEntity): Promise<any>{
 			var ret: UserPublicInfoI[] = [];
 			try {
@@ -31,8 +28,8 @@ export class FriendService {
 					if (element.user_2.id != user.id && element.confirmed === true)
 							ret.push(User.getPublicInfo(element.user_2));
 				});
+				ret.sort((a,b) => { return (a.nickname > b.nickname ? 1 : -1)} );	
 				return (ret);
-
 			} catch (error) {
 				console.log("ERROR");
 				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));

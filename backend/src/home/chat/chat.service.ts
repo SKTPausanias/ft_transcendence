@@ -141,29 +141,17 @@ export class ChatService {
 		return (parsed);
 	}
 
-
-
-
-
-
-
-
-
-
-
-	async onStartChat(data: any){
-		if (data.type == eChat.ONE_TO_ONE)
-			return this.onOneToOne(data.memberOne, data.memberTwo);
-	}
 	async getActiveChatRooms(me: UserEntity){
 		var ret: ChatRoomI[] = [];
 		try {
 			for (var i = 0; i < me.active_chat_rooms.length; i++)
 			{
 				var roomId = me.active_chat_rooms[i];
-				var room = await this.chatRepository.findOne({ relations: ["members"], where: {id : roomId}});
+				var room = await this.chatRepository.findOne({ 
+					relations: ["members"], where: {id : roomId}});
 				ret.push(this.parseChatRoom(room, me));
 			}
+			ret.sort((a,b) => { return a.name > b.name ? 1 : -1});
 			return (ret);
 		} catch (error) {
 			return (ret);
@@ -171,30 +159,6 @@ export class ChatService {
 
 	}
 
-	private async onOneToOne(m1: UserPublicInfoI, m2: UserPublicInfoI){
-		var ret: ChatEntity | undefined;
-		const memberOne = await this.userService.findByLogin(m1.login);
-		const memberTwo = await this.userService.findByLogin(m2.login);
-		const members: UserEntity[] = [memberOne, memberTwo];
-		const resp = await this.chatRepository.find({ relations: ["members"]})
-		for (let i = 0; i < resp.length; i++)
-			if (JSON.stringify(resp[i].members)==JSON.stringify(members))
-			{
-				ret =  (resp[i]);
-				break ;
-			}
-		if (ret === undefined)
-		{
-			var chatEntity = new ChatEntity();
-			chatEntity.members = [memberOne, memberTwo];
-			chatEntity.name = undefined;
-			ret = await this.chatRepository.save(chatEntity)
-		}
-		await this.userService.activateRoom(members, ret.id);
-		return(this.parseChatRoom(ret, memberOne));
-	}
-
-	
 	async saveMsg(data: any){
 		var msg: MessageEntity = <MessageEntity>{};
 		msg.owner = data.room.me;
@@ -203,10 +167,16 @@ export class ChatService {
 		msg.message = data.msg;
 		await this.msgRepository.save(msg);
 	}
+
 	async getMessages(data:any){
-		const resp = await this.msgRepository.find({relations: ["chat", "owner"], where: {chat: data.room}});
+		const resp = await this.msgRepository.find({
+			relations: ["chat", "owner"], 
+			where: {chat: data.room},
+			order : { id : "ASC"}
+		});
 		return (this.parseMessages(resp, data.room.id));
 	}
+
 	private parseMessages(messages: MessageEntity[], chatId: number){
 		var parsedMsgList: MessagesI[] = [];
 
@@ -216,6 +186,7 @@ export class ChatService {
 		}
 		return(parsedMsgList);
 	}
+
 	private parseOneMessage(msgEntity: MessageEntity, chatId: number){
 		var msg: MessagesI = {
 			owner: User.getPublicInfo(msgEntity.owner),
@@ -225,15 +196,4 @@ export class ChatService {
 		}
 		return(msg);
 	}
-
-	/* room: {
-		id: 4,
-		me: {
-		 
-		},
-		members: [ [Object] ],
-		img: 'http://localhost:3000/img/lounchy1637274452.png',
-		name: 'lounchy'
-	  },
-	  msg: 'aaa' */
 }

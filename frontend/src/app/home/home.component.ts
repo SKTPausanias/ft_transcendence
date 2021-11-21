@@ -1,8 +1,8 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
+import { SessionStorageQueryService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
-import { UserInfoI, UserPublicInfoI } from '../shared/interface/iUserInfo';
+import { UserInfoI } from '../shared/interface/iUserInfo';
 import { ChatService } from './content/chat/chat.service';
 import { HomeService } from './home.service';
 import { SocketService } from './socket.service';
@@ -18,10 +18,11 @@ export class HomeComponent implements OnInit {
 	isLoaded = false;
 	sharedPreference: SharedPreferencesI = <SharedPreferencesI>{};
 	friendsOnline: any = [];
+	socketEmiter: any;
+	chatEmiter: any;
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
-	private userService: UserService,
 	private homeService: HomeService,
 	private socketService: SocketService,
 	private chatService: ChatService
@@ -47,18 +48,19 @@ export class HomeComponent implements OnInit {
 		{
 			this.homeService.listenSessionWorker();
 			this.socketService.connect(this.session, this.sharedPreference);
-			this.socketService.receivedFilter.subscribe((data : any)=> {
-				this.sharedPreference.userInfo = data.userInfo;
-				this.sharedPreference.friends = data.friends;
-				this.sharedPreference.friend_invitation = data.friend_invitation;
-				if (data.activeChatRooms !== undefined)
-					this.sharedPreference.chat.rooms = data.activeChatRooms;
-				if (data.chats !== undefined)
-					this.sharedPreference.chat = data.chat;
-				this.isLoaded = true;
-			})
+			this.subscribeToSocketEmiter();
+			this.subscribeToChatEmiter();
+			
 		}
 	}
+	ngOnDestroy() {
+		try {
+			this.socketEmiter.unsubscribe();
+			this.chatEmiter.unsubscribe();
+		} catch (error) {
+			
+		}
+	  }
 	setFragment(ev: any) {
 		const tmpUrl = this.router.url;
 		const pos = ev.indexOf("?");
@@ -70,6 +72,19 @@ export class HomeComponent implements OnInit {
 	
 	mouseLeave(){
 		this.sharedPreference.expandRightNav = false;
+	}
+	private subscribeToSocketEmiter(){
+		this.socketEmiter = this.socketService.socketEmiter.subscribe((data : any)=> {
+			this.sharedPreference.userInfo = data.userInfo;
+			this.sharedPreference.friends = data.friends;
+			this.sharedPreference.friend_invitation = data.friend_invitation;
+			this.isLoaded = true;
+		})
+	}
+	private subscribeToChatEmiter(){
+		this.socketEmiter = this.chatService.chatPreferenceEmiter.subscribe((data : any)=> {
+			this.sharedPreference.chat = data;
+		});
 	}
 	@HostListener('window:keydown', [ '$event' ])
 	async keydown(event: any) {

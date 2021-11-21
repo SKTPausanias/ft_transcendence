@@ -5,6 +5,7 @@ import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { ChatService } from './chat.service';
+import { eChat } from 'src/app/shared/ft_enums';
 
 @Component({
   selector: 'app-chat',
@@ -26,21 +27,19 @@ export class ChatComponent implements OnInit {
 	prefSubscription: any;
 	constructor(
 		private sQuery: SessionStorageQueryService,
-		private socketService: SocketService,
 		private chatService: ChatService
 	){
 	}
   
   async ngOnInit(){
-	this.subscription = this.socketService.chatEmiter.subscribe((data : any)=> {
+	this.subscription = this.chatService.chatEmiter.subscribe((data : any)=> {
 		if (data.action == 'open')
 			this.selectChatRoom(data.room);
 		else
 			this.chatService.chatFragmentEmmiter.emit(data);
 	});
-	/* this.prefSubscription = this.chatService.prefEmiter.subscribe((data =>{
-		this.chatPreference.chat = data;
-	})) */
+
+	this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
 	if (this.chatPreference.chat.active_room != undefined)
 		this.selectChatRoom(this.chatPreference.chat.active_room);
   }
@@ -69,5 +68,8 @@ export class ChatComponent implements OnInit {
   isSelected(room: ChatRoomI)
   {
 	return (this.chatPreference.chat.active_room != undefined && room.id == this.chatPreference.chat.active_room.id)
+  }
+  isMemberOnline(room: ChatRoomI){
+	return (room.members.find(item => item.online) != undefined);
   }
 }

@@ -30,7 +30,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	async handleDisconnect(client) {
 		const sessionData = await this.getSessionData(client);
-		sessionData.userInfo.online = false;
+		sessionData.userInfo.online = await this.hasActiveSessions(client);
 		await this.socketService.emitToAllFriends(
 			this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
 			sessionData.friends, User.getPublicInfo(sessionData.userInfo));
@@ -84,7 +84,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const token = client.handshake.headers.authorization.split(' ')[1];
 		return (await this.socketService.getSessionData(token, client.id));
 	}
-
-	
-	
+	async hasActiveSessions(client: any): Promise<boolean>{
+		const token = client.handshake.headers.authorization.split(' ')[1];
+		return (await this.socketService.hasActiveSessions(token));
+	}
 }

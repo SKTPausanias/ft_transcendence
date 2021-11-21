@@ -1,10 +1,8 @@
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
-import { SocketService } from "src/app/home/socket.service";
-import { wSocket } from "src/app/shared/ft_enums";
+import { eChat } from "src/app/shared/ft_enums";
 import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
-import { mDate } from "src/app/utils/date";
 import { ChatService } from "../chat.service";
 
  interface ms{
@@ -31,7 +29,6 @@ export class MessagingComponent implements OnInit {
 	subscription: any;
 	constructor(
 		private sQuery: SessionStorageQueryService,
-		private socketService: SocketService,
 		private chatService: ChatService
 	) {}
 
@@ -41,7 +38,7 @@ export class MessagingComponent implements OnInit {
 		});
 		this.room = this.msgPreference.chat.active_room;
 		this.members =  this.room.members;
-		this.socketService.emit(wSocket.ON_All_MSG, {room: this.room});
+		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
 		
 
 	}
@@ -58,7 +55,7 @@ export class MessagingComponent implements OnInit {
 		if (this.msg.length <= 0 )
 			return ;
 		this.room = this.msgPreference.chat.active_room;
-		this.socketService.emit(wSocket.ON_NEW_MSG, {room: this.room, msg: this.msg});
+		this.chatService.emit(eChat.ON_NEW_MSG, {room: this.room, msg: this.msg});
 		this.msg = '';
 	}
 	private onItemElementsChanged(): void {
@@ -75,13 +72,19 @@ export class MessagingComponent implements OnInit {
 		if (data.action == 'room-change')
 			this.onRoomChange();
 		else if (data.action == 'loadAllMsg')
+		{
 			this.messages = data.messages;
+			//console.log("|" + this.messages[0].message + "|");
+		}
 		else if (data.action == 'newMsg')
-			this.messages.push(data.messages);
+		{
+			if (data.messages.chatId == this.room.id)
+				this.messages.push(data.messages);
+		}
 	}
 	private onRoomChange(){
 		this.room = this.msgPreference.chat.active_room;
-		this.socketService.emit(wSocket.ON_All_MSG, {room: this.room});
+		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
 	}
 	isPrivateRoom(){
 		return (this.msgPreference.chat.active_room.img != undefined);

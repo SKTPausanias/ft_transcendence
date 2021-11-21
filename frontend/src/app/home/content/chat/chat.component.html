@@ -29,7 +29,9 @@
 				</div>
 				<div *ngIf="showDM">
 					<div class="item" *ngFor="let room of getPrivateRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-							<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+							<div class="room_img online" [ngClass]="{'offline' : !isMemberOnline(room)}">
+								<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+							</div>
 							<span style="white-space: pre-line;">{{room.name}}</span>
 					</div>
 					<div class="mt-1">

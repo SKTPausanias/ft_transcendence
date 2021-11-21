@@ -20,7 +20,6 @@ export interface SessionDataI {
 	userInfo : UserInfoI;
 	friends : UserPublicInfoI[];
 	friend_invitation: UserPublicInfoI[];
-	activeChatRooms: ChatRoomI[];
 
 
 }

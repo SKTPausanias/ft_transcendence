@@ -19,8 +19,6 @@
 	<div class='msg-list scrool' #scrollframe> 
 		<div *ngFor="let item of messages;" class="msg-ctn" #scroolMsg>
 			<div class="d-flex justify-content-start me" [ngClass]="{'other justify-content-end' : item.owner.nickname != msgPreference.userInfo.nickname}">
-				<!-- <img *ngIf='!isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{identity.avatar}}" alt="image">
-				<img *ngIf='isChannel && item.owner != msgPreference.userInfo.nickname' class="ico_s img-fluid" src="{{item.user.avatar}}" alt="image"> -->
 				<img class="ico_s img-fluid" src="{{item.owner.avatar}}" alt="image">
 				<div>
 					<div  class="msg" innerText={{item.message}}></div>

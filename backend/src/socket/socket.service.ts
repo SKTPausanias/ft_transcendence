@@ -20,14 +20,18 @@ export class SocketService {
 	async getSessionData(token: string, socket_id: string): Promise<SessionDataI>{
 		var sessionData = <SessionDataI>{}
 		const session = await this.sessionService.findSessionWithRelation(token);
-
 		session.socket_id = socket_id;
 		await this.sessionService.save(session);
 		sessionData.userInfo = User.getInfo(session.userID);
 		sessionData.friends = await this.friendService.findAllFriends(session.userID);
 		sessionData.friend_invitation = await this.friendService.findAllInvitations(session.userID);
-		sessionData.activeChatRooms = await this.chatService.getActiveChatRooms(session.userID);
 		return (sessionData);
+	}
+
+	async hasActiveSessions(token: string): Promise<boolean>{
+		const session = await this.sessionService.findSession(token);
+		const sessions = await this.sessionService.findByUser(session.userID);
+		return (sessions.length - 1 > 0);
 	}
 
 	async emitToAllFriends(server: any, action: string, emiter: string, recivers: UserPublicInfoI[], data: any){
@@ -63,6 +67,12 @@ export class SocketService {
 				server.to(session.socket_id).emit(action, emiter, data);
 			});
 		});
+	}
+	async emitToOneSession(server: any, action: string, token: string, data: any)
+	{
+		const session = await this.sessionService.findSession(token);
+		console.log("emiting to: ", session.socket_id);
+		server.to(session.socket_id).emit(action, session.userID.login, data);
 	}
 	
 }

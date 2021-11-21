@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Nav, wSocket } from 'src/app/shared/ft_enums';
+import { eChat, Nav, wSocket } from 'src/app/shared/ft_enums';
 import { SessionI, SharedPreferencesI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { UserInfoI } from 'src/app/shared/interface/iUserInfo';
@@ -36,7 +36,7 @@ export class RightNavComponent implements OnInit {
 	}
 	async startChat(user: any){
 		this.router.navigateByUrl(Nav.CHAT);
-		await this.socketService.emit(wSocket.ON_START, {members: [user]});
+		await this.socketService.emit(eChat.ON_START, {members: [user]});
 
 		//await this.socketService.emit(wSocket.CHAT_ON_START, {type: "one-to-one", memberOne: this.me,  memberTwo: user});
 		//add to dm table if not exists

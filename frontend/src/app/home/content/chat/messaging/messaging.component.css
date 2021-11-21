@@ -40,6 +40,7 @@
 	border-radius: 10px;
 }
 .msg{
+	display: inline-block;
 	font-size: 15px;
 	color: #ffffff;
 	padding: 10px 20px 10px 20px;
@@ -58,6 +59,9 @@
 	font-size: 13px;
 	font-weight: 700;
 }
+img{
+	border:1.5px solid #f5f6fa;
+}
 .me>div>.msg{
 	background-color: #8ed491;
 	color: #1b222e;
@@ -71,7 +75,7 @@
 	margin-right: 10px;
 }
 .other>div{
-	text-align: start;
+	text-align: end;
 }
 .other>img{
 	margin-left: 10px;

@@ -85,3 +85,33 @@
 	background-color: #ffffff17;
 	color: #ffffff;
 }
+
+img{
+	border:1.5px solid #f5f6fa;
+}
+
+.room_img{
+	position:relative;
+}
+.online::before{
+	content: "";
+	position:absolute;
+	bottom: -2px;
+	right: 2px;
+	height:12px;
+	width: 12px;
+	border-radius: 50%;
+	background:rgb(13, 153, 24);
+	border: 1px solid #ffffff;
+}
+.offline::before{
+	content: "";
+	position:absolute;
+	bottom: -2px;
+	right: 2px;
+	height:12px;
+	width: 12px;
+	border-radius: 50%;
+	background:rgb(153, 13, 13);
+	border: 1px solid #ffffff;
+}
