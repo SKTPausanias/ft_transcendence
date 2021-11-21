@@ -28,8 +28,22 @@ export class SocketService {
 		return (sessionData);
 	}
 
+
+	async closeSession(token: string){
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			const sessions = await this.sessionService.findByUser(session.userID);
+			if (sessions.length)
+			session.userID.online = false;
+			await this.userService.save(session.userID);
+			await this.sessionService.removeByToken(token);	
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
 	async hasActiveSessions(token: string): Promise<boolean>{
-		const session = await this.sessionService.findSession(token);
+		const session = await this.sessionService.findSessionWithRelation(token);
 		const sessions = await this.sessionService.findByUser(session.userID);
 		return (sessions.length - 1 > 0);
 	}

@@ -10,7 +10,7 @@ export class ChatEntity {
 	@Column({nullable: true, unique: true})
 	name: string;
 	
-	@ManyToMany(type => UserEntity)
+	@ManyToMany(type => UserEntity, user => user.id)
 	@JoinTable()
     members: UserEntity[];
 	

@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
+import { eChat, wSocket } from "../shared/ft_enums";
 import { SessionStorageQueryService } from "../shared/ft_services";
 import { mDate } from "../utils/date";
 import { SocketService } from "./socket.service";
@@ -20,9 +21,10 @@ export class HomeService {
 				private router: Router, 
 				private socketService: SocketService) {}
 	async closeSession(){
-		this.socketService.disconnect();
+		await this.socketService.emit(wSocket.DISCONNECT_USER);
+		//this.socketService.disconnect();
 		this.terminateWorker();
-		await this.authService.logout(this.session);
+		//await this.authService.logout(this.session);
 		this.sQuery.removeAll();
 		this.router.navigateByUrl("logIn");
 	}

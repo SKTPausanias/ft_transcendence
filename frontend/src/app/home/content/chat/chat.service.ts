@@ -26,6 +26,7 @@ export class ChatService {
 		this.onLoadActiveRooms();
 		this.onChatLoadAllMessages();
 		this.onNewChatMsg();
+		this.onOnlineOflline();
 	}
 
 	private onStartChat(){
@@ -81,52 +82,18 @@ export class ChatService {
 			}catch(error){}
 		})
 	}
+	private onOnlineOflline(){
+		this.socket.on(eChat.ON_ONLINE_OFFLINE, (emiter: string, data: any) => {
+			try {
+				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id)
+				console.log(index);
+				this.sharedPreferences.chat.rooms[index] = data;
+			}catch(error){}
+		})
+	}
 
 
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
-
-
-	/*private onStartChat() {
-		this.socket.on(eChat.ON_START, (emiter: string, data: any) => {
-			try {
-				if (!this.roomExists(data.id))
-					this.sharedPreferences.chat.rooms.push(data);
-				this.sharedPreferences.chat.active_room = data;
-				//this.prefEmiter.emit(this.sharedPreferences.chat);
-				//this.socketService.emitSharedPreferences(this.sharedPreferences);
-				this.chatEmiter.emit({ action: "open", room: data });
-			} catch (error) {}
-		});
-	}
-	private onChatLoadAllMessages() {
-		this.socket.on(eChat.ON_All_MSG, (emiter: string, data: any) => {
-			try {
-				this.chatEmiter.emit({ action: "loadAllMsg", messages: data });
-			} catch (error) {}
-		});
-	}
-	private onNewChatMsg() {
-		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
-		try {
-				if (this.roomExists(data.chatId))
-					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
-				this.chatEmiter.emit({ action: "newMsg", messages: data });
-			} catch (error) {}
-		});
-	}
-
-	private onJoinRoom() {
-		this.socket.on(eChat.ON_JOIN_ROOM, (emiter: string, data: any) => {
-		try {
-			this.sharedPreferences.chat.rooms.push(data);
-			this.prefEmiter.emit(this.sharedPreferences.chat);
-		} catch (error) {}
-		});
-	}
-	private roomExists(id: number)
-	{
-		return (this.sharedPreferences.chat.rooms.find((chat) => chat.id == id) != undefined)
-	} */
 }

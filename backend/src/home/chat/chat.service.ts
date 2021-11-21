@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
@@ -59,6 +59,32 @@ export class ChatService {
 			return (<ChatRoomI>{});
 		}
 	}
+	async getChatRoomsByIds(user: UserEntity): Promise<ChatEntity[]>{
+		const roomEntities = await this.chatRepository.find({
+			relations : ["members"],
+			where: { id : In(user.active_chat_rooms)} //{id : user.active_chat_rooms}
+		});
+		return (roomEntities); 
+	}
+
+	parseChatRoom(chatRoom: ChatEntity, me: UserEntity){
+		var parsed: ChatRoomI = <ChatRoomI>{};
+		parsed.id = chatRoom.id;
+		parsed.me = User.getPublicInfo(me);
+		parsed.members = this.entitiesToInfo(chatRoom.members.filter(member => member.login != me.login));
+		if (chatRoom.name)
+			parsed.name = chatRoom.name;
+		else
+		{
+			parsed.img = parsed.members[0].avatar;
+			if (parsed.members.length == 1)
+				parsed.name = parsed.members[0].nickname;
+			else
+				parsed.name = parsed.members.slice(0, 3).map(a => a.nickname).join(",");
+		}
+		return (parsed);
+	}
+
 	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], name: string):Promise<ChatEntity>{
 		try {
 			var room: ChatEntity;
@@ -122,23 +148,6 @@ export class ChatService {
 		} catch (error) {
 			return (userList);
 		}
-	}
-	private parseChatRoom(chatRoom: ChatEntity, me: UserEntity){
-		var parsed: ChatRoomI = <ChatRoomI>{};
-		parsed.id = chatRoom.id;
-		parsed.me = User.getPublicInfo(me);
-		parsed.members = this.entitiesToInfo(chatRoom.members.filter(member => member.login != me.login));
-		if (chatRoom.name)
-			parsed.name = chatRoom.name;
-		else
-		{
-			parsed.img = parsed.members[0].avatar;
-			if (parsed.members.length == 1)
-				parsed.name = parsed.members[0].nickname;
-			else
-				parsed.name = parsed.members.slice(0, 3).map(a => a.nickname).join(",");
-		}
-		return (parsed);
 	}
 
 	async getActiveChatRooms(me: UserEntity){

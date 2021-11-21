@@ -1,6 +1,8 @@
 import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
 import { SessionService } from 'src/session/session.service';
 import { SocketService } from 'src/socket/socket.service';
+import { UserEntity } from '../user/user.entity';
+import { UserService } from '../user/user.service';
 import { ChatService } from './chat.service';
 import { eChat } from './eChat';
 
@@ -9,7 +11,8 @@ export class ChatGateway {
 	server: any;
 	constructor(private socketService: SocketService,
 				private chatService: ChatService,
-				private sessionService: SessionService){}
+				private sessionService: SessionService,
+				private userService: UserService){}
 	init(server: any){
 		this.server = server;
 	}
@@ -24,6 +27,18 @@ export class ChatGateway {
 	}
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
 	async onJoinRoom(client, data) {
+		try {
+			const session = await this.getSession(client);
+			const room = await this.chatService.getChatRoomById(session.userID, data);
+			console.log("join room: ", session.socket_id);
+			this.server.to(session.socket_id).emit(eChat.ON_JOIN_ROOM, room);
+			//await this.socketService.emitToOneSession(this.server, eChat.ON_JOIN_ROOM, session.token ,room);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
+	async onLeaveRoom(client, data) {
 		try {
 			const session = await this.getSession(client);
 			const room = await this.chatService.getChatRoomById(session.userID, data);
@@ -59,7 +74,24 @@ export class ChatGateway {
 			await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, data.room.members, resp);
 		} catch (error) {}
 	}
-
+	async goOnlineOffline(login: string){
+		try {
+			const user = await this.userService.findByLogin(login);
+			const rooms = await this.chatService.getChatRoomsByIds(user);
+			for (let i = 0; i < rooms.length; i++) {
+				const room = rooms[i];
+				const members = room.members.filter(item => item.login != user.login);
+				for (let j = 0; j < members.length; j++) {
+					const member = members[j];
+					const updatedRoom = await this.chatService.parseChatRoom(room, member);
+					await this.socketService.emitToSelf(this.server, eChat.ON_ONLINE_OFFLINE, member.login, updatedRoom);
+				}
+				//await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, data.room.members, resp);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
 	private async getSession(client: any)
 	{
 		try {
@@ -71,7 +103,6 @@ export class ChatGateway {
 	private async getSessionUser(client: any)
 	{
 		const session = await this.getSession(client);	
-		return (session.userID);
-		
+		return (session.userID);	
 	}
 }
