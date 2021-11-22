@@ -8,5 +8,7 @@ export enum wSocket {
 	CHAT_MESSAGE = 'chat-message',
 	CHAT_GROUP_MESSAGE = 'chat-group-message',
 	CHAT_BLOCK_USER = 'chat-block-user',
+	CHAT_MUTE_USER = 'chat-mute-user',
+	CHAT_BAN_USER = 'chat-ban-user',
 	GAME_POSITION = 'game-position'
 }

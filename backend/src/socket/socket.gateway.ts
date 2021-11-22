@@ -114,7 +114,16 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const friend = await this.userService.findByNickname(data.members[1].nickname);
 		console.log(sessionData.userInfo.login, " : ", data);
 		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_BLOCK_USER,
-			sessionData.userInfo.login, friend, data.isBlocked);
+			sessionData.userInfo.login, friend, data);
+	}
+
+	@SubscribeMessage(wSocket.CHAT_MUTE_USER)
+	async chatMuteUser(client, data) {
+		console.log("data chatMuteUser:", data);
+		const sessionData = await this.getSessionData(client);
+		const friend = await this.userService.findByNickname(data.user.nickname);
+		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MUTE_USER,
+			sessionData.userInfo.login, friend, data);
 	}
 
 	@SubscribeMessage(wSocket.GAME_POSITION)

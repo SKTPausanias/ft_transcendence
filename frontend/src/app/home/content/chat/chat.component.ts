@@ -24,6 +24,8 @@ export class ChatComponent implements OnInit {
   showGroupChat: boolean = false;
   friendIsBlocked: boolean = false;
   imBlocked: boolean = false;
+  showMembers: boolean = false;
+  members: UserPublicInfoI[] = [];
   channels: any[] = [];
   channel: any;
   messages: Messages[] = [];
@@ -33,6 +35,8 @@ export class ChatComponent implements OnInit {
 	session = this.sQuery.getSessionToken();
   receiver : UserPublicInfoI = <UserPublicInfoI>{};
   friendChat: UserPublicInfoI = <UserPublicInfoI>{};
+  //create dictionary with nicknames as keys and one value that is a boolean
+  chatsBlocked: {[key: string]: boolean} = {};
 
 	constructor(
     private chatService: ChatService,
@@ -41,6 +45,11 @@ export class ChatComponent implements OnInit {
   ){}
   
   ngOnInit(){
+    //for friend in chatPreference.friends fill chatsBlocked with false
+    this.chatPreference.friends.forEach(friend => {
+      this.chatsBlocked[friend.nickname] = false;
+    });
+    console.log("chatsBlocked: ", this.chatsBlocked);
     this.socketService.chatFilter.subscribe(
       (data : any) => {
         if (data) {
@@ -53,10 +62,22 @@ export class ChatComponent implements OnInit {
       (data : any) => {
         if (data != undefined) {
           console.log("data from subscribe: ", data);
-          if (data == false)
+          if (data.isBlocked == false)
+            this.chatsBlocked[data.members[0].nickname] = true;
+          else
+            this.chatsBlocked[data.members[0].nickname] = false;
+          /*if (data.isBlocked == false)
             this.imBlocked = true;
           else
-            this.imBlocked = false;
+            this.imBlocked = false;*/
+        }
+      }
+    );
+    this.socketService.chatMuteFilter.subscribe(
+      (data : any) => {
+        if (data) {
+          console.log("data from subscribe: ", data);
+
         }
       }
     );
@@ -84,20 +105,17 @@ export class ChatComponent implements OnInit {
     this.friendChat = friend;
     this.showChat = true;
     this.showGroupChat = false;
-    //delete messages from messages array
-    this.messages = [];
-    ////var ret = await this.chatService.friendIsBlocked(this.session, this.friendChat); ??
-    ////this.friendIsBlocked = ret.data.blocked; ??
-    console.log("friendIsBlocked: ", this.friendIsBlocked);
-
-    ////await this.chatService.imNotBlocked(this.session, this.friendChat)
-    //access blocked status
-    if (this.friendIsBlocked == false && this.imBlocked == false)
+    this.chatsBlocked[this.friendChat.nickname] = await this.chatService.iAmBlocked(this.session, this.receiver);
+    console.log("imBlocked: ", this.imBlocked);
+    if (this.chatsBlocked[this.friendChat.nickname] == false)
+    {
+      //delete messages from messages array
+      this.messages = [];
       this.messages = await this.chatService.getMessages(this.session, this.receiver);
     //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
-    if (this.messages.length)
-      this.identifier = this.messages[this.messages.length - 1 ].date.toString();
-   
+      if (this.messages.length)
+        this.identifier = this.messages[this.messages.length - 1 ].date.toString();
+    }
     //msgBox.child[this.messages[this.messages.size - 1]].id == messages.timeStamp scrollDown();
   }
 
@@ -108,6 +126,7 @@ export class ChatComponent implements OnInit {
     //this.receiver = channel;
     this.channel = channel;
     this.messages = [];
+    //if ((await this.chatService.isMuted(this.session, this.channel)) == false) // banned not muted
     this.messages = await this.chatService.getGroupMessages(this.session, this.channel);
     if (this.messages.length)
       this.identifier = this.messages[this.messages.length - 1 ].date.toString();
@@ -135,6 +154,16 @@ export class ChatComponent implements OnInit {
     this.channels = await this.chatService.getChatGroups(this.session);
     console.log("channels: ", this.channels);
   }
+
+  async listMembers()
+  {
+    if (this.showMembers)
+      this.showMembers = false;
+    else
+      this.showMembers = true;
+    const ret = await this.chatService.getChatUsers(this.session, this.channel);
+    this.members = ret.data.users;
+  }
   
   async blockUser(friend: any): Promise<void>{
     var members: UserPublicInfoI[] = [];
@@ -149,6 +178,16 @@ export class ChatComponent implements OnInit {
     }
     else
       this.friendIsBlocked = true;
+  }
+
+  async muteUserGroup(user : UserPublicInfoI) {
+    console.log("user: ", user);
+    const ret = await this.chatService.muteUserGroup(this.session, this.channel, user);
+    console.log("ret: ", ret);
+  }
+
+  async banUserGroup(user : UserPublicInfoI) {
+    //const ret = await this.chatService.banUserGroup(this.session, this.channel, user);
   }
 
   closeChat(){

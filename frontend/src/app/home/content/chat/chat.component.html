@@ -72,7 +72,7 @@
             <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
           </div>
         </div>
-        <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
+        <span id="action_menu_btn"><i class="fas fa-ellipsis-v" (click)='listMembers()'></i></span>
         <div class="action_menu">
           <ul>
             <li><i class="fas fa-user-circle"></i> View profile</li>
@@ -83,7 +83,30 @@
         </div>
       </div>
       <!--Messages from friends or groups, to the left go friends messages and then the messages from user-->
-      <div #msgBox class="card-body msg_card_body">
+        <!-- show members when showMembers == true instead of showing messages-->
+      <div *ngIf="showMembers == true" class="card-body msg_card_body">
+        <div class="d-flex justify-content-center">
+          <ul class="contacts">
+            <li class="active" *ngFor="let member of members">
+              <div class="d-flex bd-highlight">
+                <div class="img_cont">
+                  <img src={{member.avatar}} class="rounded-circle user_img">
+                </div>
+                <div class="user_info">
+                  <span>{{member.nickname}}</span>
+                </div>
+                <button class="btn" data-mdb-toggle="tooltip" title="mute user" (click)="muteUserGroup(member)">
+                  <span class="fa fa-volume-mute"></span>
+                </button>
+                <button class="btn" data-mdb-toggle="tooltip" title="ban user" (click)="banUserGroup(member)">
+                  <span class="fa fa-ban"></span>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div #msgBox *ngIf="showMembers == false" class="card-body msg_card_body">
         <div *ngFor="let msg of messages">
           <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
             <div class="img_cont_msg">
@@ -106,7 +129,7 @@
         </div>
        <!--  <div hidden="hidden" *ngIf='length && scrollDown()'></div> -->  
       </div>
-      <div class="card-footer">
+      <div class="card-footer" *ngIf="showMembers == false">
         <div class="input-group">
           <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
           <div class="input-group-append">
@@ -146,8 +169,8 @@
           </ul>
         </div>
       </div>
-      <!--Messages from friends or groups, to the left go friends messages and then the messages from user-->
-      <div #msgBox *ngIf="friendIsBlocked == false && imBlocked == false" class="card-body msg_card_body">
+      <!--Messages from friends or groups, to the left go friends messages and then the messages from user  chatsBlocked[friendChat.nickname]-->
+      <div #msgBox *ngIf="friendIsBlocked == false && chatsBlocked[friendChat.nickname] == false" class="card-body msg_card_body">
         <div *ngFor="let msg of messages">
           <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
             <div class="img_cont_msg">
@@ -186,7 +209,7 @@
           </div>
         </div>
       </div>
-      <div *ngIf="imBlocked == true" class="card-body msg_card_body">
+      <div *ngIf="chatsBlocked[friendChat.nickname] == true" class="card-body msg_card_body">
         <div class="d-flex justify-content-center mb-4">
           <div>
             <span>{{friendChat.nickname}} blocked you </span>

@@ -207,6 +207,21 @@ export class ChatService {
     }
   }
 
+  async iAmBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
+    const url = '/api/users/chat/iAmBlocked';
+    try{
+      const ret = (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      return (ret.data.blocked);
+      }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    }
+  }
+
   async friendIsBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
     const url = '/api/users/chat/friendIsBlocked';
     try{
@@ -232,6 +247,40 @@ export class ChatService {
       catch(e){
         console.log("Message error...");
         return (e);
+    }
+  }
+
+  async isMuted(session: SessionI, channel: any): Promise<any>{
+    const url = '/api/users/chat/isMuted';
+    try{
+      const ret = (await this.http.post<any>(url, {'channel': channel}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      console.log("isMuted ret: ", ret);
+      return (ret.data.muted);
+    }
+      catch(e){
+        console.log("Message error...");
+        return (e);
+    } 
+}
+
+  async muteUserGroup(session: SessionI, channel: any, user: UserPublicInfoI): Promise<any> {
+    const url = '/api/users/chat/muteUserGroup';
+    try{
+      const ret = (await this.http.post<any>(url, {'channel': channel, 'user': user}, { headers: new HttpHeaders({
+          Authorization: 'Bearer ' + session.token
+        })
+      }).toPromise());
+      this.socketService.emit(wSocket.CHAT_MUTE_USER, {
+        channel: channel,
+        user: user});
+      return (ret);
+      }
+    catch(e){
+      console.log("Message error...");
+      return (e);
     }
   }
 }

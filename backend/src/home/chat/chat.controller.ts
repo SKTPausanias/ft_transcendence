@@ -53,6 +53,11 @@ export class ChatController {
         return (await this.chatService.getOwnChannels(headers.authorization));
     }
 
+    @Post('/iAmBlocked')
+    async iAmBlocked(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.iAmBlocked(body.friend, headers.authorization));
+    }
+
     @Post('/friendIsBlocked')
     async friendIsBlocked(@Body() body, @Headers() headers): Promise<any> {
         return (await this.chatService.friendIsBlocked(body.friend, headers.authorization));
@@ -66,5 +71,14 @@ export class ChatController {
     async updateMembersChannel(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.updateMembersChannel(body, headers.authorization));
     }
-    
+
+    @Post('/isMuted')
+    async isMuted(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.isMuted(body, headers.authorization));
+    }
+
+    @Post('/muteUserGroup')
+    async muteUserGroup(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.muteUserGroup(body, headers.authorization));
+    }
 }
