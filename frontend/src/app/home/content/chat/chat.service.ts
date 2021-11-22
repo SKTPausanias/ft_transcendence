@@ -23,10 +23,11 @@ export class ChatService {
 		this.sharedPreferences = sharedPreference;
 		this.onStartChat();
 		this.onJoinRoom();
+		this.onLeaveRoom();
 		this.onLoadActiveRooms();
 		this.onChatLoadAllMessages();
 		this.onNewChatMsg();
-		this.onOnlineOflline();
+		this.onUpdateRoom();
 	}
 
 	private onStartChat(){
@@ -74,6 +75,20 @@ export class ChatService {
 		})
 	}
 	
+	private onLeaveRoom(){
+		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
+			try {
+				console.log("on leave room: ", data);
+				//if (this.sharedPreferences.chat.rooms.find(room => room.id == data.id) == undefined)
+				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
+				if (this.sharedPreferences.chat.active_room.id == data.id)
+					this.sharedPreferences.chat.active_room = undefined;
+				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatEmiter.emit({action : 'onDestroy'});
+			}catch(error){}
+		})
+	}
+	
 	private onLoadActiveRooms(){
 		this.socket.on(eChat.ON_LOAD_ACTIVE_ROOMS, (emiter: string, data: any) => {
 			try {
@@ -82,8 +97,8 @@ export class ChatService {
 			}catch(error){}
 		})
 	}
-	private onOnlineOflline(){
-		this.socket.on(eChat.ON_ONLINE_OFFLINE, (emiter: string, data: any) => {
+	private onUpdateRoom(){
+		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: any) => {
 			try {
 				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id)
 				console.log(index);

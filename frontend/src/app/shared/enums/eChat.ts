@@ -5,5 +5,6 @@ export enum eChat {
 	ON_LOAD_ACTIVE_ROOMS = "on-load-active-rooms",
 	ON_All_MSG = "on-all-msg",
 	ON_NEW_MSG = "on-new-msg",
-	ON_ONLINE_OFFLINE = "on-online-ofline",
+	ON_UPDATE_ROOM = "on-update-room",
+
 }

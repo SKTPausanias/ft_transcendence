@@ -45,8 +45,8 @@
 			</div>
 		</div>
 		<div class="col-10 right-container">
-			<app-messaging *ngIf="showMsgFragment" [msgPreference]='chatPreference'></app-messaging>
-			<div *ngIf="!showMsgFragment">
+			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()'></app-messaging>
+			<div *ngIf="!showRoom">
 				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>
 			</div>
 		</div>

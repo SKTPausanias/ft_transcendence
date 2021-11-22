@@ -5,15 +5,16 @@
 			<h4>
 				<i *ngIf='!isPrivateRoom()' class="fa fa-hashtag me-2"></i> 
 				 <b>{{msgPreference.chat.active_room.name}}</b>
-				 <b class="fa fa-caret-down ms-2"></b>
+				 <b class="fa fa-caret-down ms-2" (click)="showMembers()"></b>
 			</h4>
 		</div> 
 		<div class="col-6 d-flex justify-content-end">
-			<span class="fa fa-user-circle fa-lg"></span>
+			<!-- <span class="fa fa-user-circle fa-lg"></span>
 			<span class="fa fa-user-times fa-lg"></span>
 			<span class="fa fa-table-tennis  fa-lg"></span>
-			<span class="fa fa-ban fa-lg"></span>
-			<span class="fa fa-sign-out-alt fa-lg"></span>
+			<span class="fa fa-ban fa-lg"></span> -->
+			<span class="fa fa-sign-out-alt fa-lg" (click)="leaveChat()"></span>
+			<span class="fa fa-times fa-lg" (click)="closeRoom()"></span>
 		</div> 
 	</div>
 	<div class='msg-list scrool' #scrollframe> 

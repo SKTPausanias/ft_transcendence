@@ -40,11 +40,20 @@ export class ChatGateway {
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
 	async onLeaveRoom(client, data) {
 		try {
-			const session = await this.getSession(client);
-			const room = await this.chatService.getChatRoomById(session.userID, data);
-			console.log("join room: ", session.socket_id);
-			this.server.to(session.socket_id).emit(eChat.ON_JOIN_ROOM, room);
-			//await this.socketService.emitToOneSession(this.server, eChat.ON_JOIN_ROOM, session.token ,room);
+			const me = await this.getSessionUser(client);
+			const roomEntity = await this.chatService.getChatEntity(data.id)
+			var room = await this.chatService.onMemberLeave(data, me);
+			var members = room.members;
+			if (members == undefined)
+			{
+				members = roomEntity.members;
+				room = roomEntity;
+			}
+			for (let i = 0; i < members.length; i++) {
+				const member = members[i];
+				const updatedRoom = await this.chatService.parseChatRoom(room, member);
+				await this.socketService.emitToSelf(this.server, eChat.ON_LEAVE_ROOM, member.login, updatedRoom);
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -74,6 +83,8 @@ export class ChatGateway {
 			await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, data.room.members, resp);
 		} catch (error) {}
 	}
+
+
 	async goOnlineOffline(login: string){
 		try {
 			const user = await this.userService.findByLogin(login);
@@ -84,7 +95,7 @@ export class ChatGateway {
 				for (let j = 0; j < members.length; j++) {
 					const member = members[j];
 					const updatedRoom = await this.chatService.parseChatRoom(room, member);
-					await this.socketService.emitToSelf(this.server, eChat.ON_ONLINE_OFFLINE, member.login, updatedRoom);
+					await this.socketService.emitToSelf(this.server, eChat.ON_UPDATE_ROOM, member.login, updatedRoom);
 				}
 				//await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, data.room.members, resp);
 			}

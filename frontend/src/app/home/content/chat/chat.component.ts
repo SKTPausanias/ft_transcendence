@@ -18,7 +18,7 @@ export class ChatComponent implements OnInit {
 	groupRooms: ChatRoomI[] = [];
 	showChannels: boolean = true;
 	showDM : boolean = true;
-	showMsgFragment = false;
+	showRoom = false;
 	channels: any[] = [];
 	messages: any[] = [];
 	session = this.sQuery.getSessionToken();
@@ -35,6 +35,8 @@ export class ChatComponent implements OnInit {
 	this.subscription = this.chatService.chatEmiter.subscribe((data : any)=> {
 		if (data.action == 'open')
 			this.selectChatRoom(data.room);
+		else if (data.action == 'onDestroy')
+			this.closeRoom();
 		else
 			this.chatService.chatFragmentEmmiter.emit(data);
 	});
@@ -55,7 +57,7 @@ export class ChatComponent implements OnInit {
   }
   selectChatRoom(item: any){
 	this.chatPreference.chat.active_room = item;
-	this.showMsgFragment = true;
+	this.showRoom = true;
 	this.chatService.chatFragmentEmmiter.emit({action : "room-change"});
   }
 
@@ -71,5 +73,8 @@ export class ChatComponent implements OnInit {
   }
   isMemberOnline(room: ChatRoomI){
 	return (room.members.find(item => item.online) != undefined);
+  }
+  closeRoom(){
+	  this.showRoom = false;
   }
 }

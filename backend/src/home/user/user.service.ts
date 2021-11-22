@@ -127,6 +127,13 @@ export class UserService {
 				user.active_chat_rooms = [roomId];
 			await this.save(user);
 		});
-		
+	}
+	async desactivateRoom(users: UserEntity[], roomId: number){
+		users.forEach(async user => {
+			user.active_chat_rooms = user.active_chat_rooms.filter(id => id != roomId);
+			console.log("llega3");
+			await this.save(user);
+			console.log("llega4");
+		});
 	}
 }

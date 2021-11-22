@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output } from "@angular/core";
 import { eChat } from "src/app/shared/ft_enums";
 import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
@@ -16,6 +16,7 @@ import { ChatService } from "../chat.service";
 })
 export class MessagingComponent implements OnInit {
 	@Input() msgPreference: SharedPreferencesI;
+	@Output() closeRoomEvent = new EventEmitter<any>();
 	@ViewChild('scrollframe', {static: false}) scrollFrame: ElementRef;
 	@ViewChildren('scroolMsg') itemElements: QueryList<any>;
 	private scrollContainer: any;
@@ -74,7 +75,6 @@ export class MessagingComponent implements OnInit {
 		else if (data.action == 'loadAllMsg')
 		{
 			this.messages = data.messages;
-			//console.log("|" + this.messages[0].message + "|");
 		}
 		else if (data.action == 'newMsg')
 		{
@@ -85,6 +85,16 @@ export class MessagingComponent implements OnInit {
 	private onRoomChange(){
 		this.room = this.msgPreference.chat.active_room;
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
+	}
+	showMembers(){
+		console.log(this.room.members);
+	}
+	closeRoom(){
+		this.closeRoomEvent.emit();
+	}
+	leaveChat(){
+		this.chatService.emit(eChat.ON_LEAVE_ROOM, this.room);
+		this.closeRoom();
 	}
 	isPrivateRoom(){
 		return (this.msgPreference.chat.active_room.img != undefined);
