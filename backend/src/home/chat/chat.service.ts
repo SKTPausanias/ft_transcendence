@@ -283,6 +283,10 @@ export class ChatService {
 			console.log("ChannelInfo content: ", content);
 			const register = await this.chatRepository.findOne({where: {name_chat: content.channelInfo.name_chat}});
 			console.log("Chat to modify their members: ", register);
+			content.channelInfo.members.forEach(element => {
+			//	this.chatUserRepository.save({where: {}});
+				console.log("User to add: ", element);
+			});
 			//if member exist on chat_user and is selected to be delete, we should delete it
 			//if member is a new member of the group, we should insert
 			//two member object have to come in the body, newMembers[] deleteMembers[]
