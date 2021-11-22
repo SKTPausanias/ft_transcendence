@@ -61,7 +61,6 @@ export class ChatComponent implements OnInit {
     this.socketService.chatBlockFilter.subscribe(
       (data : any) => {
         if (data != undefined) {
-          console.log("data from subscribe: ", data);
           if (data.isBlocked == false)
             this.chatsBlocked[data.members[0].nickname] = true;
           else
@@ -107,15 +106,15 @@ export class ChatComponent implements OnInit {
     this.showGroupChat = false;
     this.chatsBlocked[this.friendChat.nickname] = await this.chatService.iAmBlocked(this.session, this.receiver);
     console.log("imBlocked: ", this.imBlocked);
-    if (this.chatsBlocked[this.friendChat.nickname] == false)
-    {
+    //if (this.chatsBlocked[this.friendChat.nickname] == false)
+    //{
       //delete messages from messages array
       this.messages = [];
       this.messages = await this.chatService.getMessages(this.session, this.receiver);
     //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
       if (this.messages.length)
         this.identifier = this.messages[this.messages.length - 1 ].date.toString();
-    }
+    //}
     //msgBox.child[this.messages[this.messages.size - 1]].id == messages.timeStamp scrollDown();
   }
 
