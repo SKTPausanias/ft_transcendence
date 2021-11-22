@@ -38,7 +38,7 @@ export class ChatService {
 	{
 		try {
 			var msg: MessageEntity = <MessageEntity>{};
-			const room = await this.chatRepository.findOne({ relations: ["members"], where: {id: data.room.id}});		
+			const room = await this.chatRepository.findOne({ relations: ["members", "blocked_members"], where: {id: data.room.id}});		
 			await this.userService.activateRoom(room.members, room.id);
 			msg.owner = owner;
 			msg.chat = room;
@@ -53,13 +53,13 @@ export class ChatService {
 
 	async getChatEntity(roomId: number): Promise<ChatEntity>
 	{
-		return (await this.chatRepository.findOne({ relations: ["members"], where: {id: roomId}}));
+		return (await this.chatRepository.findOne({ relations: ["members","blocked_members"], where: {id: roomId}}));
 	}
 
 	async getChatRoomById(user: UserEntity, roomId: number): Promise<ChatRoomI>
 	{
 		try {
-			const room = await this.chatRepository.findOne({ relations: ["members"], where: {id: roomId}});
+			const room = await this.chatRepository.findOne({ relations: ["members", "blocked_members"], where: {id: roomId}});
 			return (this.parseChatRoom(room, user));
 		} catch (error) {
 			return (<ChatRoomI>{});
@@ -75,28 +75,52 @@ export class ChatService {
 	async onMemberLeave(room: ChatRoomI, member: UserEntity){
 		var resp: ChatEntity = <ChatEntity>{};
 		try {
-			const roomEntity = await this.chatRepository.findOne({relations: ["members"], where: {id : room.id}})
+			const roomEntity = await this.chatRepository.findOne({relations: ["members", "blocked_members"], where: {id : room.id}})
 			roomEntity.members = roomEntity.members.filter(item => item.login != member.login);
-			if (roomEntity.members.length == 1)
+			/* if (roomEntity.members.length == 1)
 			{
 				const deleteRoom = await this.chatRepository.findOne({where : {id : room.id}})
-				await this.chatRepository.delete(deleteRoom);
+			//	await this.chatRepository.delete(deleteRoom);
 				await this.userService.desactivateRoom(roomEntity.members, room.id);
 			}
 			else
-				resp = await this.chatRepository.save(roomEntity);
+				resp = await this.chatRepository.save(roomEntity); */
 			await this.userService.desactivateRoom([member], room.id);
-			return (resp);
+			return (roomEntity);
 		} catch (error) {
 			console.log(error);
 			return (resp);
 		}
 	}
+	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatRoomI>{
+		try {
+			const roomEntity = await this.chatRepository.findOne({
+				relations: ["blocked_members", "members"], 
+				where: {id: room.id}});
+			const userEntity = await this.userService.findByLogin(user.login);
+			roomEntity.blocked_members.push(userEntity);
+			await this.chatRepository.save(roomEntity);
+			const ret = (this.parseChatRoom(roomEntity, userEntity));
+			return ret;
+		} catch (error) {
+			console.log("error");
+			return (<ChatRoomI>{});
+		}
+	}
+
 	parseChatRoom(chatRoom: ChatEntity, me: UserEntity){
+
 		var parsed: ChatRoomI = <ChatRoomI>{};
 		parsed.id = chatRoom.id;
 		parsed.me = User.getPublicInfo(me);
+
 		parsed.members = this.entitiesToInfo(chatRoom.members.filter(member => member.login != me.login));
+		parsed.blocked = false;
+		//Chat user 
+		// bolcked = user.blocked
+		// muted = 
+		if (chatRoom.blocked_members.find(item => item.login == me.login) != undefined)
+			parsed.blocked = true;
 		if (chatRoom.name)
 			parsed.name = chatRoom.name;
 		else
@@ -110,13 +134,14 @@ export class ChatService {
 			else
 				parsed.name = parsed.members.slice(0, 3).map(a => a.nickname).join(",");
 		}
+		console.log("parsed: ", parsed);
 		return (parsed);
 	}
 
 	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], name: string):Promise<ChatEntity>{
 		try {
 			var room: ChatEntity;
-			const resp = await this.chatRepository.find({ relations: ["members"]});
+			const resp = await this.chatRepository.find({ relations: ["members","blocked_members"]});
 			var users = await this.infoToUserEntities(members);
 			users.push(me);
 			if ((room = await this.getChatRoom(users)) == undefined)
@@ -132,6 +157,7 @@ export class ChatService {
 			var room = new ChatEntity();
 			room.members = members;
 			room.name = name;
+			room.blocked_members = [];
 			room = await this.chatRepository.save(room);
 			return (room);
 		} catch (error) {
@@ -141,10 +167,14 @@ export class ChatService {
 	private async getChatRoom(members: UserEntity[]): Promise<ChatEntity | undefined>
 	{
 		try {
-			const rooms = await this.chatRepository.find({ relations: ["members"]});
+			const rooms = await this.chatRepository.find({ relations: ["members","blocked_members"]});
 			for (let i = 0; i < rooms.length; i++)
 				if (JSON.stringify(rooms[i].members)==JSON.stringify(members))
+				{
+					console.log("room found");
 					return (rooms[i]);
+				}
+				console.log("Room not found");
 			return (undefined);
 		} catch (error) {
 			return (undefined);
@@ -167,6 +197,7 @@ export class ChatService {
 	private  entitiesToInfo(members: UserEntity[]): UserPublicInfoI[]
 	{
 		var userList: UserPublicInfoI[] = [];
+
 		try {
 			for (let i = 0; i < members.length; i++) {
 				const user = members[i];
@@ -185,7 +216,7 @@ export class ChatService {
 			{
 				var roomId = me.active_chat_rooms[i];
 				var room = await this.chatRepository.findOne({ 
-					relations: ["members"], where: {id : roomId}});
+					relations: ["members", "blocked_members"], where: {id : roomId}});
 				ret.push(this.parseChatRoom(room, me));
 			}
 			ret.sort((a,b) => { return a.name > b.name ? 1 : -1});

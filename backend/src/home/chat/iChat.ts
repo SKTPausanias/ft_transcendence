@@ -6,6 +6,8 @@ export interface ChatRoomI {
     me: UserPublicInfoI;
 	img: string | undefined;
 	members: UserPublicInfoI[];
+	blocked: boolean;
+
 }
 export interface MessagesI {
 	chatId: number,

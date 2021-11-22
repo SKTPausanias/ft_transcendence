@@ -56,6 +56,7 @@ export class ChatComponent implements OnInit {
 	this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
   selectChatRoom(item: any){
+	console.log("chat room: ", item);
 	this.chatPreference.chat.active_room = item;
 	this.showRoom = true;
 	this.chatService.chatFragmentEmmiter.emit({action : "room-change"});

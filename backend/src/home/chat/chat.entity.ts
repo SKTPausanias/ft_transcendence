@@ -12,7 +12,35 @@ export class ChatEntity {
 	
 	@ManyToMany(type => UserEntity, user => user.id)
 	@JoinTable()
-    members: UserEntity[];
-	
+	members: UserEntity[];
 
+	@ManyToMany(type => UserEntity, user => user.id)
+	@JoinTable()
+	blocked_members: UserEntity[];
 }
+/*
+@Entity('chat_user')
+export class ChatUserEntity {
+    @PrimaryGeneratedColumn('increment')
+    id: number;
+
+	@Column({nullable: true, unique: true})
+	name: string;
+	
+	@ManyToOne(type => UserEntity)
+    owner: UserEntity;
+
+	@ManyToOne(type => ChatEntity, chat => chat.id,
+		{
+			onDelete: "CASCADE"
+		})
+    chat: ChatEntity;
+
+
+
+	@Column({nullable: true, unique: true})
+	name: string;
+
+	
+}
+*/

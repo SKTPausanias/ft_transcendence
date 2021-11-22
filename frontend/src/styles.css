@@ -1,3 +1,4 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
 @font-face {
 	font-family: sportsjersey;
 	src: url(assets/fonts/omegle/sportsjersey.ttf	) format("opentype");

@@ -1,20 +1,37 @@
-<div class="main-ctn">
+
+<div class="main-ctn" [ngClass]="{'hide' : !room.blocked}"> You are blocked</div>
+<div class="main-ctn" [ngClass]="{'hide' : room.blocked}">
 	<div class='info row'>
 		<div class="col-6 d-flex justify-content-start">
-			<img *ngIf='isPrivateRoom()' class="ico_s img-fluid" src="{{getImage()}}" alt="image">
-			<h4>
-				<i *ngIf='!isPrivateRoom()' class="fa fa-hashtag me-2"></i> 
-				 <b>{{msgPreference.chat.active_room.name}}</b>
-				 <b class="fa fa-caret-down ms-2" (click)="showMembers()"></b>
-			</h4>
+			<div class="dropdown show">
+					 <img *ngIf='isPrivateRoom()' class="ico_s img-fluid me-2" src="{{getImage()}}" alt="image">				
+					<i *ngIf='!isPrivateRoom()' class="fa fa-hashtag me-2"></i> 
+					<b>{{msgPreference.chat.active_room.name}}</b>
+					 <b class="ms-2 icon-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<div class="dropdown-menu scrool" aria-labelledby="dropdownMenuLink">
+							<div class="dropdown-item">
+								<img class="ico_xs img-fluid me-2" src="{{msgPreference.chat.active_room.me.avatar}}" alt="image">				
+								<p>{{msgPreference.chat.active_room.me.nickname}} </p>
+							</div>
+							<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
+								<img class="ico_xs img-fluid me-2" src="{{item.avatar}}" alt="image">	
+								<p >{{item.nickname}}</p>
+								<!-- <span class="fa fa-user-circle fa-lg icon-btn"></span>
+								<span class="fa fa-user-times fa-lg icon-btn"></span>
+								<span class="fa fa-table-tennis  fa-lg icon-btn"></span> -->
+								<span class="fa fa-ban fa-lg icon-btn" (click)="blockUser(item)"></span>
+							</div>
+						</div>
+					</b>
+				 </div>
 		</div> 
 		<div class="col-6 d-flex justify-content-end">
-			<!-- <span class="fa fa-user-circle fa-lg"></span>
-			<span class="fa fa-user-times fa-lg"></span>
-			<span class="fa fa-table-tennis  fa-lg"></span>
-			<span class="fa fa-ban fa-lg"></span> -->
-			<span class="fa fa-sign-out-alt fa-lg" (click)="leaveChat()"></span>
-			<span class="fa fa-times fa-lg" (click)="closeRoom()"></span>
+			<!-- <span class="fa fa-user-circle fa-lg icon-btn"></span>
+			<span class="fa fa-user-times fa-lg icon-btn"></span>
+			<span class="fa fa-table-tennis  fa-lg icon-btn"></span>
+			<span class="fa fa-ban fa-lg icon-btn"></span> -->
+			<span class="fa fa-sign-out-alt fa-lg icon-btn" (click)="leaveChat()"></span>
+			<span class="fa fa-times fa-lg icon-btn" (click)="closeRoom()"></span>
 		</div> 
 	</div>
 	<div class='msg-list scrool' #scrollframe> 

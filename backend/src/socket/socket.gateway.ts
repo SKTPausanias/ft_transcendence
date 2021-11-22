@@ -23,6 +23,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		try {
 			this.chatGateway.init(this.server);
+			//init game gatway
+
 			const sessionData = await this.getSessionData(client);
 			await this.socketService.emitToAllFriends(
 				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 

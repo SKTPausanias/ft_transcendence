@@ -22,6 +22,4 @@ export class MessageEntity {
 			onDelete: "CASCADE"
 		})
     chat: ChatEntity;
-	
-
 }

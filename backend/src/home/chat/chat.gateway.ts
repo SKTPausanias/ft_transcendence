@@ -83,6 +83,13 @@ export class ChatGateway {
 			await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, data.room.members, resp);
 		} catch (error) {}
 	}
+	@SubscribeMessage(eChat.ON_BLOCK_USER)
+	async onBlockUser(client, data) {
+		try {
+			const room = await this.chatService.onBlockUser(data.room, data.user);
+			
+		} catch (error) {}
+	}
 
 
 	async goOnlineOffline(login: string){

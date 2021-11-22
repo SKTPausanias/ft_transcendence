@@ -5,10 +5,6 @@ import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { ChatService } from "../chat.service";
 
- interface ms{
-	from: String,
-	msg: String
-}
 @Component({
   selector: "app-messaging",
   templateUrl: "./messaging.component.html",
@@ -95,6 +91,10 @@ export class MessagingComponent implements OnInit {
 	leaveChat(){
 		this.chatService.emit(eChat.ON_LEAVE_ROOM, this.room);
 		this.closeRoom();
+	}
+	blockUser(item: UserPublicInfoI){
+		this.chatService.emit(eChat.ON_BLOCK_USER, {user: item, room: this.room});
+		console.log(item);
 	}
 	isPrivateRoom(){
 		return (this.msgPreference.chat.active_room.img != undefined);
