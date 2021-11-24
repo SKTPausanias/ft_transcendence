@@ -7,13 +7,14 @@ import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
 import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
-import { ChatEntity } from './chat.entity';
+import { ChatEntity } from './entities/chat.entity';
 import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
-import { MessageEntity } from './message.entity';
+import { ChatUsersEntity } from './entities/chatUsers.entity';
+import { MessageEntity } from './entities/message.entity';
 
 @Module({
-	imports: [ TypeOrmModule.forFeature([UserEntity, ChatEntity, MessageEntity, SessionEntity, FriendEntity])],
+	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity])],
 	providers: [SocketService, SessionService, FriendService, UserService, ChatService],
 
 })

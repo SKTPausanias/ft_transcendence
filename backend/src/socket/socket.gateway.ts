@@ -20,7 +20,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	clientsConnected = 0;
 	@WebSocketServer() server;
 	async handleConnection(client) {
-
 		try {
 			this.chatGateway.init(this.server);
 			//init game gatway

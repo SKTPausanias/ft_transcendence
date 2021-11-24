@@ -1,6 +1,8 @@
 import { SessionEntity } from "src/session/session.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ChatEntity } from "../chat/chat.entity";
+import { ChatEntity } from "../chat/entities/chat.entity";
+import { ChatUsersEntity } from "../chat/entities/chatUsers.entity";
+import { MessageEntity } from "../chat/entities/message.entity";
 import { FriendEntity } from "../friends/friend.entity";
 
 @Entity('users')
@@ -59,5 +61,12 @@ export class UserEntity {
 
 	@Column("int", { array: true , nullable: true})
 	active_chat_rooms: number[];
+
+
+    @OneToMany(() => ChatEntity, (room) => room.id)
+    rooms: ChatUsersEntity[];
+
+    @OneToMany(type => MessageEntity, message => message.user)
+    messages: MessageEntity[];
 }
 

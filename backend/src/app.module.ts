@@ -16,8 +16,9 @@ import { FriendEntity } from './home/friends/friend.entity';
 import { DashboardModule } from './home/dashboard/dashboard.module';
 import { SocketModule } from './socket/socket.module';
 import { ChatModule } from './home/chat/chat.module';
-import { ChatEntity } from './home/chat/chat.entity';
-import { MessageEntity } from './home/chat/message.entity';
+import { ChatEntity } from './home/chat/entities/chat.entity';
+import { MessageEntity } from './home/chat/entities/message.entity';
+import { ChatUsersEntity } from './home/chat/entities/chatUsers.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -31,7 +32,7 @@ import { MessageEntity } from './home/chat/message.entity';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

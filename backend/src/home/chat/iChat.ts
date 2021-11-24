@@ -15,3 +15,12 @@ export interface MessagesI {
 	message: string,
 	timeStamp: string
 }
+
+export interface ChatInfoI{
+	name: string | undefined, 
+	type: string,
+	pwd: string | undefined,
+	owner: boolean,
+	baned: boolean,
+	muted: boolean
+}
