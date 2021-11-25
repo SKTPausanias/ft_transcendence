@@ -87,6 +87,20 @@ export class ChatService {
 			const chat = await this.chatRepository.findOne({
 				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
 			}); // this is an OR
+			const tmp = await this.chatRepository.find({relations: ['chats', 'chats.user']});
+			console.log("length of tmp: ", tmp.length);
+			
+			for (var i = 0; i < tmp.length; i++) {
+				const room = tmp[i];
+				console.log(room.id);
+				console.log("length of chats: ", room.chats.length);
+				for(var j = 0; j < room.chats.length; j++){
+					let usr = room.chats[j].user;
+					console.log("nickName: ", usr.nickname);					
+				}
+				console.log("----------------------------------------------------------------");
+			}
+
 			eMsg.chat = chat;
 			const ret = await this.messageRepository.save(eMsg);
 			return (Response.makeResponse(200, { ok: "Message has been saved" }));
@@ -366,3 +380,13 @@ export class ChatService {
 		}
 	}
 }
+
+/*
+	blocked muted
+
+	CASE OF ONETOONE
+	1: info ChatInfoUser -> blocked or muted
+	2: - if blocked: no retrieve data from db messages: -> show menssage user blocked
+	   - send messages aren't allowed -> X-send-X
+	2.2: user that blcoked friend -> can be blocked too => go to step 2
+*/

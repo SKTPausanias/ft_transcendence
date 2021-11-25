@@ -88,8 +88,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage(wSocket.CHAT_MESSAGE)
 	async chatMessage(client, data) {
 		const sessionData = await this.getSessionData(client);
-		console.log(sessionData.userInfo.login, " : ", data);
-		console.log(data.receiver);
+		//console.log(sessionData.userInfo.login, " : ", data);
+		//console.log(data.receiver);
 		//const friend = await this.userService.findByNickname(user.nickname); // sacar amigo para llamar a la funcion de emitToOneFriend
 		const friend = await this.userService.findByNickname(data.receiver);
 		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, friend, data.message);

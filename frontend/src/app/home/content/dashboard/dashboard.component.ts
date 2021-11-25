@@ -84,8 +84,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 				console.log("Users to add: ", this.grpUsers);
 				console.log("Chats: ", this.channels);
 				console.log("members: ", this.members);
+				this.channelInfo.members = this.members;
 																/*Channel with members to add, grpusers with members to delete */
-				await this.dashboardService.updateMembersChannel(this.session, this.channelInfo, this.grpUsers);
+				await this.dashboardService.updateMembersChannel(this.session, this.channelInfo, this.membersToDelete);
 				break ;
 			case 'setPass':
 				console.log("channel Info: ", this.channelInfo);
@@ -231,6 +232,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 	addMember(addUsers: any): void {
 		
 		console.log("before in members", this.members)
+		if (this.users.length == 0)
+			return ;
 		for (var i = 0; i < addUsers.length; i++){
 			var user = this.users.find(pred => pred.nickname == addUsers[i].value);
 			var match = this.grpUsers.find(pred => pred.nickname == addUsers[i].value);
