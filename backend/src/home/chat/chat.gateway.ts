@@ -20,7 +20,7 @@ export class ChatGateway {
 	@SubscribeMessage(eChat.ON_START)
 	async onStart(client, data) {
 		const me = await this.getSessionUser(client);
-		const resp = await this.chatService.onStart(me, data.members, data.name);
+		const resp = await this.chatService.onStart(me, data.members, data.chatInfo);
 		await this.server.to(client.id).emit(eChat.ON_START, me.login, resp);
 	}
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
@@ -60,6 +60,11 @@ export class ChatGateway {
 	@SubscribeMessage(eChat.ON_BLOCK_USER)
 	async onBlockUser(client, data) {
 		
+	}
+	@SubscribeMessage(eChat.ON_ADD_MEMBER_TO_CHAT)
+	async onAddMemberToChat(client, data) {
+		const resp = await this.chatService.addMemberToChat(data.room, data.member);
+		console.log("member added: ", resp);
 	}
 
 

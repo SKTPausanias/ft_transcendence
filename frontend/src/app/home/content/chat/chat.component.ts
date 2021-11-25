@@ -75,10 +75,14 @@ export class ChatComponent implements OnInit {
 	return (this.chatPreference.chat.active_room != undefined && room.id == this.chatPreference.chat.active_room.id)
   }
   isMemberOnline(room: ChatRoomI){
-	return (room.members.find(item => item.online) != undefined);
+	return (room.onlineStatus);
   }
   closeRoom(){
 	  this.showRoom = false;
+  }
+  addMemberToChat(){
+	this.openModal("member");
+	console.log("lets add member")
   }
   openModal(name: string){
 	const modal = this.modalService.open(ChatModalComponent, { centered: false, animation: true });

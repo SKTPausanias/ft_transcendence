@@ -14,6 +14,7 @@ import { ChatService } from "../chat.service";
 export class MessagingComponent implements OnInit {
 	@Input() msgPreference: SharedPreferencesI;
 	@Output() closeRoomEvent = new EventEmitter<any>();
+	@Output() addMemberEvent = new EventEmitter<any>();
 	@ViewChild('scrollframe', {static: false}) scrollFrame: ElementRef;
 	@ViewChildren('scroolMsg') itemElements: QueryList<any>;
 	private scrollContainer: any;
@@ -89,6 +90,9 @@ export class MessagingComponent implements OnInit {
 	}
 	closeRoom(){
 		this.closeRoomEvent.emit();
+	}
+	addMemberToChat(){
+		this.addMemberEvent.emit()
 	}
 	leaveChat(){
 		this.chatService.emit(eChat.ON_LEAVE_ROOM, this.room);

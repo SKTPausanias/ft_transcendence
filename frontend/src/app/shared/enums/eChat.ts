@@ -6,6 +6,14 @@ export enum eChat {
 	ON_All_MSG = "on-all-msg",
 	ON_NEW_MSG = "on-new-msg",
 	ON_UPDATE_ROOM = "on-update-room",
-	ON_BLOCK_USER = "on-block-user"
+	ON_BLOCK_USER = "on-block-user",
+	ON_ADD_MEMBER_TO_CHAT = "on-add-member-to-chat"
+}
+export enum eChatType{
+	DIRECT = 'direct',
+	DIRECT_PRIVATE = 'direct_private',
+	DIRECT_PUBLIC = 'direct_public',
+	CHANNEL_PRIVATE = 'channel_private',
+	CHANNEL_PUBLIC = 'channel_public'
 
 }

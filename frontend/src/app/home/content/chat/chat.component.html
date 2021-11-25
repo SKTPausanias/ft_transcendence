@@ -10,7 +10,7 @@
 				</div>
 				<div *ngIf="showChannels">
 					<p class="item" *ngFor="let room of getGroupRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-						<i class="fa fa-hashtag"></i> {{room.name}}
+						<span class="ms-2"><i class="fa fa-hashtag"></i> {{room.name}}</span>
 					</p>
 					<div class="mt-1">
 						<button class="fa-btn" (click)="openModal('channel')">
@@ -28,7 +28,7 @@
 					<p class="mb-1">Dirrect messages</p>
 				</div>
 				<div *ngIf="showDM">
-					<div class="item" *ngFor="let room of getPrivateRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+					<div class="item ps-2" *ngFor="let room of getPrivateRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
 							<div class="room_img online" [ngClass]="{'offline' : !isMemberOnline(room)}">
 								<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
 							</div>
@@ -45,7 +45,7 @@
 			</div>
 		</div>
 		<div class="col-10 right-container">
-			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()'></app-messaging>
+			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()' (addMemberEvent)="addMemberToChat()"></app-messaging>
 			<div *ngIf="!showRoom">
 				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>			
 			</div>

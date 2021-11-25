@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { eChat, Nav } from 'src/app/shared/ft_enums';
-import { SharedPreferencesI, ChannelI } from 'src/app/shared/ft_interfaces';
+import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
+import { SharedPreferencesI, ChatI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
@@ -53,9 +53,9 @@ export class ChatModalComponent implements OnInit {
 	}
 	
 	async save(): Promise<void> {
-		var channelInfo: ChannelI = <ChannelI> {
+		var channelInfo: ChatI = <ChatI> {
 			name: this.channelName,
-			type: this.channelType,
+			type: this.getChannelType(),
 			password: this.password,
 			protected: this.addPassword, //provisional
 		};
@@ -112,6 +112,7 @@ export class ChatModalComponent implements OnInit {
 						else
 							this.onSearchBoxFriendChange(text).subscribe((res: any)=> {
 								this.searchResult = res;
+								this.filterSearchResults();
 							}, (err: any) => {
 								console.log('error', err);
 							});
@@ -125,13 +126,26 @@ export class ChatModalComponent implements OnInit {
 	}
 	onSearchBoxChannelChange(value: any)
 	{
+		//return (this.chatService.live)
 		return ["test-channel-a","test-channel-b","test-channel-c", "test-channel-d", "test-channel-e", "test-channel-f", "test-channel-g", "test-channel-h", "test-channel-i" ];
 	}
 	async onSubmitFriends(): Promise<void> {
-		if (this.type =='friend')
-			this.searchResult = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
+		if (!this.isChannel())
+		{
+			if (this.searchInput.nativeElement.value.length > 0)
+				this.searchResult = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
+			this.filterSearchResults();
+		}
 		else
 			this.searchResult = ["test-channel-a","test-channel-b","test-channel-c", "test-channel-d", "test-channel-e", "test-channel-f", "test-channel-g", "test-channel-h", "test-channel-i" ]
+	}
+	filterSearchResults(){
+		if (this.type == 'member')
+			this.searchResult = this.searchResult.filter(el => {
+			      return !this.preferences.chat.active_room.members.find((element : UserPublicInfoI) => {
+			      return element.login === el.login;
+			      });
+			   });
 	}
 	async addFriendShip(user: UserPublicInfoI): Promise<any>{
 		const resp = await (this.dashboardService.addFriendShip(user, this.session));
@@ -150,12 +164,25 @@ export class ChatModalComponent implements OnInit {
 		}, 1000)
 		return (resp);
 	}
+	addMemberToChat(user: UserPublicInfoI){
+		this.chatService.emit(eChat.ON_ADD_MEMBER_TO_CHAT, {room : this.preferences.chat.active_room, member: user});
+		console.log("lets add: ", user);
+	}
 	startChat(user: UserPublicInfoI){
 		this.modal.dismiss();
-		this.chatService.emit(eChat.ON_START, {members: [user]});
+		var chatInfo: ChatI = <ChatI>{};
+		chatInfo.type = eChatType.DIRECT;
+		this.chatService.emit(eChat.ON_START, {members: [user], chatInfo});
 	}
 	isNotFriend(user: UserPublicInfoI): boolean{
 		return (this.preferences.friends.find(usr => usr.login == user.login) == undefined);
+	}
+	getChannelType(){
+		if (this.channelType == 'private')
+			return (this.type == 'friend' ? eChatType.DIRECT_PRIVATE : eChatType.CHANNEL_PRIVATE);
+		else if (this.channelType = 'public')
+			return (this.type == 'friend' ? eChatType.DIRECT_PUBLIC : eChatType.CHANNEL_PUBLIC);
+		return undefined;
 	}
 	private initVariables(dismiss: boolean){
 		this.search = '';

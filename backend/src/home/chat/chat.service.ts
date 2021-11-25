@@ -11,6 +11,7 @@ import { MessageEntity } from "./entities/message.entity";
 import { ChatUsersEntity } from "./entities/chatUsers.entity";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
+import { eChatType } from "./eChat";
 
 @Injectable()
 export class ChatService {
@@ -23,10 +24,10 @@ export class ChatService {
 				private msgRepository: Repository<MessageEntity>,
 				private userService: UserService){}
 
-	async onStart(me: UserEntity, members: UserPublicInfoI[], name: string): Promise<ChatRoomI>
+	async onStart(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI): Promise<ChatRoomI>
 	{
 		try {
-			const room = await this.findChatRoom(me, members, name);
+			const room = await this.findChatRoom(me, members, chatInfo);
 			await this.userService.activateRoom([me], room.id);
 			const chatMe = await this.chatUserRepository.findOne({
 				relations: ['user'],
@@ -100,40 +101,14 @@ export class ChatService {
 		return null
 	}
 
-	parseChatRoom(chatRoom: ChatEntity, me: ChatUsersEntity): ChatRoomI{
-
-		var parsed: ChatRoomI = <ChatRoomI>{};
-		parsed.id = chatRoom.id;
-		parsed.me = User.getPublicInfo(me.user);
-
-		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
-		parsed.owner = me.owner;
-		parsed.muted = me.muted;
-		parsed.banned = me.banned;
-		if (chatRoom.type == 'public')
-			parsed.name = chatRoom.name;
-		else
-		{
-			if (parsed.members.length > 0)
-				parsed.img = parsed.members[0].avatar;
-			else
-				parsed.img = parsed.me.avatar;
-			if (parsed.members.length == 1)
-				parsed.name = parsed.members[0].nickname;
-			else
-				parsed.name = parsed.members.slice(0, 3).map(a => a.nickname).join(",");
-		}
-		return (parsed);
-	}
-
-	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], type: string):Promise<ChatEntity>{
+	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI):Promise<ChatEntity>{
 		try {
 			var room: ChatEntity;
 			var users = await this.infoToUserEntities(members);
 			users.push(me);
 			users = users.sort((a,b)=> { return a.id > b.id ? 1 : -1});
 			this.setChatName(users);
-			if (type == undefined || type == 'private')
+			if (chatInfo.type == eChatType.DIRECT)
 			{
 				room = await this.chatRepository.findOne({
 					relations: ["members", "members.user"],
@@ -190,17 +165,39 @@ export class ChatService {
 			
 			var chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
 			chatMembers[0].owner = true;
-			
 			const room = await this.newChatRoom(chatMembers, channelInfo);
 			if ( room === undefined ) 
 				return (Response.makeResponse(500, { error: "can't creat channel" }));
-			
+			await this.userService.activateRoom(this.chatUserToUserEntity(chatMembers), room.id);
 			return (Response.makeResponse(200, { message: "channel created successfuly" }));
 		} catch (error) {
 			return (Response.makeResponse(500, { error: "can't creat channel" }));
 		}
 	}
-	
+	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
+	{
+		try {
+			var chatRoom = await this.chatRepository.findOne({
+				relations: ["members", "members.user"],
+				where: {id : room.id}
+			})
+			if (chatRoom.members.find(member => member.user.login == user.login) != undefined)
+				return (undefined)
+			var chatUser = this.getChatUserEntity(user, this.newChatUserInfo(false));
+			chatUser.room = chatRoom;
+			chatUser.user = await this.userService.findByLogin(user.login);
+			console.log("llega1: ", chatUser);
+			chatUser = await this.chatUserRepository.save(chatUser);
+			console.log("llega2");
+			chatRoom.members.push(chatUser);
+			chatRoom = await this.chatRepository.save(chatRoom)
+			await this.userService.activateRoom([chatUser.user], chatRoom.id);
+			return (chatRoom);
+		} catch (error) {
+			console.log("error: ", error);
+			return (undefined)
+		}
+	}
 	private chatUserToUserEntity(chatUsers: ChatUsersEntity[]){
 		let users: UserEntity[] = [];
 		for (let i = 0; i < chatUsers.length; i++) {
@@ -211,15 +208,15 @@ export class ChatService {
 	}
 	getChatUserEntities(members: UserPublicInfoI[], info: ChatUserI): ChatUsersEntity[]{
 		var ret: ChatUsersEntity[] = []
-		for (let i = 0; i < members.length; i++) {
-			const member = members[i];
-			const entity = <ChatUsersEntity>{
-				user: member,
-				owner: info.owner
-			}
-			ret.push(entity);
-		}
+		for (let i = 0; i < members.length; i++)
+			ret.push(this.getChatUserEntity(members[i], info));
 		return (ret);
+	}
+	getChatUserEntity(member: UserPublicInfoI, info: ChatUserI){
+		return (<ChatUsersEntity>{
+			user: member,
+			owner: info.owner
+		})
 	}
 	private async infoToUserEntities(members: UserPublicInfoI[]): Promise<UserEntity[]>
 	{
@@ -259,7 +256,30 @@ export class ChatService {
 		return (await this.msgRepository.save(msgEntity));
 	}
 
-	
+
+	parseChatRoom(chatRoom: ChatEntity, me: ChatUsersEntity): ChatRoomI{
+
+		var parsed: ChatRoomI = <ChatRoomI>{};
+		parsed.id = chatRoom.id;
+		parsed.me = User.getPublicInfo(me.user);
+		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
+		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
+		parsed.owner = me.owner;
+		parsed.muted = me.muted;
+		parsed.banned = me.banned;
+		if (chatRoom.type != eChatType.DIRECT)
+			parsed.name = chatRoom.name;
+		if (chatRoom.type != eChatType.CHANNEL_PRIVATE && chatRoom.type != eChatType.CHANNEL_PUBLIC)
+		{
+			if (parsed.members.length > 0)
+				parsed.img = parsed.members[0].avatar;
+			else
+				parsed.img = parsed.me.avatar;
+			if (chatRoom.type == eChatType.DIRECT)
+				parsed.name = parsed.members[0].nickname;
+		}
+		return (parsed);
+	}
 
 	private parseMessages(messages: MessageEntity[]){
 		var parsedMsgList: MessagesI[] = [];

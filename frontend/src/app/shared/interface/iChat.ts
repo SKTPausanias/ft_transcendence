@@ -9,6 +9,7 @@ export interface ChatRoomI {
 	banned: boolean;
 	owner: boolean;
     muted: boolean;
+	onlineStatus: boolean;
 }
 export interface MessagesI {
     message: string,
@@ -16,10 +17,11 @@ export interface MessagesI {
     owner: UserPublicInfoI,
 }
 
-export interface ChannelI {
+export interface ChatI {
     name: string,
     type: string
     protected: boolean,
     password: string,
     members: UserInfoI[]
 }
+

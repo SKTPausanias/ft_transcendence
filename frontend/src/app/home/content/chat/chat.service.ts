@@ -2,8 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { eChat } from "src/app/shared/ft_enums";
-import { SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
-import { ChannelI } from "src/app/shared/interface/iChat";
+import { ChatI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SocketService } from "../../socket.service";
 
 @Injectable({providedIn: "root"})
@@ -112,7 +111,7 @@ export class ChatService {
 		})
 	}
 
-	async addChannel(session: SessionI, channelInfo: ChannelI): Promise<any> {
+	async addChannel(session: SessionI, channelInfo: ChatI): Promise<any> {
 		const url = '/api/users/chat/addChannel';
 		console.log("data from body: ", channelInfo);
 		try{

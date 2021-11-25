@@ -11,8 +11,9 @@
 				</div>
 				<div class="w-100 d-flex justify-content-center px-3">
 					<small class="text-center">
-						<i *ngIf='isChannel()'>You can search for channel and join it or create your own</i>
-						<i *ngIf='!isChannel()'>You can search for other users and start chat, send a friendship invitation or dare to play pong</i>
+						<i *ngIf="type == 'channel'">You can search for channel and join it or create your own</i>
+						<i *ngIf="type == 'friend'">You can search for other users and start chat, send a friendship invitation or dare to play pong</i>
+						<i *ngIf="type == 'member'">You can search for users to add them to chat room</i>
 					</small>		
 				</div>
 
@@ -30,7 +31,7 @@
 					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}...">
 					<span class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
 				</div>
-				<div class="searchbar d-flex justify-content-center mx-2">
+				<div *ngIf="type != 'member'"  class="searchbar d-flex justify-content-center mx-2">
 					<span class="add_icon"><i class="fas fa-plus" (click)='openForm()'></i></span>
 				</div>
 			</div>
@@ -48,9 +49,10 @@
 					</div>
 					<div class="col-3">
 						<div class="h-100 d-flex justify-content-center">
-							<span class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" (click)="startChat(item)"></span>
-							<span *ngIf='isNotFriend(item)' class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" (click)="addFriendShip(item)"></span>
-							<span class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;"></span>
+							<span *ngIf="type == 'friend'" class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" (click)="startChat(item)"></span>
+							<span *ngIf="type == 'friend' && isNotFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" (click)="addFriendShip(item)"></span>
+							<span *ngIf="type == 'friend'" class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;"></span>
+							<span *ngIf="type == 'member'" class="fa fa-plus  fa-lg icon-btn float-right" style="margin: auto;" (click)="addMemberToChat(item)"></span>
 						</div>
 					</div>
 				</div>

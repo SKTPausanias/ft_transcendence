@@ -10,6 +10,7 @@ export interface ChatRoomI {
 	banned: boolean;
 	owner: boolean;
     muted: boolean;
+	onlineStatus: boolean;
 
 }
 export interface MessagesI {
