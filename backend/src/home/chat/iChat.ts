@@ -22,11 +22,27 @@ export interface MessagesI {
 export interface ChatInfoI{
 	name: string | undefined, 
 	type: string,
-	pwd: string | undefined,
+	password: string | undefined,
 	owner: boolean,
 	baned: boolean,
 	muted: boolean
 }
+
+export interface ChatUserI {
+	owner: boolean,
+	baned: boolean,
+	muted: boolean,	
+}
+
+export interface ChatI {
+    name: string,
+    type: string,
+    password: string,
+    protected: boolean,
+	members: UserPublicInfoI[]
+}
+
+
 export interface NewMessageI {
 	emitTo : UserEntity[],
 	message: MessagesI

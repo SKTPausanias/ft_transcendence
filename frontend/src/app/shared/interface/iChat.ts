@@ -1,4 +1,4 @@
-import { UserPublicInfoI } from "./iUserInfo";
+import { UserInfoI, UserPublicInfoI } from "./iUserInfo";
 
 export interface ChatRoomI {
 	id: number;
@@ -14,4 +14,12 @@ export interface MessagesI {
     message: string,
     timeStamp: string,
     owner: UserPublicInfoI,
-  }
+}
+
+export interface ChannelI {
+    name: string,
+    type: string
+    protected: boolean,
+    password: string,
+    members: UserInfoI[]
+}

@@ -6,9 +6,11 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ChatEntity } from "./entities/chat.entity";
-import { ChatInfoI, ChatRoomI, MessagesI, NewMessageI } from "./iChat";
+import { ChatI, ChatInfoI, ChatRoomI, ChatUserI, MessagesI, NewMessageI } from "./iChat";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatUsersEntity } from "./entities/chatUsers.entity";
+import { Response } from "src/shared/response/responseClass";
+import { Exception } from "src/shared/utils/exception";
 
 @Injectable()
 export class ChatService {
@@ -137,8 +139,11 @@ export class ChatService {
 					relations: ["members", "members.user"],
 					where: {name: this.chatName}
 				});
-				if (room == undefined)
-					room = await this.newChatRoom(users, this.newChatInfo(this.chatName, 'private'));
+				if (room == undefined){
+					const chatInfo = this.newChatInfo(this.chatName, 'private');//change type for oneToOne
+					const chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
+					room = await this.newChatRoom(chatMembers, chatInfo);
+				}
 				else
 					console.log("room exists");
 			}
@@ -147,19 +152,52 @@ export class ChatService {
 			return (<ChatEntity>{});
 		}
 	}
-	private async newChatRoom(members: UserEntity[], chatInfo: ChatInfoI): Promise<ChatEntity>
+	private async newChatRoom(members: ChatUsersEntity[], chatInfo: ChatI): Promise<ChatEntity | undefined>
 	{
 		try {
 			var room = new ChatEntity();
-			room.members = this.getChatUserEntities(members, chatInfo);
+
+			room.members = members;
 			room.name = chatInfo.name;
 			room.type = chatInfo.type;
-			room.password = chatInfo.pwd;
-			for (let i = 0; i < room.members.length; i++) 
-				await this.chatUserRepository.save(room.members[i]);
-			return (await this.chatRepository.save(room));
+			room.password = chatInfo.password;
+			room.protected = chatInfo.protected;
+			
+			if ((room = await this.chatRepository.save(room)) === undefined) //warn: if any issue change to insert
+				return (undefined);
+			for (let i = 0; i < room.members.length; i++)
+			{
+				room.members[i].room = room;
+				await this.chatUserRepository.save(room.members[i]); //warn: if any issue change to insert
+			}
+			return (room);
 		} catch (error) {
-			return (<ChatEntity>{});
+			return (undefined);
+		}
+	}
+	 async addChanel(channelInfo: ChatI, header: string): Promise<any> {
+		const token = header.split(' ')[1]; //must check if session is active before continue
+		try {
+			const check = await this.chatRepository.findOne({
+				where: { name: channelInfo.name }
+			});
+
+			if (check !== undefined){
+				console.log("room already exists: message from addChannel");
+				return (Response.makeResponse(600, { error: "Channel already exists" }));
+			}
+			var users: UserEntity[] = await this.infoToUserEntities(channelInfo.members);
+			
+			var chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
+			chatMembers[0].owner = true;
+			
+			const room = await this.newChatRoom(chatMembers, channelInfo);
+			if ( room === undefined ) 
+				return (Response.makeResponse(500, { error: "can't creat channel" }));
+			
+			return (Response.makeResponse(200, { message: "channel created successfuly" }));
+		} catch (error) {
+			return (Response.makeResponse(500, { error: "can't creat channel" }));
 		}
 	}
 	
@@ -171,7 +209,7 @@ export class ChatService {
 		}
 		return (users);
 	}
-	getChatUserEntities(members: UserPublicInfoI[], info: ChatInfoI): ChatUsersEntity[]{
+	getChatUserEntities(members: UserPublicInfoI[], info: ChatUserI): ChatUsersEntity[]{
 		var ret: ChatUsersEntity[] = []
 		for (let i = 0; i < members.length; i++) {
 			const member = members[i];
@@ -251,13 +289,22 @@ export class ChatService {
 				this.chatName += '_';	
 		}
 	}
-	newChatInfo(name: string, type: string, pwd?: string, owner?: boolean)
+	newChatInfo(name: string, type: string, password?: string, lock?: boolean): any
 	{
-		return (<ChatInfoI>{
+		return (<ChatI>{
 			name : name,
 			type : type,
-			pwd : pwd,
-			owner : owner ? true : false
+			password : password,
+			protected: lock
+		})
+	}
+	
+	newChatUserInfo(owner: boolean): any
+	{
+		return (<ChatUserI>{
+			owner: owner,
+			muted: false,
+			baned: false
 		})
 	}
 }

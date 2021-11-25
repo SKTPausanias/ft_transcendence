@@ -4,7 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { eChat, Nav } from 'src/app/shared/ft_enums';
-import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { SharedPreferencesI, ChannelI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
@@ -51,15 +51,27 @@ export class ChatModalComponent implements OnInit {
 	openForm(){
 		this.showForm = true;
 	}
-	save(){
-		console.log("Channel name: ", this.channelName);
-		console.log("Channel type: ", this.channelType);
-		console.log("password: ", this.password);
+	
+	async save(): Promise<void> {
+		var channelInfo: ChannelI = <ChannelI> {
+			name: this.channelName,
+			type: this.channelType,
+			password: this.password,
+			protected: this.addPassword, //provisional
+		};
+		channelInfo.members = [this.preferences.userInfo];
+
+		console.log("Cahnnel info: ", channelInfo);
 		console.log("rePassword: ", this.repassword);
 		if (this.password != this.repassword)
 			this.errorMsg = "Passwords dosn't match";
-		else
-			this.modal.dismiss();	
+		else {
+			const resp = await this.chatService.addChannel(this.session, channelInfo);
+			if (resp.statusCode == 200)
+				this.modal.dismiss();
+			else
+				console.log(resp.error);
+		}
 	}
 	cancel(dismiss: boolean){
 		this.initVariables(dismiss);
@@ -70,6 +82,7 @@ export class ChatModalComponent implements OnInit {
 		this.password = this.repassword = undefined;
 		this.errorMsg = '';
 		!this.addPassword ? (this.addPassword = false) : (this.addPassword = true);
+		console.log("Protected Toggle is: ", this.addPassword);
 	}
 	selectType(target: any){
 		this.channelType = target.value;
