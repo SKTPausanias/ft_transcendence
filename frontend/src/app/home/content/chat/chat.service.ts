@@ -28,6 +28,9 @@ export class ChatService {
 		this.onChatLoadAllMessages();
 		this.onNewChatMsg();
 		this.onUpdateRoom();
+
+
+		this.onTest();
 	}
 
 	private onStartChat(){
@@ -110,5 +113,13 @@ export class ChatService {
 
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
+	}
+
+
+
+	private onTest(){
+		this.socket.on('test', (data: any) => {
+			console.log("onTest: ", data);
+		})
 	}
 }

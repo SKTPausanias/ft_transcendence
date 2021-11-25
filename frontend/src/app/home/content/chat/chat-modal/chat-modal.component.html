@@ -1,0 +1,100 @@
+<div class="d-flex justify-content-end close-ctn">
+	<b id="close" class="fa fa-times py-2 me-3" (click)="cancel(true)"></b>
+</div>
+<div class="border rounded-bottom border-secondary">
+	<!-- Title -->
+	<div class="title">
+		<div class="w-100 py-3 d-flex justify-content-center">
+			<div>
+				<div class="w-100 d-flex justify-content-center">
+					<h5>Add {{type}}</h5>
+				</div>
+				<div class="w-100 d-flex justify-content-center px-3">
+					<small class="text-center">
+						<i *ngIf='isChannel()'>You can search for channel and join it or create your own</i>
+						<i *ngIf='!isChannel()'>You can search for other users and start chat, send a friendship invitation or dare to play pong</i>
+					</small>		
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div *ngIf="showAddFriendshipMsg" class="d-flex justify-content-center msg-box py-2">
+		Friend invitation has been send
+	</div>
+	<!-- Search & add toolbar -->
+	<div class="input-group pb-3 mt-3">
+		<div class="container">
+			<div class="d-flex justify-content-center">
+			 	<div class="searchbar mx-2">
+					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}...">
+					<span class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
+				</div>
+				<div class="searchbar d-flex justify-content-center mx-2">
+					<span class="add_icon"><i class="fas fa-plus" (click)='openForm()'></i></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- List results of search channels or friends -->
+	<div *ngIf='searchResult.length > 0 && !showForm' class="scrool pb-3">
+		<div class="ms-2 pt-2 search-results" *ngFor='let item of searchResult'>
+			<!-- friend -->
+			<div *ngIf='!isChannel()' class="border-bottom border-light">
+				<div class="row  item-ctn">
+					<div class="col-9">
+						<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
+						<h5 class="d-inline me-5">{{item.nickname}}</h5>
+					</div>
+					<div class="col-3">
+						<div class="h-100 d-flex justify-content-center">
+							<span class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" (click)="startChat(item)"></span>
+							<span *ngIf='isNotFriend(item)' class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" (click)="addFriendShip(item)"></span>
+							<span class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Channel -->
+			<div *ngIf='isChannel()' class="w-100 border-bottom border-light">
+				<div class="row item-ctn">
+					<div class="col-9">
+						<b class="fa fa-hashtag  fa icon-btn me-2"></b>
+						<h5 class="d-inline me-5">{{item}}</h5>
+					</div>
+					<div class="col-3">
+						<div class="h-100 d-flex justify-content-center">
+							<span class="fa fa-sign-in-alt  fa-lg icon-btn float-right" style="margin: auto;"></span>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>	
+	</div>
+	<!-- Create new Channel -->
+	<div *ngIf="showForm" class="form w-100">
+		<div class="my-2 w-100 p-3">
+			<div *ngIf="errorMsg.length > 0" class="w-100 text-danger mb-2 text-center"><h5>{{errorMsg}}</h5></div>
+			<input [(ngModel)]='channelName' class="w-100 mb-3 p-2" type="text" name="" placeholder="Channel name...">
+			<select class="form-select form-select-sm mb-3 p-2" aria-label=".form-select-sm example" (change)="selectType($event.target)"required>
+				<option disabled selected value> -- Select an option -- </option>
+				<option value="public">Public</option>
+				<option value="private">Private</option>
+			</select>
+			<div class="form-check form-switch mb-3">
+				<input [(ngModel)]="addPassword" class="form-check-input" type="checkbox" (change)="passCheckBox()" value="{{addPassword}}">
+				<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+			</div>
+			<div *ngIf="addPassword">
+				<input [(ngModel)]="password" class="w-100 mb-3 p-2" type="password" name="" placeholder="Select password...">
+				<input [(ngModel)]="repassword" class="w-100 mb-3 p-2" type="password" name="" placeholder="Repeat password...">
+			</div>
+		</div>
+		<div class="w-100 d-flex justify-content-end pe-3 pb-3">
+			<button class="save-btn mx-2" (click)=save()>Save</button>
+			<button class="cancel-btn mx-2" (click)="cancel(false)">Cancel</button>
+		</div>
+	</div>
+
+	
+</div>

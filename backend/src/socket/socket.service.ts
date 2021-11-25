@@ -72,10 +72,9 @@ export class SocketService {
 			server.to(element.socket_id).emit(action, emiter, data);
 		});
 	}
-	async emitToAll(server: any, action: string, emiter: string, recivers: UserPublicInfoI[], data: any)
+	async emitToAll(server: any, action: string, emiter: string, recivers: UserEntity[], data: any)
 	{
-		recivers.forEach(async reciver => {
-			const user = await this.userService.findByLogin(reciver.login);
+		recivers.forEach(async user => {
 			const sessions = await this.sessionService.findByUser(user);
 			sessions.forEach(session => {
 				server.to(session.socket_id).emit(action, emiter, data);

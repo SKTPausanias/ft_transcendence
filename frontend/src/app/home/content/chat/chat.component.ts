@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, Type, ViewChild } from '@angular/core';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { SocketService } from '../../socket.service';
 import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
@@ -6,6 +6,8 @@ import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { ChatService } from './chat.service';
 import { eChat } from 'src/app/shared/ft_enums';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChatModalComponent } from './chat-modal/chat-modal.component';
 
 @Component({
   selector: 'app-chat',
@@ -27,7 +29,8 @@ export class ChatComponent implements OnInit {
 	prefSubscription: any;
 	constructor(
 		private sQuery: SessionStorageQueryService,
-		private chatService: ChatService
+		private chatService: ChatService,
+		private modalService: NgbModal
 	){
 	}
   
@@ -40,7 +43,6 @@ export class ChatComponent implements OnInit {
 		else
 			this.chatService.chatFragmentEmmiter.emit(data);
 	});
-
 	this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
 	if (this.chatPreference.chat.active_room != undefined)
 		this.selectChatRoom(this.chatPreference.chat.active_room);
@@ -77,5 +79,14 @@ export class ChatComponent implements OnInit {
   }
   closeRoom(){
 	  this.showRoom = false;
+  }
+  openModal(name: string){
+	const modal = this.modalService.open(ChatModalComponent, { centered: false, animation: true });
+	modal.componentInstance.type = name;
+	modal.componentInstance.preferences = this.chatPreference;
+	modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+		console.log(receivedEntry);
+	})
+
   }
 }

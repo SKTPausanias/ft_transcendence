@@ -3,6 +3,7 @@ import { eChat } from "src/app/shared/ft_enums";
 import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
+import { DashboardService } from "../../dashboard/dashboard.service";
 import { ChatService } from "../chat.service";
 
 @Component({
@@ -26,7 +27,8 @@ export class MessagingComponent implements OnInit {
 	subscription: any;
 	constructor(
 		private sQuery: SessionStorageQueryService,
-		private chatService: ChatService
+		private chatService: ChatService,
+		private dashboardService: DashboardService
 	) {}
 
 	async ngOnInit(): Promise<void> {
@@ -101,5 +103,9 @@ export class MessagingComponent implements OnInit {
 	}
 	getImage(){
 		return (this.msgPreference.chat.active_room.img);
+	}
+
+	async addFriendShip(user: UserPublicInfoI){
+		const resp = await (this.dashboardService.addFriendShip(user, this.session));
 	}
 }

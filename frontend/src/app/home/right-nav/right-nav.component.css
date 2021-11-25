@@ -23,3 +23,17 @@
 .offline{
 	opacity: 0.3;
 }
+@keyframes grow {
+	from {color: #222B3C; font-size: 0px;}
+  	to {color: #f38a00; font-size: 18px;}
+}
+.anim{
+	margin-left: 2px;
+	animation: grow 1.5s;
+	animation-iteration-count: infinite;
+}
+.notification{
+	height: 20px;
+	color: #ffaa3a;
+	font-size: 18px;
+}

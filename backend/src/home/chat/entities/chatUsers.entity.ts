@@ -10,6 +10,9 @@ export class ChatUsersEntity {
     @ManyToOne(type => UserEntity, user => user.rooms)
     user: UserEntity;
 
+    @ManyToOne(type => ChatEntity, chat => chat.members)
+    room: ChatEntity;
+
     @Column({default : false})
     owner: boolean;
 

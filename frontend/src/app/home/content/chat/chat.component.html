@@ -13,9 +13,9 @@
 						<i class="fa fa-hashtag"></i> {{room.name}}
 					</p>
 					<div class="mt-1">
-						<button class="fa-btn">
-							<span class="fa fa-plus fa-icon"> </span>
-							<p>Add channel</p>
+						<button class="fa-btn" (click)="openModal('channel')">
+							<span class="fa fa-users fa-icon"></span>
+							<p>Find channel</p>
 						</button>
 					</div>
 				</div>
@@ -35,9 +35,9 @@
 							<span style="white-space: pre-line;">{{room.name}}</span>
 					</div>
 					<div class="mt-1">
-						<button class="fa-btn">
+						<button class="fa-btn" (click)="openModal('friend')">
 							<span class="fa fa-user-plus fa-icon"> </span>
-							<p>Add friend to chat</p>
+							<p>Find people</p>
 						</button>
 					</div>
 				</div>
@@ -47,7 +47,7 @@
 		<div class="col-10 right-container">
 			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()'></app-messaging>
 			<div *ngIf="!showRoom">
-				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>
+				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>			
 			</div>
 		</div>
 	</div>

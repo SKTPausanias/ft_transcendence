@@ -20,9 +20,8 @@ export class ChatGateway {
 	@SubscribeMessage(eChat.ON_START)
 	async onStart(client, data) {
 		const me = await this.getSessionUser(client);
-		await this.chatService.onStart(me, data.members, data.name);
-
-		this.server.to(client.id).emit('test', "Testing...")
+		const resp = await this.chatService.onStart(me, data.members, data.name);
+		await this.server.to(client.id).emit(eChat.ON_START, me.login, resp);
 	}
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
 	async onJoinRoom(client, data) {
@@ -30,28 +29,43 @@ export class ChatGateway {
 	}
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
 	async onLeaveRoom(client, data) {
-		
 	}
 	@SubscribeMessage(eChat.ON_LOAD_ACTIVE_ROOMS)
 	async onLoadActiveRooms(client) {
-	
+		try {
+			const me = await this.getSessionUser(client);
+			const rooms = await this.chatService.getActiveChatRooms(me);
+			await this.socketService.emitToSelf(this.server, eChat.ON_LOAD_ACTIVE_ROOMS, me.login ,rooms);
+		} catch (error) {}
 	}
 	@SubscribeMessage(eChat.ON_All_MSG)
 	async getAllMsg(client, data) {
-		
+		try {
+			const me = await this.getSessionUser(client);
+			const resp = await this.chatService.getAllMessages(data);
+			await this.server.to(client.id).emit(eChat.ON_All_MSG, me.login, resp);
+		} catch (error) {
+			console.log(error);
+		}
 	}
 	@SubscribeMessage(eChat.ON_NEW_MSG)
 	async onNewMsg(client, data) {
-		
+		try {
+			console.log(data);
+		const me = await this.getSessionUser(client);
+		const resp = await this.chatService.newMessage(me, data);
+		await this.socketService.emitToAll(this.server, eChat.ON_NEW_MSG, me.login, resp.emitTo, resp.message);
+		} catch (error) {}
 	}
 	@SubscribeMessage(eChat.ON_BLOCK_USER)
 	async onBlockUser(client, data) {
-	
+		
 	}
 
 
 	async goOnlineOffline(login: string){
-		
+		console.log(login, " now is offline");;
+
 	}
 
 

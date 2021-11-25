@@ -31,15 +31,17 @@
 .dropdown-menu.scrool::-webkit-scrollbar-track {
   background: #92a1c0e8;
 }
-.dropdown-item{
-}
-.dropdown-item p{
-	display: inline;
-}
+
 .dropdown-item:hover{
 	background-color: #6C7B9D;
 }
 
+.dropdown-item .icon-btn{
+	color: #ffffff;
+}
+.dropdown-item .icon-btn:hover{
+	color: #34425C;
+}
 
 .icon-btn{
 	margin: 0 10px 0 10px;

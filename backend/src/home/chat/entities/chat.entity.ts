@@ -20,7 +20,9 @@ export class ChatEntity {
     @Column({default: false})
     protected: boolean;
 
-    @ManyToMany(() => ChatUsersEntity)
-	@JoinTable()
+	@OneToMany(() => ChatUsersEntity, (member) => member.room)
     members: ChatUsersEntity[];
+
+    @OneToMany(type => MessageEntity, message => message.chat)
+    messages: MessageEntity[];
 }

@@ -15,9 +15,9 @@ export class MessageEntity {
 	date: string;
 
 	@ManyToOne(type => UserEntity, user => user.messages)
-    user: UserEntity;
+    owner: UserEntity;
 
-    @ManyToOne(type => ChatEntity)
+    @ManyToOne(type => ChatEntity, room => room.id)
     chat: ChatEntity;
 
 }

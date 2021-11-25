@@ -1,3 +1,4 @@
+import { UserEntity } from "../user/user.entity";
 import { UserPublicInfoI } from "../user/userI";
 
 export interface ChatRoomI {
@@ -6,7 +7,9 @@ export interface ChatRoomI {
     me: UserPublicInfoI;
 	img: string | undefined;
 	members: UserPublicInfoI[];
-	blocked: boolean;
+	banned: boolean;
+	owner: boolean;
+    muted: boolean;
 
 }
 export interface MessagesI {
@@ -23,4 +26,8 @@ export interface ChatInfoI{
 	owner: boolean,
 	baned: boolean,
 	muted: boolean
+}
+export interface NewMessageI {
+	emitTo : UserEntity[],
+	message: MessagesI
 }

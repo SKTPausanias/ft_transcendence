@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { eChat, Nav, wSocket } from 'src/app/shared/ft_enums';
 import { SessionI, SharedPreferencesI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
-import { UserInfoI } from 'src/app/shared/interface/iUserInfo';
+import { UserInfoI, UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { DashboardService } from '../content/dashboard/dashboard.service';
 import { SocketService } from '../socket.service';
@@ -17,6 +17,8 @@ export class RightNavComponent implements OnInit {
 	session: SessionI = this.sQuery.getSessionToken();
 	me: UserInfoI;
 	onlineUsers: any;
+	pos = 0;
+
 	
 	constructor(private sQuery: SessionStorageQueryService,
 		private userServie: UserService,
@@ -41,5 +43,37 @@ export class RightNavComponent implements OnInit {
 		//await this.socketService.emit(wSocket.CHAT_ON_START, {type: "one-to-one", memberOne: this.me,  memberTwo: user});
 		//add to dm table if not exists
 		//open chat
+	}
+	getInvitation(): UserPublicInfoI{
+
+		if (this.pos >= this.rigtNavPreference.friend_invitation.length)
+			this.pos = this.rigtNavPreference.friend_invitation.length - 1;
+		this.pos < 0 ? (this.pos = 0) : 0;
+		if (this.rigtNavPreference.friend_invitation.length > 0)
+			return (this.rigtNavPreference.friend_invitation[this.pos])
+		return (<UserPublicInfoI>{});
+	}
+	async accept(){
+		const user = this.rigtNavPreference.friend_invitation[this.pos];
+		return (await this.dashboardService.addFriendShip(user, this.session))
+
+	}
+	async decline(){
+		const user = this.rigtNavPreference.friend_invitation[this.pos];
+		return (await this.dashboardService.removeFriendShip(user, this.session))
+	}
+	next(){
+		if (this.pos < this.rigtNavPreference.friend_invitation.length - 1)
+			this.pos++;
+		else
+			this.pos = 0;
+	}
+	prev(){
+		if (this.pos > 0)
+			this.pos--;
+		else
+			this.pos = this.rigtNavPreference.friend_invitation.length - 1;
+		if (this.pos < 0)
+			this.pos = 0;
 	}
 }

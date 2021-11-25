@@ -59,14 +59,14 @@ export class UserEntity {
     })
     friends: FriendEntity[];
 
-	@Column("int", { array: true , nullable: true})
+	@Column("int", {array: true , default: []})
 	active_chat_rooms: number[];
 
 
     @OneToMany(() => ChatEntity, (room) => room.id)
     rooms: ChatUsersEntity[];
 
-    @OneToMany(type => MessageEntity, message => message.user)
+    @OneToMany(type => MessageEntity, message => message.owner)
     messages: MessageEntity[];
 }
 
