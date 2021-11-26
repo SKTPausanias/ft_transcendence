@@ -5,7 +5,7 @@ import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { ChatService } from './chat.service';
-import { eChat } from 'src/app/shared/ft_enums';
+import { eChat, eChatType } from 'src/app/shared/ft_enums';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChatModalComponent } from './chat-modal/chat-modal.component';
 
@@ -16,12 +16,12 @@ import { ChatModalComponent } from './chat-modal/chat-modal.component';
 })
 export class ChatComponent implements OnInit {
 	@Input() chatPreference: SharedPreferencesI;
+	directRooms: ChatRoomI[] = [];
 	privateRooms: ChatRoomI[] = [];
-	groupRooms: ChatRoomI[] = [];
+	publicRooms: ChatRoomI[] = [];
 	showChannels: boolean = true;
 	showDM : boolean = true;
 	showRoom = false;
-	channels: any[] = [];
 	messages: any[] = [];
 	session = this.sQuery.getSessionToken();
 	friends: UserPublicInfoI[] = [];
@@ -40,6 +40,8 @@ export class ChatComponent implements OnInit {
 			this.selectChatRoom(data.room);
 		else if (data.action == 'onDestroy')
 			this.closeRoom();
+		else if (data.action == "onLoad")
+			this.distinguishRooms();
 		else
 			this.chatService.chatFragmentEmmiter.emit(data);
 	});
@@ -63,7 +65,12 @@ export class ChatComponent implements OnInit {
 	this.showRoom = true;
 	this.chatService.chatFragmentEmmiter.emit({action : "room-change"});
   }
-
+  distinguishRooms(){
+	var rooms = this.chatPreference.chat.rooms;
+	this.directRooms = rooms.filter(room => room.type == eChatType.DIRECT);
+	this.privateRooms = rooms.filter(room => room.type == eChatType.PRIVATE);
+	this.publicRooms = rooms.filter(room => room.type == eChatType.PUBLIC);
+  }
   getPrivateRooms(){
 	return (this.chatPreference.chat.rooms.filter(room => room.img != undefined))
   }

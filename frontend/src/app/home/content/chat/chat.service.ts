@@ -98,6 +98,8 @@ export class ChatService {
 			try {
 				this.sharedPreferences.chat.rooms = data;
 				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatEmiter.emit({action : 'onLoad'});
+
 			}catch(error){}
 		})
 	}
@@ -110,7 +112,8 @@ export class ChatService {
 					this.sharedPreferences.chat.rooms.push(data);
 				else
 					this.sharedPreferences.chat.rooms[index] = data;
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+					this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatEmiter.emit({action: "onLoad"});
 			}catch(error){}
 		})
 	}

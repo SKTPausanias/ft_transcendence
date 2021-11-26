@@ -181,11 +181,9 @@ export class ChatModalComponent implements OnInit {
 		return (this.preferences.friends.find(usr => usr.login == user.login) == undefined);
 	}
 	getChannelType(){
-		if (this.channelType == 'private')
-			return (this.type == 'friend' ? eChatType.DIRECT_PRIVATE : eChatType.CHANNEL_PRIVATE);
-		else if (this.channelType = 'public')
-			return (this.type == 'friend' ? eChatType.DIRECT_PUBLIC : eChatType.CHANNEL_PUBLIC);
-		return undefined;
+		if (this.channelType == eChatType.PRIVATE || this.channelType == eChatType.PUBLIC)
+			return (this.channelType);
+		return (eChatType.DIRECT);
 	}
 	private initVariables(dismiss: boolean){
 		this.search = '';

@@ -115,9 +115,9 @@ export class ChatService {
 					where: {name: this.chatName}
 				});
 				if (room == undefined){
-					const chatInfo = this.newChatInfo(this.chatName, 'private');//change type for oneToOne
+					const roomInfo = this.newChatInfo(this.chatName, chatInfo.type);//change type for oneToOne
 					const chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
-					room = await this.newChatRoom(chatMembers, chatInfo);
+					room = await this.newChatRoom(chatMembers, roomInfo);
 				}
 				else
 					console.log("room exists");
@@ -265,17 +265,15 @@ export class ChatService {
 		parsed.owner = me.owner;
 		parsed.muted = me.muted;
 		parsed.banned = me.banned;
+		parsed.type = chatRoom.type;
 		if (chatRoom.type != eChatType.DIRECT)
 			parsed.name = chatRoom.name;
-		if (chatRoom.type != eChatType.CHANNEL_PRIVATE && chatRoom.type != eChatType.CHANNEL_PUBLIC)
+		if (chatRoom.type == eChatType.DIRECT)
 		{
-			if (parsed.members.length > 0)
-				parsed.img = parsed.members[0].avatar;
-			else
-				parsed.img = parsed.me.avatar;
-			if (chatRoom.type == eChatType.DIRECT)
-				parsed.name = parsed.members[0].nickname;
+			parsed.img = parsed.members[0].avatar;
+			parsed.name = parsed.members[0].nickname;
 		}
+		console.log("parsed: ", parsed);
 		return (parsed);
 	}
 

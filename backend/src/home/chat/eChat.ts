@@ -11,9 +11,6 @@ export enum eChat {
 }
 export enum eChatType{
 	DIRECT = 'direct',
-	DIRECT_PRIVATE = 'direct_private',
-	DIRECT_PUBLIC = 'direct_public',
-	CHANNEL_PRIVATE = 'channel_private',
-	CHANNEL_PUBLIC = 'channel_public'
-
+	PRIVATE = 'private',
+	PUBLIC = 'public'
 }

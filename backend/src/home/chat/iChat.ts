@@ -11,6 +11,7 @@ export interface ChatRoomI {
 	owner: boolean;
     muted: boolean;
 	onlineStatus: boolean;
+	type: string;
 
 }
 export interface MessagesI {

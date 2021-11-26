@@ -6,16 +6,35 @@
 						<button class="fa-btn" (click)="hideShowChannels()">
 							<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
 						</button>
-						<p>Channels</p>
+						<p>Public Channels</p>
 				</div>
 				<div *ngIf="showChannels">
-					<p class="item" *ngFor="let room of getGroupRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-						<span class="ms-2"><i class="fa fa-hashtag"></i> {{room.name}}</span>
+					<p class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+						<span class="ms-2"><i class="fa fa-broadcast-tower"></i> {{room.name}}</span>
 					</p>
 					<div class="mt-1">
 						<button class="fa-btn" (click)="openModal('channel')">
-							<span class="fa fa-users fa-icon"></span>
+							<span class="fa fa-search fa-icon"></span>
 							<p>Find channel</p>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="child">
+				<div class="room-ctn">
+						<button class="fa-btn" (click)="hideShowChannels()">
+							<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
+						</button>
+						<p>Private Channels</p>
+				</div>
+				<div *ngIf="showChannels">
+					<p class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+						<span class="ms-2"><i class="fa fa-user-shield"></i> {{room.name}}</span>
+					</p>
+					<div class="mt-1">
+						<button class="fa-btn" (click)="openModal('channel')">
+							<span class="fa fa-search-plus fa-icon"></span>
+							<p>Manage channels</p>
 						</button>
 					</div>
 				</div>
@@ -28,7 +47,7 @@
 					<p class="mb-1">Dirrect messages</p>
 				</div>
 				<div *ngIf="showDM">
-					<div class="item ps-2" *ngFor="let room of getPrivateRooms()" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+					<div class="item ps-2" *ngFor="let room of directRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
 							<div class="room_img online" [ngClass]="{'offline' : !isMemberOnline(room)}">
 								<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
 							</div>
