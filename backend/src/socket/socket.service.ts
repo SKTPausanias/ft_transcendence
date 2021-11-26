@@ -74,11 +74,15 @@ export class SocketService {
 	}
 	async emitToAll(server: any, action: string, emiter: string, recivers: UserEntity[], data: any)
 	{
-		recivers.forEach(async user => {
-			const sessions = await this.sessionService.findByUser(user);
-			sessions.forEach(session => {
-				server.to(session.socket_id).emit(action, emiter, data);
-			});
+		recivers.forEach(async reciver => {
+			this.emitToOne(server, action, emiter, reciver, data);
+		});
+	}
+	async emitToOne(server: any, action: string, emiter: string, reciver: UserEntity, data: any)
+	{
+		const sessions = await this.sessionService.findByUser(reciver);
+		sessions.forEach(session => {
+			server.to(session.socket_id).emit(action, emiter, data);
 		});
 	}
 	async emitToOneSession(server: any, action: string, token: string, data: any)

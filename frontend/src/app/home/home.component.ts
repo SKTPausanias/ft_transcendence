@@ -83,6 +83,9 @@ export class HomeComponent implements OnInit {
 	}
 	private subscribeToChatEmiter(){
 		this.socketEmiter = this.chatService.chatPreferenceEmiter.subscribe((data : any)=> {
+			var activeRoom = this.sharedPreference.chat.active_room;
+			if (activeRoom != undefined)
+				this.sharedPreference.chat.active_room = data.rooms.find((item: any) => item.id == activeRoom.id);
 			this.sharedPreference.chat = data;
 		});
 	}

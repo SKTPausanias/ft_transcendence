@@ -186,9 +186,7 @@ export class ChatService {
 			var chatUser = this.getChatUserEntity(user, this.newChatUserInfo(false));
 			chatUser.room = chatRoom;
 			chatUser.user = await this.userService.findByLogin(user.login);
-			console.log("llega1: ", chatUser);
 			chatUser = await this.chatUserRepository.save(chatUser);
-			console.log("llega2");
 			chatRoom.members.push(chatUser);
 			chatRoom = await this.chatRepository.save(chatRoom)
 			await this.userService.activateRoom([chatUser.user], chatRoom.id);

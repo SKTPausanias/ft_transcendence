@@ -82,14 +82,15 @@ export class ChatComponent implements OnInit {
   }
   addMemberToChat(){
 	this.openModal("member");
-	console.log("lets add member")
   }
   openModal(name: string){
 	const modal = this.modalService.open(ChatModalComponent, { centered: false, animation: true });
 	modal.componentInstance.type = name;
 	modal.componentInstance.preferences = this.chatPreference;
 	modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-		console.log(receivedEntry);
+		if (receivedEntry == "onAddChannel")
+			this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
+		console.log("Recived entry", receivedEntry);
 	})
 
   }

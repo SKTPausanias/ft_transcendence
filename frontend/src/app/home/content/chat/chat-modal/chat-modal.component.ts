@@ -68,7 +68,10 @@ export class ChatModalComponent implements OnInit {
 		else {
 			const resp = await this.chatService.addChannel(this.session, channelInfo);
 			if (resp.statusCode == 200)
+			{
+				this.passEntry.emit("onAddChannel");
 				this.modal.dismiss();
+			}
 			else
 				console.log(resp.error);
 		}
@@ -166,7 +169,7 @@ export class ChatModalComponent implements OnInit {
 	}
 	addMemberToChat(user: UserPublicInfoI){
 		this.chatService.emit(eChat.ON_ADD_MEMBER_TO_CHAT, {room : this.preferences.chat.active_room, member: user});
-		console.log("lets add: ", user);
+		
 	}
 	startChat(user: UserPublicInfoI){
 		this.modal.dismiss();

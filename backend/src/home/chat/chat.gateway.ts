@@ -5,6 +5,7 @@ import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { ChatService } from './chat.service';
 import { eChat } from './eChat';
+import { ChatEntity } from './entities/chat.entity';
 
 @WebSocketGateway({ cors: true })
 export class ChatGateway {
@@ -63,8 +64,13 @@ export class ChatGateway {
 	}
 	@SubscribeMessage(eChat.ON_ADD_MEMBER_TO_CHAT)
 	async onAddMemberToChat(client, data) {
-		const resp = await this.chatService.addMemberToChat(data.room, data.member);
-		console.log("member added: ", resp);
+		const me = await this.getSessionUser(client);
+		const room = await this.chatService.addMemberToChat(data.room, data.member);
+		for (let i = 0; i < room.members.length; i++) {
+			const member = room.members[i];
+			const parsedRoom = this.chatService.parseChatRoom(room, member);
+			await this.socketService.emitToOne(this.server, eChat.ON_UPDATE_ROOM, me.login, member.user, parsedRoom);
+		}
 	}
 
 
