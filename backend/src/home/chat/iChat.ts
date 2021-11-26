@@ -7,9 +7,9 @@ export interface ChatRoomI {
     me: UserPublicInfoI;
 	img: string | undefined;
 	members: UserPublicInfoI[];
-	banned: boolean;
+	banned: UserPublicInfoI[];
 	owner: boolean;
-    muted: boolean;
+    muted: UserPublicInfoI[];
 	onlineStatus: boolean;
 	type: string;
 

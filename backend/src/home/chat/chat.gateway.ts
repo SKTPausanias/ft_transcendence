@@ -73,7 +73,13 @@ export class ChatGateway {
 	}
 	@SubscribeMessage(eChat.ON_BLOCK_USER)
 	async onBlockUser(client, data) {
-		
+		try
+		{
+			//const me = await this.getSessionUser(client);
+			await this.chatService.onBlockUser(data.room, data.user);
+			//await this. (room, me.login);
+		}
+		catch(error) {}
 	}
 	@SubscribeMessage(eChat.ON_ADD_MEMBER_TO_CHAT)
 	async onAddMemberToChat(client, data) {

@@ -122,7 +122,14 @@ export class ChatService {
 		return null
 	}
 	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatRoomI>{
-		return null
+		const roomEntity = await this.chatRepository.findOne({
+			relations: ["members", "members.user"],
+			where : {id : room.id}
+		});
+		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
+		chatUser.banned = true;
+		await this.chatUserRepository.save(chatUser);
+		return (this.parseChatRoom(roomEntity, chatUser));
 	}
 
 	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI):Promise<ChatEntity>{
@@ -255,8 +262,9 @@ export class ChatService {
 			return (entities);
 		}
 	}
-	private  chatUserToUserInfo(members: ChatUsersEntity[]): UserPublicInfoI[]
+	private  chatUserToUserInfo(members: any): UserPublicInfoI[]
 	{
+		console.log("chatUserToUserInfo: ", members);
 		var userList: UserPublicInfoI[] = [];
 		try {
 			for (let i = 0; i < members.length; i++) {
@@ -265,6 +273,7 @@ export class ChatService {
 			}
 			return (userList);
 		} catch (error) {
+			console.log("error: ", error);
 			return (userList);
 		}
 	}
@@ -288,8 +297,11 @@ export class ChatService {
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
 		parsed.owner = me.owner;
-		parsed.muted = me.muted;
-		parsed.banned = me.banned;
+		parsed.muted = this.chatUserToUserInfo(chatRoom.members.find(member => member.muted));
+		parsed.banned = this.chatUserToUserInfo(chatRoom.members.find(member => member.banned));
+
+		//parsed.muted = me.muted;
+		//parsed.banned = me.banned;
 		parsed.type = chatRoom.type;
 		if (chatRoom.type != eChatType.DIRECT)
 			parsed.name = chatRoom.name;
@@ -298,6 +310,7 @@ export class ChatService {
 			parsed.img = parsed.members[0].avatar;
 			parsed.name = parsed.members[0].nickname;
 		}
+		console.log("parsed: ", parsed);
 		return (parsed);
 	}
 
