@@ -22,15 +22,28 @@ export class ChatGateway {
 	async onStart(client, data) {
 		const me = await this.getSessionUser(client);
 		const resp = await this.chatService.onStart(me, data.members, data.chatInfo);
+		console.log("on start resp: ", resp);
 		await this.server.to(client.id).emit(eChat.ON_START, me.login, resp);
 	}
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
 	async onJoinRoom(client, data) {
-	
+		const me = await this.getSessionUser(client);
+		const room = await this.chatService.getChatRoomById(me, data);
+		await this.emitToAll(room, me.login);
 	}
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
 	async onLeaveRoom(client, data) {
+		try {
+			console.log("onLeaveRoom: ", data);
+			const me = await this.getSessionUser(client);
+			const room = await this.chatService.getChatRoomById(me, data.id);
+			await this.chatService.deActivateRoom(me, room);
+			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);
+		} catch (error) {
+			console.log("<error> onLeaveRoom:", error);
+		}
 	}
+	
 	@SubscribeMessage(eChat.ON_LOAD_ACTIVE_ROOMS)
 	async onLoadActiveRooms(client) {
 		try {
@@ -66,11 +79,7 @@ export class ChatGateway {
 	async onAddMemberToChat(client, data) {
 		const me = await this.getSessionUser(client);
 		const room = await this.chatService.addMemberToChat(data.room, data.member);
-		for (let i = 0; i < room.members.length; i++) {
-			const member = room.members[i];
-			const parsedRoom = this.chatService.parseChatRoom(room, member);
-			await this.socketService.emitToOne(this.server, eChat.ON_UPDATE_ROOM, me.login, member.user, parsedRoom);
-		}
+		await this.emitToAll(room, me.login);
 	}
 
 
@@ -79,7 +88,13 @@ export class ChatGateway {
 
 	}
 
-
+	async emitToAll(room: ChatEntity, me: string){
+		for (let i = 0; i < room.members.length; i++) {
+			const member = room.members[i];
+			const parsedRoom = this.chatService.parseChatRoom(room, member);
+			await this.socketService.emitToOne(this.server, eChat.ON_UPDATE_ROOM, me, member.user, parsedRoom);
+		}
+	}
 
 
 	private async getSession(client: any)

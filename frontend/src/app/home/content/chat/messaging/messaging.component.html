@@ -10,21 +10,21 @@
 					<b class="ms-2 icon-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<div class="dropdown-menu scrool" aria-labelledby="dropdownMenuLink">
 						<div class="dropdown-item">
-							<div class="border-bottom border-secondary border-2 ms-3">
+							<div class="border-bottom border-light ms-3 pb-2">
 								<img class="ico_s img-fluid me-2" src="{{msgPreference.chat.active_room.me.avatar}}" alt="image">				
 								<h5 class="d-inline text-light">{{msgPreference.chat.active_room.me.nickname}} </h5>
 							</div>
 						</div>
 						<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
 							<div class="row m-0 ms-2">
-								<div class="col-9">
+								<div class="col-8">
 									<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
 									<h5 class="d-inline text-light">{{item.nickname}}</h5>
 								</div>
-								<div class="col-3">
+								<div class="col-4">
 									<div class="h-100 d-flex justify-content-center">
 										<span class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
-										<span class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
 									</div>
 								</div>
 							</div>

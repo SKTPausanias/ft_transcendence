@@ -1,41 +1,46 @@
 <div class="fill">
 	<div class="row mx-0">
 		<div class="col-2 left-container scrool">
-			<div class="child">
+			<div class="child border-bottom border-light  mb-2">
 				<div class="room-ctn">
-						<button class="fa-btn" (click)="hideShowChannels()">
-							<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
-						</button>
-						<p>Public Channels</p>
-				</div>
-				<div *ngIf="showChannels">
-					<p class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-						<span class="ms-2"><i class="fa fa-broadcast-tower"></i> {{room.name}}</span>
-					</p>
-					<div class="mt-1">
-						<button class="fa-btn" (click)="openModal('channel')">
-							<span class="fa fa-search fa-icon"></span>
-							<p>Find channel</p>
-						</button>
-					</div>
-				</div>
-			</div>
-			<div class="child">
-				<div class="room-ctn">
-						<button class="fa-btn" (click)="hideShowChannels()">
-							<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
-						</button>
-						<p>Private Channels</p>
-				</div>
-				<div *ngIf="showChannels">
-					<p class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-						<span class="ms-2"><i class="fa fa-user-shield"></i> {{room.name}}</span>
-					</p>
-					<div class="mt-1">
-						<button class="fa-btn" (click)="openModal('channel')">
-							<span class="fa fa-search-plus fa-icon"></span>
-							<p>Manage channels</p>
-						</button>
+					<button class="fa-btn" (click)="hideShowChannels()">
+						<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
+					</button>
+					<p>Channels</p>	
+					<div *ngIf="showChannels" class="room-ctn ms-2">
+						<div class="room-ctn">
+							<button class="fa-btn" (click)="hideShowPublicChannels()">
+								<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showPublicChannels, 'fa-caret-right' : !showPublicChannels}"></span>
+							</button>
+							<p>Public</p>
+							<div class="room-ctn">
+								<div *ngIf="showPublicChannels">
+									<p class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<span class="ms-2 fa-blue"><i class="fa fa-broadcast-tower"></i> {{room.name}}</span>
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="room-ctn">
+							<button class="fa-btn" (click)="hideShowPrivateChannels()">
+								<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showPrivateChannels, 'fa-caret-right' : !showPrivateChannels}"></span>
+							</button>
+							<p>Private</p>
+							<div class="room-ctn">
+								<div *ngIf="showPrivateChannels">
+									<p class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<span class="ms-2 fa-blue"><i class="fa fa-user-shield "></i> {{room.name}}</span>
+									</p>
+									
+								</div>
+							</div>
+						</div>
+						<div class="mt-1">
+							<button class="fa-btn" (click)="openModal('channel')">
+								<span class="fa fa-search-plus fa-icon"></span>
+								<p>Manage channels</p>
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

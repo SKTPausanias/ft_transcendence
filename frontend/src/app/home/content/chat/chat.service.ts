@@ -37,6 +37,7 @@ export class ChatService {
 	private onStartChat(){
 		this.socket.on(eChat.ON_START, (emiter: string, data: any) => {
 			try {
+				console.log("onStartChat: ", data);
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
 					this.sharedPreferences.chat.rooms.push(data);
 				this.sharedPreferences.chat.active_room = data;
@@ -56,13 +57,11 @@ export class ChatService {
 
 	private onNewChatMsg(){
 		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
+			console.log("onNewChatMsg: ", data);
 			try {
 				console.log("on new msg");
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
-				{
 					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
-					console.log("join room emited");
-				}
 				this.chatEmiter.emit({action : 'newMsg' , messages: data});
 			}catch(error){}
 		})
@@ -71,10 +70,9 @@ export class ChatService {
 	private onJoinRoom(){
 		this.socket.on(eChat.ON_JOIN_ROOM, (data: any) => {
 			try {
-				console.log("on join room");
-				//if (this.sharedPreferences.chat.rooms.find(room => room.id == data.id) == undefined)
-					this.sharedPreferences.chat.rooms.push(data);
+				this.sharedPreferences.chat.rooms.push(data);
 				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatEmiter.emit();
 			}catch(error){}
 		})
 	}
@@ -98,7 +96,7 @@ export class ChatService {
 			try {
 				this.sharedPreferences.chat.rooms = data;
 				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
-				this.chatEmiter.emit({action : 'onLoad'});
+				this.chatEmiter.emit();
 
 			}catch(error){}
 		})
@@ -112,8 +110,8 @@ export class ChatService {
 					this.sharedPreferences.chat.rooms.push(data);
 				else
 					this.sharedPreferences.chat.rooms[index] = data;
-					this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
-				this.chatEmiter.emit({action: "onLoad"});
+				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatEmiter.emit();
 			}catch(error){}
 		})
 	}

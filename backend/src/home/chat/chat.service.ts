@@ -102,8 +102,17 @@ export class ChatService {
 		return null;
 	}
 
-	async getChatRoomById(user: UserEntity, roomId: number): Promise<ChatRoomI>
+	async getChatRoomById(user: UserEntity, roomId: number): Promise<ChatEntity | undefined>
 	{
+		try {
+			const room = await this.chatRepository.findOne({
+				relations: ["members", "members.user"],
+				where : {id : roomId}
+			});
+			return (room);
+		} catch (error) {
+			return (undefined);
+		}
 		return null
 	}
 	async getChatRoomsByIds(user: UserEntity): Promise<ChatEntity[]>{
@@ -344,11 +353,16 @@ export class ChatService {
 		active.chat = chatRoom;
 		for (var i = 0; i < users.length; i++) {
 			active.user = users[i];
-			await this.activeRoomRepository.save(active);
+			const cmpActive = await this.activeRoomRepository.findOne({
+				relations: ['chat', 'user'],
+				where: {chat: chatRoom.id, user: users[i].id}
+			})
+			if (cmpActive == undefined)
+				await this.activeRoomRepository.save(active);
 		}
 	}
 
-	private async deActivateRoom(user: UserEntity, chatRoom: ChatEntity): Promise<void>{
+	async deActivateRoom(user: UserEntity, chatRoom: ChatEntity): Promise<void>{
 		const active = await this.activeRoomRepository.findOne({
 			relations: ['user', 'chat'],
 			where: { user: user.id , chat: chatRoom.id}

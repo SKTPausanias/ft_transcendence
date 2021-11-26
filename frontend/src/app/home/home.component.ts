@@ -87,6 +87,7 @@ export class HomeComponent implements OnInit {
 			if (activeRoom != undefined)
 				this.sharedPreference.chat.active_room = data.rooms.find((item: any) => item.id == activeRoom.id);
 			this.sharedPreference.chat = data;
+			console.log("subscribeToChatEmiter: ", this.sharedPreference.chat);
 		});
 	}
 	@HostListener('window:keydown', [ '$event' ])
