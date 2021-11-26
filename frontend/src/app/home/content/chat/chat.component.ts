@@ -37,13 +37,16 @@ export class ChatComponent implements OnInit {
 
   async ngOnInit() {
     this.subscription = this.chatService.chatEmiter.subscribe((data: any) => {
-      console.log("ngOnInit: prefs= ", this.chatPreference.chat);
       this.distinguishRooms();
-      if (data == undefined) return;
-      if (data.action == "open") this.selectChatRoom(data.room);
-      else if (data.action == "onDestroy") this.closeRoom();
+	  this.chatService.chatFragmentEmmiter.emit();
+      if (data == undefined)
+	  	return;
+      if (data.action == "open") 
+	  	this.selectChatRoom(data.room);
+      else if (data.action == "onDestroy") 
+	  	this.closeRoom();
       else data != undefined;
-      this.chatService.chatFragmentEmmiter.emit(data);
+      	this.chatService.chatFragmentEmmiter.emit(data);
     });
     this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
     if (this.chatPreference.chat.active_room != undefined)
@@ -72,11 +75,12 @@ export class ChatComponent implements OnInit {
   hideShowDM() {
     this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
-  selectChatRoom(item: any) {
-    console.log("chat room: ", item);
-    this.chatPreference.chat.active_room = item;
-    this.showRoom = true;
-    this.chatService.chatFragmentEmmiter.emit({ action: "room-change" });
+  selectChatRoom(item: ChatRoomI) {
+	if (item.protected)
+		return (this.openModal("protected", item));
+	this.chatPreference.chat.active_room = item;
+	this.showRoom = true;
+	this.chatService.chatFragmentEmmiter.emit({ action: "room-change" });
   }
   distinguishRooms() {
     var rooms = this.chatPreference.chat.rooms;
@@ -109,12 +113,13 @@ export class ChatComponent implements OnInit {
   addMemberToChat() {
     this.openModal("member");
   }
-  openModal(name: string) {
+  openModal(name: string, room?: ChatRoomI) {
     const modal = this.modalService.open(ChatModalComponent, {
       centered: false,
       animation: true,
     });
     modal.componentInstance.type = name;
+    modal.componentInstance.room = room;
     modal.componentInstance.preferences = this.chatPreference;
     modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
       if (receivedEntry == "onAddChannel")

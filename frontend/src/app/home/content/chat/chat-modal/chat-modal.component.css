@@ -67,6 +67,9 @@
 	color:white;
 	text-decoration:none;
 }
+.search_icon:hover{
+	cursor: pointer;
+}
 
 .add_icon{
 	height: 40px;

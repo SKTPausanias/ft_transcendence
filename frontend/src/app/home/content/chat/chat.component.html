@@ -1,6 +1,6 @@
 <div class="fill">
 	<div class="row mx-0">
-		<div class="col-2 left-container scrool">
+		<div class="col-3 left-container scrool">
 			<div class="child border-bottom border-light  mb-2">
 				<div class="room-ctn">
 					<button class="fa-btn" (click)="hideShowChannels()">
@@ -15,9 +15,17 @@
 							<p>Public</p>
 							<div class="room-ctn">
 								<div *ngIf="showPublicChannels">
-									<p class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-										<span class="ms-2 fa-blue"><i class="fa fa-broadcast-tower"></i> {{room.name}}</span>
-									</p>
+									<div class="item row" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<div class="col-10 cut-text">
+											<span class="ms-2 channel-text">
+												<i class="fa fa-broadcast-tower channel-fa"></i> 
+												{{room.name}}
+											</span>
+										</div>
+										<div class="col-2">
+											<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -28,9 +36,18 @@
 							<p>Private</p>
 							<div class="room-ctn">
 								<div *ngIf="showPrivateChannels">
-									<p class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-										<span class="ms-2 fa-blue"><i class="fa fa-user-shield "></i> {{room.name}}</span>
-									</p>
+									<div class="item row" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										
+										<div class="col-10 cut-text">
+											<span class="ms-2 channel-text">
+												<i class="fa fa-user-shield channel-fa"></i> 
+												{{room.name}}
+											</span>
+										</div>
+										<div class="col-2">
+											<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+										</div>
+									</div>
 									
 								</div>
 							</div>
@@ -68,7 +85,7 @@
 				
 			</div>
 		</div>
-		<div class="col-10 right-container">
+		<div class="col-9 right-container">
 			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()' (addMemberEvent)="addMemberToChat()"></app-messaging>
 			<div *ngIf="!showRoom">
 				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>			

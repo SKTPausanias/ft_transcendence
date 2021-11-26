@@ -1,6 +1,6 @@
 
-<!--<div class="main-ctn" [ngClass]="{'hide' : !room.banned}"> You are blocked</div>-->
-<div class="main-ctn"> <!--[ngClass]="{'hide' : room.banned}"-->
+<div  *ngIf="imBanned" class="ban-msg text-danger"> <i>You are blocked in this chat!</i></div>
+<div class="main-ctn" [ngClass]="{'hide' : imBanned}">
 	<div class='info row'>
 		<div class="col-6 d-flex justify-content-start">
 			<div class="dropdown show">
@@ -17,13 +17,14 @@
 						</div>
 						<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
 							<div class="row m-0 ms-2">
-								<div class="col-8">
+								<div class="col-6">
 									<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
 									<h5 class="d-inline text-light">{{item.nickname}}</h5>
 								</div>
-								<div class="col-4">
+								<div class="col-6">
 									<div class="h-100 d-flex justify-content-center">
 										<span class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
+										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
 										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
 									</div>
 								</div>
@@ -54,8 +55,10 @@
 				</div>
 			</div>
 		</div>
+		<div *ngIf='directBanned' class="d-flex justify-content-center text-danger"><i>You blocked this user</i></div>
 	</div>
-	<div class='msg-action row'> 
+	<div *ngIf='imMuted' class="d-flex justify-content-center"><i class="fa fa-volume-mute fa-lg">You are muted in this room</i></div>
+	<div *ngIf='!imMuted && !directBanned'class='msg-action row'> 
 		<div class="col-11 ps-0 pe-0">
 			<textarea type="text" [(ngModel)]="msg"></textarea>
 		</div>

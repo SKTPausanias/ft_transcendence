@@ -115,6 +115,17 @@ img{
 	background:rgb(153, 13, 13);
 	border: 1px solid #ffffff;
 }
-.fa-blue{
+.channel-fa{
+	color: #94f368;
+}
+.channel-text{
 	color: #a4f6ff;
+}
+.cut-text { 
+	text-overflow: ellipsis;
+	overflow: hidden; 
+	white-space: nowrap;
+  }
+.lock{
+	color: #6e0000;
 }

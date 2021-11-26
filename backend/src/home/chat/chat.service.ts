@@ -121,7 +121,7 @@ export class ChatService {
 	async onMemberLeave(room: ChatRoomI, member: UserEntity){
 		return null
 	}
-	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatRoomI>{
+	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
 		const roomEntity = await this.chatRepository.findOne({
 			relations: ["members", "members.user"],
 			where : {id : room.id}
@@ -129,7 +129,17 @@ export class ChatService {
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
 		chatUser.banned = true;
 		await this.chatUserRepository.save(chatUser);
-		return (this.parseChatRoom(roomEntity, chatUser));
+		return (roomEntity);
+	}
+	async onMuteUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
+		const roomEntity = await this.chatRepository.findOne({
+			relations: ["members", "members.user"],
+			where : {id : room.id}
+		});
+		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
+		chatUser.muted = true;
+		await this.chatUserRepository.save(chatUser);
+		return (roomEntity);
 	}
 
 	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI):Promise<ChatEntity>{
@@ -262,7 +272,7 @@ export class ChatService {
 			return (entities);
 		}
 	}
-	private  chatUserToUserInfo(members: any): UserPublicInfoI[]
+	private  chatUserToUserInfo(members: ChatUsersEntity[]): UserPublicInfoI[]
 	{
 		console.log("chatUserToUserInfo: ", members);
 		var userList: UserPublicInfoI[] = [];
@@ -297,12 +307,10 @@ export class ChatService {
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
 		parsed.owner = me.owner;
-		parsed.muted = this.chatUserToUserInfo(chatRoom.members.find(member => member.muted));
-		parsed.banned = this.chatUserToUserInfo(chatRoom.members.find(member => member.banned));
-
-		//parsed.muted = me.muted;
-		//parsed.banned = me.banned;
+		parsed.muted = this.chatUserToUserInfo(chatRoom.members.filter(member => member.muted));
+		parsed.banned = this.chatUserToUserInfo(chatRoom.members.filter(member => member.banned));
 		parsed.type = chatRoom.type;
+		parsed.protected = chatRoom.protected;
 		if (chatRoom.type != eChatType.DIRECT)
 			parsed.name = chatRoom.name;
 		if (chatRoom.type == eChatType.DIRECT)

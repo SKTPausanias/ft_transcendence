@@ -7,31 +7,40 @@
 		<div class="w-100 py-3 d-flex justify-content-center">
 			<div>
 				<div class="w-100 d-flex justify-content-center">
-					<h5>Add {{type}}</h5>
+					<h5 *ngIf="type != 'protected'">Add {{type}}</h5>
+					<h5 *ngIf="type == 'protected'">
+						<i *ngIf="room.type == 'public'" class="fa fa-broadcast-tower channel-fa pe-2"></i> 
+						<i *ngIf="room.type == 'private'" class="fa fa-user-shield channel-fa pe-2"></i> 
+
+						{{room.name}}
+					</h5>
 				</div>
 				<div class="w-100 d-flex justify-content-center px-3">
 					<small class="text-center">
 						<i *ngIf="type == 'channel'">You can search for channel and join it or create your own</i>
 						<i *ngIf="type == 'friend'">You can search for other users and start chat, send a friendship invitation or dare to play pong</i>
 						<i *ngIf="type == 'member'">You can search for users to add them to chat room</i>
+						<i *ngIf="type == 'protected'">This room is protected with password</i>
 					</small>		
 				</div>
 
 			</div>
 		</div>
 	</div>
-	<div *ngIf="showAddFriendshipMsg" class="d-flex justify-content-center msg-box py-2">
-		Friend invitation has been send
+	<div *ngIf="statusMsg.length > 0" class="d-flex justify-content-center msg-box py-2">
+		{{statusMsg}}
 	</div>
 	<!-- Search & add toolbar -->
 	<div class="input-group pb-3 mt-3">
 		<div class="container">
 			<div class="d-flex justify-content-center">
 			 	<div class="searchbar mx-2">
-					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}...">
-					<span class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
+					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}..." [ngClass]="{'hide' : type == 'protected'}">
+					<input *ngIf="type == 'protected'" [(ngModel)]="password" class="search_input" type="text" name="" placeholder="Enter password...">
+					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
+					<span *ngIf="type == 'protected'" class="search_icon"><i class="fas fa-key" (click)=onJoinProtectedRoom()></i></span>
 				</div>
-				<div *ngIf="type != 'member'"  class="searchbar d-flex justify-content-center mx-2">
+				<div *ngIf="type != 'member' && type != 'protected'"  class="searchbar d-flex justify-content-center mx-2">
 					<span class="add_icon"><i class="fas fa-plus" (click)='openForm()'></i></span>
 				</div>
 			</div>

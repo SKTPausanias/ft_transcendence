@@ -11,6 +11,7 @@ export interface ChatRoomI {
     muted: UserPublicInfoI[];
 	onlineStatus: boolean;
 	type: string;
+	protected: boolean;
 }
 export interface MessagesI {
     message: string,

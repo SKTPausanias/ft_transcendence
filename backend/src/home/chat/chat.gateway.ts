@@ -29,7 +29,7 @@ export class ChatGateway {
 	async onJoinRoom(client, data) {
 		const me = await this.getSessionUser(client);
 		const room = await this.chatService.getChatRoomById(me, data);
-		await this.emitToAll(room, me.login);
+		await this.emitRoomUpdateToAll(room, me.login);
 	}
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
 	async onLeaveRoom(client, data) {
@@ -43,7 +43,7 @@ export class ChatGateway {
 			console.log("<error> onLeaveRoom:", error);
 		}
 	}
-	
+
 	@SubscribeMessage(eChat.ON_LOAD_ACTIVE_ROOMS)
 	async onLoadActiveRooms(client) {
 		try {
@@ -75,9 +75,19 @@ export class ChatGateway {
 	async onBlockUser(client, data) {
 		try
 		{
-			//const me = await this.getSessionUser(client);
-			await this.chatService.onBlockUser(data.room, data.user);
-			//await this. (room, me.login);
+			const me = await this.getSessionUser(client);
+			const room = await this.chatService.onBlockUser(data.room, data.user);
+			await this.emitRoomUpdateToAll(room, me.login);
+		}
+		catch(error) {}
+	}
+	@SubscribeMessage(eChat.ON_MUTE_USER)
+	async onMuteUser(client, data) {
+		try
+		{
+			const me = await this.getSessionUser(client);
+			const room = await this.chatService.onMuteUser(data.room, data.user);
+			await this.emitRoomUpdateToAll(room, me.login);
 		}
 		catch(error) {}
 	}
@@ -85,7 +95,7 @@ export class ChatGateway {
 	async onAddMemberToChat(client, data) {
 		const me = await this.getSessionUser(client);
 		const room = await this.chatService.addMemberToChat(data.room, data.member);
-		await this.emitToAll(room, me.login);
+		await this.emitRoomUpdateToAll(room, me.login);
 	}
 
 
@@ -94,7 +104,7 @@ export class ChatGateway {
 
 	}
 
-	async emitToAll(room: ChatEntity, me: string){
+	async emitRoomUpdateToAll(room: ChatEntity, me: string){
 		for (let i = 0; i < room.members.length; i++) {
 			const member = room.members[i];
 			const parsedRoom = this.chatService.parseChatRoom(room, member);

@@ -26,6 +26,10 @@ export class MessagingComponent implements OnInit {
 	members: UserPublicInfoI[];
 	room: ChatRoomI;
 	subscription: any;
+	imBanned: boolean = false;
+	imMuted: boolean = false;
+	directBanned: boolean = false;
+
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private chatService: ChatService,
@@ -69,6 +73,8 @@ export class MessagingComponent implements OnInit {
 	}
 	private chatFragmentEmitterHandler(data: any)
 	{
+		if (data == undefined)
+			return this.setupRoom();
 		if (data.action == 'room-change')
 			this.onRoomChange();
 		else if (data.action == 'loadAllMsg')
@@ -102,6 +108,10 @@ export class MessagingComponent implements OnInit {
 		this.chatService.emit(eChat.ON_BLOCK_USER, {user: item, room: this.room});
 		console.log(item);
 	}
+	muteUser(item: UserPublicInfoI){		
+		this.chatService.emit(eChat.ON_MUTE_USER, {user: item, room: this.room});
+		console.log("lets mute this user: ", item.nickname);
+	}
 	isPrivateRoom(){
 		return (this.msgPreference.chat.active_room.img != undefined);
 	}
@@ -111,5 +121,22 @@ export class MessagingComponent implements OnInit {
 
 	async addFriendShip(user: UserPublicInfoI){
 		const resp = await (this.dashboardService.addFriendShip(user, this.session));
+	}
+
+	setupRoom(){
+		this.imBanned = false;
+		this.imMuted = false;
+		this.directBanned = false;
+		this.room = this.msgPreference.chat.active_room;
+		if (this.room.banned.length > 0)
+			this.imBanned = this.room.banned.find(item => item.login == this.room.me.login) != undefined;
+		if (this.room.muted.length > 0)
+			this.imMuted = this.room.muted.find(item => item.login == this.room.me.login) != undefined;
+		if (this.room.members.length == 1 && this.room.banned.length)
+		{
+			this.directBanned = true;
+			this.scrollToBottom();
+		}
+		console.log(this.directBanned);
 	}
 }

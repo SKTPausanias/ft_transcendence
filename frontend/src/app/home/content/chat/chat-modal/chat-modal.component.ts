@@ -4,7 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
-import { SharedPreferencesI, ChatI } from 'src/app/shared/ft_interfaces';
+import { SharedPreferencesI, ChatI, ChatRoomI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
@@ -18,12 +18,13 @@ import { ChatService } from '../chat.service';
 export class ChatModalComponent implements OnInit {
 	@Input() public preferences: SharedPreferencesI;
 	@Input() public type: string;
+	@Input() public room: ChatRoomI;
 	@Output() passEntry: EventEmitter<any> = new EventEmitter();
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	session = this.sQuery.getSessionToken();
 	search: string;
 	errorMsg:string;
-	showAddFriendshipMsg: boolean;
+	statusMsg: string = '';
 	showAddButton: boolean;
 	showForm: boolean;
 	addPassword: boolean;
@@ -142,6 +143,11 @@ export class ChatModalComponent implements OnInit {
 		else
 			this.searchResult = ["test-channel-a","test-channel-b","test-channel-c", "test-channel-d", "test-channel-e", "test-channel-f", "test-channel-g", "test-channel-h", "test-channel-i" ]
 	}
+	onJoinProtectedRoom(){
+
+		this.setStatusMsgTimer("Not calling yet to backend!");
+		console.log("onJoinProtectedRoom: <", this.room.name, "> password ? ", this.password);
+	}
 	filterSearchResults(){
 		if (this.type == 'member')
 			this.searchResult = this.searchResult.filter(el => {
@@ -154,17 +160,7 @@ export class ChatModalComponent implements OnInit {
 		const resp = await (this.dashboardService.addFriendShip(user, this.session));
 		console.log("on add friendship: ", resp);
 		if (resp)
-			this.showAddFriendshipMsg = true;
-		var counter = 3;
-		let intervalId = setInterval(() => {
-			counter--;
-			console.log("counter: ", counter);
-			if (counter-- == 0)
-			{
-				this.showAddFriendshipMsg = false;
-				clearInterval(intervalId)
-			}
-		}, 1000)
+			this.setStatusMsgTimer("Friend invitation has been send");
 		return (resp);
 	}
 	addMemberToChat(user: UserPublicInfoI){
@@ -184,6 +180,20 @@ export class ChatModalComponent implements OnInit {
 		if (this.channelType == eChatType.PRIVATE || this.channelType == eChatType.PUBLIC)
 			return (this.channelType);
 		return (eChatType.DIRECT);
+	}
+	setStatusMsgTimer(msg: string)
+	{
+		this.statusMsg = msg;
+		var counter = 3;
+		let intervalId = setInterval(() => {
+			counter--;
+			console.log("counter: ", counter);
+			if (counter-- == 0)
+			{
+				this.statusMsg = '';
+				clearInterval(intervalId)
+			}
+		}, 1000)
 	}
 	private initVariables(dismiss: boolean){
 		this.search = '';
