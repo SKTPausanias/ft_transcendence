@@ -116,7 +116,7 @@ export class UserService {
 			return (error);
 		}
 	}
-	async activateRoom(users: UserEntity[], roomId: number){
+	/* async activateRoom(users: UserEntity[], roomId: number){
 		users.forEach(async user => {
 			if (user.active_chat_rooms)
 			{
@@ -135,5 +135,5 @@ export class UserService {
 			await this.save(user);
 			console.log("llega4");
 		});
-	}
+	} */
 }

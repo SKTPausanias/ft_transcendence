@@ -2,6 +2,7 @@ import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMan
 import { UserEntity } from "../../user/user.entity";
 import { MessageEntity } from "./message.entity";
 import { ChatUsersEntity } from "./chatUsers.entity";
+import { ActiveRoomEntity } from "./activeRoom.entity";
 
 @Entity('chat')
 export class ChatEntity {
@@ -25,4 +26,7 @@ export class ChatEntity {
 
     @OneToMany(type => MessageEntity, message => message.chat)
     messages: MessageEntity[];
+
+    @OneToMany(() => ActiveRoomEntity, activeChat => activeChat.id)
+    ActiveChats: ActiveRoomEntity[];
 }

@@ -13,9 +13,10 @@ import { ChatService } from './chat.service';
 import { ChatUsersEntity } from './entities/chatUsers.entity';
 import { MessageEntity } from './entities/message.entity';
 import { ChatController } from './chat.controller';
+import { ActiveRoomEntity } from './entities/activeRoom.entity';
 
 @Module({
-	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity])],
+	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity, ActiveRoomEntity])],
 	providers: [SocketService, SessionService, FriendService, UserService, ChatService],
 	controllers: [ChatController]
 })
