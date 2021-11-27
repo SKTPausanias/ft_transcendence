@@ -33,7 +33,7 @@
 }
 
 .dropdown-item:hover{
-	background-color: #6C7B9D;
+	background-color: #92a1c0e8;
 }
 
 .dropdown-item .icon-btn{
@@ -116,8 +116,8 @@ img{
 
 .scrool{
 	overflow-y: scroll;
-	max-height: 80vh;
-	height: 80vh;	
+	max-height: 75vh;
+	height: 75vh;	
 }
 .scrool::-webkit-scrollbar {
 	width: 20px;
@@ -159,15 +159,26 @@ img{
 	padding-top: 10px;
 	padding-bottom: 10px;
 	display: flex;
-  justify-content: center;
-  align-items: center;
-
+	justify-content: center;
+	align-items: center;
 	color: #b0bdd8;
 }
 
 .btn-send:hover{
 	cursor: pointer;
 	color: #ffffff;
+}
+.btn-muted{
+	border-left: 1px solid #b0bdd8;
+	border-radius: 20px;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #b0bdd8;
 }
 .ban-msg{
 	height: 100%;

@@ -10,7 +10,10 @@ export class ChatUsersEntity {
     @ManyToOne(type => UserEntity, user => user.rooms)
     user: UserEntity;
 
-    @ManyToOne(type => ChatEntity, chat => chat.members)
+    @ManyToOne(type => ChatEntity, chat => chat.members,
+		{
+			onDelete: "CASCADE"
+		})
     room: ChatEntity;
 
     @Column({default : false})
@@ -21,5 +24,8 @@ export class ChatUsersEntity {
 
     @Column({default : false})
     banned: boolean;
+
+    @Column({default : false})
+    hasRoomKey: boolean;
 
 }

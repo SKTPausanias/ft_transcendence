@@ -92,7 +92,6 @@ export class MessagingComponent implements OnInit {
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
 	}
 	showMembers(){
-		console.log(this.room.members);
 	}
 	closeRoom(){
 		this.closeRoomEvent.emit();
@@ -106,11 +105,9 @@ export class MessagingComponent implements OnInit {
 	}
 	blockUser(item: UserPublicInfoI){
 		this.chatService.emit(eChat.ON_BLOCK_USER, {user: item, room: this.room});
-		console.log(item);
 	}
 	muteUser(item: UserPublicInfoI){		
 		this.chatService.emit(eChat.ON_MUTE_USER, {user: item, room: this.room});
-		console.log("lets mute this user: ", item.nickname);
 	}
 	isPrivateRoom(){
 		return (this.msgPreference.chat.active_room.img != undefined);
@@ -137,6 +134,5 @@ export class MessagingComponent implements OnInit {
 			this.directBanned = true;
 			this.scrollToBottom();
 		}
-		console.log(this.directBanned);
 	}
 }

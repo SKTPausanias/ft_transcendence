@@ -6,13 +6,14 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ChatEntity } from "./entities/chat.entity";
-import { ChatI, ChatInfoI, ChatRoomI, ChatUserI, MessagesI, NewMessageI } from "./iChat";
+import { ChatI, ChatInfoI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI } from "./iChat";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatUsersEntity } from "./entities/chatUsers.entity";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
 import { eChatType } from "./eChat";
 import { ActiveRoomEntity } from "./entities/activeRoom.entity";
+import { SessionService } from "src/session/session.service";
 
 @Injectable()
 export class ChatService {
@@ -25,7 +26,8 @@ export class ChatService {
 				private msgRepository: Repository<MessageEntity>,
 				@InjectRepository(ActiveRoomEntity)
 				private activeRoomRepository: Repository<ActiveRoomEntity>,
-				private userService: UserService){}
+				private userService: UserService,
+				private sessionService: SessionService){}
 
 	async onStart(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI): Promise<ChatRoomI>
 	{
@@ -43,18 +45,6 @@ export class ChatService {
 	async getActiveChatRooms(me: UserEntity){
 		var ret: ChatRoomI[] = [];
 		try {
-			
-			/* const roomEntities = await this.chatRepository.find({
-				relations : ["members", "members.user"],
-				where: { id : In(me.active_chat_rooms)}
-			});
-			for (var i = 0; i < roomEntities.length; i++)
-			{
-				var chatUser = roomEntities[i].members.find(item => item.user.id == me.id);
-				ret.push(this.parseChatRoom(roomEntities[i], chatUser));
-			}
-			ret.sort((a,b) => { return a.name > b.name ? 1 : -1}); */
-			//prints if active exists ---> can delete when everything works
 			const active: ActiveRoomEntity[] = await this.activeRoomRepository.find({
 				relations: ['user', 'chat', 'chat.members', "chat.members.user"],
 				where: { user: me.id}
@@ -64,7 +54,6 @@ export class ChatService {
 				var chatUser = active[i].chat.members.find(item => item.user.id == me.id);
 				ret.push(this.parseChatRoom(active[i].chat, chatUser));
 			}
-			//console.log("Content of active ocurrence: ", active);
 			return (ret);
 		} catch (error) {
 			return (ret);
@@ -127,7 +116,7 @@ export class ChatService {
 			where : {id : room.id}
 		});
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
-		chatUser.banned = true;
+		chatUser.banned = chatUser.banned ? false : true;
 		await this.chatUserRepository.save(chatUser);
 		return (roomEntity);
 	}
@@ -137,7 +126,7 @@ export class ChatService {
 			where : {id : room.id}
 		});
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
-		chatUser.muted = true;
+		chatUser.muted = chatUser.muted ? false : true;
 		await this.chatUserRepository.save(chatUser);
 		return (roomEntity);
 	}
@@ -160,8 +149,6 @@ export class ChatService {
 					const chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
 					room = await this.newChatRoom(chatMembers, roomInfo);
 				}
-				else
-					console.log("room exists");
 			}
 			return (room);
 		} catch (error) {
@@ -192,27 +179,53 @@ export class ChatService {
 		}
 	}
 	 async addChanel(channelInfo: ChatI, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check if session is active before continue
+		const token = header.split(' ')[1];
 		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
 			const check = await this.chatRepository.findOne({
 				where: { name: channelInfo.name }
 			});
-
-			if (check !== undefined){
-				console.log("room already exists: message from addChannel");
+			if (check !== undefined)
 				return (Response.makeResponse(600, { error: "Channel already exists" }));
-			}
+
 			var users: UserEntity[] = await this.infoToUserEntities(channelInfo.members);
-			
 			var chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
 			chatMembers[0].owner = true;
+
 			const room = await this.newChatRoom(chatMembers, channelInfo);
 			if ( room === undefined ) 
-				return (Response.makeResponse(500, { error: "can't creat channel" }));
+				return (Response.makeResponse(500, { error: "can't creat channel" }));	
 			await this.activateRoom(this.chatUserToUserEntity(chatMembers), room);
-			return (Response.makeResponse(200, { message: "channel created successfuly" }));
+
+			var chatUser = room.members.find(member => member.user.id == session.userID.id);
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));
 		} catch (error) {
 			return (Response.makeResponse(500, { error: "can't creat channel" }));
+		}
+	}
+	async unlockRoom(key: RoomKeyI, header: string): Promise<any>{
+		const token = header.split(' ')[1]; //must check if session is active before continue
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+
+			const room = await this.getChatRoomById(session.userID, key.id);
+			if (room.password != key.password)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+
+			var chatUser = room.members.find(member => member.user.id == session.userID.id);
+			if (chatUser == undefined)
+				return (Response.makeResponse(500, { error: "can't unlock room" }));
+				
+			chatUser.hasRoomKey = true;
+			chatUser = await this.chatUserRepository.save(chatUser);
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));	
+		} catch (error) {
+			return (Response.makeResponse(500, { error: "can't unlock room" }));
+
 		}
 	}
 	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
@@ -234,7 +247,6 @@ export class ChatService {
 			await this.activateRoom([chatUser.user], chatRoom);
 			return (chatRoom);
 		} catch (error) {
-			console.log("error: ", error);
 			return (undefined)
 		}
 	}
@@ -274,7 +286,6 @@ export class ChatService {
 	}
 	private  chatUserToUserInfo(members: ChatUsersEntity[]): UserPublicInfoI[]
 	{
-		console.log("chatUserToUserInfo: ", members);
 		var userList: UserPublicInfoI[] = [];
 		try {
 			for (let i = 0; i < members.length; i++) {
@@ -283,7 +294,6 @@ export class ChatService {
 			}
 			return (userList);
 		} catch (error) {
-			console.log("error: ", error);
 			return (userList);
 		}
 	}
@@ -311,6 +321,7 @@ export class ChatService {
 		parsed.banned = this.chatUserToUserInfo(chatRoom.members.filter(member => member.banned));
 		parsed.type = chatRoom.type;
 		parsed.protected = chatRoom.protected;
+		parsed.hasRoomKey = me.hasRoomKey;
 		if (chatRoom.type != eChatType.DIRECT)
 			parsed.name = chatRoom.name;
 		if (chatRoom.type == eChatType.DIRECT)
@@ -318,7 +329,6 @@ export class ChatService {
 			parsed.img = parsed.members[0].avatar;
 			parsed.name = parsed.members[0].nickname;
 		}
-		console.log("parsed: ", parsed);
 		return (parsed);
 	}
 
@@ -388,7 +398,6 @@ export class ChatService {
 			relations: ['user', 'chat'],
 			where: { user: user.id , chat: chatRoom.id}
 		});
-		console.log("Content of active ocurrence: ", active);
 		if (active !== undefined)
 			await this.activeRoomRepository.delete(active);
 	}

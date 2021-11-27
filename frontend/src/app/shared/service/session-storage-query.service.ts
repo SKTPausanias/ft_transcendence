@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SessionStorageService } from 'src/app/shared/ft_services';
 import { Storage } from '../ft_enums';
 import { SessionI } from '../interface/iSession';
+import { SharedPreferencesI } from '../interface/iSharedPreferences';
 
 @Injectable({
 providedIn: 'root',
@@ -22,6 +23,7 @@ export class SessionStorageQueryService {
 	removeSessionToken() {
 		this.sessionStorage.remove(Storage.SESSION_TOKEN);
 	}
+
 	setUser(user: any) {
 		this.sessionStorage.set(Storage.USER, user);
 	}

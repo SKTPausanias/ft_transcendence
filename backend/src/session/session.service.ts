@@ -93,7 +93,7 @@ export class SessionService {
 			throw new Exception(Response.makeResponse(410, {error : "Gone"}));
 		return (session);
 	}
-	async findSessionWithRelation(token: string)
+	async findSessionWithRelation(token: string): Promise<any>
 	{
 		var session;
 		try {

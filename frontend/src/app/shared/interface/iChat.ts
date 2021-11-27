@@ -12,6 +12,7 @@ export interface ChatRoomI {
 	onlineStatus: boolean;
 	type: string;
 	protected: boolean;
+	hasRoomKey: boolean;
 }
 export interface MessagesI {
     message: string,
@@ -25,5 +26,9 @@ export interface ChatI {
     protected: boolean,
     password: string,
     members: UserInfoI[]
+}
+export interface RoomKeyI{
+	id: number;
+	password: string;
 }
 

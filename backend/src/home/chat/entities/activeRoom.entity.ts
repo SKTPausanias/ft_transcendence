@@ -10,7 +10,10 @@ export class ActiveRoomEntity {
     @ManyToOne(type => UserEntity, user => user.id)
     user: UserEntity;
 
-    @ManyToOne(type => ChatEntity, chat => chat.id)
+    @ManyToOne(type => ChatEntity, chat => chat.id,
+		{
+			onDelete: "CASCADE"
+		})
     chat: ChatEntity;
 
 }

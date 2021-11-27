@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { eChat } from "src/app/shared/ft_enums";
-import { ChatI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { ChatI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SocketService } from "../../socket.service";
 
 @Injectable({providedIn: "root"})
@@ -29,15 +29,11 @@ export class ChatService {
 		this.onChatLoadAllMessages();
 		this.onNewChatMsg();
 		this.onUpdateRoom();
-
-
-		this.onTest();
 	}
 
 	private onStartChat(){
 		this.socket.on(eChat.ON_START, (emiter: string, data: any) => {
 			try {
-				console.log("onStartChat: ", data);
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
 					this.sharedPreferences.chat.rooms.push(data);
 				this.sharedPreferences.chat.active_room = data;
@@ -57,9 +53,7 @@ export class ChatService {
 
 	private onNewChatMsg(){
 		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
-			console.log("onNewChatMsg: ", data);
 			try {
-				console.log("on new msg");
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
 					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
 				this.chatEmiter.emit({action : 'newMsg' , messages: data});
@@ -80,7 +74,6 @@ export class ChatService {
 	private onLeaveRoom(){
 		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
 			try {
-				console.log("on leave room: ", data);
 				//if (this.sharedPreferences.chat.rooms.find(room => room.id == data.id) == undefined)
 				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
 				if (this.sharedPreferences.chat.active_room.id == data.id)
@@ -104,7 +97,6 @@ export class ChatService {
 	private onUpdateRoom(){
 		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: any) => {
 			try {
-				console.log("OnUpdateRoom: ", data);
 				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id);
 				if (index < 0)
 					this.sharedPreferences.chat.rooms.push(data);
@@ -118,7 +110,6 @@ export class ChatService {
 
 	async addChannel(session: SessionI, channelInfo: ChatI): Promise<any> {
 		const url = '/api/users/chat/addChannel';
-		console.log("data from body: ", channelInfo);
 		try{
 		  const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
 			  Authorization: 'Bearer ' + session.token
@@ -128,18 +119,22 @@ export class ChatService {
 		} catch(e){
 		  return (e);
 		}
-	  }
+	}
+	async unlockRoom(session: SessionI, key: RoomKeyI): Promise<any> {
+		const url = '/api/users/chat/unlockRoom';
+		try{
+		  const ret = (await this.http.post<any>(url, key, { headers: new HttpHeaders({
+			  Authorization: 'Bearer ' + session.token
+			})
+		  }).toPromise())
+		return (ret);
+		} catch(e){
+		  return (e);
+		}
+	}
 
 
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
-	}
-
-
-
-	private onTest(){
-		this.socket.on('test', (data: any) => {
-			console.log("onTest: ", data);
-		})
 	}
 }

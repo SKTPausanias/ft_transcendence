@@ -13,6 +13,7 @@ export interface ChatRoomI {
 	onlineStatus: boolean;
 	type: string;
 	protected: boolean;
+	hasRoomKey: boolean;
 
 }
 export interface MessagesI {
@@ -44,9 +45,11 @@ export interface ChatI {
     protected: boolean,
 	members: UserPublicInfoI[]
 }
-
-
 export interface NewMessageI {
 	emitTo : UserEntity[],
 	message: MessagesI
+}
+export interface RoomKeyI{
+	id: number;
+	password: string;
 }

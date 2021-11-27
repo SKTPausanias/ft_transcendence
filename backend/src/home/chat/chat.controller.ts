@@ -5,8 +5,12 @@ import { ChatService } from "./chat.service";
 export class ChatController {
     constructor(private chatService: ChatService){}
 
-    @Post('/addChannel')
-    async addChannel(@Body() body, @Headers() headers): Promise<any> {
-        return (await this.chatService.addChanel(body, headers.authorization));
-    }
+	@Post('/addChannel')
+	async addChannel(@Body() body, @Headers() headers): Promise<any> {
+		return (await this.chatService.addChanel(body, headers.authorization));
+	}
+	@Post('/unlockRoom')
+	async unlockRoom(@Body() body, @Headers() headers): Promise<any> {
+		return (await this.chatService.unlockRoom(body, headers.authorization));
+	}
 }

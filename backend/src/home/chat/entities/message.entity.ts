@@ -17,7 +17,10 @@ export class MessageEntity {
 	@ManyToOne(type => UserEntity, user => user.messages)
     owner: UserEntity;
 
-    @ManyToOne(type => ChatEntity, room => room.id)
+    @ManyToOne(type => ChatEntity, room => room.id,
+		{
+			onDelete: "CASCADE"
+		})
     chat: ChatEntity;
 
 }

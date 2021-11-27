@@ -76,7 +76,7 @@ export class ChatComponent implements OnInit {
     this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
   selectChatRoom(item: ChatRoomI) {
-	if (item.protected)
+	if (item.protected && !item.owner && !item.hasRoomKey)
 		return (this.openModal("protected", item));
 	this.chatPreference.chat.active_room = item;
 	this.showRoom = true;
@@ -122,9 +122,10 @@ export class ChatComponent implements OnInit {
     modal.componentInstance.room = room;
     modal.componentInstance.preferences = this.chatPreference;
     modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-      if (receivedEntry == "onAddChannel")
-        this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
-      console.log("Recived entry", receivedEntry);
+		if (receivedEntry.action == "onAddChannel")
+			this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
+		if (receivedEntry.action == "joinRoom")
+			this.selectChatRoom(receivedEntry.room);
     });
   }
 }

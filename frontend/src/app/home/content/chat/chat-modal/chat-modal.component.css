@@ -170,3 +170,8 @@
 	background-color: #1a8d03d7;
 	color: #ffffff;
 }
+.msg-error-box{
+	z-index: 2;
+	background-color: #8d0303d7;
+	color: #ffffff;
+}

@@ -4,11 +4,12 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
-import { SharedPreferencesI, ChatI, ChatRoomI } from 'src/app/shared/ft_interfaces';
+import { SharedPreferencesI, ChatI, ChatRoomI, RoomKeyI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
 import { ChatService } from '../chat.service';
+import { StatusMessageI } from './statusMsgI';
 
 @Component({
   selector: 'app-channel-modal',
@@ -23,8 +24,7 @@ export class ChatModalComponent implements OnInit {
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
 	session = this.sQuery.getSessionToken();
 	search: string;
-	errorMsg:string;
-	statusMsg: string = '';
+	statusMsg: StatusMessageI = <StatusMessageI>{};
 	showAddButton: boolean;
 	showForm: boolean;
 	addPassword: boolean;
@@ -46,14 +46,19 @@ export class ChatModalComponent implements OnInit {
 		this.initSearchboxListener();
 		if (this.type == 'friend')
 			this.showAddButton = false;
-
-		this.passEntry.emit("this is from modal: " + this.type);
+		if (this.room != undefined && this.room.protected)
+		this.statusMsg = <StatusMessageI>{
+			isError: true,
+			message : "DONT FORGET TO HASH PASWORD IN SERVER SIDE AND REMOVE THIS MESSAGE FROM ngOnInit()"
+		};
 	}
 	openForm(){
 		this.showForm = true;
 	}
 	
 	async save(): Promise<void> {
+		if (!this.checkFormData())
+			return ;
 		var channelInfo: ChatI = <ChatI> {
 			name: this.channelName,
 			type: this.getChannelType(),
@@ -61,21 +66,19 @@ export class ChatModalComponent implements OnInit {
 			protected: this.addPassword, //provisional
 		};
 		channelInfo.members = [this.preferences.userInfo];
-
-		console.log("Cahnnel info: ", channelInfo);
-		console.log("rePassword: ", this.repassword);
-		if (this.password != this.repassword)
-			this.errorMsg = "Passwords dosn't match";
-		else {
-			const resp = await this.chatService.addChannel(this.session, channelInfo);
-			if (resp.statusCode == 200)
-			{
-				this.passEntry.emit("onAddChannel");
-				this.modal.dismiss();
-			}
-			else
-				console.log(resp.error);
+		
+		const resp = await this.chatService.addChannel(this.session, channelInfo);
+		if (resp.statusCode == 200)
+		{
+			this.passEntry.emit({action: "onAddChannel"});
+			this.passEntry.emit({action: "joinRoom", room : resp.data});
+			this.modal.dismiss();
+			return ;
 		}
+		this.startStatusMsgTimer(<StatusMessageI>{
+			isError: true,
+			message : resp.data.error
+		});
 	}
 	cancel(dismiss: boolean){
 		this.initVariables(dismiss);
@@ -84,9 +87,8 @@ export class ChatModalComponent implements OnInit {
 	}
 	passCheckBox(){
 		this.password = this.repassword = undefined;
-		this.errorMsg = '';
+		this.statusMsg = <StatusMessageI>{};
 		!this.addPassword ? (this.addPassword = false) : (this.addPassword = true);
-		console.log("Protected Toggle is: ", this.addPassword);
 	}
 	selectType(target: any){
 		this.channelType = target.value;
@@ -143,10 +145,21 @@ export class ChatModalComponent implements OnInit {
 		else
 			this.searchResult = ["test-channel-a","test-channel-b","test-channel-c", "test-channel-d", "test-channel-e", "test-channel-f", "test-channel-g", "test-channel-h", "test-channel-i" ]
 	}
-	onJoinProtectedRoom(){
-
-		this.setStatusMsgTimer("Not calling yet to backend!");
-		console.log("onJoinProtectedRoom: <", this.room.name, "> password ? ", this.password);
+	async onJoinProtectedRoom(){
+		const resp = await this.chatService.unlockRoom(this.session, <RoomKeyI>{
+			id: this.room.id,
+			password: this.password
+		});
+		if (resp.statusCode == 200)
+		{
+			this.passEntry.emit({action : "joinRoom", room : resp.data});
+			this.modal.dismiss();
+			return ;
+		}
+		this.startStatusMsgTimer(<StatusMessageI>{
+			isError: true,
+			message : "Wrong room password"
+		});
 	}
 	filterSearchResults(){
 		if (this.type == 'member')
@@ -158,13 +171,19 @@ export class ChatModalComponent implements OnInit {
 	}
 	async addFriendShip(user: UserPublicInfoI): Promise<any>{
 		const resp = await (this.dashboardService.addFriendShip(user, this.session));
-		console.log("on add friendship: ", resp);
 		if (resp)
-			this.setStatusMsgTimer("Friend invitation has been send");
+			this.startStatusMsgTimer(<StatusMessageI>{
+				isError: false,
+				message : "Friend invitation has been send"
+			});
 		return (resp);
 	}
 	addMemberToChat(user: UserPublicInfoI){
 		this.chatService.emit(eChat.ON_ADD_MEMBER_TO_CHAT, {room : this.preferences.chat.active_room, member: user});
+		this.startStatusMsgTimer(<StatusMessageI>{
+			isError: false,
+			message : "Member has been added to this room"
+		});
 		
 	}
 	startChat(user: UserPublicInfoI){
@@ -181,23 +200,44 @@ export class ChatModalComponent implements OnInit {
 			return (this.channelType);
 		return (eChatType.DIRECT);
 	}
-	setStatusMsgTimer(msg: string)
+
+	checkFormData(){
+		var error = true;
+		var msg = "";
+		if (this.channelName == undefined || !this.channelName.length)
+			msg = "Bad channel name"
+		else if (this.channelType == undefined || !this.channelType.length)
+			msg = "Please select channel type"
+		else if (this.password != this.repassword)
+			msg = "Passwords dosn't match"
+		else if (this.addPassword && (this.password == undefined || !this.password.length))
+			msg = "Channel marked as protected. Please select password"
+		else
+			error = false
+		if (error)
+			this.startStatusMsgTimer(<StatusMessageI>{
+				isError: error,
+				message : msg
+			});
+		return (!error);
+	}
+	startStatusMsgTimer(msgStatus: StatusMessageI)
 	{
-		this.statusMsg = msg;
+		this.statusMsg = msgStatus;
 		var counter = 3;
 		let intervalId = setInterval(() => {
 			counter--;
-			console.log("counter: ", counter);
 			if (counter-- == 0)
 			{
-				this.statusMsg = '';
+				this.statusMsg = <StatusMessageI>{};
 				clearInterval(intervalId)
 			}
 		}, 1000)
 	}
+
 	private initVariables(dismiss: boolean){
+		this.statusMsg = <StatusMessageI>{};
 		this.search = '';
-		this.errorMsg = '';
 		this.showAddButton = true;
 		this.showForm = false;
 		this.addPassword = false;

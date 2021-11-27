@@ -27,8 +27,8 @@
 			</div>
 		</div>
 	</div>
-	<div *ngIf="statusMsg.length > 0" class="d-flex justify-content-center msg-box py-2">
-		{{statusMsg}}
+	<div *ngIf="statusMsg.message != undefined" class="d-flex justify-content-center msg-box py-2" [ngClass]="{'msg-error-box' : statusMsg.isError}">
+		{{statusMsg.message}}
 	</div>
 	<!-- Search & add toolbar -->
 	<div class="input-group pb-3 mt-3">
@@ -85,7 +85,6 @@
 	<!-- Create new Channel -->
 	<div *ngIf="showForm" class="form w-100">
 		<div class="my-2 w-100 p-3">
-			<div *ngIf="errorMsg.length > 0" class="w-100 text-danger mb-2 text-center"><h5>{{errorMsg}}</h5></div>
 			<input [(ngModel)]='channelName' class="w-100 mb-3 p-2" type="text" name="" placeholder="Channel name...">
 			<select class="form-select form-select-sm mb-3 p-2" aria-label=".form-select-sm example" (change)="selectType($event.target)"required>
 				<option disabled selected value> -- Select an option -- </option>
@@ -94,7 +93,7 @@
 			</select>
 			<div class="form-check form-switch mb-3">
 				<input [(ngModel)]="addPassword" class="form-check-input" type="checkbox" (change)="passCheckBox()" value="{{addPassword}}">
-				<label class="form-check-label" for="flexSwitchCheckDefault">Protect with password</label>
+				<label class="form-check-label" for="flexSwitchCheckDefault">{{addPassword ? 'Protected' : 'Unprotected'}}</label>
 			</div>
 			<div *ngIf="addPassword">
 				<input [(ngModel)]="password" class="w-100 mb-3 p-2" type="password" name="" placeholder="Select password...">
