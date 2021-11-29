@@ -14,9 +14,10 @@ import { SocketGateway } from './socket.gateway';
 import { SocketService } from './socket.service';
 import { ChatUsersEntity } from 'src/home/chat/entities/chatUsers.entity';
 import { ActiveRoomEntity } from 'src/home/chat/entities/activeRoom.entity';
+import { HashService } from 'src/shared/hash/hash.service';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity, ActiveRoomEntity ])],
-	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService, ChatGateway]
+	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService, ChatGateway,HashService]
 })
 export class SocketModule {}

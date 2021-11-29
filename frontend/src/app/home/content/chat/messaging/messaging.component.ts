@@ -15,6 +15,7 @@ export class MessagingComponent implements OnInit {
 	@Input() msgPreference: SharedPreferencesI;
 	@Output() closeRoomEvent = new EventEmitter<any>();
 	@Output() addMemberEvent = new EventEmitter<any>();
+	@Output() changePasswordEvent = new EventEmitter<any>();
 	@ViewChild('scrollframe', {static: false}) scrollFrame: ElementRef;
 	@ViewChildren('scroolMsg') itemElements: QueryList<any>;
 	private scrollContainer: any;
@@ -73,6 +74,7 @@ export class MessagingComponent implements OnInit {
 	}
 	private chatFragmentEmitterHandler(data: any)
 	{
+		console.log("onChatFragmentEmiter: ", this.room.id);
 		if (data == undefined)
 			return this.setupRoom();
 		if (data.action == 'room-change')
@@ -95,6 +97,9 @@ export class MessagingComponent implements OnInit {
 	}
 	closeRoom(){
 		this.closeRoomEvent.emit();
+	}
+	changePassword(){
+		console.log("changePassword msgFragment")
 	}
 	addMemberToChat(){
 		this.addMemberEvent.emit()

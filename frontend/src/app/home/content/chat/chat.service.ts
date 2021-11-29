@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { eChat } from "src/app/shared/ft_enums";
-import { ChatI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { ChatI, ChatPasswordUpdateI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SocketService } from "../../socket.service";
 
 @Injectable({providedIn: "root"})
@@ -53,10 +53,21 @@ export class ChatService {
 
 	private onNewChatMsg(){
 		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
+			const activeRoom = this.sharedPreferences.chat.active_room;
+				
 			try {
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
 					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
+			if (activeRoom != undefined && activeRoom.id == data.chatId)
+			{
+				console.log("Don't call backend to mark as unread message");
 				this.chatEmiter.emit({action : 'newMsg' , messages: data});
+			}
+			else
+			{
+				this.chatPreferenceEmiter.emit({action : 'unread' , messages: data});
+				console.log("Call backend and mark as unread message");		
+			}
 			}catch(error){}
 		})
 	}
@@ -132,7 +143,17 @@ export class ChatService {
 		  return (e);
 		}
 	}
-
+	async updatePassChannel(session: SessionI, channelInfo: ChatPasswordUpdateI): Promise<any> {
+		const url = '/api/users/chat/updatePassChannel';
+		console.log('data to be updated: ', channelInfo);
+		try {
+		  const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
+					Authorization: 'Bearer ' + session.token})}).toPromise())
+			return (ret);
+		} catch (e) {
+		  return (e);
+		}
+	  }
 
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);

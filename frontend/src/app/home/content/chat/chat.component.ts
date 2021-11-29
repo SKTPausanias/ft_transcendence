@@ -45,7 +45,7 @@ export class ChatComponent implements OnInit {
 	  	this.selectChatRoom(data.room);
       else if (data.action == "onDestroy") 
 	  	this.closeRoom();
-      else data != undefined;
+    //  else data != undefined;
       	this.chatService.chatFragmentEmmiter.emit(data);
     });
     this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
@@ -113,6 +113,10 @@ export class ChatComponent implements OnInit {
   addMemberToChat() {
     this.openModal("member");
   }
+  changePassword(){
+	  console.log("lets open modal pwd")
+	//this.openModal("pwd");
+}
   openModal(name: string, room?: ChatRoomI) {
     const modal = this.modalService.open(ChatModalComponent, {
       centered: false,
@@ -122,7 +126,7 @@ export class ChatComponent implements OnInit {
     modal.componentInstance.room = room;
     modal.componentInstance.preferences = this.chatPreference;
     modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-		if (receivedEntry.action == "onAddChannel")
+		if (receivedEntry.action == "onUpdateChannel")
 			this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
 		if (receivedEntry.action == "joinRoom")
 			this.selectChatRoom(receivedEntry.room);

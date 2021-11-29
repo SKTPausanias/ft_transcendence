@@ -13,4 +13,8 @@ export class ChatController {
 	async unlockRoom(@Body() body, @Headers() headers): Promise<any> {
 		return (await this.chatService.unlockRoom(body, headers.authorization));
 	}
+	@Post('/updatePassChannel')
+    async updateChannel(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.updatePassChannel(body, headers.authorization));
+    }
 }

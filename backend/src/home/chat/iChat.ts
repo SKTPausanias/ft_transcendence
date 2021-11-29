@@ -53,3 +53,8 @@ export interface RoomKeyI{
 	id: number;
 	password: string;
 }
+export interface ChatPasswordUpdateI {
+    chatId: number,
+    protected: boolean,
+    password: string
+}

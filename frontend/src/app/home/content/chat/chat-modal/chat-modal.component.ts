@@ -70,7 +70,7 @@ export class ChatModalComponent implements OnInit {
 		const resp = await this.chatService.addChannel(this.session, channelInfo);
 		if (resp.statusCode == 200)
 		{
-			this.passEntry.emit({action: "onAddChannel"});
+			this.passEntry.emit({action: "onUpdateChannel"});
 			this.passEntry.emit({action: "joinRoom", room : resp.data});
 			this.modal.dismiss();
 			return ;

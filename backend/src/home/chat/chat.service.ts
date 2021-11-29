@@ -6,7 +6,7 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ChatEntity } from "./entities/chat.entity";
-import { ChatI, ChatInfoI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI } from "./iChat";
+import { ChatI, ChatInfoI, ChatPasswordUpdateI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI } from "./iChat";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatUsersEntity } from "./entities/chatUsers.entity";
 import { Response } from "src/shared/response/responseClass";
@@ -14,6 +14,7 @@ import { Exception } from "src/shared/utils/exception";
 import { eChatType } from "./eChat";
 import { ActiveRoomEntity } from "./entities/activeRoom.entity";
 import { SessionService } from "src/session/session.service";
+import { HashService } from "src/shared/hash/hash.service";
 
 @Injectable()
 export class ChatService {
@@ -27,7 +28,8 @@ export class ChatService {
 				@InjectRepository(ActiveRoomEntity)
 				private activeRoomRepository: Repository<ActiveRoomEntity>,
 				private userService: UserService,
-				private sessionService: SessionService){}
+				private sessionService: SessionService,
+				private hashService: HashService){}
 
 	async onStart(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI): Promise<ChatRoomI>
 	{
@@ -91,7 +93,7 @@ export class ChatService {
 		return null;
 	}
 
-	async getChatRoomById(user: UserEntity, roomId: number): Promise<ChatEntity | undefined>
+	async getChatRoomById(roomId: number): Promise<ChatEntity | undefined>
 	{
 		try {
 			const room = await this.chatRepository.findOne({
@@ -163,7 +165,8 @@ export class ChatService {
 			room.members = members;
 			room.name = chatInfo.name;
 			room.type = chatInfo.type;
-			room.password = chatInfo.password;
+			if (chatInfo.password != undefined)
+				room.password = this.hashService.hash(chatInfo.password);
 			room.protected = chatInfo.protected;
 			
 			if ((room = await this.chatRepository.save(room)) === undefined) //warn: if any issue change to insert
@@ -212,8 +215,8 @@ export class ChatService {
 			if (session == undefined)
 				return (Response.makeResponse(401, { error: "unauthorized" }));
 
-			const room = await this.getChatRoomById(session.userID, key.id);
-			if (room.password != key.password)
+			const room = await this.getChatRoomById(key.id);
+			if (!await this.hashService.compare(key.password, room.password))
 				return (Response.makeResponse(401, { error: "unauthorized" }));
 
 			var chatUser = room.members.find(member => member.user.id == session.userID.id);
@@ -222,10 +225,34 @@ export class ChatService {
 				
 			chatUser.hasRoomKey = true;
 			chatUser = await this.chatUserRepository.save(chatUser);
+			console.log(chatUser);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));	
 		} catch (error) {
+			console.log("errro");
 			return (Response.makeResponse(500, { error: "can't unlock room" }));
 
+		}
+	}
+	async updatePassChannel(channelInfo: ChatPasswordUpdateI, header: string): Promise<any> {
+		console.log("lets change pasword");
+		const token = header.split(' ')[1]; //must check is session is active before continue
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			var room = await this.getChatRoomById(channelInfo.chatId)
+			if (await this.hashService.compare(channelInfo.password, room.password))
+				return (Response.makeResponse(600, {error : "Looks like you are trying to save same password"}));
+			if ((room.protected = channelInfo.protected) && channelInfo.password != undefined)
+				room.password =  this.hashService.hash(channelInfo.password);
+			room = await this.chatRepository.save(room);
+			var chatUser = room.members.find(member => member.user.id == session.userID.id); //owner
+			var members = room.members.filter(member => member.user.id != chatUser.user.id); //members
+			members = members.map(item => ({ ...item, hasRoomKey: false})); //all members lost room key
+			await this.chatUserRepository.save(members); //update members
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser))); //return parsed room
+		} catch (error) {
+			return (Response.makeResponse(410, {error }));
 		}
 	}
 	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
@@ -243,7 +270,6 @@ export class ChatService {
 			chatUser = await this.chatUserRepository.save(chatUser);
 			chatRoom.members.push(chatUser);
 			chatRoom = await this.chatRepository.save(chatRoom)
-			//await this.userService.activateRoom([chatUser.user], chatRoom.id); //salvar el array
 			await this.activateRoom([chatUser.user], chatRoom);
 			return (chatRoom);
 		} catch (error) {

@@ -28,7 +28,7 @@ export class ChatGateway {
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
 	async onJoinRoom(client, data) {
 		const me = await this.getSessionUser(client);
-		const room = await this.chatService.getChatRoomById(me, data);
+		const room = await this.chatService.getChatRoomById(data);
 		await this.emitRoomUpdateToAll(room, me.login);
 	}
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
@@ -36,7 +36,7 @@ export class ChatGateway {
 		try {
 			console.log("onLeaveRoom: ", data);
 			const me = await this.getSessionUser(client);
-			const room = await this.chatService.getChatRoomById(me, data.id);
+			const room = await this.chatService.getChatRoomById(data.id);
 			await this.chatService.deActivateRoom(me, room);
 			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);
 		} catch (error) {

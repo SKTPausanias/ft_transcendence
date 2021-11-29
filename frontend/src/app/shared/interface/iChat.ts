@@ -31,4 +31,23 @@ export interface RoomKeyI{
 	id: number;
 	password: string;
 }
+export interface ChatPasswordUpdateI {
+    chatId: number,
+    protected: boolean,
+    password: string
+}
+
+export interface UnreadedMessagesI{
+	unreaded : [
+		{
+			login: string,
+			roomIdf : number
+		}
+	]
+}
+
+/**
+ * On recive msg unreaded.push({login, roomID})
+ * Si usuario esta en la sala se quita todas quincidencias con su login y roomId de unreaded
+ */
 
