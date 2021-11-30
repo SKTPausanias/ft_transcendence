@@ -26,7 +26,8 @@ import { AuthComponent } from './auth/auth.component';
 import { TwoFactorComponent } from './auth/two-factor/two-factor.component';
 import { FriendInvitationComponent } from './home/content/dashboard/notifications/friend-invitation/friend-invitation.component';
 import { MessagingComponent } from './home/content/chat/messaging/messaging.component';
-import { ChatModalComponent } from './home/content/chat/chat-modal/chat-modal.component';
+import { ChatModalComponent } from './home/content/chat/modal/chat-modal.component';
+import { ChangePasswordComponent } from './home/content/chat/modal/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { ChatModalComponent } from './home/content/chat/chat-modal/chat-modal.co
   TwoFactorComponent,
   FriendInvitationComponent,
   MessagingComponent,
-  ChatModalComponent
+  ChatModalComponent,
+  ChangePasswordComponent
   ],
   imports: [
     BrowserModule,

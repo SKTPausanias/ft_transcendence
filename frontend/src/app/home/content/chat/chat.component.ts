@@ -7,7 +7,7 @@ import { mDate } from 'src/app/utils/date';
 import { ChatService } from './chat.service';
 import { eChat, eChatType } from 'src/app/shared/ft_enums';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ChatModalComponent } from './chat-modal/chat-modal.component';
+import { ChatModalComponent } from './modal/chat-modal.component';
 
 @Component({
   selector: "app-chat",
@@ -45,6 +45,13 @@ export class ChatComponent implements OnInit {
 			this.selectChatRoom(data.room);
 		else if (data.onDestroy != undefined) 
 			this.closeRoom();
+		else if (data.close != undefined)
+		{
+			console.log("Data.close = ", data.close)
+			if (this.chatPreference.chat.active_room != undefined && 
+				this.chatPreference.chat.active_room.id == data.close.id && !data.close.owner && data.close.protected)
+				this.closeRoom()
+		}
     });
     this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
     if (this.chatPreference.chat.active_room != undefined)
@@ -129,7 +136,7 @@ export class ChatComponent implements OnInit {
 		else if (receivedEntry.room != undefined)
 		{
 			this.selectChatRoom(receivedEntry.room);
-			this.chatService.chatPreferenceEmiter
+
 		}
     });
   }

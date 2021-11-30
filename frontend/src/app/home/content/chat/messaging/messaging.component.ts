@@ -1,10 +1,12 @@
 import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output } from "@angular/core";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { eChat } from "src/app/shared/ft_enums";
 import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { DashboardService } from "../../dashboard/dashboard.service";
 import { ChatService } from "../chat.service";
+import { ChangePasswordComponent } from "../modal/change-password/change-password.component";
 
 @Component({
   selector: "app-messaging",
@@ -34,7 +36,8 @@ export class MessagingComponent implements OnInit {
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private chatService: ChatService,
-		private dashboardService: DashboardService
+		private dashboardService: DashboardService,
+		private modalService: NgbModal
 	) {}
 
 	async ngOnInit(): Promise<void> {
@@ -92,6 +95,7 @@ export class MessagingComponent implements OnInit {
 		this.closeRoomEvent.emit();
 	}
 	changePassword(){
+		this.openModal(this.room);
 		console.log("changePassword msgFragment")
 	}
 	addMemberToChat(){
@@ -130,4 +134,15 @@ export class MessagingComponent implements OnInit {
 			this.scrollToBottom();
 		}
 	}
+	openModal(room?: ChatRoomI) {
+		const modal = this.modalService.open(ChangePasswordComponent, {
+		  centered: false,
+		  animation: true,
+		});
+		modal.componentInstance.room = room;
+		modal.componentInstance.preferences = this.msgPreference;
+		modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+			this.chatService.emit(eChat.ON_UPDATE_ROOM, {room : receivedEntry});
+		});
+	  }
 }

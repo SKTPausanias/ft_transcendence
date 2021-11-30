@@ -33,6 +33,8 @@
 								</div>
 								<div class="col-5">
 									<div class="h-100 d-flex justify-content-center">
+										
+										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-user-shield fa-lg icon-btn float-right m-auto"></span>
 										<span class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
 										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
 										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>

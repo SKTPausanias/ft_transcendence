@@ -105,14 +105,22 @@ export class ChatService {
 	}
 	private onUpdateRoom(){
 		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: any) => {
+			var chat = this.sharedPreferences.chat;
 			try {
 				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id);
 				if (index < 0)
 					this.sharedPreferences.chat.rooms.push(data);
 				else
 					this.sharedPreferences.chat.rooms[index] = data;
-				this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
+				if (chat.active_room != undefined && chat.active_room.id == data.id)
+				{
+					this.sharedPreferences.chat.active_room = chat.rooms.find(item => item.id == data.id)
+					this.chatPreferenceEmiter.emit({chat : this.sharedPreferences.chat});
+				}
+				else
+					this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
 				this.chatEmiter.emit();
+				this.chatEmiter.emit({close : data});
 			}catch(error){}
 		})
 	}
