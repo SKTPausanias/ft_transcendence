@@ -46,11 +46,6 @@ export class ChatModalComponent implements OnInit {
 		this.initSearchboxListener();
 		if (this.type == 'friend')
 			this.showAddButton = false;
-		if (this.room != undefined && this.room.protected)
-		this.statusMsg = <StatusMessageI>{
-			isError: true,
-			message : "DONT FORGET TO HASH PASWORD IN SERVER SIDE AND REMOVE THIS MESSAGE FROM ngOnInit()"
-		};
 	}
 	openForm(){
 		this.showForm = true;
@@ -70,8 +65,11 @@ export class ChatModalComponent implements OnInit {
 		const resp = await this.chatService.addChannel(this.session, channelInfo);
 		if (resp.statusCode == 200)
 		{
-			this.passEntry.emit({action: "onUpdateChannel"});
-			this.passEntry.emit({action: "joinRoom", room : resp.data});
+			this.passEntry.emit();
+			//this.passEntry.emit({action: "onUpdateChannel"});
+			this.passEntry.emit({room : resp.data});
+
+			//this.passEntry.emit({action: "joinRoom", room : resp.data});
 			this.modal.dismiss();
 			return ;
 		}
@@ -152,7 +150,9 @@ export class ChatModalComponent implements OnInit {
 		});
 		if (resp.statusCode == 200)
 		{
-			this.passEntry.emit({action : "joinRoom", room : resp.data});
+			this.passEntry.emit();
+			//this.passEntry.emit({action : "onUpdateChannel"});
+			this.passEntry.emit({room : resp.data});
 			this.modal.dismiss();
 			return ;
 		}

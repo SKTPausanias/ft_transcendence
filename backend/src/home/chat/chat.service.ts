@@ -222,10 +222,8 @@ export class ChatService {
 			var chatUser = room.members.find(member => member.user.id == session.userID.id);
 			if (chatUser == undefined)
 				return (Response.makeResponse(500, { error: "can't unlock room" }));
-				
-			chatUser.hasRoomKey = true;
-			chatUser = await this.chatUserRepository.save(chatUser);
-			console.log(chatUser);
+				chatUser.hasRoomKey = true;
+				chatUser = await this.chatUserRepository.save(chatUser);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));	
 		} catch (error) {
 			console.log("errro");

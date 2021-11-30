@@ -37,16 +37,14 @@ export class ChatComponent implements OnInit {
 
   async ngOnInit() {
     this.subscription = this.chatService.chatEmiter.subscribe((data: any) => {
-      this.distinguishRooms();
-	  this.chatService.chatFragmentEmmiter.emit();
-      if (data == undefined)
-	  	return;
-      if (data.action == "open") 
-	  	this.selectChatRoom(data.room);
-      else if (data.action == "onDestroy") 
-	  	this.closeRoom();
-    //  else data != undefined;
-      	this.chatService.chatFragmentEmmiter.emit(data);
+		this.distinguishRooms();
+		this.chatService.chatFragmentEmmiter.emit(data);
+		if (data == undefined)
+			return;
+		if (data.room != undefined) 
+			this.selectChatRoom(data.room);
+		else if (data.onDestroy != undefined) 
+			this.closeRoom();
     });
     this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
     if (this.chatPreference.chat.active_room != undefined)
@@ -80,7 +78,7 @@ export class ChatComponent implements OnInit {
 		return (this.openModal("protected", item));
 	this.chatPreference.chat.active_room = item;
 	this.showRoom = true;
-	this.chatService.chatFragmentEmmiter.emit({ action: "room-change" });
+	this.chatService.chatFragmentEmmiter.emit({ changeRoom: item });
   }
   distinguishRooms() {
     var rooms = this.chatPreference.chat.rooms;
@@ -126,10 +124,13 @@ export class ChatComponent implements OnInit {
     modal.componentInstance.room = room;
     modal.componentInstance.preferences = this.chatPreference;
     modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-		if (receivedEntry.action == "onUpdateChannel")
+		if (receivedEntry == undefined)
 			this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
-		if (receivedEntry.action == "joinRoom")
+		else if (receivedEntry.room != undefined)
+		{
 			this.selectChatRoom(receivedEntry.room);
+			this.chatService.chatPreferenceEmiter
+		}
     });
   }
 }

@@ -13,8 +13,9 @@
 	<div class='info row'>
 		<div class="col-6 d-flex justify-content-start">
 			<div class="dropdown show">
-				<img *ngIf='isPrivateRoom()' class="ico_s img-fluid me-2" src="{{getImage()}}" alt="image">				
-				<i *ngIf='!isPrivateRoom()' class="fa fa-hashtag me-2"></i> 
+				<img *ngIf='room.img != undefined' class="ico_s img-fluid me-2" src="{{room.img}}" alt="image">				
+				<i *ngIf="room.img == undefined && room.type == 'private'" class="fa fa-user-shield fa-color me-2"></i> 		
+				<i *ngIf="room.img == undefined && room.type == 'public'" class="fa fa-broadcast-tower fa-color me-2"></i> 
 				<b>{{msgPreference.chat.active_room.name}}</b>
 					<b class="ms-2 icon-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<div class="dropdown-menu scrool" aria-labelledby="dropdownMenuLink">

@@ -82,10 +82,19 @@ export class HomeComponent implements OnInit {
 	}
 	private subscribeToChatEmiter(){
 		this.socketEmiter = this.chatService.chatPreferenceEmiter.subscribe((data : any)=> {
-			var activeRoom = this.sharedPreference.chat;
+			if (data.chat != undefined)
+				this.sharedPreference.chat = data.chat;
+			else if (data.rooms != undefined)
+				this.sharedPreference.chat.rooms = data.rooms;
+			else if (data.messages != undefined)
+				console.log("this is unread");
+
+		/* 	console.log("DATA: ", data);
+			var activeRoom = this.sharedPreference.chat.active_room;
+			console.log("SP: ", this.sharedPreference.chat);
 			if (activeRoom != undefined)
-				this.sharedPreference.chat.active_room = data.rooms.find((item: any) => item.id == activeRoom.active_room.id);
-			this.sharedPreference.chat = data;
+				this.sharedPreference.chat.active_room = data.rooms.find((item: any) => item.id == activeRoom.id);
+			this.sharedPreference.chat.rooms = data.rooms; */
 
 		});
 	}

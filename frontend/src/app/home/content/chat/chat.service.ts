@@ -37,8 +37,8 @@ export class ChatService {
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
 					this.sharedPreferences.chat.rooms.push(data);
 				this.sharedPreferences.chat.active_room = data;
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
-				this.chatEmiter.emit({action: 'open', room : data});
+				this.chatPreferenceEmiter.emit({chat : this.sharedPreferences.chat});
+				this.chatEmiter.emit({room : data});
 			}catch(error){}
 		})
 	}
@@ -46,7 +46,7 @@ export class ChatService {
 	private onChatLoadAllMessages(){
 		this.socket.on(eChat.ON_All_MSG, (emiter: string, data: any) => {
 			try {
-				this.chatEmiter.emit({action : 'loadAllMsg' , messages: data});
+				this.chatEmiter.emit({messages: data});
 			}catch(error){}
 		})
 	}
@@ -61,11 +61,11 @@ export class ChatService {
 			if (activeRoom != undefined && activeRoom.id == data.chatId)
 			{
 				console.log("Don't call backend to mark as unread message");
-				this.chatEmiter.emit({action : 'newMsg' , messages: data});
+				this.chatEmiter.emit({newMessage: data});
 			}
 			else
 			{
-				this.chatPreferenceEmiter.emit({action : 'unread' , messages: data});
+				this.chatPreferenceEmiter.emit({messages: data});
 				console.log("Call backend and mark as unread message");		
 			}
 			}catch(error){}
@@ -76,7 +76,7 @@ export class ChatService {
 		this.socket.on(eChat.ON_JOIN_ROOM, (data: any) => {
 			try {
 				this.sharedPreferences.chat.rooms.push(data);
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
 				this.chatEmiter.emit();
 			}catch(error){}
 		})
@@ -85,12 +85,11 @@ export class ChatService {
 	private onLeaveRoom(){
 		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
 			try {
-				//if (this.sharedPreferences.chat.rooms.find(room => room.id == data.id) == undefined)
 				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
 				if (this.sharedPreferences.chat.active_room.id == data.id)
 					this.sharedPreferences.chat.active_room = undefined;
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
-				this.chatEmiter.emit({action : 'onDestroy'});
+				this.chatPreferenceEmiter.emit({ chat : this.sharedPreferences.chat});
+				this.chatEmiter.emit({onDestroy : data});
 			}catch(error){}
 		})
 	}
@@ -99,9 +98,8 @@ export class ChatService {
 		this.socket.on(eChat.ON_LOAD_ACTIVE_ROOMS, (emiter: string, data: any) => {
 			try {
 				this.sharedPreferences.chat.rooms = data;
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatPreferenceEmiter.emit({ rooms : this.sharedPreferences.chat.rooms});
 				this.chatEmiter.emit();
-
 			}catch(error){}
 		})
 	}
@@ -113,7 +111,7 @@ export class ChatService {
 					this.sharedPreferences.chat.rooms.push(data);
 				else
 					this.sharedPreferences.chat.rooms[index] = data;
-				this.chatPreferenceEmiter.emit(this.sharedPreferences.chat);
+				this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
 				this.chatEmiter.emit();
 			}catch(error){}
 		})

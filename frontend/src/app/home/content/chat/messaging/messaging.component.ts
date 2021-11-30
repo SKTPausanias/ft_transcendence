@@ -30,7 +30,7 @@ export class MessagingComponent implements OnInit {
 	imBanned: boolean = false;
 	imMuted: boolean = false;
 	directBanned: boolean = false;
-
+	faShield = "fa-user-shield";
 	constructor(
 		private sQuery: SessionStorageQueryService,
 		private chatService: ChatService,
@@ -74,26 +74,19 @@ export class MessagingComponent implements OnInit {
 	}
 	private chatFragmentEmitterHandler(data: any)
 	{
-		console.log("onChatFragmentEmiter: ", this.room.id);
 		if (data == undefined)
 			return this.setupRoom();
-		if (data.action == 'room-change')
-			this.onRoomChange();
-		else if (data.action == 'loadAllMsg')
-		{
+		if (data.changeRoom != undefined)
+			this.onRoomChange(data.changeRoom);
+		else if (data.messages != undefined)
 			this.messages = data.messages;
-		}
-		else if (data.action == 'newMsg')
-		{
-			if (data.messages.chatId == this.room.id)
-				this.messages.push(data.messages);
-		}
+		else if (data.newMessage != undefined)
+			if (data.newMessage.chatId == this.room.id)
+				this.messages.push(data.newMessage);
 	}
-	private onRoomChange(){
-		this.room = this.msgPreference.chat.active_room;
+	private onRoomChange(newRoom: ChatRoomI){
+		this.room = newRoom;
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
-	}
-	showMembers(){
 	}
 	closeRoom(){
 		this.closeRoomEvent.emit();
@@ -113,9 +106,6 @@ export class MessagingComponent implements OnInit {
 	}
 	muteUser(item: UserPublicInfoI){		
 		this.chatService.emit(eChat.ON_MUTE_USER, {user: item, room: this.room});
-	}
-	isPrivateRoom(){
-		return (this.msgPreference.chat.active_room.img != undefined);
 	}
 	getImage(){
 		return (this.msgPreference.chat.active_room.img);
