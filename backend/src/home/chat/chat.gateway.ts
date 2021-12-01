@@ -35,10 +35,14 @@ export class ChatGateway {
 	async onLeaveRoom(client, data) {
 		try {
 			console.log("onLeaveRoom: ", data);
-			const me = await this.getSessionUser(client);
-			const room = await this.chatService.getChatRoomById(data.id);
+			/* const me = await this.getSessionUser(client); */
+
+			const room = await this.chatService.leaveRoom(data);
+			if (room != undefined && room.members != undefined)
+				await this.emitRoomUpdateToAll(room, data.me.login);
+			/*const room = await this.chatService.getChatRoomById(data.id);
 			await this.chatService.deActivateRoom(me, room);
-			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);
+			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);*/
 		} catch (error) {
 			console.log("<error> onLeaveRoom:", error);
 		}

@@ -44,6 +44,7 @@ export class ChatService {
 			return (<ChatRoomI>{});
 		}
 	}
+
 	async getActiveChatRooms(me: UserEntity){
 		var ret: ChatRoomI[] = [];
 		try {
@@ -109,9 +110,41 @@ export class ChatService {
 	async getChatRoomsByIds(user: UserEntity): Promise<ChatEntity[]>{
 		return null
 	}
+	
 	async onMemberLeave(room: ChatRoomI, member: UserEntity){
 		return null
 	}
+
+	async deleteRoom(id: number): Promise<void> {
+		const room = await this.chatRepository.findOne({where: {id: id}});
+		await this.chatRepository.delete(room);
+	}
+	async leaveRoom(data: ChatRoomI): Promise<ChatEntity | undefined>{
+		console.log("Leaving from chatService: ");
+
+		try {
+			const room = await this.getChatRoomById(data.id);
+			var userToDelete = room.members.find(item => item.user.login == data.me.login);
+			room.members = room.members.filter(item => item != userToDelete);
+			console.log("after: room.members length: ", room.members.length);
+			if (room.members.length == 0){
+				console.log("Deleting room, nobody belongs to it...");
+				await this.deleteRoom(data.id);
+				return (undefined);
+			}
+			if (userToDelete.owner){
+				room.members[0].admin = true;
+				room.members[0].owner = true;
+				await this.chatUserRepository.save(room.members[0]);
+			}
+			await this.chatUserRepository.delete(userToDelete);
+			return (room);
+		} catch (error) {//create response
+			return (undefined);
+		}
+
+	}
+
 	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
 		const roomEntity = await this.chatRepository.findOne({
 			relations: ["members", "members.user"],

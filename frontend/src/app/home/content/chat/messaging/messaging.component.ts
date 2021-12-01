@@ -102,8 +102,13 @@ export class MessagingComponent implements OnInit {
 		this.addMemberEvent.emit()
 	}
 	leaveChat(){
-		this.chatService.emit(eChat.ON_LEAVE_ROOM, this.room);
-		this.closeRoom();
+		console.log("Leaving....");
+		/* room.id, me*/
+		if (confirm("Are you sure you want to leave?"))
+			this.chatService.emit(eChat.ON_LEAVE_ROOM, this.room);
+		else
+			console.log("Not leaving room...");
+		/*this.closeRoom(); */
 	}
 	blockUser(item: UserPublicInfoI){
 		this.chatService.emit(eChat.ON_BLOCK_USER, {user: item, room: this.room});
