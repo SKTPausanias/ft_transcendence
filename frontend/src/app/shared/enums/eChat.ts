@@ -8,7 +8,9 @@ export enum eChat {
 	ON_UPDATE_ROOM = "on-update-room",
 	ON_BLOCK_USER = "on-block-user",
 	ON_MUTE_USER = "on-mute-user",
-	ON_ADD_MEMBER_TO_CHAT = "on-add-member-to-chat"
+	ON_ADD_MEMBER_TO_CHAT = "on-add-member-to-chat",
+	ON_CHANGE_ROLE = "on-change-role",
+
 }
 export enum eChatType{
 	DIRECT = 'direct',

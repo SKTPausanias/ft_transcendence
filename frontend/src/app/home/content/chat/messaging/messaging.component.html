@@ -29,15 +29,24 @@
 							<div class="row m-0 ms-2">
 								<div class="col-7">
 									<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
-									<h5 class="d-inline text-light">{{item.nickname}}</h5>
+									<h5 class="d-inline text-light">
+										<span *ngIf="item.login == room.owner.login" class="fa fa-crown text-warning"></span>
+										{{item.nickname}}
+									</h5>
 								</div>
 								<div class="col-5">
 									<div class="h-100 d-flex justify-content-center">
 										
-										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-user-shield fa-lg icon-btn float-right m-auto"></span>
-										<span class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
-										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
-										<span *ngIf="room.owner || room.type == 'direct'" class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+										<div *ngIf="room.admin && room.owner.login != item.login" class="d-flex justify-content-center">
+											<span  class="fa fa-user-secret fa-lg icon-btn float-right m-auto" (click)="setAsAdmin(item)"></span>
+											<span  class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
+											<span  class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+										</div>
+										<div *ngIf="room.type == 'direct'">
+											<span class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
+											<span class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+										</div>
+										<span *ngIf="!isFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
 									</div>
 								</div>
 							</div>
@@ -50,9 +59,9 @@
 			<!-- <span class="fa fa-user-circle fa-lg icon-btn"></span>
 			<span class="fa fa-user-times fa-lg icon-btn"></span>
 			<span class="fa fa-table-tennis  fa-lg icon-btn"></span> -->
-			<span *ngIf="room.owner" class="fa fa-key fa-lg icon-btn" (click)="changePassword()" data-toggle="tooltip" title="Change password"></span>
+			<span *ngIf="room.owner.login == room.me.login || room.admin" class="fa fa-key fa-lg icon-btn" (click)="changePassword()" data-toggle="tooltip" title="Change password"></span>
 			<span *ngIf="room.type != 'direct'" class="fa fa-user-plus fa-lg icon-btn" (click)="addMemberToChat()"></span>
-			<span *ngIf="room.owner" class="fa fa-cog fa-lg icon-btn"></span>
+			<span *ngIf="room.owner.login == room.me.login || room.admin" class="fa fa-cog fa-lg icon-btn"></span>
 			<span class="fa fa-sign-out-alt fa-lg icon-btn" (click)="leaveChat()"></span>
 			<span class="fa fa-times fa-lg icon-btn" (click)="closeRoom()"></span>
 		</div> 

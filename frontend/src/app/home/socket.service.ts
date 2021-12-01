@@ -136,4 +136,7 @@ export class SocketService {
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
+	getSocket(): Socket{
+		return this.socket;
+	}
 }

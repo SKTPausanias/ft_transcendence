@@ -58,16 +58,16 @@ export class ChatService {
 			try {
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
 					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
-			if (activeRoom != undefined && activeRoom.id == data.chatId)
-			{
-				console.log("Don't call backend to mark as unread message");
-				this.chatEmiter.emit({newMessage: data});
-			}
-			else
-			{
-				this.chatPreferenceEmiter.emit({messages: data});
-				console.log("Call backend and mark as unread message");		
-			}
+				if (activeRoom != undefined && activeRoom.id == data.chatId)
+				{
+					console.log("Don't call backend to mark as unread message");
+					this.chatEmiter.emit({newMessage: data});
+				}
+				else
+				{
+					this.chatPreferenceEmiter.emit({messages: data});
+					console.log("Call backend and mark as unread message");		
+				}
 			}catch(error){}
 		})
 	}

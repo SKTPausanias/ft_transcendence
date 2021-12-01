@@ -53,6 +53,7 @@ export class ChangePasswordComponent implements OnInit {
 				isError: true,
 				message: ret.data.error
 			})
+		//this.chatService.emit(eChat.ON_UPDATE_ROOM, {room : receivedEntry}); is this better?
 		this.passEntry.emit(this.room);
 		this.modal.dismiss();
 	}

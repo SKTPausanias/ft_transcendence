@@ -46,6 +46,9 @@ export class HomeComponent implements OnInit {
 		}
 		else
 		{
+			//const ret = await this.homeService.loadPreferences();
+			//if (ret.statusCode == 200)
+			//this.sharedPreferences = ret.prefernces;
 			this.homeService.listenSessionWorker();
 			this.socketService.connect(this.session, this.sharedPreference);
 			this.subscribeToSocketEmiter();

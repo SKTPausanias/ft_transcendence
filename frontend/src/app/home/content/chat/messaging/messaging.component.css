@@ -24,7 +24,7 @@
 }
 
 .dropdown-menu{
-	width: 400px;
+	width: 600px;
 	height: 10px;
 	background-color: #92a1c0e8;
 }
@@ -189,5 +189,21 @@ img{
 }
 .fa-color{
 	color: #94f368;
+}
+.crown-container{
+	position: relative;
+	text-align: center;
+	color: white;
+}
+.crown {
+	min-width: 20px;
+	min-height: 20px;
+	position: absolute;
+	top: 16px;
+	left: 8px;
+	background-color: #9900ff;
+	padding: 5px;
+	border-radius: 50%;
+	font-size: 8px;
 }
 

@@ -6,6 +6,7 @@ import { DashboardService } from './dashboard.service';
 import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
 import { fromEvent } from 'rxjs';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { HomeService } from '../../home.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,7 +28,8 @@ export class DashboardComponent implements OnInit {
 	]
 	constructor(
 	  private dashboardService: DashboardService,
-	  private sQuery: SessionStorageQueryService
+	  private sQuery: SessionStorageQueryService,
+	  public homeService: HomeService
 	  ) { }
   
 	ngOnInit() {

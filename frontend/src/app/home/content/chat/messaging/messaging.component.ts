@@ -111,6 +111,16 @@ export class MessagingComponent implements OnInit {
 	muteUser(item: UserPublicInfoI){		
 		this.chatService.emit(eChat.ON_MUTE_USER, {user: item, room: this.room});
 	}
+	setAsAdmin(item: UserPublicInfoI){
+		this.chatService.emit(eChat.ON_CHANGE_ROLE, {roomId: this.room.id, user: item.login});
+	}
+	isAdmin(item: UserPublicInfoI){
+		return (this.room.admins.find(own => own.login == item.login) != undefined);
+	}
+	isFriend(item: UserPublicInfoI)
+	{
+		return (this.msgPreference.friends.find(friend => friend.login == item.login) != undefined);
+	}
 	getImage(){
 		return (this.msgPreference.chat.active_room.img);
 	}

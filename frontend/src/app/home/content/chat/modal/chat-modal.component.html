@@ -36,7 +36,7 @@
 			<div class="d-flex justify-content-center">
 			 	<div class="searchbar mx-2">
 					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}..." [ngClass]="{'hide' : type == 'protected'}">
-					<input *ngIf="type == 'protected'" [(ngModel)]="password" class="search_input" type="text" name="" placeholder="Enter password...">
+					<input *ngIf="type == 'protected'" [(ngModel)]="password" class="search_input" type="password" name="" placeholder="Enter password...">
 					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
 					<span *ngIf="type == 'protected'" class="search_icon"><i class="fas fa-key" (click)=onJoinProtectedRoom()></i></span>
 				</div>

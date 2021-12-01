@@ -39,3 +39,8 @@
 	</div>
 </div>
 <app-friend-invitation [friendPreferneces]="dashboardPreference"></app-friend-invitation>
+<div>
+	<div>
+		1---> {{dashboardPreference.chat.active_room != undefined ? dashboardPreference.chat.active_room.name : 'undefined'}}
+	</div>
+</div>
