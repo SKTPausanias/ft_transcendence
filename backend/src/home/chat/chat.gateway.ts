@@ -97,6 +97,20 @@ export class ChatGateway {
 		const room = await this.chatService.addMemberToChat(data.room, data.member);
 		await this.emitRoomUpdateToAll(room, me.login);
 	}
+	
+	@SubscribeMessage(eChat.ON_UPDATE_ROOM)
+	async onUpdateRoom(client, data) {
+		const me = await this.getSessionUser(client);
+		const room = await this.chatService.getChatRoomById(data.room.id);
+		await this.emitRoomUpdateToAll(room, me.login);
+	}
+	@SubscribeMessage(eChat.ON_CHANGE_ROLE)
+	async onChangeRole(client, data) {
+		const me = await this.getSessionUser(client);
+		const room = await this.chatService.changeUserRole(data.roomId, data.user);
+		if (room)
+			await this.emitRoomUpdateToAll(room, me.login)
+	}
 
 
 	async goOnlineOffline(login: string){

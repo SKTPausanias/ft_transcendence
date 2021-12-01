@@ -8,13 +8,14 @@ export interface ChatRoomI {
 	img: string | undefined;
 	members: UserPublicInfoI[];
 	banned: UserPublicInfoI[];
-	owner: boolean;
+	owner: UserPublicInfoI;
+	admin: boolean;
     muted: UserPublicInfoI[];
+    admins: UserPublicInfoI[];
 	onlineStatus: boolean;
 	type: string;
 	protected: boolean;
 	hasRoomKey: boolean;
-
 }
 export interface MessagesI {
 	chatId: number,

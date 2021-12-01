@@ -196,7 +196,8 @@ export class ChatService {
 			var users: UserEntity[] = await this.infoToUserEntities(channelInfo.members);
 			var chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
 			chatMembers[0].owner = true;
-
+			chatMembers[0].admin = true;
+			chatMembers[0].hasRoomKey = true;
 			const room = await this.newChatRoom(chatMembers, channelInfo);
 			if ( room === undefined ) 
 				return (Response.makeResponse(500, { error: "can't creat channel" }));	
@@ -239,10 +240,12 @@ export class ChatService {
 			if (session == undefined)
 				return (Response.makeResponse(401, { error: "unauthorized" }));
 			var room = await this.getChatRoomById(channelInfo.chatId)
-			if (await this.hashService.compare(channelInfo.password, room.password))
-				return (Response.makeResponse(600, {error : "Looks like you are trying to save same password"}));
+			if (channelInfo.protected &&  await this.hashService.compare(channelInfo.password, room.password))
+				return (Response.makeResponse(600, {error : "Can't use same password"}));
 			if ((room.protected = channelInfo.protected) && channelInfo.password != undefined)
 				room.password =  this.hashService.hash(channelInfo.password);
+			if (!room.protected)
+				room.password = '';
 			room = await this.chatRepository.save(room);
 			var chatUser = room.members.find(member => member.user.id == session.userID.id); //owner
 			var members = room.members.filter(member => member.user.id != chatUser.user.id); //members
@@ -274,6 +277,16 @@ export class ChatService {
 			return (undefined)
 		}
 	}
+	async changeUserRole(roomId: number, login: string): Promise<ChatEntity> {
+		const room = await this.getChatRoomById(roomId);
+		const chatUser = room.members.find(item => item.user.login == login);
+		if (chatUser.owner)
+			return (null);
+		chatUser.admin ? (chatUser.admin = false) : (chatUser.admin = true);
+		await this.chatUserRepository.save(chatUser);
+		return (room);
+	}
+
 	private chatUserToUserEntity(chatUsers: ChatUsersEntity[]){
 		let users: UserEntity[] = [];
 		for (let i = 0; i < chatUsers.length; i++) {
@@ -340,9 +353,11 @@ export class ChatService {
 		parsed.me = User.getPublicInfo(me.user);
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
-		parsed.owner = me.owner;
+		parsed.owner = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
+		parsed.admin = me.admin;
 		parsed.muted = this.chatUserToUserInfo(chatRoom.members.filter(member => member.muted));
 		parsed.banned = this.chatUserToUserInfo(chatRoom.members.filter(member => member.banned));
+		parsed.admins = this.chatUserToUserInfo(chatRoom.members.filter(member => member.admin));
 		parsed.type = chatRoom.type;
 		parsed.protected = chatRoom.protected;
 		parsed.hasRoomKey = me.hasRoomKey;

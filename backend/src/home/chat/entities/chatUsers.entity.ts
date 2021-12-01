@@ -18,6 +18,8 @@ export class ChatUsersEntity {
 
     @Column({default : false})
     owner: boolean;
+    @Column({default : false})
+    admin: boolean;
 
     @Column({default : false})
     muted: boolean;

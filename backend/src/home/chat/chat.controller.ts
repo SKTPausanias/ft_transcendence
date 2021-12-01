@@ -17,4 +17,8 @@ export class ChatController {
     async updateChannel(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.updatePassChannel(body, headers.authorization));
     }
+/* 	@Post('/updatePassChannel')
+    async changeUserRole(@Body() body, @Headers() headers): Promise<any>{
+        return (await this.chatService.changeUserRole(body, headers.authorization));
+    } */
 }
