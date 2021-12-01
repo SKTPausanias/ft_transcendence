@@ -39,7 +39,10 @@ export class ChatGateway {
 
 			const room = await this.chatService.leaveRoom(data);
 			if (room != undefined && room.members != undefined)
+			{
+				console.log("emmiting update");
 				await this.emitRoomUpdateToAll(room, data.me.login);
+			}
 			/*const room = await this.chatService.getChatRoomById(data.id);
 			await this.chatService.deActivateRoom(me, room);
 			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);*/

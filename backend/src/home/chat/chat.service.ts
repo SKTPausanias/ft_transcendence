@@ -133,9 +133,15 @@ export class ChatService {
 				return (undefined);
 			}
 			if (userToDelete.owner){
-				room.members[0].admin = true;
-				room.members[0].owner = true;
-				await this.chatUserRepository.save(room.members[0]);
+				var newOwner = room.members.find(item => !item.banned && !item.muted)
+				if (newOwner == undefined)
+					if ((newOwner = room.members.find(item => !item.banned)) == undefined)
+						newOwner = room.members[0];
+				newOwner.admin = true;
+				newOwner.owner = true;
+				newOwner.banned = false;
+				newOwner.muted = false;
+				await this.chatUserRepository.save(newOwner);
 			}
 			await this.chatUserRepository.delete(userToDelete);
 			return (room);
@@ -152,7 +158,8 @@ export class ChatService {
 		});
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
 		chatUser.banned = chatUser.banned ? false : true;
-		await this.chatUserRepository.save(chatUser);
+		const ret = await this.chatUserRepository.save(chatUser);
+		console.log("block user: ", ret);
 		return (roomEntity);
 	}
 	async onMuteUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
@@ -386,8 +393,11 @@ export class ChatService {
 		parsed.me = User.getPublicInfo(me.user);
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
-		parsed.owner = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
+		parsed.owner = me.owner;
+		parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
 		parsed.admin = me.admin;
+		parsed.imBanned = me.banned;
+		parsed.imMuted = me.muted;
 		parsed.muted = this.chatUserToUserInfo(chatRoom.members.filter(member => member.muted));
 		parsed.banned = this.chatUserToUserInfo(chatRoom.members.filter(member => member.banned));
 		parsed.admins = this.chatUserToUserInfo(chatRoom.members.filter(member => member.admin));

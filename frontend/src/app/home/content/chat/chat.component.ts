@@ -81,6 +81,7 @@ export class ChatComponent implements OnInit {
     this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
   selectChatRoom(item: ChatRoomI) {
+	  console.log("chat selected: ", item);
 	if (item.protected && !item.owner && !item.hasRoomKey)
 		return (this.openModal("protected", item));
 	this.chatPreference.chat.active_room = item;

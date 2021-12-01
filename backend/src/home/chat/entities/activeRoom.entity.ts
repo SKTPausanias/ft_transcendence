@@ -16,4 +16,6 @@ export class ActiveRoomEntity {
 		})
     chat: ChatEntity;
 
+	
+
 }

@@ -105,6 +105,7 @@ export class ChatService {
 	}
 	private onUpdateRoom(){
 		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: any) => {
+			console.log("on update room: ", data);
 			var chat = this.sharedPreferences.chat;
 			try {
 				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id);
