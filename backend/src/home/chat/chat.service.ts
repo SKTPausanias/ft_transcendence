@@ -434,11 +434,6 @@ export class ChatService {
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
 		parsed.owner = me.owner;
-		/* parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user); */
-		if (chatRoom.type == eChatType.DIRECT)
-            parsed.ownerInfo = <UserPublicInfoI>{};
-        else
-            parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
 		parsed.admin = me.admin;
 		parsed.imBanned = me.banned;
 		parsed.imMuted = me.muted;
@@ -449,9 +444,13 @@ export class ChatService {
 		parsed.protected = chatRoom.protected;
 		parsed.hasRoomKey = me.hasRoomKey;
 		if (chatRoom.type != eChatType.DIRECT)
-			parsed.name = chatRoom.name;
-		if (chatRoom.type == eChatType.DIRECT)
 		{
+			parsed.name = chatRoom.name;
+			parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
+		}
+		else
+		{
+			parsed.ownerInfo = <UserPublicInfoI>{};
 			parsed.img = parsed.members[0].avatar;
 			parsed.name = parsed.members[0].nickname;
 		}
