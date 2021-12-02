@@ -57,7 +57,7 @@ export class ChatService {
 				
 			try {
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
-					this.socket.emit(eChat.ON_JOIN_ROOM, data.chatId);
+					this.socket.emit(eChat.ON_UPDATE_ROOM, {room : data});
 				if (activeRoom != undefined && activeRoom.id == data.chatId)
 				{
 					console.log("Don't call backend to mark as unread message");

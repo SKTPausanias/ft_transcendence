@@ -27,9 +27,7 @@ export class ChatGateway {
 	}
 	@SubscribeMessage(eChat.ON_JOIN_ROOM)
 	async onJoinRoom(client, data) {
-		const me = await this.getSessionUser(client);
-		const room = await this.chatService.getChatRoomById(data);
-		await this.emitRoomUpdateToAll(room, me.login);
+		//Used when user join's the room
 	}
 	@SubscribeMessage(eChat.ON_LEAVE_ROOM)
 	async onLeaveRoom(client, data) {
@@ -107,8 +105,10 @@ export class ChatGateway {
 	
 	@SubscribeMessage(eChat.ON_UPDATE_ROOM)
 	async onUpdateRoom(client, data) {
+		var id;
+		data.room.id != undefined ? (id = data.room.id) : (id = data.room.chatId);
 		const me = await this.getSessionUser(client);
-		const room = await this.chatService.getChatRoomById(data.room.id);
+		const room = await this.chatService.getChatRoomById(id);
 		await this.emitRoomUpdateToAll(room, me.login);
 	}
 	@SubscribeMessage(eChat.ON_CHANGE_ROLE)
