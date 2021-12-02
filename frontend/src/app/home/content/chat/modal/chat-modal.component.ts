@@ -91,6 +91,12 @@ export class ChatModalComponent implements OnInit {
 	selectType(target: any){
 		this.channelType = target.value;
 	}
+
+	joinRoom(room: any) {
+		console.log("join room: ", room);
+		//si protected, check password and join room
+	}
+
 	isChannel(){
 		return (this.type == "channel" ? true : false);
 	}

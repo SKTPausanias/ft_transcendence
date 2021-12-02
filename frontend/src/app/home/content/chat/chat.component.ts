@@ -113,6 +113,7 @@ export class ChatComponent implements OnInit {
   isMemberOnline(room: ChatRoomI) {
     return room.onlineStatus;
   }
+
   closeRoom() {
     this.showRoom = false;
   }

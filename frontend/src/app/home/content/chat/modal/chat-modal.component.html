@@ -70,12 +70,14 @@
 			<div *ngIf='isChannel()' class="w-100 border-bottom border-light">
 				<div class="row item-ctn">
 					<div class="col-9">
-						<b class="fa fa-hashtag  fa icon-btn me-2"></b>
-						<h5 class="d-inline me-5">{{item}}</h5>
+						<span *ngIf="item.type == 'public'" class="fa fa-broadcast-tower channel-fa"></span>
+						<span *ngIf="item.type == 'private'" class="fa fa-user-shield channel-fa"></span>
+						<h5 class="d-inline me-5">{{item.name}}</h5>
+						<span *ngIf="item.protected" class="fa fa-lock text-danger"></span>
 					</div>
 					<div class="col-3">
 						<div class="h-100 d-flex justify-content-center">
-							<span class="fa fa-sign-in-alt  fa-lg icon-btn float-right" style="margin: auto;"></span>
+							<span class="fa fa-sign-in-alt  fa-lg icon-btn float-right" style="margin: auto;" (click)="joinRoom(item)"></span>
 						</div>
 					</div>
 				</div>
