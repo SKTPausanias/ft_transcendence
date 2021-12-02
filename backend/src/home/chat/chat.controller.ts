@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers, Get } from "@nestjs/common";
+import { Controller, Post, Body, Headers, Get, Query, Param } from "@nestjs/common";
 import { ChatService } from "./chat.service";
 
 @Controller('/api/users/chat')
@@ -17,6 +17,12 @@ export class ChatController {
     async updateChannel(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.updatePassChannel(body, headers.authorization));
     }
+	@Get('/searchRooms')
+	async search(@Query() body, @Headers() headers){
+		
+		if (body.value !== undefined)
+			return await this.chatService.searchRoom(body.value, headers.authorization);
+	}
 /* 	@Post('/updatePassChannel')
     async changeUserRole(@Body() body, @Headers() headers): Promise<any>{
         return (await this.chatService.changeUserRole(body, headers.authorization));

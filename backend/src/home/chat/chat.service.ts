@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { In, Repository } from "typeorm";
+import { In, Like, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
@@ -317,6 +317,47 @@ export class ChatService {
 			return (undefined)
 		}
 	}
+
+	async searchRoom(value: any, header: string): Promise<any>{
+		const token = header.split(' ')[1];
+		try {
+			var myRooms: any[] = [];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			/* console.log("calling search complex query rooms: ");
+			const searchRooms = await this.chatRepository.find({
+				relations: ["members"],
+				where: [
+					{ type: eChatType.PUBLIC },
+					{ type: eChatType.PRIVATE,
+					members: { 
+						user: {
+							id: session.userID.id //1
+						}
+					}
+				}]
+			})
+			console.log("Returned rooms: ", searchRooms); */
+			const onwRooms = await this.chatUserRepository.find({
+				relations: ['room'],
+				where: [{ user: session.userID }]
+			})
+			for (var i = 0; i < onwRooms.length; i++) {
+				if (onwRooms[i].room.type == eChatType.PRIVATE)
+				myRooms.push(onwRooms[i].room)
+			}
+			console.log("value: ", value);
+			const rooms = await this.chatRepository.find({where: { type: eChatType.PUBLIC, name: Like("%" + value + "%")}});
+			myRooms = myRooms.concat(rooms)
+			return (Response.makeResponse(200, myRooms ));
+		} catch (error) {
+			if (error.statusCode == 410)
+				return (error);
+			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
+
 	async changeUserRole(roomId: number, login: string): Promise<ChatEntity> {
 		const room = await this.getChatRoomById(roomId);
 		const chatUser = room.members.find(item => item.user.login == login);

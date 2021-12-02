@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { eChat } from "src/app/shared/ft_enums";
@@ -162,6 +162,36 @@ export class ChatService {
 		}
 	  }
 
+	  liveSearchRooms(session: SessionI, val: string): any{
+		 
+		const url = '/api/users/chat/searchRooms';
+		var data: HttpParams = new HttpParams().set("value", val);
+		try{
+			return (this.http.get<any>(url, { headers: new HttpHeaders({
+				Authorization: 'Bearer ' + session.token}),
+				params: data
+			  }))
+		}catch(e){
+			console.log("errorrrrrrrr: ", e);
+		  return ([]);
+		}
+	  }
+	 	async searchRooms(session: SessionI, val: string): Promise<any>{
+		 
+		const url = '/api/users/chat/searchRooms';
+		var data: HttpParams = new HttpParams().set("value", val);
+		try{
+			const ret = await (this.http.get<any>(url, { headers: new HttpHeaders({
+				Authorization: 'Bearer ' + session.token}),
+				params: data
+			  }).toPromise());
+			  console.log("Content of ret rooms: ", ret);
+			  return (ret.data);
+		}catch(e){
+			console.log("errorrrrrrrr: ", e);
+		  return ([]);
+		}
+	  }
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
