@@ -62,3 +62,9 @@ export interface ChatPasswordUpdateI {
     protected: boolean,
     password: string
 }
+export interface SearchRoomI {
+	id: number,
+	name: string,
+	type: string,
+	protected: boolean
+}

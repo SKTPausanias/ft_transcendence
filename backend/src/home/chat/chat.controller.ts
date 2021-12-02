@@ -19,12 +19,7 @@ export class ChatController {
     }
 	@Get('/searchRooms')
 	async search(@Query() body, @Headers() headers){
-		
 		if (body.value !== undefined)
 			return await this.chatService.searchRoom(body.value, headers.authorization);
 	}
-/* 	@Post('/updatePassChannel')
-    async changeUserRole(@Body() body, @Headers() headers): Promise<any>{
-        return (await this.chatService.changeUserRole(body, headers.authorization));
-    } */
 }

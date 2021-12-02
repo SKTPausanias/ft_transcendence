@@ -6,7 +6,7 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ChatEntity } from "./entities/chat.entity";
-import { ChatI, ChatInfoI, ChatPasswordUpdateI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI } from "./iChat";
+import { ChatI, ChatInfoI, ChatPasswordUpdateI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI, SearchRoomI } from "./iChat";
 import { MessageEntity } from "./entities/message.entity";
 import { ChatUsersEntity } from "./entities/chatUsers.entity";
 import { Response } from "src/shared/response/responseClass";
@@ -318,38 +318,37 @@ export class ChatService {
 		}
 	}
 
+	private searchRoomParser(roomEntity: ChatEntity): SearchRoomI {
+		return (<SearchRoomI>{
+			id: roomEntity.id,
+			name: roomEntity.name,
+			type: roomEntity.type,
+			protected: roomEntity.protected
+		});
+	}
+	private searchRoomsParser(roomEntity: ChatEntity[]): SearchRoomI[] {
+		var rooms: SearchRoomI[] = [];
+		for (var i = 0; i < roomEntity.length; i++)
+			rooms.push(this.searchRoomParser(roomEntity[i]));
+		return (rooms);
+	}
 	async searchRoom(value: any, header: string): Promise<any>{
 		const token = header.split(' ')[1];
 		try {
-			var myRooms: any[] = [];
+			var myRooms: SearchRoomI[] = [];
 			const session = await this.sessionService.findSessionWithRelation(token);
 			if (session == undefined)
 				return (Response.makeResponse(401, { error: "unauthorized" }));
-			/* console.log("calling search complex query rooms: ");
-			const searchRooms = await this.chatRepository.find({
-				relations: ["members"],
-				where: [
-					{ type: eChatType.PUBLIC },
-					{ type: eChatType.PRIVATE,
-					members: { 
-						user: {
-							id: session.userID.id //1
-						}
-					}
-				}]
-			})
-			console.log("Returned rooms: ", searchRooms); */
 			const onwRooms = await this.chatUserRepository.find({
 				relations: ['room'],
-				where: [{ user: session.userID }]
+				where: [{ user: session.userID, room: {name: Like(value + "%")} }]
 			})
 			for (var i = 0; i < onwRooms.length; i++) {
 				if (onwRooms[i].room.type == eChatType.PRIVATE)
-				myRooms.push(onwRooms[i].room)
+					myRooms.push(this.searchRoomParser(onwRooms[i].room));
 			}
-			console.log("value: ", value);
-			const rooms = await this.chatRepository.find({where: { type: eChatType.PUBLIC, name: Like("%" + value + "%")}});
-			myRooms = myRooms.concat(rooms)
+			const rooms = await this.chatRepository.find({where: { type: eChatType.PUBLIC, name: Like(value + "%")}});
+			myRooms = myRooms.concat(this.searchRoomsParser(rooms));
 			return (Response.makeResponse(200, myRooms ));
 		} catch (error) {
 			if (error.statusCode == 410)
@@ -435,7 +434,11 @@ export class ChatService {
 		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
 		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
 		parsed.owner = me.owner;
-		parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
+		/* parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user); */
+		if (chatRoom.type == eChatType.DIRECT)
+            parsed.ownerInfo = <UserPublicInfoI>{};
+        else
+            parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
 		parsed.admin = me.admin;
 		parsed.imBanned = me.banned;
 		parsed.imMuted = me.muted;

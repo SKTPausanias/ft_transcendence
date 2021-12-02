@@ -154,44 +154,42 @@ export class ChatService {
 		const url = '/api/users/chat/updatePassChannel';
 		console.log('data to be updated: ', channelInfo);
 		try {
-		  const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
+			const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
 					Authorization: 'Bearer ' + session.token})}).toPromise())
 			return (ret);
 		} catch (e) {
-		  return (e);
+			return (e);
 		}
-	  }
+	}
 
-	  liveSearchRooms(session: SessionI, val: string): any{
-		 
-		const url = '/api/users/chat/searchRooms';
-		var data: HttpParams = new HttpParams().set("value", val);
-		try{
-			return (this.http.get<any>(url, { headers: new HttpHeaders({
-				Authorization: 'Bearer ' + session.token}),
-				params: data
-			  }))
-		}catch(e){
-			console.log("errorrrrrrrr: ", e);
-		  return ([]);
-		}
-	  }
-	 	async searchRooms(session: SessionI, val: string): Promise<any>{
-		 
-		const url = '/api/users/chat/searchRooms';
-		var data: HttpParams = new HttpParams().set("value", val);
-		try{
-			const ret = await (this.http.get<any>(url, { headers: new HttpHeaders({
-				Authorization: 'Bearer ' + session.token}),
-				params: data
-			  }).toPromise());
-			  console.log("Content of ret rooms: ", ret);
-			  return (ret.data);
-		}catch(e){
-			console.log("errorrrrrrrr: ", e);
-		  return ([]);
-		}
-	  }
+	liveSearchRooms(session: SessionI, val: string): any{
+		
+	const url = '/api/users/chat/searchRooms';
+	var data: HttpParams = new HttpParams().set("value", val);
+	try{
+		return (this.http.get<any>(url, { headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token}),
+			params: data
+			}))
+	}catch(e){
+		return ([]);
+	}
+	}
+	async searchRooms(session: SessionI, val: string): Promise<any>{
+		
+	const url = '/api/users/chat/searchRooms';
+	var data: HttpParams = new HttpParams().set("value", val);
+	try{
+		const ret = await (this.http.get<any>(url, { headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token}),
+			params: data
+			}).toPromise());
+			console.log("Content of ret rooms: ", ret);
+			return (ret.data);
+	}catch(e){
+		return ([]);
+	}
+	}
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}

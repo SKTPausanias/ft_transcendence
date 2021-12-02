@@ -106,15 +106,14 @@ export class ChatModalComponent implements OnInit {
 					else
 					{
 						if (this.isChannel()){
-							console.log("Calling this one: WTF: 0");
-							this.onSearchBoxChannelChange(text).subscribe(()=>{})
-						}
+							//this.onSearchBoxChannelChange(text).subscribe(()=>{})
 							//IMPORTANT WHEN CHANNEL SEARCH IS READY
-							/* this.onSearchBoxChannelChange(text).subscribe((res: any)=> {
-								this.searchResult = res;
+							this.onSearchBoxChannelChange(text).subscribe((res: any)=> {
+								this.searchResult = res.data;
 							}, (err: any) => {
 								console.log('error', err);
-							}); */
+							});
+						}
 						else
 							this.onSearchBoxFriendChange(text).subscribe((res: any)=> {
 								this.searchResult = res;
@@ -131,22 +130,17 @@ export class ChatModalComponent implements OnInit {
 		return (this.dashboardService.liveSearchUsers(this.session, value));
 	}
 	onSearchBoxChannelChange(value: any) {
-		console.log("Calling this one: WTF: 1");
 		return (this.chatService.liveSearchRooms(this.session, value))
-		//return ["test-channel-a","test-channel-b","test-channel-c", "test-channel-d", "test-channel-e", "test-channel-f", "test-channel-g", "test-channel-h", "test-channel-i" ];
 	}
 	async onSubmitFriends(): Promise<void> {
-		console.log("Calling this one: WTF: 2");
 		if (!this.isChannel())
 		{
 			if (this.searchInput.nativeElement.value.length > 0)
 				this.searchResult = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
 			this.filterSearchResults();
 		}
-		else {
+		else 
 			this.searchResult = await this.chatService.searchRooms(this.session, this.searchInput.nativeElement.value);
-			 
-		}
 	}
 	async onJoinProtectedRoom(){
 		const resp = await this.chatService.unlockRoom(this.session, <RoomKeyI>{
