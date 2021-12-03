@@ -35,7 +35,7 @@ export class ChatService {
 	{
 		try {
 			const room = await this.findChatRoom(me, members, chatInfo);
-			await this.activateRoom([me], room);
+			await this.activateOneUserRoom(me, room);
 			const chatMe = await this.chatUserRepository.findOne({
 				relations: ['user'],
 				where: {user: me.id}});
@@ -78,7 +78,7 @@ export class ChatService {
 				relations: ["members", "members.user"],
 				 where: {id: data.room.id}});
 			const userEntities = this.chatUserToUserEntity(room.members);
-			await this.activateRoom(userEntities, room);
+			await this.activateUserRooms(userEntities, room);
 			const msgEntity = await this.saveMsg(room, owner, data.msg);
 			return (<NewMessageI>{
 				emitTo : userEntities,
@@ -243,7 +243,7 @@ export class ChatService {
 			const room = await this.newChatRoom(chatMembers, channelInfo);
 			if ( room === undefined ) 
 				return (Response.makeResponse(500, { error: "can't creat channel" }));	
-			await this.activateRoom(this.chatUserToUserEntity(chatMembers), room);
+			await this.activateUserRooms(this.chatUserToUserEntity(chatMembers), room);
 
 			var chatUser = room.members.find(member => member.user.id == session.userID.id);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));
@@ -314,9 +314,8 @@ export class ChatService {
 			chatUser = await this.chatUserRepository.save(chatUser);
 			chatRoom.members.push(chatUser);
 			chatRoom = await this.chatRepository.save(chatRoom)
-			await this.activateRoom([chatUser.user], chatRoom);
-			console.log("add member to chat buenas tardes", chatRoom);
-			return (chatRoom);
+			await this.activateUserRooms([chatUser.user], chatRoom);
+			return (await this.getChatRoomById(chatRoom.id));
 		} catch (error) {
 			console.log("error",error);
 			return (undefined)
@@ -370,16 +369,21 @@ export class ChatService {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			if (session == undefined)
 				return (Response.makeResponse(401, { error: "unauthorized" }));
-			//check user is already in room
-			/*const chatUser = await this.chatUserRepository.findOne({
-				relations: ['room', 'room.members', 'room.members.user', 'user'],
-				where: [{ user: session.userID, room: { id: room.id } }]
-			});
-			if (chatUser != undefined)
-				return (Response.makeResponse(400, { error: "user already in room" }));*/
-			const resp = await this.addMemberToChat(room, session.userID);
-			console.log("join room", resp);
-			return (resp);
+				var chatRoom = await this.getChatRoomById(room.id);
+				var chatUser = await this.chatUserRepository.findOne({
+					relations: ['room', 'user'],
+					where: [{ user: session.userID, room: { id: room.id } }]
+				});
+				if (chatUser != undefined)
+				{
+					await this.activateOneUserRoom(session.userID, chatRoom);
+					return (Response.makeResponse(200, this.parseChatRoom(chatRoom, chatUser)));
+				}
+			chatRoom = await this.addMemberToChat(room, session.userID);
+			chatUser = chatRoom.members.find(item => item.user.login == session.userID.login);
+			if (chatUser == undefined)
+				return (Response.makeResponse(500, { error: 'Unable to join chat' }));
+			return (Response.makeResponse(200, this.parseChatRoom(chatRoom, chatUser)));
 		} catch (error) {
 			return (Response.makeResponse(500, { error: 'Unable to join chat' }));
 		}
@@ -532,17 +536,23 @@ export class ChatService {
 		})
 	}
 
-	private async activateRoom(users: UserEntity[], chatRoom: ChatEntity): Promise<void>{
+	private async activateOneUserRoom(user: UserEntity, chatRoom: ChatEntity): Promise<ActiveRoomEntity>{
 		var active: ActiveRoomEntity = new ActiveRoomEntity();
+		var ret: ActiveRoomEntity;
+		active.user = user;
 		active.chat = chatRoom;
+		const cmpActive = await this.activeRoomRepository.findOne({
+			relations: ['chat', 'user'],
+			where: {chat: chatRoom.id, user: user.id}
+		})
+		if (cmpActive == undefined)
+			ret = await this.activeRoomRepository.save(active);
+		return (ret);
+	}
+
+	private async activateUserRooms(users: UserEntity[], chatRoom: ChatEntity): Promise<void>{
 		for (var i = 0; i < users.length; i++) {
-			active.user = users[i];
-			const cmpActive = await this.activeRoomRepository.findOne({
-				relations: ['chat', 'user'],
-				where: {chat: chatRoom.id, user: users[i].id}
-			})
-			if (cmpActive == undefined)
-				await this.activeRoomRepository.save(active);
+			await this.activateOneUserRoom(users[i], chatRoom);
 		}
 	}
 

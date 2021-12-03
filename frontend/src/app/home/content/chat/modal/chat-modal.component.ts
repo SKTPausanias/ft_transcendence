@@ -4,7 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
-import { SharedPreferencesI, ChatI, ChatRoomI, RoomKeyI } from 'src/app/shared/ft_interfaces';
+import { SharedPreferencesI, ChatI, ChatRoomI, RoomKeyI, SearchRoomI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
@@ -92,8 +92,21 @@ export class ChatModalComponent implements OnInit {
 		this.channelType = target.value;
 	}
 
-	async joinRoom(room: any) {
-		await this.chatService.joinRoom(this.session, room);
+	async joinRoom(room: SearchRoomI) {
+		if (room.protected)
+		{
+			alert("IMPLEMENT JOIN PROTECTED ROOM");
+			return ;
+		}
+		const resp = await this.chatService.joinRoom(this.session, room);
+		if (resp.statusCode != 200)
+			return this.startStatusMsgTimer(<StatusMessageI>{
+				isError: true,
+				message: resp.error
+			})
+		this.chatService.emit(eChat.ON_UPDATE_ROOM, {room : resp.data});
+		this.passEntry.emit({room : resp.data});
+		this.modal.dismiss();
 		//si protected, check password and join room
 	}
 

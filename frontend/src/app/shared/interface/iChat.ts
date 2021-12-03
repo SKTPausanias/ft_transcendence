@@ -50,6 +50,12 @@ export interface UnreadedMessagesI{
 		}
 	]
 }
+export interface SearchRoomI {
+	id: number,
+	name: string,
+	type: string,
+	protected: boolean
+}
 
 /**
  * On recive msg unreaded.push({login, roomID})

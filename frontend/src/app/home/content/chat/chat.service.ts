@@ -200,9 +200,6 @@ export class ChatService {
 		try{
 			const ret = await (this.http.post<any>(url, room, { headers: new HttpHeaders({
 				Authorization: 'Bearer ' + session.token})}).toPromise());
-			//emit to the room
-			console.log("Content of ret rooms: ", ret);
-			//this.socket.emit(eChat.ON_UPDATE_ROOM, {room : ret.data});
 			return (ret);
 		}catch(e){
 			return (e);
