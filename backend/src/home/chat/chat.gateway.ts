@@ -41,6 +41,7 @@ export class ChatGateway {
 				console.log("emmiting update");
 				await this.emitRoomUpdateToAll(room, data.me.login);
 			}
+			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, data.me.login, data);
 			/*const room = await this.chatService.getChatRoomById(data.id);
 			await this.chatService.deActivateRoom(me, room);
 			await this.server.to(client.id).emit(eChat.ON_LEAVE_ROOM, me.login, data);*/

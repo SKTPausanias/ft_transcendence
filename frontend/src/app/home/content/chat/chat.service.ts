@@ -85,6 +85,7 @@ export class ChatService {
 	private onLeaveRoom(){
 		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
 			try {
+				console.log("ON_LEAVE_ROOM", data);
 				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
 				if (this.sharedPreferences.chat.active_room.id == data.id)
 					this.sharedPreferences.chat.active_room = undefined;
@@ -192,5 +193,19 @@ export class ChatService {
 	}
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
+	}
+
+	async joinRoom(session: SessionI, room: any): Promise<any>{
+		const url = '/api/users/chat/joinRoom';
+		try{
+			const ret = await (this.http.post<any>(url, room, { headers: new HttpHeaders({
+				Authorization: 'Bearer ' + session.token})}).toPromise());
+			//emit to the room
+			console.log("Content of ret rooms: ", ret);
+			//this.socket.emit(eChat.ON_UPDATE_ROOM, {room : ret.data});
+			return (ret);
+		}catch(e){
+			return (e);
+		}
 	}
 }

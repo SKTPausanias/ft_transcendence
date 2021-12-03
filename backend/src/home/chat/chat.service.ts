@@ -144,6 +144,8 @@ export class ChatService {
 				await this.chatUserRepository.save(newOwner);
 			}
 			await this.chatUserRepository.delete(userToDelete);
+			const userEntity = await this.userService.findByLogin(data.me.login);
+			await this.deActivateRoom(userEntity, room);
 			return (room);
 		} catch (error) {//create response
 			return (undefined);
@@ -299,6 +301,7 @@ export class ChatService {
 	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
 	{
 		try {
+
 			var chatRoom = await this.chatRepository.findOne({
 				relations: ["members", "members.user"],
 				where: {id : room.id}
@@ -312,8 +315,10 @@ export class ChatService {
 			chatRoom.members.push(chatUser);
 			chatRoom = await this.chatRepository.save(chatRoom)
 			await this.activateRoom([chatUser.user], chatRoom);
+			console.log("add member to chat buenas tardes", chatRoom);
 			return (chatRoom);
 		} catch (error) {
+			console.log("error",error);
 			return (undefined)
 		}
 	}
@@ -326,12 +331,14 @@ export class ChatService {
 			protected: roomEntity.protected
 		});
 	}
+
 	private searchRoomsParser(roomEntity: ChatEntity[]): SearchRoomI[] {
 		var rooms: SearchRoomI[] = [];
 		for (var i = 0; i < roomEntity.length; i++)
 			rooms.push(this.searchRoomParser(roomEntity[i]));
 		return (rooms);
 	}
+
 	async searchRoom(value: any, header: string): Promise<any>{
 		const token = header.split(' ')[1];
 		try {
@@ -354,6 +361,27 @@ export class ChatService {
 			if (error.statusCode == 410)
 				return (error);
 			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
+		}
+	}
+
+	async joinRoom(room: any, header: string): Promise<any> {
+		const token = header.split(' ')[1];
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			//check user is already in room
+			/*const chatUser = await this.chatUserRepository.findOne({
+				relations: ['room', 'room.members', 'room.members.user', 'user'],
+				where: [{ user: session.userID, room: { id: room.id } }]
+			});
+			if (chatUser != undefined)
+				return (Response.makeResponse(400, { error: "user already in room" }));*/
+			const resp = await this.addMemberToChat(room, session.userID);
+			console.log("join room", resp);
+			return (resp);
+		} catch (error) {
+			return (Response.makeResponse(500, { error: 'Unable to join chat' }));
 		}
 	}
 

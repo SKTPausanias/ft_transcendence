@@ -22,4 +22,9 @@ export class ChatController {
 		if (body.value !== undefined)
 			return await this.chatService.searchRoom(body.value, headers.authorization);
 	}
+
+	@Post('/joinRoom')
+	async joinRoom(@Body() body, @Headers() headers): Promise<any> {
+		return (await this.chatService.joinRoom(body, headers.authorization));
+	}
 }

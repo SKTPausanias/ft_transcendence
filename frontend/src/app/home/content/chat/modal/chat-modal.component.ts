@@ -92,8 +92,8 @@ export class ChatModalComponent implements OnInit {
 		this.channelType = target.value;
 	}
 
-	joinRoom(room: any) {
-		console.log("join room: ", room);
+	async joinRoom(room: any) {
+		await this.chatService.joinRoom(this.session, room);
 		//si protected, check password and join room
 	}
 
