@@ -20,6 +20,7 @@ import { ChatEntity } from './home/chat/entities/chat.entity';
 import { MessageEntity } from './home/chat/entities/message.entity';
 import { ChatUsersEntity } from './home/chat/entities/chatUsers.entity';
 import { ActiveRoomEntity } from './home/chat/entities/activeRoom.entity';
+import { UnreadMessageEntity } from './home/chat/entities/unread-message.entity';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -33,7 +34,9 @@ import { ActiveRoomEntity } from './home/chat/entities/activeRoom.entity';
 		username: process.env.DB_USER, 
 		password: process.env.DB_PASS,		
 		database: process.env.DB, 
-		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity, ActiveRoomEntity],
+		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, 
+					FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity, 
+					ActiveRoomEntity, UnreadMessageEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

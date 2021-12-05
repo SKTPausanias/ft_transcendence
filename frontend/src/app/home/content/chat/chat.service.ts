@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
-import { eChat } from "src/app/shared/ft_enums";
-import { ChatI, ChatPasswordUpdateI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { eChat, Nav } from "src/app/shared/ft_enums";
+import { ChatI, ChatPasswordUpdateI, ChatRoomI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SocketService } from "../../socket.service";
 
 @Injectable({providedIn: "root"})
@@ -29,6 +29,7 @@ export class ChatService {
 		this.onChatLoadAllMessages();
 		this.onNewChatMsg();
 		this.onUpdateRoom();
+		this.onUnreadMsg();
 	}
 
 	private onStartChat(){
@@ -54,22 +55,26 @@ export class ChatService {
 	private onNewChatMsg(){
 		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
 			const activeRoom = this.sharedPreferences.chat.active_room;
-				
+			const path = this.sharedPreferences.path;
 			try {
 				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
 					this.socket.emit(eChat.ON_UPDATE_ROOM, {room : data});
-				if (activeRoom != undefined && activeRoom.id == data.chatId)
+				if (activeRoom != undefined && activeRoom.id == data.chatId && path != undefined && path == Nav.CHAT )
 				{
-					console.log("Don't call backend to mark as unread message");
 					this.chatEmiter.emit({newMessage: data});
+					this.socket.emit(eChat.ON_READ_MSG, data);
 				}
 				else
-				{
-					this.chatPreferenceEmiter.emit({messages: data});
-					console.log("Call backend and mark as unread message");		
-				}
+					this.socket.emit(eChat.ON_GET_UNREAD_MSG, data.chatId);
+
+
 			}catch(error){}
 		})
+	}
+	private onUnreadMsg(){
+		this.socket.on(eChat.ON_GET_UNREAD_MSG, (emiter: string, data: number) => {
+		this.chatPreferenceEmiter.emit({unreaded: data});
+		});
 	}
 	
 	private onJoinRoom(){
@@ -85,13 +90,13 @@ export class ChatService {
 	private onLeaveRoom(){
 		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
 			try {
-				console.log("ON_LEAVE_ROOM", data);
 				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
-				if (this.sharedPreferences.chat.active_room.id == data.id)
+				if (this.sharedPreferences.chat.active_room != undefined && this.sharedPreferences.chat.active_room.id == data.id)
 					this.sharedPreferences.chat.active_room = undefined;
 				this.chatPreferenceEmiter.emit({ chat : this.sharedPreferences.chat});
 				this.chatEmiter.emit({onDestroy : data});
-			}catch(error){}
+			}catch(error){
+			}
 		})
 	}
 	
@@ -105,8 +110,7 @@ export class ChatService {
 		})
 	}
 	private onUpdateRoom(){
-		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: any) => {
-			console.log("on update room: ", data);
+		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: ChatRoomI) => {
 			var chat = this.sharedPreferences.chat;
 			try {
 				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id);
@@ -122,7 +126,8 @@ export class ChatService {
 				else
 					this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
 				this.chatEmiter.emit();
-				this.chatEmiter.emit({close : data});
+				if (!this.sharedPreferences.chat.active_room.hasRoomKey)
+					this.chatEmiter.emit({close : data});
 			}catch(error){}
 		})
 	}
@@ -153,7 +158,6 @@ export class ChatService {
 	}
 	async updatePassChannel(session: SessionI, channelInfo: ChatPasswordUpdateI): Promise<any> {
 		const url = '/api/users/chat/updatePassChannel';
-		console.log('data to be updated: ', channelInfo);
 		try {
 			const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
 					Authorization: 'Bearer ' + session.token})}).toPromise())
@@ -185,7 +189,6 @@ export class ChatService {
 			Authorization: 'Bearer ' + session.token}),
 			params: data
 			}).toPromise());
-			console.log("Content of ret rooms: ", ret);
 			return (ret.data);
 	}catch(e){
 		return ([]);

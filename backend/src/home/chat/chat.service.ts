@@ -15,6 +15,7 @@ import { eChatType } from "./eChat";
 import { ActiveRoomEntity } from "./entities/activeRoom.entity";
 import { SessionService } from "src/session/session.service";
 import { HashService } from "src/shared/hash/hash.service";
+import { UnreadMessageEntity } from "./entities/unread-message.entity";
 
 @Injectable()
 export class ChatService {
@@ -27,6 +28,8 @@ export class ChatService {
 				private msgRepository: Repository<MessageEntity>,
 				@InjectRepository(ActiveRoomEntity)
 				private activeRoomRepository: Repository<ActiveRoomEntity>,
+				@InjectRepository(UnreadMessageEntity)
+				private unreadedMsgRepository: Repository<UnreadMessageEntity>,
 				private userService: UserService,
 				private sessionService: SessionService,
 				private hashService: HashService){}
@@ -37,7 +40,7 @@ export class ChatService {
 			const room = await this.findChatRoom(me, members, chatInfo);
 			await this.activateOneUserRoom(me, room);
 			const chatMe = await this.chatUserRepository.findOne({
-				relations: ['user'],
+				relations: ['user', "unreadMessages"],
 				where: {user: me.id}});
 			return (this.parseChatRoom(room, chatMe));
 		} catch (error) {
@@ -49,7 +52,7 @@ export class ChatService {
 		var ret: ChatRoomI[] = [];
 		try {
 			const active: ActiveRoomEntity[] = await this.activeRoomRepository.find({
-				relations: ['user', 'chat', 'chat.members', "chat.members.user"],
+				relations: ['user', 'chat', 'chat.members', "chat.members.user", "chat.members.unreadMessages"],
 				where: { user: me.id}
 			});
 			for (var i = 0; i < active.length; i++)
@@ -74,12 +77,11 @@ export class ChatService {
 	async newMessage(owner: UserEntity, data: any): Promise<NewMessageI>
 	{
 		try {
-			const room = await this.chatRepository.findOne({ 
-				relations: ["members", "members.user"],
-				 where: {id: data.room.id}});
+			const room = await this.getChatRoomById(data.room.id);
 			const userEntities = this.chatUserToUserEntity(room.members);
 			await this.activateUserRooms(userEntities, room);
 			const msgEntity = await this.saveMsg(room, owner, data.msg);
+			await this.markAsUnreaded(msgEntity)
 			return (<NewMessageI>{
 				emitTo : userEntities,
 				message : this.parseOneMessage(msgEntity)
@@ -88,31 +90,81 @@ export class ChatService {
 			return (<NewMessageI>{});
 		}
 	}
-
-	async getChatEntity(roomId: number): Promise<ChatEntity>
+	
+	async markAsUnreaded(msgEntity: MessageEntity): Promise<void>
 	{
-		return null;
+		const members = msgEntity.chat.members;
+		try {
+			for (let i = 0; i < members.length; i++) {
+				const unreadedMessage = new UnreadMessageEntity();
+				const member = members[i];
+				if (member.user.id == msgEntity.owner.id)
+					continue ;
+				unreadedMessage.message = msgEntity;
+				unreadedMessage.chatUser = member;
+				member.unreadMessages.push(unreadedMessage);
+				await this.chatUserRepository.save(member)
+				await this.unreadedMsgRepository.save(unreadedMessage);
+			}
+		} catch (error) {
+			console.log(error)
+		}
+	}
+	
+	async markAsReaded(user: UserEntity, room: ChatRoomI): Promise<number>
+	{
+		try {
+			var chatUser = await this.chatUserRepository.findOne({
+				relations: ["room", "user", "unreadMessages"],
+				where: {
+					room:{
+						id : room.id
+					},
+					user: user.id
+				}
+			})
+			if (chatUser != undefined)
+			{
+				await this.unreadedMsgRepository.remove(chatUser.unreadMessages);
+				chatUser.unreadMessages = [];
+				chatUser = await this.chatUserRepository.save(chatUser);
+			}
+			return (await this.getUnreadedMsg(user));
+		} catch (error) {
+			console.log(error)
+			return (0);
+		}
+	}
+	async getUnreadedMsg(user: UserEntity): Promise<number>
+	{
+		var unreaded = 0;
+		try {
+			var chatUsers = await this.chatUserRepository.find({
+				relations: ["user", "unreadMessages"],
+				where: {user : user.id}
+			})
+			if (chatUsers != undefined)
+				for (let i = 0; i < chatUsers.length; i++) {
+					unreaded += chatUsers[i].unreadMessages.length;
+				}
+			return (unreaded);
+		} catch (error) {
+			console.log(error)
+			return (0);
+		}
 	}
 
 	async getChatRoomById(roomId: number): Promise<ChatEntity | undefined>
 	{
 		try {
 			const room = await this.chatRepository.findOne({
-				relations: ["members", "members.user"],
+				relations: ["members", "members.user", "members.unreadMessages"],
 				where : {id : roomId}
 			});
 			return (room);
 		} catch (error) {
 			return (undefined);
 		}
-		return null
-	}
-	async getChatRoomsByIds(user: UserEntity): Promise<ChatEntity[]>{
-		return null
-	}
-	
-	async onMemberLeave(room: ChatRoomI, member: UserEntity){
-		return null
 	}
 
 	async deleteRoom(id: number): Promise<void> {
@@ -120,15 +172,15 @@ export class ChatService {
 		await this.chatRepository.delete(room);
 	}
 	async leaveRoom(data: ChatRoomI): Promise<ChatEntity | undefined>{
-		console.log("Leaving from chatService: ");
 
 		try {
-			const room = await this.getChatRoomById(data.id);
+			const room = await this.chatRepository.findOne({
+				relations: ["members", "members.user"],
+				where: {id : data.id}
+			}) 
 			var userToDelete = room.members.find(item => item.user.login == data.me.login);
 			room.members = room.members.filter(item => item != userToDelete);
-			console.log("after: room.members length: ", room.members.length);
 			if (room.members.length == 0){
-				console.log("Deleting room, nobody belongs to it...");
 				await this.deleteRoom(data.id);
 				return (undefined);
 			}
@@ -143,32 +195,24 @@ export class ChatService {
 				newOwner.muted = false;
 				await this.chatUserRepository.save(newOwner);
 			}
+			await this.deActivateRoom(userToDelete.user, room);
 			await this.chatUserRepository.delete(userToDelete);
-			const userEntity = await this.userService.findByLogin(data.me.login);
-			await this.deActivateRoom(userEntity, room);
 			return (room);
 		} catch (error) {//create response
+			console.log(error)
 			return (undefined);
 		}
-
 	}
 
 	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
-		const roomEntity = await this.chatRepository.findOne({
-			relations: ["members", "members.user"],
-			where : {id : room.id}
-		});
+		const roomEntity = await this.getChatRoomById(room.id);
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
 		chatUser.banned = chatUser.banned ? false : true;
 		const ret = await this.chatUserRepository.save(chatUser);
-		console.log("block user: ", ret);
 		return (roomEntity);
 	}
 	async onMuteUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
-		const roomEntity = await this.chatRepository.findOne({
-			relations: ["members", "members.user"],
-			where : {id : room.id}
-		});
+		const roomEntity = await this.getChatRoomById(room.id);
 		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
 		chatUser.muted = chatUser.muted ? false : true;
 		await this.chatUserRepository.save(chatUser);
@@ -189,13 +233,14 @@ export class ChatService {
 					where: {name: this.chatName}
 				});
 				if (room == undefined){
-					const roomInfo = this.newChatInfo(this.chatName, chatInfo.type);//change type for oneToOne
+					const roomInfo = this.newChatInfo(this.chatName, chatInfo.type);
 					const chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
 					room = await this.newChatRoom(chatMembers, roomInfo);
 				}
 			}
 			return (room);
 		} catch (error) {
+			console.log(error);
 			return (<ChatEntity>{});
 		}
 	}
@@ -248,11 +293,12 @@ export class ChatService {
 			var chatUser = room.members.find(member => member.user.id == session.userID.id);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));
 		} catch (error) {
+			console.log(error)
 			return (Response.makeResponse(500, { error: "can't creat channel" }));
 		}
 	}
 	async unlockRoom(key: RoomKeyI, header: string): Promise<any>{
-		const token = header.split(' ')[1]; //must check if session is active before continue
+		const token = header.split(' ')[1]; 
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			if (session == undefined)
@@ -275,7 +321,6 @@ export class ChatService {
 		}
 	}
 	async updatePassChannel(channelInfo: ChatPasswordUpdateI, header: string): Promise<any> {
-		console.log("lets change pasword");
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
@@ -295,17 +340,13 @@ export class ChatService {
 			await this.chatUserRepository.save(members); //update members
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser))); //return parsed room
 		} catch (error) {
-			return (Response.makeResponse(410, {error }));
+			return (Response.makeResponse(410, {error: "Cant change password" }));
 		}
 	}
 	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
 	{
 		try {
-
-			var chatRoom = await this.chatRepository.findOne({
-				relations: ["members", "members.user"],
-				where: {id : room.id}
-			})
+			var chatRoom = await this.getChatRoomById(room.id);
 			if (chatRoom.members.find(member => member.user.login == user.login) != undefined)
 				return (undefined)
 			var chatUser = this.getChatUserEntity(user, this.newChatUserInfo(false));
@@ -346,7 +387,7 @@ export class ChatService {
 			if (session == undefined)
 				return (Response.makeResponse(401, { error: "unauthorized" }));
 			const onwRooms = await this.chatUserRepository.find({
-				relations: ['room'],
+				relations: ['room', "unreadMessages"],
 				where: [{ user: session.userID, room: {name: Like(value + "%")} }]
 			})
 			for (var i = 0; i < onwRooms.length; i++) {
@@ -371,7 +412,7 @@ export class ChatService {
 				return (Response.makeResponse(401, { error: "unauthorized" }));
 				var chatRoom = await this.getChatRoomById(room.id);
 				var chatUser = await this.chatUserRepository.findOne({
-					relations: ['room', 'user'],
+					relations: ['room', 'user', 'unreadMessages'],
 					where: [{ user: session.userID, room: { id: room.id } }]
 				});
 				if (chatUser != undefined)
@@ -475,6 +516,8 @@ export class ChatService {
 		parsed.type = chatRoom.type;
 		parsed.protected = chatRoom.protected;
 		parsed.hasRoomKey = me.hasRoomKey;
+		if (me.unreadMessages != undefined)
+			parsed.unreadMsg = me.unreadMessages.length;
 		if (chatRoom.type != eChatType.DIRECT)
 		{
 			parsed.name = chatRoom.name;
@@ -500,6 +543,7 @@ export class ChatService {
 
 	private parseOneMessage(msgEntity: MessageEntity){
 		var msg: MessagesI = {
+			id: msgEntity.id,
 			owner: User.getPublicInfo(msgEntity.owner),
 			message: msgEntity.message,
 			timeStamp: msgEntity.date,

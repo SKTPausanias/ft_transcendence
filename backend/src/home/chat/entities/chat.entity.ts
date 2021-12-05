@@ -28,5 +28,5 @@ export class ChatEntity {
     messages: MessageEntity[];
 
     @OneToMany(() => ActiveRoomEntity, activeChat => activeChat.id)
-    ActiveChats: ActiveRoomEntity[];
+    activeChats: ActiveRoomEntity[];
 }

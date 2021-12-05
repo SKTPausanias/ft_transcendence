@@ -1,11 +1,12 @@
 import { Component, Type, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { Router, NavigationStart, Event, NavigationEnd, NavigationError } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
-import { Nav } from 'src/app/shared/ft_enums'
+import { eChat, Nav } from 'src/app/shared/ft_enums'
 import { SessionStorageQueryService } from 'src/app/shared/ft_services'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NgbdModalConfirm } from 'src/app/home/left-nav/logout-modal/logout-modal.component'
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { ChatService } from '../content/chat/chat.service';
 
 @Component({
 selector: 'app-left-nav',
@@ -26,6 +27,7 @@ export class LeftNavComponent implements OnInit {
 		private router: Router,
 		private sQuery: SessionStorageQueryService,
 		private authService: AuthService,
+		private chatService: ChatService,
 		private modalService: NgbModal)
 		{
 			this.selectSnd.volume = 0.1;
@@ -44,7 +46,7 @@ export class LeftNavComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-
+		this.chatService.emit(eChat.ON_GET_UNREAD_MSG);
 		if (this.url === undefined)
 			this.navigate(this.parseRouterUrl());
 	}

@@ -18,11 +18,14 @@ export interface ChatRoomI {
 	type: string;
 	protected: boolean;
 	hasRoomKey: boolean;
+	unreadMsg: number;
 }
 export interface MessagesI {
-    message: string,
-    timeStamp: string,
-    owner: UserPublicInfoI,
+	id: number,
+	chatId: number,
+	owner: UserPublicInfoI,
+	message: string,
+	timeStamp: string
 }
 
 export interface ChatI {

@@ -67,6 +67,7 @@ export class HomeComponent implements OnInit {
 		const tmpUrl = this.router.url;
 		const pos = ev.indexOf("?");
 		this._path = tmpUrl.substring(0, pos >= 0 ? pos : ev.length);
+		this.sharedPreference.path = this._path;
 	}
 	mouseEnter(){
 		this.sharedPreference.expandRightNav = true;
@@ -89,8 +90,8 @@ export class HomeComponent implements OnInit {
 				this.sharedPreference.chat = data.chat;
 			else if (data.rooms != undefined)
 				this.sharedPreference.chat.rooms = data.rooms;
-			else if (data.messages != undefined)
-				console.log("this is unread");
+			else if (data.unreaded != undefined)
+				this.sharedPreference.unreaded_messages = data.unreaded;
 
 		/* 	console.log("DATA: ", data);
 			var activeRoom = this.sharedPreference.chat.active_room;

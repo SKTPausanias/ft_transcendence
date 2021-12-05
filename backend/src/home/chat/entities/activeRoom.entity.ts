@@ -16,6 +16,8 @@ export class ActiveRoomEntity {
 		})
     chat: ChatEntity;
 
+	//ONE TO ONE WITH CHAT_USER_ENTITY?????????????? to delete cascade
+
 	
 
 }

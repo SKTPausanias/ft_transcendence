@@ -10,6 +10,9 @@ export enum eChat {
 	ON_MUTE_USER = "on-mute-user",
 	ON_ADD_MEMBER_TO_CHAT = "on-add-member-to-chat",
 	ON_CHANGE_ROLE = "on-change-role",
+	ON_UNREAD_MSG = "on-unread-msg",
+	ON_READ_MSG = "on-read-msg",
+	ON_GET_UNREAD_MSG = "on-get-unread-msg",
 
 }
 export enum eChatType{

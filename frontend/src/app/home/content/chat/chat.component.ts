@@ -47,7 +47,6 @@ export class ChatComponent implements OnInit {
 			this.closeRoom();
 		else if (data.close != undefined)
 		{
-			console.log("Data.close = ", data.close)
 			if (this.chatPreference.chat.active_room != undefined && 
 				this.chatPreference.chat.active_room.id == data.close.id && !data.close.owner && data.close.protected)
 				this.closeRoom()
@@ -81,7 +80,6 @@ export class ChatComponent implements OnInit {
     this.showDM ? (this.showDM = false) : (this.showDM = true);
   }
   selectChatRoom(item: ChatRoomI) {
-	  console.log("chat selected: ", item);
 	if (item.protected && !item.owner && !item.hasRoomKey)
 		return (this.openModal("protected", item));
 	this.chatPreference.chat.active_room = item;

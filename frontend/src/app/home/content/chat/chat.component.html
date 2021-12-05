@@ -15,16 +15,17 @@
 							<p>Public</p>
 							<div class="room-ctn">
 								<div *ngIf="showPublicChannels">
-									<div class="item row" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-										<div class="col-10 cut-text">
-											<span class="ms-2 channel-text">
-												<i class="fa fa-broadcast-tower channel-fa"></i> 
-												{{room.name}}
-											</span>
+									<div class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<div class="item-ctn">
+											<img  class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/public.png" alt="image">
+											<div *ngIf="room.unreadMsg > 0" class="unread">
+												{{room.unreadMsg}}
+											</div>
+											<div class="lock">
+												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+											</div>
 										</div>
-										<div class="col-2">
-											<i *ngIf='room.protected' class="fa fa-lock lock"></i>
-										</div>
+										<span class="cut-text">{{room.name}}</span>
 									</div>
 								</div>
 							</div>
@@ -36,19 +37,18 @@
 							<p>Private</p>
 							<div class="room-ctn">
 								<div *ngIf="showPrivateChannels">
-									<div class="item row" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-										
-										<div class="col-10 cut-text">
-											<span class="ms-2 channel-text">
-												<i class="fa fa-user-shield channel-fa"></i> 
-												{{room.name}}
-											</span>
+									<div class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<div class="item-ctn">
+											<img  class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/private.png" alt="image">
+											<div *ngIf="room.unreadMsg > 0" class="unread">
+												{{room.unreadMsg}}
+											</div>
+											<div class="lock">
+												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+											</div>
 										</div>
-										<div class="col-2">
-											<i *ngIf='room.protected' class="fa fa-lock lock"></i>
-										</div>
+										<span class="cut-text">{{room.name}}</span>
 									</div>
-									
 								</div>
 							</div>
 						</div>
@@ -70,10 +70,13 @@
 				</div>
 				<div *ngIf="showDM">
 					<div class="item ps-2" *ngFor="let room of directRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-							<div class="room_img online" [ngClass]="{'offline' : !isMemberOnline(room)}">
-								<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+						<div class="item-ctn">
+							<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+							<div *ngIf="room.unreadMsg > 0" class="unread">
+								{{room.unreadMsg}}
 							</div>
-							<span style="white-space: pre-line;">{{room.name}}</span>
+						</div>
+						<span class="cut-text">{{room.name}}</span>
 					</div>
 					<div class="mt-1">
 						<button class="fa-btn" (click)="openModal('friend')">
