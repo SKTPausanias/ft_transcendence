@@ -13,42 +13,56 @@
 	<div class='info row'>
 		<div class="col-6 d-flex justify-content-start">
 			<div class="dropdown show">
-				<img *ngIf='room.img != undefined' class="ico_s img-fluid me-2" src="{{room.img}}" alt="image">				
-				<i *ngIf="room.img == undefined && room.type == 'private'" class="fa fa-user-shield fa-color me-2"></i> 		
-				<i *ngIf="room.img == undefined && room.type == 'public'" class="fa fa-broadcast-tower fa-color me-2"></i> 
-				<b>{{msgPreference.chat.active_room.name}}</b>
-					<b class="ms-2 icon-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<div class="dropdown-menu scrool" aria-labelledby="dropdownMenuLink">
-						<div class="dropdown-item">
-							<div class="border-bottom border-light ms-3 pb-2">
+				<b class="ms-2 icon-btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<img *ngIf='room.img != undefined' class="ico_s img-fluid me-2" src="{{room.img}}" alt="image">				
+					<i *ngIf="room.img == undefined && room.type == 'private'" class="fa fa-user-shield fa-color me-2"></i> 		
+					<i *ngIf="room.img == undefined && room.type == 'public'" class="fa fa-broadcast-tower fa-color me-2"></i> 
+					{{msgPreference.chat.active_room.name}}
+					<div class="dropdown-menu scrool p-0" aria-labelledby="dropdownMenuLink">
+					<div class="dropdown-item">
+						<div class="ms-3 p-1">
+							<div class="crown-ctn cut-text" [ngClass]="{'text-warning' : msgPreference.chat.active_room.me.login == room.ownerInfo.login}">
 								<img class="ico_s img-fluid me-2" src="{{msgPreference.chat.active_room.me.avatar}}" alt="image">				
-								<h5 class="d-inline text-light">{{msgPreference.chat.active_room.me.nickname}} </h5>
+								<div class="crown">
+									<span *ngIf="msgPreference.chat.active_room.me.login == room.ownerInfo.login" class="fa fa-crown"></span>
+								</div>
+								<h5 class="d-inline">{{msgPreference.chat.active_room.me.nickname}} </h5>
+
 							</div>
 						</div>
-						<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
-							<div class="row m-0 ms-2">
-								<div class="col-7">
+					</div>
+					<div class="border-bottom border-light border-2"></div>
+					<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
+						<div class="row m-0 ms-2">
+							<div class="col-7 cut-text" >
+								<div class="crown-ctn cut-text" [ngClass]="{'text-warning' : item.login == room.ownerInfo.login}" (click)="openProfile(item)">
 									<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
-									<h5 class="d-inline text-light">
-										<span *ngIf="item.login == room.ownerInfo.login" class="fa fa-crown text-warning"></span>
+									<div class="crown">
+										<span *ngIf="item.login == room.ownerInfo.login" class="fa fa-crown"></span>
+									</div>
+									<h5 class="d-inline" >
 										{{item.nickname}}
 									</h5>
 								</div>
-								<div class="col-5">
-									<div class="h-100 d-flex justify-content-center">
-										
-										<div *ngIf="room.admin && room.ownerInfo.login != item.login" class="d-flex justify-content-center">
-											<span  class="fa fa-user-secret fa-lg icon-btn float-right m-auto" (click)="setAsAdmin(item)"></span>
-											<span  class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
-											<span  class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+							</div>
+							<div class="col-5">
+								<div class="h-100">
+									<div class="row">
+										<div class="col-3 offset-3">
+											<span *ngIf="room.admin && room.ownerInfo.login != item.login" class="fa fa-user-secret fa-lg icon-btn" (click)="setAsAdmin(item)"></span>
 										</div>
-										<div *ngIf="room.type == 'direct'">
-											<span class="fa fa-volume-mute fa-lg icon-btn float-right m-auto" (click)="muteUser(item)"></span>
-											<span class="fa fa-ban fa-lg icon-btn float-right m-auto" (click)="blockUser(item)"></span>
+										<div class="col-3">
+											<span *ngIf="room.admin && room.ownerInfo.login != item.login || room.type =='direct'" class="fa fa-volume-mute fa-lg icon-btn" (click)="muteUser(item)"></span>
 										</div>
-										<span *ngIf="!isFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right m-auto" (click)="addFriendShip(item)"></span>
+										<div class="col-3">
+											<span *ngIf="(room.admin && room.ownerInfo.login != item.login) || room.type =='direct'" class="fa fa-ban fa-lg icon-btn" (click)="blockUser(item)"></span>
+										</div>
+									<!-- 	<div class="col-3">
+											<span class="fa fa-id-badge fa-lg icon-btn" (click)="openProfile(item)"></span>
+										</div> -->
+										</div>
 									</div>
-								</div>
+							</div>
 							</div>
 						</div>
 					</div>

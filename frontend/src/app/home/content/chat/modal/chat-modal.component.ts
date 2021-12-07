@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
@@ -10,6 +10,7 @@ import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
 import { ChatService } from '../chat.service';
 import { StatusMessageI } from './statusMsgI';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
 @Component({
   selector: 'app-channel-modal',
@@ -34,7 +35,8 @@ export class ChatModalComponent implements OnInit {
 	repassword: string | undefined;
 	searchResult: any[] = [];
 
-	constructor(public modal: NgbActiveModal,
+	constructor(public modal: NgbActiveModal,		
+				private modalService: NgbModal,
 				private dashboardService: DashboardService,
 	  			private sQuery: SessionStorageQueryService,
 				private router: Router,
@@ -238,6 +240,18 @@ export class ChatModalComponent implements OnInit {
 				message : msg
 			});
 		return (!error);
+	}
+	openProfile(item : UserPublicInfoI){
+		const modal = this.modalService.open(UserProfileComponent, {
+			centered: false,
+			animation: true,
+			windowClass : "user-profile"
+		  });
+		  modal.componentInstance.user = item;
+		  modal.componentInstance.preferences = this.preferences;
+		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+			  console.log("pass entry resived: ", receivedEntry);
+		  });
 	}
 	startStatusMsgTimer(msgStatus: StatusMessageI)
 	{

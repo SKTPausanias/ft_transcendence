@@ -28,6 +28,7 @@ import { FriendInvitationComponent } from './home/content/dashboard/notification
 import { MessagingComponent } from './home/content/chat/messaging/messaging.component';
 import { ChatModalComponent } from './home/content/chat/modal/chat-modal.component';
 import { ChangePasswordComponent } from './home/content/chat/modal/change-password/change-password.component';
+import { UserProfileComponent } from './home/content/chat/modal/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { ChangePasswordComponent } from './home/content/chat/modal/change-passwo
   FriendInvitationComponent,
   MessagingComponent,
   ChatModalComponent,
-  ChangePasswordComponent
+  ChangePasswordComponent,
+  UserProfileComponent
   ],
   imports: [
     BrowserModule,

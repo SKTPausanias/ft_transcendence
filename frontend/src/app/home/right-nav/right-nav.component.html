@@ -27,16 +27,19 @@
 					</div>
 			</div>
 		</div>
-		<div *ngFor="let friend of rigtNavPreference.friends" class="mx-3">
-			<div class="parent" [ngClass]="{'offline' : !friend.online}">
+		<div *ngFor="let friend of rigtNavPreference.friends" class="w-100" [ngClass]="{'d-flex justify-content-center' : !rigtNavPreference.expandRightNav}">
+			<div class="parent friend-item" [ngClass]="{'offline' : !friend.online}" (click)="openProfile(friend)">
 
+
+
+				
 				<div>
-					<img src='{{friend.avatar}}' class="ico_s" alt="">
+					<img src='{{friend.avatar}}' class="ico_s" alt="" [ngClass]="{'ms-2' : rigtNavPreference.expandRightNav}">
 				</div>
 				<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
 					<p id="nickname">{{friend.nickname}}</p>
-					<button class="btn-danger" (click)="removeFriend(friend)">X</button>
-					<button class="btn-warning ms-3 fa fa-align-justify" (click)="startChat(friend)"></button>
+<!-- 					<button class="btn-danger" (click)="removeFriend(friend)">X</button>
+					<button class="btn-warning ms-3 fa fa-align-justify" (click)="startChat(friend)"></button> -->
 				</div>
 			</div>
 		</div>

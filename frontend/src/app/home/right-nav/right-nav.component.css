@@ -37,3 +37,8 @@
 	color: #ffaa3a;
 	font-size: 18px;
 }
+.friend-item:hover{
+	cursor: pointer;
+	border-left: 3px solid #ffffff;
+	background-color: #ffffff3b;
+}

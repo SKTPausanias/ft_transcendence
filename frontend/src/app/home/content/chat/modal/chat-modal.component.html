@@ -51,8 +51,8 @@
 		<div class="ms-2 pt-2 search-results" *ngFor='let item of searchResult'>
 			<!-- friend -->
 			<div *ngIf='!isChannel()' class="border-bottom border-light">
-				<div class="row  item-ctn">
-					<div class="col-9">
+				<div class="row  item-ctn" >
+					<div class="col-9 profile" (click)="openProfile(item)">
 						<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
 						<h5 class="d-inline me-5">{{item.nickname}}</h5>
 					</div>

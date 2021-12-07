@@ -136,6 +136,9 @@
 	border-radius: 20px;
 	color: #ffffff;
 }
+.profile:hover{
+	cursor: pointer;
+}
 .form-switch .form-check-input:checked {
 	background-color: #415a8b;
 }

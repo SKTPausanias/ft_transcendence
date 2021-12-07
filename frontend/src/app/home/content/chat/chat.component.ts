@@ -8,6 +8,7 @@ import { ChatService } from './chat.service';
 import { eChat, eChatType } from 'src/app/shared/ft_enums';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChatModalComponent } from './modal/chat-modal.component';
+import { UserProfileComponent } from './modal/user-profile/user-profile.component';
 
 @Component({
   selector: "app-chat",
@@ -36,7 +37,7 @@ export class ChatComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.subscription = this.chatService.chatEmiter.subscribe((data: any) => {
+	    this.subscription = this.chatService.chatEmiter.subscribe((data: any) => {
 		this.distinguishRooms();
 		this.chatService.chatFragmentEmmiter.emit(data);
 		if (data == undefined)

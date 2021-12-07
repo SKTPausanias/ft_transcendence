@@ -7,6 +7,7 @@ import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { DashboardService } from "../../dashboard/dashboard.service";
 import { ChatService } from "../chat.service";
 import { ChangePasswordComponent } from "../modal/change-password/change-password.component";
+import { UserProfileComponent } from "../modal/user-profile/user-profile.component";
 
 @Component({
   selector: "app-messaging",
@@ -109,6 +110,18 @@ export class MessagingComponent implements OnInit {
 		else
 			console.log("Not leaving room...");
 		/*this.closeRoom(); */
+	}
+	openProfile(item : UserPublicInfoI){
+		const modal = this.modalService.open(UserProfileComponent, {
+			centered: false,
+			animation: true,
+			windowClass : "user-profile"
+		  });
+		  modal.componentInstance.user = item;
+		  modal.componentInstance.preferences = this.msgPreference;
+		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+			  console.log("pass entry resived: ", receivedEntry);
+		  });
 	}
 	blockUser(item: UserPublicInfoI){
 		this.chatService.emit(eChat.ON_BLOCK_USER, {user: item, room: this.room});

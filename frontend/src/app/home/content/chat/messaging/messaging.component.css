@@ -24,16 +24,19 @@
 }
 
 .dropdown-menu{
-	width: 600px;
+	width: 450px;
 	height: 10px;
 	background-color: #92a1c0e8;
 }
 .dropdown-menu.scrool::-webkit-scrollbar-track {
   background: #92a1c0e8;
 }
-
+.dropdown-item{
+	border-left: 5px solid #92a1c0e8;
+}
 .dropdown-item:hover{
-	background-color: #92a1c0e8;
+	background-color: #7e8ca7e8;
+	border-left: 5px solid #364052;
 }
 
 .dropdown-item .icon-btn{
@@ -117,7 +120,7 @@ img{
 .scrool{
 	overflow-y: scroll;
 	max-height: 75vh;
-	height: 75vh;	
+	height: 75vh;
 }
 .scrool::-webkit-scrollbar {
 	width: 20px;
@@ -190,20 +193,33 @@ img{
 .fa-color{
 	color: #94f368;
 }
-.crown-container{
+.crown-ctn{
 	position: relative;
-	text-align: center;
 	color: white;
 }
 .crown {
-	min-width: 20px;
-	min-height: 20px;
 	position: absolute;
-	top: 16px;
-	left: 8px;
-	background-color: #9900ff;
-	padding: 5px;
+	top: -20px;
+	left: 35px;
 	border-radius: 50%;
-	font-size: 8px;
+	font-size: 16px;
+	align-items: center;
+
+/* 	position: absolute;
+	top: -28px;
+	left: 11px;
+	border-radius: 50%;
+	padding-left: 3px;
+	padding-right: 3px;
+	text-align: center;
+	color: #fdd700;
+	font-size: 18px;
+	align-items: center; */
 }
 
+.cut-text { 
+	text-overflow: ellipsis;
+	overflow: hidden; 
+	white-space: nowrap;
+	color: #ffffff;
+}

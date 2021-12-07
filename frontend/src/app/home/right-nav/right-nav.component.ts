@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { eChat, eChatType, Nav, wSocket } from 'src/app/shared/ft_enums';
 import { ChatI, SessionI, SharedPreferencesI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { UserInfoI, UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
+import { UserProfileComponent } from '../content/chat/modal/user-profile/user-profile.component';
 import { DashboardService } from '../content/dashboard/dashboard.service';
 import { SocketService } from '../socket.service';
 @Component({
@@ -24,7 +26,8 @@ export class RightNavComponent implements OnInit {
 		private userServie: UserService,
 		private dashboardService: DashboardService,
 		private socketService: SocketService,
-		private router: Router) {
+		private router: Router,
+		private modalService: NgbModal) {
 		}
 		
 	async ngOnInit(): Promise<void> {
@@ -77,5 +80,18 @@ export class RightNavComponent implements OnInit {
 			this.pos = this.rigtNavPreference.friend_invitation.length - 1;
 		if (this.pos < 0)
 			this.pos = 0;
+	}
+	openProfile(user: UserPublicInfoI){
+		console.log("open profile from right nav")
+		const modal = this.modalService.open(UserProfileComponent, {
+			centered: false,
+			animation: true,
+			windowClass : "user-profile"
+		  });
+		  modal.componentInstance.user = user;
+		  modal.componentInstance.preferences = this.rigtNavPreference ;
+		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+			  console.log("pass entry resived: ", receivedEntry);
+		  });
 	}
 }

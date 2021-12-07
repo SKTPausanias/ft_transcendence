@@ -98,3 +98,7 @@ main{
   .separator:not(:empty)::after {
 	margin-left: .75em;
   }
+
+.user-profile .modal-dialog{
+	max-width: calc(100vw - 40%); 
+}
