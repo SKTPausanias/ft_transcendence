@@ -4,6 +4,7 @@ import { ActiveRoomEntity } from "../chat/entities/activeRoom.entity";
 import { ChatEntity } from "../chat/entities/chat.entity";
 import { ChatUsersEntity } from "../chat/entities/chatUsers.entity";
 import { MessageEntity } from "../chat/entities/message.entity";
+import { StatsEntity } from "../chat/entities/stats.entity";
 import { FriendEntity } from "../friends/friend.entity";
 
 @Entity('users')
@@ -68,6 +69,13 @@ export class UserEntity {
 
     @OneToMany(type => MessageEntity, message => message.owner)
     messages: MessageEntity[];
+
+    // relation with user1 and user2 from statsEntity
+    @OneToMany(type => StatsEntity, stats => stats.user1)
+    stats: StatsEntity[];
+
+    @OneToMany(type => StatsEntity, stats => stats.user2)
+    stats2: StatsEntity[];
 
     /* @Column("int", {array: true , default: []})
 	  active_chat_rooms: number[]; */
