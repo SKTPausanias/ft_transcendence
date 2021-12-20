@@ -134,6 +134,10 @@ img{
 	position: relative;
 	color: #94f368;
 }
+.item-wht{
+	position: relative;
+	color: #ffffff;
+}
 .unread{
 	position: absolute;
 	top:-3px;

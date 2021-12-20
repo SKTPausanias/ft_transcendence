@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, Type, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { SocketService } from '../../socket.service';
 import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
@@ -17,6 +17,7 @@ import { UserProfileComponent } from './modal/user-profile/user-profile.componen
 })
 export class ChatComponent implements OnInit {
   @Input() chatPreference: SharedPreferencesI;
+  @Output() closeRoomEvent = new EventEmitter<any>();
   directRooms: ChatRoomI[] = [];
   privateRooms: ChatRoomI[] = [];
   publicRooms: ChatRoomI[] = [];
@@ -115,7 +116,18 @@ export class ChatComponent implements OnInit {
 
   closeRoom() {
     this.showRoom = false;
+    this.closeRoomEvent.emit();
+    console.log("Close the chat.");
   }
+
+  leaveChat(room: any){
+		console.log("Leaving....");
+		/* room.id, me*/
+		if (confirm("Are you sure you want to leave?"))
+      console.log("Leaving room comfirmed.");
+			this.chatService.emit(eChat.ON_LEAVE_ROOM, room);
+	}
+
   addMemberToChat() {
     this.openModal("member");
   }

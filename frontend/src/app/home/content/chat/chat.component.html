@@ -15,8 +15,8 @@
 							<p>Public</p>
 							<div class="room-ctn">
 								<div *ngIf="showPublicChannels">
-									<div class="item" *ngFor="let room of publicRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
-										<div class="item-ctn">
+									<div class="item" *ngFor="let room of publicRooms" [ngClass]="{'selected-item' : isSelected(room)}">
+										<div class="col-9 item-ctn" (click)="selectChatRoom(room)">
 											<img  class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/public.png" alt="image">
 											<div *ngIf="room.unreadMsg > 0" class="unread">
 												{{room.unreadMsg}}
@@ -24,9 +24,13 @@
 											<div class="lock">
 												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
 											</div>
+											<span class="item-wht cut-text">{{room.name}}</span>
 										</div>
-										<span class="cut-text">{{room.name}}</span>
+										<div class="col-3 d-flex justify-content-end" data-mdb-toggle="tooltip" title="Leave Chat">
+											<span class="fas fa-trash-alt fa-lg icon-btn" (click)="leaveChat(room)"></span>
+										</div>
 									</div>
+
 								</div>
 							</div>
 						</div>
