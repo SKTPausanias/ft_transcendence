@@ -95,11 +95,11 @@ export class ChatModalComponent implements OnInit {
 	}
 
 	async joinRoom(room: SearchRoomI) {
-		if (room.protected)
+		/* if (room.protected)
 		{
 			alert("IMPLEMENT JOIN PROTECTED ROOM");
 			return ;
-		}
+		} */ 
 		const resp = await this.chatService.joinRoom(this.session, room);
 		if (resp.statusCode != 200)
 			return this.startStatusMsgTimer(<StatusMessageI>{
@@ -109,7 +109,6 @@ export class ChatModalComponent implements OnInit {
 		this.chatService.emit(eChat.ON_UPDATE_ROOM, {room : resp.data});
 		this.passEntry.emit({room : resp.data});
 		this.modal.dismiss();
-		//si protected, check password and join room
 	}
 
 	isChannel(){
