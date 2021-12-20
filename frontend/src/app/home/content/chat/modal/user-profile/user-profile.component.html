@@ -30,15 +30,15 @@
 				<span class="fa fa-tv fa-2x p-2"><i><small> watch live</small></i></span>
 			</div>
 			<div class="row justify-content-center action-ctn">
-				<div class="col-4 me-4" (click)="startChat()">
+				<div class="col-4 me-4" data-toggle="tooltip" title="Chat with {{user.nickname}}" (click)="startChat()">
 					<span class="fa fa-comment-dots fa-2x icon-btn" ></span>
 				</div>
-				<div class="col-4 me-4" (click)="playPong()">
+				<div class="col-4 me-4" data-toggle="tooltip" title="Play Pong with {{user.nickname}}" (click)="playPong()">
 					<span class="fa fa-table-tennis  fa-2x icon-btn"></span>
 				</div>
 				<div class="col-4" (click)="handleFriendship()">
-					<span *ngIf="!isFriend()" class="fa fa-user-plus fa-2x icon-btn"></span>
-					<span *ngIf="isFriend()" class="fa fa-user-times fa-2x icon-btn"></span>
+					<span *ngIf="!isFriend()" class="fa fa-user-plus fa-2x icon-btn" title="Start friendship with {{user.nickname}}" ></span>
+					<span *ngIf="isFriend()" class="fa fa-user-times fa-2x icon-btn" title="Break friendship with {{user.nickname}}" ></span>
 				</div>
 
 			</div>

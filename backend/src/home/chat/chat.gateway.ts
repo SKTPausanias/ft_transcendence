@@ -148,12 +148,14 @@ export class ChatGateway {
 	}
 
 	async emitRoomUpdateToAll(room: ChatEntity, me: string, selfOnly: boolean){
-		for (let i = 0; i < room.members.length; i++) {
-			const member = room.members[i];
-			if (selfOnly && member.user.login != me)
-				continue ;
-			const parsedRoom = this.chatService.parseChatRoom(room, member);
-			await this.socketService.emitToOne(this.server, eChat.ON_UPDATE_ROOM, me, member.user, parsedRoom);
+		if (room != undefined && room.members != undefined){
+			for (let i = 0; i < room.members.length; i++) {
+				const member = room.members[i];
+				if (selfOnly && member.user.login != me)
+					continue ;
+				const parsedRoom = this.chatService.parseChatRoom(room, member);
+				await this.socketService.emitToOne(this.server, eChat.ON_UPDATE_ROOM, me, member.user, parsedRoom);
+			}
 		}
 	}
 

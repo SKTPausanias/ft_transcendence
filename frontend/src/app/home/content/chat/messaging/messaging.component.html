@@ -35,7 +35,7 @@
 					<div class="dropdown-item" *ngFor="let item of msgPreference.chat.active_room.members;">
 						<div class="row m-0 ms-2">
 							<div class="col-7 cut-text" >
-								<div class="crown-ctn cut-text" [ngClass]="{'text-warning' : item.login == room.ownerInfo.login}" (click)="openProfile(item)">
+								<div class="crown-ctn cut-text" [ngClass]="{'text-warning' : item.login == room.ownerInfo.login}" data-toggle="tooltip" title="View user profile" (click)="openProfile(item)">
 									<img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
 									<div class="crown">
 										<span *ngIf="item.login == room.ownerInfo.login" class="fa fa-crown"></span>
@@ -49,13 +49,13 @@
 								<div class="h-100">
 									<div class="row">
 										<div class="col-3 offset-3">
-											<span *ngIf="room.admin && room.ownerInfo.login != item.login" class="fa fa-user-secret fa-lg icon-btn" (click)="setAsAdmin(item)"></span>
+											<span *ngIf="room.admin && room.ownerInfo.login != item.login" class="fa fa-user-secret fa-lg icon-btn" data-toggle="tooltip" title="Set user as admin" (click)="setAsAdmin(item)"></span>
 										</div>
 										<div class="col-3">
-											<span *ngIf="room.admin && room.ownerInfo.login != item.login || room.type =='direct'" class="fa fa-volume-mute fa-lg icon-btn" (click)="muteUser(item)"></span>
+											<span *ngIf="room.admin && room.ownerInfo.login != item.login || room.type =='direct'" class="fa fa-volume-mute fa-lg icon-btn" data-toggle="tooltip" title="Mute this user" (click)="muteUser(item)"></span>
 										</div>
 										<div class="col-3">
-											<span *ngIf="(room.admin && room.ownerInfo.login != item.login) || room.type =='direct'" class="fa fa-ban fa-lg icon-btn" (click)="blockUser(item)"></span>
+											<span *ngIf="(room.admin && room.ownerInfo.login != item.login) || room.type =='direct'" class="fa fa-ban fa-lg icon-btn" data-toggle="tooltip" title="Ban this user" (click)="blockUser(item)"></span>
 										</div>
 									<!-- 	<div class="col-3">
 											<span class="fa fa-id-badge fa-lg icon-btn" (click)="openProfile(item)"></span>
@@ -73,11 +73,11 @@
 			<!-- <span class="fa fa-user-circle fa-lg icon-btn"></span>
 			<span class="fa fa-user-times fa-lg icon-btn"></span>
 			<span class="fa fa-table-tennis  fa-lg icon-btn"></span> -->
-			<span *ngIf="room.owner || room.admin" class="fa fa-key fa-lg icon-btn" (click)="changePassword()" data-toggle="tooltip" title="Change password"></span>
-			<span *ngIf="room.type != 'direct'" class="fa fa-user-plus fa-lg icon-btn" (click)="addMemberToChat()"></span>
-			<span *ngIf="room.owner || room.admin" class="fa fa-cog fa-lg icon-btn"></span>
-			<span class="fa fa-sign-out-alt fa-lg icon-btn" (click)="leaveChat()"></span>
-			<span class="fa fa-times fa-lg icon-btn" (click)="closeRoom()"></span>
+			<span *ngIf="room.owner || room.admin" class="fa fa-key fa-lg icon-btn" data-toggle="tooltip" title="Password settings" (click)="changePassword()"></span>
+			<span *ngIf="room.type != 'direct'" class="fa fa-user-plus fa-lg icon-btn" data-toggle="tooltip" title="Add new members" (click)="addMemberToChat()"></span>
+			<span *ngIf="room.owner || room.admin" class="fa fa-cog fa-lg icon-btn" data-toggle="tooltip" title="Settings"></span>
+			<span class="fa fa-sign-out-alt fa-lg icon-btn" data-toggle="tooltip" title="Leave and close chat" (click)="leaveChat()"></span>
+			<span class="fa fa-times fa-lg icon-btn" data-toggle="tooltip" title="Close chat" (click)="closeRoom()"></span>
 		</div> 
 	</div>
 	<div class='msg-list scrool' #scrollframe> 
@@ -91,7 +91,7 @@
 			</div>
 		</div>
 		<div *ngIf='directBanned' class="d-flex justify-content-center text-danger">
-			<i class="fa fa-ban">  You blocked this user</i>
+			<i class="fa fa-ban"> User has been blocked</i>
 		</div>
 	</div>
 	<div *ngIf='room.imMuted' class="d-flex justify-content-center"><i><small>You are muted in this room</small></i></div>
@@ -99,7 +99,7 @@
 		<div class="col-11 ps-0 pe-0">
 			<textarea *ngIf='!room.imMuted' type="text" [(ngModel)]="msg"></textarea>
 		</div>
-		<div *ngIf='!room.imMuted'class="col-1 btn-send" (click)="send()">
+		<div *ngIf='!room.imMuted'class="col-1 btn-send" data-toggle="tooltip" title="Send message" (click)="send()">
 			<span class="fa fa-paper-plane fa-lg"></span>
 		</div>
 		<div *ngIf='room.imMuted' class="col-1 btn-muted">

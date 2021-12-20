@@ -16,21 +16,25 @@
 							<div class="room-ctn">
 								<div *ngIf="showPublicChannels">
 									<div class="item" *ngFor="let room of publicRooms" [ngClass]="{'selected-item' : isSelected(room)}">
-										<div class="col-9 item-ctn" (click)="selectChatRoom(room)">
-											<img  class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/public.png" alt="image">
+										<!---->
+										<!--Para: no más control-Z-->
+										<div class="item-ctn" (click)="selectChatRoom(room)">
+											<img class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/public.png" alt="image">
 											<div *ngIf="room.unreadMsg > 0" class="unread">
 												{{room.unreadMsg}}
 											</div>
-											<div class="lock">
+											<div class="lock d-flex justify-content-start">
 												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
 											</div>
+										</div>
+										<div class="col-9 pl-0" (click)="selectChatRoom(room)">
 											<span class="item-wht cut-text">{{room.name}}</span>
 										</div>
-										<div class="col-3 d-flex justify-content-end" data-mdb-toggle="tooltip" title="Leave Chat">
+										<div class="col-1 d-flex justify-content-end" data-mdb-toggle="tooltip" title="Leave Chat">
 											<span class="fas fa-trash-alt fa-lg icon-btn" (click)="leaveChat(room)"></span>
 										</div>
+										<!---->
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -56,10 +60,10 @@
 								</div>
 							</div>
 						</div>
-						<div data-mdb-toggle="tooltip" data-delay='{"show":"500", "hide":"300"}' title="Search chat"  class="mt-1">
-							<button class="fa-btn" (click)="openModal('channel')">
+						<div data-mdb-toggle="tooltip" data-delay='{"show":"500", "hide":"300"}' title="Search chat" class="mt-1">
+							<button class="fa-btn" data-mdb-toggle="tooltip" title="Find and add channels" (click)="openModal('channel')">
 								<span class="fa fa-search-plus fa-icon"></span>
-								<p>Manage channels</p>
+								<p>LookUp channels</p>
 							</button>
 						</div>
 					</div>
@@ -83,7 +87,7 @@
 						<span class="cut-text">{{room.name}}</span>
 					</div>
 					<div class="mt-1">
-						<button class="fa-btn" (click)="openModal('friend')">
+						<button class="fa-btn" data-mdb-toggle="tooltip" title="Find and add people to chat" (click)="openModal('friend')">
 							<span class="fa fa-user-plus fa-icon"> </span>
 							<p>Find people</p>
 						</button>

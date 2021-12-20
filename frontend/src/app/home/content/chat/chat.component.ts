@@ -123,9 +123,10 @@ export class ChatComponent implements OnInit {
   leaveChat(room: any){
 		console.log("Leaving....");
 		/* room.id, me*/
-		if (confirm("Are you sure you want to leave?"))
+		if (confirm("Are you sure you want to leave?")){
       console.log("Leaving room comfirmed.");
 			this.chatService.emit(eChat.ON_LEAVE_ROOM, room);
+    }
 	}
 
   addMemberToChat() {

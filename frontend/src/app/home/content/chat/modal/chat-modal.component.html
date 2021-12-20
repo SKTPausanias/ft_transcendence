@@ -58,10 +58,10 @@
 					</div>
 					<div class="col-3">
 						<div class="h-100 d-flex justify-content-center">
-							<span *ngIf="type == 'friend'" class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" (click)="startChat(item)"></span>
-							<span *ngIf="type == 'friend' && isNotFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" (click)="addFriendShip(item)"></span>
-							<span *ngIf="type == 'friend'" class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;"></span>
-							<span *ngIf="type == 'member'" class="fa fa-plus  fa-lg icon-btn float-right" style="margin: auto;" (click)="addMemberToChat(item)"></span>
+							<span *ngIf="type == 'friend'" class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="chat with this user" (click)="startChat(item)"></span>
+							<span *ngIf="type == 'friend' && isNotFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Start a friendship" (click)="addFriendShip(item)"></span>
+							<span *ngIf="type == 'friend'" class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Request to play pong"></span>
+							<span *ngIf="type == 'member'" class="fa fa-plus  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="add to members chat" (click)="addMemberToChat(item)"></span>
 						</div>
 					</div>
 				</div>
