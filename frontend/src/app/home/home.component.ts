@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit {
 		this.sharedPreference.friends = [];
 		this.sharedPreference.expandRightNav = false;
 		this.sharedPreference.friend_invitation = [];
+		this.sharedPreference.in_game = false;
 		this.sharedPreference.chat = {
 			active_room: undefined,
 			rooms: []

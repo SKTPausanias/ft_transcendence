@@ -2,7 +2,7 @@
 	<div class="d-flex flex-column align-items-center align-items-start text-white min-vh-100 pt-3 pb-3">
 		<img src="/assets/img/logo.png"class="ico ico_m img-fluid" (click)="home()" alt="home" #home_e [ngClass]="{'selected' : url == navL.HOME}" (mouseenter) ="mouseEnter()">
 		<div id="sep" class="pt-3"></div>
-		<img src="/assets/img/ico/play.png" class="ico ico_m img-fluid" (click)="play()" alt="play" #play_e [ngClass]="{'selected' : url == navL.GAME}" (mouseenter) ="mouseEnter()">
+		<img src="/assets/img/ico/play.png" class="ico ico_m img-fluid" (click)="play()" alt="play" #play_e [ngClass]="{'selected' : url == navL.PLAY}" (mouseenter) ="mouseEnter()">
 		<img src="/assets/img/ico/live.png" class="ico ico_m img-fluid" (click)="live()" alt="live" #live_e [ngClass]="{'selected' : url == navL.LIVE}" (mouseenter) ="mouseEnter()">
 		<div class="chat-container">
 				<img src="/assets/img/ico/chat.png" class="ico ico_m img-fluid" (click)="chat()" alt="chat" #chat_e [ngClass]="{'selected' : url == navL.CHAT}" (mouseenter) ="mouseEnter()">

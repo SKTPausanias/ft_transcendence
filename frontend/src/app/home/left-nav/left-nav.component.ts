@@ -52,7 +52,7 @@ export class LeftNavComponent implements OnInit {
 	}
 	
 	home(): void { this.selectSnd.play();this.navigate(Nav.HOME); }
-	play(): void { this.selectSnd.play();this.navigate(Nav.GAME); }
+	play(): void { this.selectSnd.play();this.navigate(Nav.PLAY); }
 	live(): void { this.selectSnd.play();this.navigate(Nav.LIVE); }
 	chat(): void { this.selectSnd.play();this.navigate(Nav.CHAT); }
 	conf(): void { this.selectSnd.play();this.navigate(Nav.CONF); }

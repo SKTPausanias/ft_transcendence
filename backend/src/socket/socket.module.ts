@@ -16,10 +16,12 @@ import { ChatUsersEntity } from 'src/home/chat/entities/chatUsers.entity';
 import { ActiveRoomEntity } from 'src/home/chat/entities/activeRoom.entity';
 import { HashService } from 'src/shared/hash/hash.service';
 import { UnreadMessageEntity } from 'src/home/chat/entities/unread-message.entity';
+import { PlayGateway } from 'src/home/play/play.gateway';
+import { PlayService } from 'src/home/play/play.service';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity,
 				ChatEntity, MessageEntity, ChatUsersEntity, ActiveRoomEntity, UnreadMessageEntity ])],
-	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService, ChatGateway,HashService]
+	providers : [SocketGateway, SessionService, FriendService, SocketService, UserService, ChatService, ChatGateway,HashService, PlayGateway, PlayService]
 })
 export class SocketModule {}
