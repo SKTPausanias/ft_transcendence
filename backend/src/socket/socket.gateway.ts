@@ -1,6 +1,7 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { ChatGateway } from 'src/home/chat/chat.gateway';
 import { FriendService } from 'src/home/friends/friend.service';
+import { PlayGateway } from 'src/home/play/play.gateway';
 import { UserService } from 'src/home/user/user.service';
 import { User } from 'src/home/user/userClass';
 import { SessionService } from 'src/session/session.service';
@@ -13,6 +14,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(private socketService: SocketService,
 				private chatGateway: ChatGateway,
+				private playGateway: PlayGateway,
 				private userService: UserService,
 				private sessionService: SessionService,
 				private friendService: FriendService){}
@@ -22,6 +24,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleConnection(client) {
 		try {
 			this.chatGateway.init(this.server);
+			this.playGateway.init(this.server);
 			//init game gatway
 
 			const sessionData = await this.getSessionData(client);

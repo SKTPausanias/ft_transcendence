@@ -22,6 +22,7 @@ import { ChatUsersEntity } from './home/chat/entities/chatUsers.entity';
 import { ActiveRoomEntity } from './home/chat/entities/activeRoom.entity';
 import { UnreadMessageEntity } from './home/chat/entities/unread-message.entity';
 import { StatsEntity } from './home/chat/entities/stats.entity';
+import { PlayModule } from './home/play/play.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -49,7 +50,8 @@ import { StatsEntity } from './home/chat/entities/stats.entity';
 	  UserModule,
 	  DashboardModule,
 	  SocketModule,
-	  ChatModule
+	  ChatModule,
+	  PlayModule
 	],
   controllers: [AppController],
   providers: [AppService]

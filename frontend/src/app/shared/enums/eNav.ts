@@ -1,6 +1,6 @@
 export enum Nav {
 	HOME = '/',
-	GAME = '/play',
+	PLAY = '/play',
 	LIVE = '/live',
 	CHAT = '/chat',
 	CONF = '/settings'

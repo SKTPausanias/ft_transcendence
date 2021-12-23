@@ -1,7 +1,6 @@
 import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
 import { SessionService } from 'src/session/session.service';
 import { SocketService } from 'src/socket/socket.service';
-import { UserEntity } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { ChatService } from './chat.service';
 import { eChat } from './eChat';

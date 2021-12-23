@@ -14,7 +14,6 @@ import { ContentComponent } from './home/content/content.component';
 import { SettingsComponent } from './home/content/settings/settings.component';
 import { ChatComponent } from './home/content/chat/chat.component';
 import { LiveComponent } from './home/content/live/live.component';
-import { GameComponent } from './home/content/game/game.component';
 import { PlayComponent } from './home/content/play/play.component';
 import { DashboardComponent } from './home/content/dashboard/dashboard.component';
 import { RightNavComponent } from './home/right-nav/right-nav.component';
@@ -43,7 +42,6 @@ import { UserProfileComponent } from './home/content/chat/modal/user-profile/use
 	SettingsComponent,
 	ChatComponent,
 	LiveComponent,
-	GameComponent,
 	PlayComponent,
 	DashboardComponent,
 	ConfirmationComponent,

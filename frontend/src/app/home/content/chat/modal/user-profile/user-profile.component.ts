@@ -1,11 +1,13 @@
 import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
+import { Router } from "@angular/router";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { eChat, eChatType } from "src/app/shared/ft_enums";
+import { eChat, eChatType, ePlay } from "src/app/shared/ft_enums";
 import { ChatI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { DashboardService } from "../../../dashboard/dashboard.service";
 import { ChatService } from "../../chat.service";
+import { PlayService } from "../../../play/play.service";
 
 @Component({
 	selector: "app-user-profile",
@@ -17,9 +19,11 @@ export class UserProfileComponent implements OnInit {
 	@Input() public user: UserPublicInfoI;
 	@Output() passEntry: EventEmitter<any> = new EventEmitter();
 	session = this.sQuery.getSessionToken();
-	constructor(private modal: NgbActiveModal,
+	constructor(private router: Router,
+				private modal: NgbActiveModal,
 				private dashboardService: DashboardService,
 				private chatService: ChatService,
+				private playService: PlayService,
 				private sQuery: SessionStorageQueryService) {}
 
 	ngOnInit(): void {
@@ -44,9 +48,13 @@ export class UserProfileComponent implements OnInit {
 		var chatInfo: ChatI = <ChatI>{};
 		chatInfo.type = eChatType.DIRECT;
 		this.chatService.emit(eChat.ON_START, {members: [this.user], chatInfo});
+		this.router.navigateByUrl("/chat");		
 	}
 	playPong(){
-		alert("You're gonna dare your friend " + this.user.nickname);
+		//alert("You're gonna dare your friend " + this.user.nickname);
+		this.router.navigateByUrl("/play");
+		//start game
+		this.playService.emit(ePlay.ON_START_PLAY, this.user);
 	}
 
 

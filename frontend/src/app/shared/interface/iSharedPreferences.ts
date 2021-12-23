@@ -8,6 +8,7 @@ export interface SharedPreferencesI {
 	friends : UserPublicInfoI[];
 	friend_invitation: UserPublicInfoI[];
 	expandRightNav : boolean;
+	in_game : boolean;
 	chat: {
 		active_room: any;
 	 	rooms: any[];
