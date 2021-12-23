@@ -137,6 +137,7 @@ export class ChatModalComponent implements OnInit {
 						else
 							this.onSearchBoxFriendChange(text).subscribe((res: any)=> {
 								this.searchResult = res;
+								this.searchResult = this.searchResult.filter(item => item.login != "nobody");
 								this.filterSearchResults();
 							}, (err: any) => {
 								console.log('error', err);
@@ -157,6 +158,7 @@ export class ChatModalComponent implements OnInit {
 		{
 			if (this.searchInput.nativeElement.value.length > 0)
 				this.searchResult = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
+				this.searchResult = this.searchResult.filter(item => item.login != "nobody");
 			this.filterSearchResults();
 		}
 		else 
@@ -183,10 +185,10 @@ export class ChatModalComponent implements OnInit {
 	filterSearchResults(){
 		if (this.type == 'member')
 			this.searchResult = this.searchResult.filter(el => {
-			      return !this.preferences.chat.active_room.members.find((element : UserPublicInfoI) => {
-			      return element.login === el.login;
-			      });
-			   });
+				return !this.preferences.chat.active_room.members.find((element : UserPublicInfoI) => {
+				return element.login === el.login;
+			});
+		});
 	}
 	async addFriendShip(user: UserPublicInfoI): Promise<any>{
 		const resp = await (this.dashboardService.addFriendShip(user, this.session));

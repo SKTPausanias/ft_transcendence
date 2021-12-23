@@ -155,7 +155,8 @@ export class UserService {
 			for (var i = 0; i < messages.length; i++) { //keep if it works, all messages from group and private********************
 				if (messages[i].chat.type == "direct")
 					await this.messagesRepository.remove(messages[i])
-				await this.messagesRepository.update(messages[i], {owner: nobody});
+				else
+					await this.messagesRepository.update(messages[i], {owner: nobody});
 			}
 
 			/**After reasigning the messages (Maybe before... I'll check those cases to see what is the best solution) */
