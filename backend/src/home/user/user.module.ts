@@ -10,12 +10,16 @@ import { FriendService } from '../friends/friend.service';
 import { UserController } from './user.controller';
 import { UserEntity } from './user.entity';
 import { UserService } from './user.service';
+import { ActiveRoomEntity } from '../chat/entities/activeRoom.entity';
+import { ChatUsersEntity } from '../chat/entities/chatUsers.entity';
+import { UnreadMessageEntity } from '../chat/entities/unread-message.entity';
+import { HashService } from 'src/shared/hash/hash.service';
 
 @Module({
-imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity])],
+imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ActiveRoomEntity, ChatUsersEntity, UnreadMessageEntity, MessageEntity, ChatEntity])],
   controllers: [UserController],
   providers: [
-	UserService, SessionService, FriendService
+	UserService, SessionService, FriendService, ChatService, HashService
 ]
 })
 export class UserModule {}

@@ -1,6 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable, OneToMany, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
 import { UserEntity } from "../../user/user.entity";
-import { UserPublicInfoI } from "../../user/userI";
 import { ChatEntity } from "./chat.entity";
 
 @Entity('message')

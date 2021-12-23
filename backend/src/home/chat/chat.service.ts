@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { In, Like, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
@@ -30,6 +30,8 @@ export class ChatService {
 				private activeRoomRepository: Repository<ActiveRoomEntity>,
 				@InjectRepository(UnreadMessageEntity)
 				private unreadedMsgRepository: Repository<UnreadMessageEntity>,
+				//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
+				@Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
 				private userService: UserService,
 				private sessionService: SessionService,
 				private hashService: HashService){}
