@@ -17,6 +17,8 @@ export class PlayGateway {
 	@SubscribeMessage(ePlay.ON_START_PLAY)
 	async onStart(client, data) {
         console.log("<debug> onStart:", data);
-		//await this.server.to(client.id).emit(ePlay.ON_START_PLAY, me.login, resp);
+		//emit to both players
+		await this.socketService.emitToSelf(this.server, ePlay.ON_START_PLAY, data.player1.login, data);
+		await this.socketService.emitToSelf(this.server, ePlay.ON_START_PLAY, data.player2.login, data);
 	}
 }

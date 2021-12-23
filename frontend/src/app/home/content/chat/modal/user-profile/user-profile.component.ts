@@ -52,9 +52,10 @@ export class UserProfileComponent implements OnInit {
 	}
 	playPong(){
 		//alert("You're gonna dare your friend " + this.user.nickname);
+		this.modal.dismiss();
 		this.router.navigateByUrl("/play");
 		//start game
-		this.playService.emit(ePlay.ON_START_PLAY, this.user);
+		this.playService.emit(ePlay.ON_START_PLAY, {player1: this.preferences.userInfo, player2: this.user});
 	}
 
 
