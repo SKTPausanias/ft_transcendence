@@ -21,7 +21,7 @@ import { MessageEntity } from './home/chat/entities/message.entity';
 import { ChatUsersEntity } from './home/chat/entities/chatUsers.entity';
 import { ActiveRoomEntity } from './home/chat/entities/activeRoom.entity';
 import { UnreadMessageEntity } from './home/chat/entities/unread-message.entity';
-import { StatsEntity } from './home/chat/entities/stats.entity';
+import { StatsEntity } from './home/play/stats.entity';
 import { PlayModule } from './home/play/play.module';
 
 @Module({

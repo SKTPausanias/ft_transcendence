@@ -1,3 +1,6 @@
 <p>play works!</p>
 <!-- if user not in game, show button to search game-->
 <button *ngIf="!playPreference.in_game" (click)="search_game()">Search Game</button>
+<button (click)="winplayer1()">win player1 </button> <!-- only for testing -->
+<button (click)="winplayer2()">win player2 </button>
+

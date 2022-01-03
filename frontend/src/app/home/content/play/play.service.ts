@@ -18,12 +18,22 @@ export class PlayService {
 		this.socket = socket;
 		this.sharedPreferences = sharedPreference;
 		this.onStartGame();
+		this.onStopGame();
 	}
 
 	private onStartGame(){
 		this.socket.on(ePlay.ON_START_PLAY, (emiter: string, data: any) => {
 			try {
 				console.log("onStartGame", emiter, data);
+				this.playEmiter.emit({game: data});
+			}catch(error){}
+		})
+	}
+
+	private onStopGame(){
+		this.socket.on(ePlay.ON_STOP_PLAY, (emiter: string, data: any) => {
+			try {
+				console.log("onStopGame", emiter, data);
 				this.playEmiter.emit({game: data});
 			}catch(error){}
 		})

@@ -55,6 +55,7 @@ export class UserProfileComponent implements OnInit {
 		this.modal.dismiss();
 		this.router.navigateByUrl("/play");
 		//start game
+		
 		this.playService.emit(ePlay.ON_START_PLAY, {player1: this.preferences.userInfo, player2: this.user});
 	}
 

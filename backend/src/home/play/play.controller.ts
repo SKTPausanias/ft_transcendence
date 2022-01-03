@@ -3,5 +3,7 @@ import { PlayService } from "./play.service";
 
 @Controller('/api/users/play')
 export class PlayController {
-    constructor(private playService: PlayService){}
+    constructor(private playService: PlayService){
+    }
+    
 }
