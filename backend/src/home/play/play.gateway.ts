@@ -1,6 +1,7 @@
 import { WebSocketGateway, SubscribeMessage } from '@nestjs/websockets';
 import { SessionService } from 'src/session/session.service';
 import { SocketService } from 'src/socket/socket.service';
+import { User } from '../user/userClass';
 import { ePlay } from './ePlay';
 import { PlayService } from './play.service';
 
@@ -8,7 +9,8 @@ import { PlayService } from './play.service';
 export class PlayGateway {
 	server: any;
 	constructor(private socketService: SocketService,
-                private playService: PlayService){}
+                private playService: PlayService,
+				private sessionService: SessionService){}
 
 	init(server: any){
 		this.server = server;
@@ -33,5 +35,39 @@ export class PlayGateway {
 		//rename emitToSelf
 		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player1.login, {data, finished: true});
 		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player2.login, {data, finished: true});
+	}
+	
+	@SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
+	async onRequestInvitation(client, data) {
+		
+		const me = await this.getSessionUser(client);
+		const opUser = await this.playService.newInviation(me, data);
+		if (opUser != null)
+			this.socketService.emitToOne(this.server, ePlay.ON_REQUEST_INVITATION, me.login, opUser, User.getPublicInfo(me));
+		
+	}
+
+	@SubscribeMessage(ePlay.ON_ACCEPT_INVITATION)
+	async onAcceptInvitation(client, data) {
+		console.log("<debug> onAcceptInvitation:", data);
+	}
+
+	@SubscribeMessage(ePlay.ON_DECLINE_INVITATION)
+	async onDeclineInvitation(client, data) {
+		console.log("<debug> onAcceptInvitation:", data);
+	}
+
+	private async getSession(client: any)
+	{
+		try {
+			const token = client.handshake.headers.authorization.split(' ')[1];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			return (session);
+		} catch (error) {}
+	}
+	private async getSessionUser(client: any)
+	{
+		const session = await this.getSession(client);	
+		return (session.userID);	
 	}
 }

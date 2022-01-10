@@ -4,6 +4,7 @@ import { SessionStorageQueryService } from 'src/app/shared/ft_services'
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 import { UserInfoI } from '../shared/interface/iUserInfo';
 import { ChatService } from './content/chat/chat.service';
+import { PlayService } from './content/play/play.service';
 import { HomeService } from './home.service';
 import { SocketService } from './socket.service';
 
@@ -20,17 +21,20 @@ export class HomeComponent implements OnInit {
 	friendsOnline: any = [];
 	socketEmiter: any;
 	chatEmiter: any;
+	playEmiter: any;
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
 	private homeService: HomeService,
 	private socketService: SocketService,
-	private chatService: ChatService
+	private chatService: ChatService,
+	private playService: PlayService
 	) {
 		this.sharedPreference.userInfo = <UserInfoI>{};
 		this.sharedPreference.friends = [];
 		this.sharedPreference.expandRightNav = false;
 		this.sharedPreference.friend_invitation = [];
+		this.sharedPreference.game_invitation = [];
 		this.sharedPreference.in_game = false;
 		this.sharedPreference.chat = {
 			active_room: undefined,
@@ -54,12 +58,14 @@ export class HomeComponent implements OnInit {
 			this.socketService.connect(this.session, this.sharedPreference);
 			this.subscribeToSocketEmiter();
 			this.subscribeToChatEmiter();
+			this.subscribeToPlayEmiter();
 		}
 	}
 	ngOnDestroy() {
 		try {
 			this.socketEmiter.unsubscribe();
 			this.chatEmiter.unsubscribe();
+			this.playEmiter.unsubscribe();
 		} catch (error) {
 			
 		}
@@ -103,6 +109,20 @@ export class HomeComponent implements OnInit {
 
 		});
 	}
+
+	private subscribeToPlayEmiter(): void {
+		this.playEmiter = this.playService.playEmiter.subscribe((data: any) => {
+			console.log("Data subscribed on playEmiter function: ", data);
+			if (data.invitation !== undefined)
+				this.sharedPreference.game_invitation.push(data.invitation);
+			else if (data.declination !== undefined)
+				console.log("Game declination...");
+			else if (data.acceptation !== undefined)
+				console.log("Game acceptation...");
+		});
+	}
+
+
 	@HostListener('window:keydown', [ '$event' ])
 	async keydown(event: any) {
 		await this.homeService.listenActivity();

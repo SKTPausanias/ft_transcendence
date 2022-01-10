@@ -20,6 +20,7 @@ export class RightNavComponent implements OnInit {
 	me: UserInfoI;
 	onlineUsers: any;
 	pos = 0;
+	gamePos = 0;
 
 	
 	constructor(private sQuery: SessionStorageQueryService,
@@ -49,6 +50,43 @@ export class RightNavComponent implements OnInit {
 		//add to dm table if not exists
 		//open chat
 	}
+
+	/** START: Game invitation */
+	getGameInvitation(): UserPublicInfoI {
+		if (this.gamePos >= this.rigtNavPreference.game_invitation.length)
+			this.gamePos = this.rigtNavPreference.game_invitation.length - 1;
+		this.gamePos < 0 ? (this.gamePos = 0) : 0;
+		if (this.rigtNavPreference.game_invitation.length > 0)
+			return (this.rigtNavPreference.game_invitation[this.gamePos])
+		return (<UserPublicInfoI>{});
+	}
+
+	async acceptGameInvitation(){
+		const user = this.rigtNavPreference.game_invitation[this.gamePos];
+		return (await this.dashboardService.addFriendShip(user, this.session))// create a call and query to save state of accepted invitation
+
+	}
+	async declineGameInvitation(){
+		const user = this.rigtNavPreference.game_invitation[this.gamePos];
+		return (await this.dashboardService.removeFriendShip(user, this.session))// create a call and query to save state of declined invitation
+	}
+	nextGameInvitation(){
+		if (this.gamePos < this.rigtNavPreference.game_invitation.length - 1)
+			this.gamePos++;
+		else
+			this.gamePos = 0;
+	}
+	prevGameInvitation(){
+		if (this.gamePos > 0)
+			this.gamePos--;
+		else
+			this.gamePos = this.rigtNavPreference.game_invitation.length - 1;
+		if (this.gamePos < 0)
+			this.gamePos = 0;
+	}
+	/** END: Game invitation */
+
+	/**START: Friend invitation */
 	getInvitation(): UserPublicInfoI{
 
 		if (this.pos >= this.rigtNavPreference.friend_invitation.length)
@@ -81,6 +119,7 @@ export class RightNavComponent implements OnInit {
 		if (this.pos < 0)
 			this.pos = 0;
 	}
+	/** END: Friend invitation */
 	openProfile(user: UserPublicInfoI){
 		console.log("open profile from right nav")
 		const modal = this.modalService.open(UserProfileComponent, {

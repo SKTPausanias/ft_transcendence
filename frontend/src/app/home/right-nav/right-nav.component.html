@@ -10,20 +10,20 @@
 		</div>
 		<div id="sep"></div>
 		<!-- Game invitation-->
-		<div class="w-100 py-3 border-bottom">
+		<div *ngIf="rigtNavPreference.game_invitation.length > 0" class="w-100 py-3 border-bottom">
 			<div class="d-flex justify-content-center">
 				<span class="notification "*ngIf="!rigtNavPreference.expandRightNav"><span>PLAY</span></span>
 				<div *ngIf="rigtNavPreference.expandRightNav">
 						<p class="notification text-center mb-4" *ngIf="rigtNavPreference.expandRightNav">Lets play</p>
 						<div class="d-flex justify-content-center">
-							<p  *ngIf="rigtNavPreference.friend_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prev()"></p>
-							<img src="" class="ico_s img-fluid me-3" alt="">
-							<h5 class="d-inline mt-2">dbelinsk</h5>
-							<p *ngIf="rigtNavPreference.friend_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="next()"></p>
+							<p  *ngIf="rigtNavPreference.game_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prevGameInvitation()"></p>
+							<img src="{{getGameInvitation().avatar}}" class="ico_s img-fluid me-3" alt="">
+							<h5 class="d-inline mt-2">{{getGameInvitation().nickname}}</h5>
+							<p *ngIf="rigtNavPreference.game_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="nextGameInvitation()"></p>
 						</div>
 						<div class="d-flex justify-content-center mt-3">
-							<b class="fa fa-check fa-lg btn-outline-success mx-1 p-2" (click)="accept()"></b>
-							<b class="fa fa-times fa-lg btn-outline-danger mx-1 p-2" (click)="decline()"></b>
+							<b class="fa fa-check fa-lg btn-outline-success mx-1 p-2" (click)="acceptGameInvitation()"></b>
+							<b class="fa fa-times fa-lg btn-outline-danger mx-1 p-2" (click)="declineGameInvitation()"></b>
 						</div>
 					</div>
 			</div>

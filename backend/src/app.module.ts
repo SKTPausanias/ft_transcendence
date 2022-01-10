@@ -23,6 +23,7 @@ import { ActiveRoomEntity } from './home/chat/entities/activeRoom.entity';
 import { UnreadMessageEntity } from './home/chat/entities/unread-message.entity';
 import { StatsEntity } from './home/play/stats.entity';
 import { PlayModule } from './home/play/play.module';
+import {PlayEntity } from './home/play/play.entity'
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -38,7 +39,7 @@ import { PlayModule } from './home/play/play.module';
 		database: process.env.DB, 
 		entities: [UserEntity, ConfirmationEntity, TwoFactorEntity, SessionEntity, 
 					FriendEntity, ChatEntity, ChatUsersEntity, MessageEntity, 
-					ActiveRoomEntity, UnreadMessageEntity, StatsEntity],
+					ActiveRoomEntity, UnreadMessageEntity, StatsEntity, PlayEntity],
 		autoLoadEntities: true,
 		synchronize: true,
 	}),

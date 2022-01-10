@@ -1,5 +1,4 @@
 import { UserInfoI } from "../ft_interfaces";
-import { MessagesI } from "./iChat";
 import { UserPublicInfoI } from "./iUserInfo";
 
 export interface SharedPreferencesI {
@@ -7,6 +6,7 @@ export interface SharedPreferencesI {
 	userInfo : UserInfoI;
 	friends : UserPublicInfoI[];
 	friend_invitation: UserPublicInfoI[];
+	game_invitation:  UserPublicInfoI [];
 	expandRightNav : boolean;
 	in_game : boolean;
 	chat: {
