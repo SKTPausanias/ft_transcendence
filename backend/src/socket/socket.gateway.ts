@@ -1,43 +1,47 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { ChatGateway } from 'src/home/chat/chat.gateway';
+import { FriendService } from 'src/home/friends/friend.service';
+import { PlayGateway } from 'src/home/play/play.gateway';
+import { UserService } from 'src/home/user/user.service';
 import { User } from 'src/home/user/userClass';
+import { SessionService } from 'src/session/session.service';
 import { wSocket } from 'src/socket/eSocket';
 import { SocketService } from './socket.service';
-import { UserService } from 'src/home/user/user.service';
   
 
 @WebSocketGateway({ cors: true })
 export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(private socketService: SocketService,
-		private userService: UserService,
-		){}
+				private chatGateway: ChatGateway,
+				private playGateway: PlayGateway,
+				private userService: UserService,
+				private sessionService: SessionService,
+				private friendService: FriendService){}
 	//sockets: wSocketI[] = [];
 	clientsConnected = 0;
 	@WebSocketServer() server;
 	async handleConnection(client) {
-
 		try {
+			this.chatGateway.init(this.server);
+			this.playGateway.init(this.server);
+			//init game gatway
+
 			const sessionData = await this.getSessionData(client);
 			await this.socketService.emitToAllFriends(
 				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
 				sessionData.friends, User.getPublicInfo(sessionData.userInfo));
 				this.server.to(client.id).emit(wSocket.SESSION_INIT, sessionData);
+
+				await this.chatGateway.goOnlineOffline(sessionData.userInfo.login);
 				console.log("Connected: there are ", ++this.clientsConnected, " clients connected!: ", client.id);
 			} catch (error) {
 				console.error(error);
-				this.server.emit('force-disconnect');
+				this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
 			}
 		}
 	async handleDisconnect(client) {
-		const sessionData = await this.getSessionData(client);
-		sessionData.userInfo.online = false;
-		await this.socketService.emitToAllFriends(
-			this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
-			sessionData.friends, User.getPublicInfo(sessionData.userInfo));
-/* 	var sck = SocketClass.findSocket(this.sockets, client.id);
-	this.sockets = sck.remove(this.sockets);
-	sck.onChange(wSocket.USER_UPDATE, this.server, this.sockets); */
-	console.log("Disconnected: there are ", --this.clientsConnected, " clients connected");
+		console.log("Disconnected: there are ", --this.clientsConnected, " clients connected");
 	}
 	@SubscribeMessage(wSocket.SESSION_INIT)
 	async handshake(client, message) {
@@ -80,76 +84,31 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async userDelete(client, data) {
 		await this.socketService.emitToAllFriends(this.server, wSocket.USER_DELETE, data.emiter, data.friends, data.friends)
 	}
+	@SubscribeMessage(wSocket.CONNECT_USER)
+	async userConnect(client) {
+		
+	}
+	
+	@SubscribeMessage(wSocket.DISCONNECT_USER)
+	async userDiconnect(client) {
+		const token = client.handshake.headers.authorization.split(' ')[1];
+		const session = await this.sessionService.findSessionWithRelation(token);
+		const friends = await this.friendService.findAllFriends(session.userID);
+		await this.sessionService.removeByToken(token);
+		const sessions = await this.sessionService.findByUser(session.userID);
+		if (!sessions.length)
+		{
+			session.userID.online = false;
+			await this.userService.save(session.userID);
+			await this.socketService.emitToAllFriends(this.server, wSocket.USER_UPDATE, session.userID.login, 
+				friends, User.getPublicInfo(session.userID));
+			await this.chatGateway.goOnlineOffline(session.userID.login);
+		}
+		this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
+	}
+
 	private async getSessionData(client: any){
 		const token = client.handshake.headers.authorization.split(' ')[1];
 		return (await this.socketService.getSessionData(token, client.id));
-	}
-	
-	@SubscribeMessage(wSocket.CHAT_MESSAGE)
-	async chatMessage(client, data) {
-		const sessionData = await this.getSessionData(client);
-		//console.log(sessionData.userInfo.login, " : ", data);
-		//console.log(data.receiver);
-		//const friend = await this.userService.findByNickname(user.nickname); // sacar amigo para llamar a la funcion de emitToOneFriend
-		const friend = await this.userService.findByNickname(data.receiver);
-		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, friend, data.message);
-		await this.socketService.emitToSelf(this.server, wSocket.CHAT_MESSAGE, sessionData.userInfo.login, data.message);
-		//this.server.emit(wSocket.CHAT_MESSAGE, sessionData.userInfo.login, message);
-		//await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_MESSAGE,
-		//		sessionData.userInfo.login, sessionData.friends, data.message);
-	}
-
-	@SubscribeMessage(wSocket.CHAT_GROUP_MESSAGE)
-	async chatGroupMessage(client, data) {
-		const sessionData = await this.getSessionData(client);
-		//data.userInfo = User.getPublicInfo(sessionData.userInfo);
-		var recievers = await this.userService.getAllInChannel(data.channel.name_chat);
-		await this.socketService.emitToAllFriends(this.server, wSocket.CHAT_GROUP_MESSAGE,
-			sessionData.userInfo.login, recievers, data.message);
-	}
-
-	@SubscribeMessage(wSocket.CHAT_BLOCK_USER)
-	async chatBlockUser(client, data) {
-		const sessionData = await this.getSessionData(client);
-		const friend = await this.userService.findByNickname(data.members[1].nickname);
-		console.log(sessionData.userInfo.login, " : ", data);
-		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_BLOCK_USER,
-			sessionData.userInfo.login, friend, data);
-	}
-
-	@SubscribeMessage(wSocket.CHAT_MUTE_USER)
-	async chatMuteUser(client, data) {
-		console.log("data chatMuteUser:", data);
-		const sessionData = await this.getSessionData(client);
-		const friend = await this.userService.findByNickname(data.user.nickname);
-		await this.socketService.emitToOneFriend(this.server, wSocket.CHAT_MUTE_USER,
-			sessionData.userInfo.login, friend, data);
-	}
-
-	@SubscribeMessage(wSocket.GAME_POSITION)
-	async moveBall(client, data)
-	{
-		//const sessionData = await this.getSessionData(client);
-		switch(data.direction) {
-            case "left":
-                data.x -= 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "right":
-                data.x += 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "up":
-                data.y -= 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-            case "down":
-                data.y += 5;
-               this.server.emit(wSocket.GAME_POSITION, data);
-                break;
-			default:
-				this.server.emit(wSocket.GAME_POSITION, data);
-				break;
-        }
 	}
 }

@@ -1,286 +1,211 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { SessionI } from 'src/app/shared/ft_interfaces';
-import { SocketService } from '../../socket.service';
-import { wSocket } from 'src/app/shared/ft_enums';
-import { ChannelI, messageI, MessagesI } from 'src/app/shared/interface/iChat';
-import { Messages } from 'src/app/shared/class/cMessages';
-import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
+import { Injectable, EventEmitter } from "@angular/core";
+import { Socket } from "socket.io-client";
+import { eChat, Nav } from "src/app/shared/ft_enums";
+import { ChatI, ChatPasswordUpdateI, ChatRoomI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { SocketService } from "../../socket.service";
 
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({providedIn: "root"})
 export class ChatService {
-  constructor(
-    private http: HttpClient,
-		private socketService: SocketService,
-    ) { }
-  
-  async sendMessage(message: string, session: SessionI, receiver: UserPublicInfoI, timestamp: number, nickname: string): Promise<any> {
-    const url = '/api/users/chat/saveMessage';
-    console.log("Calling backend saveMessage...", session);
-    var objMessage = new Messages();
-    objMessage.setMessage({ message: message, date: timestamp, user : receiver, owner: nickname })
-    var body: messageI = <messageI>{};
+	chatFragmentEmmiter: EventEmitter<any>;
+	chatEmiter: EventEmitter<any>;
+	chatPreferenceEmiter: EventEmitter<any>;
 
-    body.message = message;
-    body.receiver = receiver.nickname;
-    body.timestamp = timestamp;
-    /* Need to set/pass as argument of this function the following parameters:  
-    body.chatID = chatID;
-    body.userID = this.user.id;
-    * Then we can send to backend as body the data to be saved into message table.
-    */
-    try{
-      const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      console.log("Message from chat: ", ret);
-      this.socketService.emit(wSocket.CHAT_MESSAGE, {
-        message: objMessage,
-        receiver: receiver.nickname});
-        return (ret);
-      }
-      catch(e){
-      console.log("Message error...");
-      return (e);
-    }
-  }
-  
-  async sendGroupMessage(message: string, session: SessionI, channel: any, timestamp: number, nickname: string): Promise<any> {
-    const url = '/api/users/chat/saveGroupMessage';
-    console.log("Calling backend saveGroupMessage...", session);
-    var objMessage = new Messages();
-    objMessage.setMessage({ message: message, date: timestamp, owner: nickname })
-    var body: messageI = <messageI>{};
+	private socket: Socket;
+	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
+	constructor(private http: HttpClient) {
+		this.chatFragmentEmmiter = new EventEmitter<any>();
+		this.chatEmiter = new EventEmitter<any>();
+		this.chatPreferenceEmiter = new EventEmitter<any>();
+	}
 
-    body.message = message;
-    body.receiver = channel;
-    console.log("Channellol: ", body.receiver);
-    body.timestamp = timestamp;
-    try{
-      const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      console.log("Message from chat: ", ret);
-      this.socketService.emit(wSocket.CHAT_GROUP_MESSAGE, {
-        message: objMessage,
-        channel: channel});
-        return (ret);
-      }
-      catch(e){
-      console.log("Message error...");
-      return (e);
-    }
-  }
+	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
+		this.socket = socket;
+		this.sharedPreferences = sharedPreference;
+		this.onStartChat();
+		this.onJoinRoom();
+		this.onLeaveRoom();
+		this.onLoadActiveRooms();
+		this.onChatLoadAllMessages();
+		this.onNewChatMsg();
+		this.onUpdateRoom();
+		this.onUnreadMsg();
+	}
 
-  async getMessages(session: SessionI, receiver: UserPublicInfoI): Promise<any> {
-    const url = '/api/users/chat/getMessages';
-    var body = { receiver: receiver.nickname };
-    var messages: Messages[] = [];
-    
+	private onStartChat(){
+		this.socket.on(eChat.ON_START, (emiter: string, data: any) => {
+			try {
+				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.id) == undefined)
+					this.sharedPreferences.chat.rooms.push(data);
+				this.sharedPreferences.chat.active_room = data;
+				this.chatPreferenceEmiter.emit({chat : this.sharedPreferences.chat});
+				this.chatEmiter.emit({room : data});
+			}catch(error){}
+		})
+	}
+	
+	private onChatLoadAllMessages(){
+		this.socket.on(eChat.ON_All_MSG, (emiter: string, data: any) => {
+			try {
+				this.chatEmiter.emit({messages: data});
+			}catch(error){}
+		})
+	}
 
-    try{
-      const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-        if (ret.statusCode == 200){
-          console.log("Messages from chat ret: ", ret.data);
-          //aux = ret.data.messages;
-          // for each message in ret.data.messages, create a new Messages object and push it into messages array
-          //convert aux
-          for (let i = 0; i < ret.data.messages.length; i++)
-          {
-            var tmp: Messages = new Messages();
-            tmp.setMessage({ message: ret.data.messages[i].message, date: ret.data.messages[i].date, user : ret.data.messages[i].user, owner: ret.data.messages[i].user.nickname });
-            messages.push(tmp);
-          }
-          console.log("Messages from chat on var messages: ", messages);
-        }
-        return (messages);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
+	private onNewChatMsg(){
+		this.socket.on(eChat.ON_NEW_MSG, (emiter: string, data: any) => {
+			const activeRoom = this.sharedPreferences.chat.active_room;
+			const path = this.sharedPreferences.path;
+			try {
+				if (this.sharedPreferences.chat.rooms.find(chat => chat.id == data.chatId) == undefined)
+					this.socket.emit(eChat.ON_UPDATE_ROOM, {room : data});
+				if (activeRoom != undefined && activeRoom.id == data.chatId && path != undefined && path == Nav.CHAT )
+				{
+					this.chatEmiter.emit({newMessage: data});
+					this.socket.emit(eChat.ON_READ_MSG, data);
+				}
+				else
+					this.socket.emit(eChat.ON_GET_UNREAD_MSG, data.chatId);
 
-  async getGroupMessages(session: SessionI, channel : any) : Promise<any> {
-    const url = '/api/users/chat/getGroupMessages';
-    var body = { channel: channel };
-    var messages: Messages[] = [];
 
-    try{
-      const ret = (await this.http.post<any>(url, body, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-        if (ret.statusCode == 200){
-          console.log("Messages from group chat ret: ", ret.data);
-          for (let i = 0; i < ret.data.messages.length; i++)
-          {
-            var tmp: Messages = new Messages();
-            tmp.setMessage({ message: ret.data.messages[i].message, date: ret.data.messages[i].date, user : ret.data.messages[i].user, owner: ret.data.messages[i].user.nickname });
-            messages.push(tmp);
-          }
-          console.log("Messages from chat on var messages: ", messages);
-        }
-        return (messages);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
+			}catch(error){}
+		})
+	}
+	private onUnreadMsg(){
+		this.socket.on(eChat.ON_GET_UNREAD_MSG, (emiter: string, data: number) => {
+		this.chatPreferenceEmiter.emit({unreaded: data});
+		});
+	}
+	
+	private onJoinRoom(){
+		this.socket.on(eChat.ON_JOIN_ROOM, (data: any) => {
+			try {
+				this.sharedPreferences.chat.rooms.push(data);
+				this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
+				this.chatEmiter.emit();
+			}catch(error){}
+		})
+	}
+	
+	private onLeaveRoom(){
+		this.socket.on(eChat.ON_LEAVE_ROOM, (emiter: string, data: any) => {
+			try {
+				this.sharedPreferences.chat.rooms = this.sharedPreferences.chat.rooms.filter(room => room.id != data.id);
+				if (this.sharedPreferences.chat.active_room != undefined && this.sharedPreferences.chat.active_room.id == data.id)
+					this.sharedPreferences.chat.active_room = undefined;
+				this.chatPreferenceEmiter.emit({ chat : this.sharedPreferences.chat});
+				this.chatEmiter.emit({onDestroy : data});
+			}catch(error){
+			}
+		})
+	}
+	
+	private onLoadActiveRooms(){
+		this.socket.on(eChat.ON_LOAD_ACTIVE_ROOMS, (emiter: string, data: any) => {
+			try {
+				this.sharedPreferences.chat.rooms = data;
+				this.chatPreferenceEmiter.emit({ rooms : this.sharedPreferences.chat.rooms});
+				this.chatEmiter.emit();
+			}catch(error){}
+		})
+	}
+	private onUpdateRoom(){
+		this.socket.on(eChat.ON_UPDATE_ROOM, (emiter: string, data: ChatRoomI) => {
+			var chat = this.sharedPreferences.chat;
+			try {
+				const index = this.sharedPreferences.chat.rooms.findIndex(item => item.id == data.id);
+				if (index < 0)
+					this.sharedPreferences.chat.rooms.push(data);
+				else
+					this.sharedPreferences.chat.rooms[index] = data;
+				if (chat.active_room != undefined && chat.active_room.id == data.id)
+				{
+					this.sharedPreferences.chat.active_room = chat.rooms.find(item => item.id == data.id)
+					this.chatPreferenceEmiter.emit({chat : this.sharedPreferences.chat});
+				}
+				else
+					this.chatPreferenceEmiter.emit({rooms : this.sharedPreferences.chat.rooms});
+				this.chatEmiter.emit();
+				if (!this.sharedPreferences.chat.active_room.hasRoomKey)
+					this.chatEmiter.emit({close : data});
+			}catch(error){}
+		})
+	}
 
-  async getChatGroups(session: SessionI): Promise<any> {
-    const url = '/api/users/chat/getChatGroups';
-    var channels: any[] = [];
-    try{
-      const ret = (await this.http.get<any>(url, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-        if (ret.statusCode == 200){
-          channels = ret.data.chats;
-        }
-        return (channels);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
+	async addChannel(session: SessionI, channelInfo: ChatI): Promise<any> {
+		const url = '/api/users/chat/addChannel';
+		try{
+		  const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
+			  Authorization: 'Bearer ' + session.token
+			})
+		  }).toPromise())
+		return (ret);
+		} catch(e){
+		  return (e);
+		}
+	}
+	async unlockRoom(session: SessionI, key: RoomKeyI): Promise<any> {
+		const url = '/api/users/chat/unlockRoom';
+		try{
+		  const ret = (await this.http.post<any>(url, key, { headers: new HttpHeaders({
+			  Authorization: 'Bearer ' + session.token
+			})
+		  }).toPromise())
+		return (ret);
+		} catch(e){
+		  return (e);
+		}
+	}
+	async updatePassChannel(session: SessionI, channelInfo: ChatPasswordUpdateI): Promise<any> {
+		const url = '/api/users/chat/updatePassChannel';
+		try {
+			const ret = (await this.http.post<any>(url, channelInfo, { headers: new HttpHeaders({
+					Authorization: 'Bearer ' + session.token})}).toPromise())
+			return (ret);
+		} catch (e) {
+			return (e);
+		}
+	}
 
-  async getOwnChannels(session: SessionI): Promise<any>{
-    const url = '/api/users/chat/getOwnChannels';
-    var channels: any[] = [];
-    try{
-      const ret = (await this.http.get<any>(url, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-        if (ret.statusCode == 200){
-          channels = ret.data.chats;
-        }
-        return (channels);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
+	liveSearchRooms(session: SessionI, val: string): any{
+		
+	const url = '/api/users/chat/searchRooms';
+	var data: HttpParams = new HttpParams().set("value", val);
+	try{
+		return (this.http.get<any>(url, { headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token}),
+			params: data
+			}))
+	}catch(e){
+		return ([]);
+	}
+	}
+	async searchRooms(session: SessionI, val: string): Promise<any>{
+		
+	const url = '/api/users/chat/searchRooms';
+	var data: HttpParams = new HttpParams().set("value", val);
+	try{
+		const ret = await (this.http.get<any>(url, { headers: new HttpHeaders({
+			Authorization: 'Bearer ' + session.token}),
+			params: data
+			}).toPromise());
+			return (ret.data);
+	}catch(e){
+		return ([]);
+	}
+	}
+	emit(action: string, data?: any){
+		data ? this.socket.emit(action, data) : this.socket.emit(action);
+	}
 
-  async getChatUsers(session: SessionI, chatInfo: ChannelI): Promise<any>{
-    const url = '/api/users/chat/getChatUsers';
-    try{
-      return (await this.http.post<any>(url, chatInfo, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
-
-  async blockUser(session: SessionI, members: UserPublicInfoI[], friendIsBlocked: boolean): Promise<any>{
-    const url = '/api/users/chat/blockUser';
-    try{
-      const ret = (await this.http.post<any>(url, {'members': members, 'isBlocked': friendIsBlocked}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      this.socketService.emit(wSocket.CHAT_BLOCK_USER, {
-        members: members,
-        isBlocked: friendIsBlocked});
-      return (ret);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
-
-  async iAmBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
-    const url = '/api/users/chat/iAmBlocked';
-    try{
-      const ret = (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      return (ret.data.blocked);
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
-
-  async friendIsBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
-    const url = '/api/users/chat/friendIsBlocked';
-    try{
-      return (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
-
-  async imNotBlocked(session: SessionI, friend: UserPublicInfoI): Promise<any>{
-    const url = '/api/users/chat/imNotBlocked';
-    try{
-      return (await this.http.post<any>(url, {'friend': friend}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    }
-  }
-
-  async isMuted(session: SessionI, channel: any): Promise<any>{
-    const url = '/api/users/chat/isMuted';
-    try{
-      const ret = (await this.http.post<any>(url, {'channel': channel}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      console.log("isMuted ret: ", ret);
-      return (ret.data.muted);
-    }
-      catch(e){
-        console.log("Message error...");
-        return (e);
-    } 
-}
-
-  async muteUserGroup(session: SessionI, channel: any, user: UserPublicInfoI): Promise<any> {
-    const url = '/api/users/chat/muteUserGroup';
-    try{
-      const ret = (await this.http.post<any>(url, {'channel': channel, 'user': user}, { headers: new HttpHeaders({
-          Authorization: 'Bearer ' + session.token
-        })
-      }).toPromise());
-      this.socketService.emit(wSocket.CHAT_MUTE_USER, {
-        channel: channel,
-        user: user});
-      return (ret);
-      }
-    catch(e){
-      console.log("Message error...");
-      return (e);
-    }
-  }
+	async joinRoom(session: SessionI, room: any): Promise<any>{
+		const url = '/api/users/chat/joinRoom';
+		try{
+			const ret = await (this.http.post<any>(url, room, { headers: new HttpHeaders({
+				Authorization: 'Bearer ' + session.token})}).toPromise());
+			return (ret);
+		}catch(e){
+			return (e);
+		}
+	}
 }

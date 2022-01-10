@@ -1,9 +1,12 @@
 import { SessionEntity } from "src/session/session.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ActiveRoomEntity } from "../chat/entities/activeRoom.entity";
+import { ChatEntity } from "../chat/entities/chat.entity";
+import { ChatUsersEntity } from "../chat/entities/chatUsers.entity";
+import { MessageEntity } from "../chat/entities/message.entity";
+import { StatsEntity } from "../play/stats.entity";
 import { FriendEntity } from "../friends/friend.entity";
-import { ChatEntity } from "../chat/chat.entity";
-import { MessageEntity } from "../chat/message.entity";
-import { ChatUsersEntity } from "../chat/chatUsers.entity";
+
 @Entity('users')
 export class UserEntity {
 
@@ -58,10 +61,32 @@ export class UserEntity {
     })
     friends: FriendEntity[];
 
-    @OneToMany(() => ChatEntity, (chat) => chat.chats)
-    chats: ChatUsersEntity[];
+	
 
-    @OneToMany(type => MessageEntity, message => message.user)
+
+    @OneToMany(() => ChatEntity, (room) => room.id)
+    rooms: ChatUsersEntity[];
+
+    @OneToMany(type => MessageEntity, message => message.owner)
     messages: MessageEntity[];
+
+    // relation with user1 and user2 from statsEntity
+    @OneToMany(type => StatsEntity, stats => stats.user1)
+    stats: StatsEntity[];
+
+    @OneToMany(type => StatsEntity, stats => stats.user2)
+    stats2: StatsEntity[];
+
+    @Column({nullable: false, default: 0})
+    victories: number;
+
+    @Column({nullable: false, default: 0})
+    defeats: number;
+
+    /* @Column("int", {array: true , default: []})
+	  active_chat_rooms: number[]; */
+    //Relation with activeRooms: one user can have many activeRooms
+    @OneToMany(() => ActiveRoomEntity, (activeRoom) => activeRoom.id)
+    activeRooms: ActiveRoomEntity[];
 }
 

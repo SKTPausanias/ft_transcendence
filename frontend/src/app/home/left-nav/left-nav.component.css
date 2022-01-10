@@ -17,4 +17,21 @@
 	border-bottom: 1px solid rgba(255, 255, 255, 0.671);
 }
 
+.chat-container{
+	position: relative;
+	text-align: center;
+	color: white;
+}
+.bottom-right {
+	min-width: 20px;
+	min-height: 20px;
+	position: absolute;
+	top: 16px;
+	left: 8px;
+	background-color: #9900ff;
+	padding: 5px;
+	border-radius: 50%;
+	font-size: 8px;
+}
+
 

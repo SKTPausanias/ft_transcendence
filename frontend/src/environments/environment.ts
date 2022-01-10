@@ -7,7 +7,7 @@ export const loc = {
 };
 
 export const pub = {
-  ftAuthUrl: "https://api.intra.42.fr/oauth/authorize?client_id=4f391c47a84fdc6865abb82d2f385e60a7ace38404a76d2f00b88283ce497795&redirect_uri=http%3A%2F%2Fwww.ecodtp.com%3A4200%2Fauth&response_type=code"
+  ftAuthUrl: "https://api.intra.42.fr/oauth/authorize?client_id=484b3a764e26aec9b3220318c9a86040f303a892182e81fa7068f136d815a174&redirect_uri=http%3A%2F%2Fwww.ph.noip.me%3A4200%2Fauth&response_type=code"
 };
 
 export const environment = {
@@ -15,7 +15,8 @@ export const environment = {
   production: false,
   inactivity_time: 6000,			// 10 min
   renew_session_margin: 1800,	// 30 min before session expires in backend
-  server_ws_uri: 'ws://localhost:3000'
+  //server_ws_uri: 'ws://ph.noip.me:3000',
+  server_ws_uri: 'ws://localhost:3000',
 };
 
 

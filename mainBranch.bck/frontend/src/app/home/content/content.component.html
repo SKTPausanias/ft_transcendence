@@ -1,0 +1,7 @@
+<div class="bg-light min-vh-100 min-vw-95">
+	<app-dashboard *ngIf="path == nav.HOME" [dashboardPreference]="contentPreference"></app-dashboard>
+	<app-play *ngIf="path == nav.GAME"></app-play>
+	<app-live *ngIf="path == nav.LIVE"></app-live>
+	<app-chat *ngIf="path == nav.CHAT" [chatPreference]="contentPreference"></app-chat>
+	<app-settings *ngIf="path == nav.CONF" [settingsPreference]="contentPreference"></app-settings>
+</div>

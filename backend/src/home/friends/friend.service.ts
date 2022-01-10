@@ -1,23 +1,19 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { SessionService } from "src/session/session.service";
 import { Response } from "src/shared/response/responseClass";
 import { Exception } from "src/shared/utils/exception";
-import { Repository } from "typeorm";
-import { ChatService } from "../chat/chat.service";
+import { Connection, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
+import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { FriendEntity } from "./friend.entity";
 
 @Injectable()
 export class FriendService {
-	constructor(
-		@InjectRepository(FriendEntity) private friendRepository: Repository<FriendEntity>,
-		private chatService : ChatService,
-        /*@Inject(forwardRef(() => UserService))
-		private userService: UserService,*/
-       	//private sessionService: SessionService,
-        ){}
+	constructor(	@InjectRepository(FriendEntity) 
+		private friendRepository: Repository<FriendEntity>){}
 		async findAllFriends(user: UserEntity): Promise<any>{
 			var ret: UserPublicInfoI[] = [];
 			try {
@@ -32,8 +28,8 @@ export class FriendService {
 					if (element.user_2.id != user.id && element.confirmed === true)
 							ret.push(User.getPublicInfo(element.user_2));
 				});
+				ret.sort((a,b) => { return (a.nickname > b.nickname ? 1 : -1)} );	
 				return (ret);
-
 			} catch (error) {
 				console.log("ERROR");
 				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));

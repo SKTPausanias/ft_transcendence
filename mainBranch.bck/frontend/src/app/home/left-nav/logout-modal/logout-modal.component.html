@@ -1,0 +1,18 @@
+	<div class="modal-header d-flex flex-column align-items-end">
+		<button type="button" class="close" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div class="text-center">
+		<img class="ico_m img-fluid" src="/assets/img/logo.png" alt="image">
+	</div>
+	<div class="separator mt-3"> LOG OUT</div>
+
+	<div class="modal-body">
+		<p><strong>Are you sure you want to logout?</strong></p>
+	</div>
+	<div class="separator pb-2"></div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('cancel click')">Cancel</button>
+		<button type="button" class="btn logout_btn" (click)="close('LogOut click')">LogOut</button>
+	</div>

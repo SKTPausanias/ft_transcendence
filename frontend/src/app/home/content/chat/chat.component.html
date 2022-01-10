@@ -1,220 +1,106 @@
-<div class="container-fluid h-100">
-  <div class="row justify-content-center h-100">
-    <div class="col-md-4 col-xl-3 chat"><div class="card mb-sm-3 mb-md-0 contacts_card">
-      <div class="card-header">
-        <div class="input-group">
-          <input type="text" placeholder="Search..." name="" class="form-control search">
-          <div class="input-group-prepend">
-            <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
-          </div>
-        </div>
-      </div>
-      <div class="card-body contacts_body">
-        <ul *ngIf="showPrivate == true" class="contacts">
-          <li class="active" *ngFor="let friend of chatPreference.friends">
-            <div class="d-flex bd-highlight">
-              <div class="img_cont">
-                <img src={{friend.avatar}} class="rounded-circle user_img">
-                <span *ngIf="friend.online" class="online_icon"></span>
-                <span *ngIf="!friend.online" class="online_icon offline"></span>
-              </div>
-              <div class="user_info">
-                <span>{{friend.nickname}}</span>
-              </div>
-              <button class="btn" data-mdb-toggle="tooltip" title="Open chat" (click)="selectChat(friend)">
-                <span class="fa fa-comment-dots"></span>
-              </button>
-              <button class="btn" (click)="playPong(friend)">
-                <span class="fa fa-table-tennis"></span>
-              </button>
-          </div>
-        </li>
-        </ul>
-        <!---->
-        <ul *ngIf="showPrivate == false" class="contacts">
-          <li class="active" *ngFor="let channel of channels">
-            <div class="d-flex bd-highlight">
-              <div class="img_cont">
-                <img src="http://localhost:3000/img/default_avatar.png" class="rounded-circle user_img">
-              </div>
-              <div class="user_info">
-                <span>{{channel.name_chat}}</span>
-              </div>
-              <button class="btn" data-mdb-toggle="tooltip" title="Open chat" (click)="selectChatGroup(channel)">
-                <span class="fa fa-comment-dots"></span>
-              </button>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <div class="card-footer">
-        <button class="btn" (click)="getPrivates()"><i class="fas fa-user-lock"> Private</i></button>
-        <button class="btn" (click)="getChatGroups()"><i class="fas fa-users"> Channels</i></button>
-      </div>
-    </div>
-  </div>
-  <!-- Content of chnnaels chat: public/private/channels -->
-  <div *ngIf="showGroupChat == true" class="col-md-8 col-xl-6 chat">
-    <div class="card">
-      <div class="card-header msg_head">
-        <div class="d-flex bd-highlight">
-          <div class="img_cont">
-            <i class="fas fa-broadcast-tower"></i>
-            <img src='http://localhost:3000/img/default_avatar.png' class="rounded-circle user_img">
-          </div>
-          <div class="user_info">
-            <span>{{channel.name_chat}}</span>
-          </div>
-          <div class="video_cam">
-            <span><i class="fas fa-user-circle"></i></span>
-            <span><i class="fas fa-user-times"></i></span>
-            <span (click)='playPong(friendChat)'><i class="fas fa-table-tennis"></i></span>
-            <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
-          </div>
-        </div>
-        <span id="action_menu_btn"><i class="fas fa-ellipsis-v" (click)='listMembers()'></i></span>
-        <div class="action_menu">
-          <ul>
-            <li><i class="fas fa-user-circle"></i> View profile</li>
-            <li><i class="fas fa-users"></i> Add to close friends</li>
-            <li><i class="fas fa-plus"></i> Add to group</li>
-            <li><i class="fas fa-ban"></i> Block</li>
-          </ul>
-        </div>
-      </div>
-      <!--Messages from friends or groups, to the left go friends messages and then the messages from user-->
-        <!-- show members when showMembers == true instead of showing messages-->
-      <div *ngIf="showMembers == true" class="card-body msg_card_body">
-        <div class="d-flex justify-content-center">
-          <ul class="contacts">
-            <li class="active" *ngFor="let member of members">
-              <div class="d-flex bd-highlight">
-                <div class="img_cont">
-                  <img src={{member.avatar}} class="rounded-circle user_img">
-                </div>
-                <div class="user_info">
-                  <span>{{member.nickname}}</span>
-                </div>
-                <button class="btn" data-mdb-toggle="tooltip" title="mute user" (click)="muteUserGroup(member)">
-                  <span class="fa fa-volume-mute"></span>
-                </button>
-                <button class="btn" data-mdb-toggle="tooltip" title="ban user" (click)="banUserGroup(member)">
-                  <span class="fa fa-ban"></span>
-                </button>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div #msgBox *ngIf="showMembers == false" class="card-body msg_card_body">
-        <div *ngFor="let msg of messages">
-          <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
-            <div class="img_cont_msg">
-              <img src={{msg.user.avatar}} class="rounded-circle user_img_msg">
-            </div>
-            <div id="{{msg.date}}" class="msg_cotainer">
-              {{msg.message}}
-              <span class="msg_time"> {{msg.msgDateString}} </span>
-            </div>
-          </div>
-          <div *ngIf="msg.owner == chatPreference.userInfo.nickname" class="d-flex justify-content-end mb-4">
-            <div id="{{msg.date}}" class="msg_cotainer_send">
-              {{msg.message}}
-              <span class="msg_time_send"> {{msg.msgDateString}} </span>
-            </div>
-            <div class="img_cont_msg">
-              <img src={{chatPreference.userInfo.avatar}} class="rounded-circle user_img_msg">
-            </div>
-          </div>
-        </div>
-       <!--  <div hidden="hidden" *ngIf='length && scrollDown()'></div> -->  
-      </div>
-      <div class="card-footer" *ngIf="showMembers == false">
-        <div class="input-group">
-          <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
-          <div class="input-group-append">
-            <span class="input-group-text send_btn" (click)="sendGroupMessage()"><i class="fas fa-location-arrow"></i></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Following is the chat component of One on One conversations: should be different than the group ones-->
-  <div *ngIf="showChat == true" class="col-md-8 col-xl-6 chat">
-    <div class="card">
-      <div class="card-header msg_head">
-        <div class="d-flex bd-highlight">
-          <div class="img_cont">
-            <img src={{friendChat.avatar}} class="rounded-circle user_img">
-            <span class="online_icon"></span>
-          </div>
-          <div class="user_info">
-            <span>Chat with {{friendChat.nickname}}</span>
-          </div>
-          <div class="video_cam">
-            <span><i class="fas fa-user-circle"></i></span>
-            <span><i class="fas fa-user-times"></i></span>
-            <span (click)='playPong(friendChat)'><i class="fas fa-table-tennis"></i></span>
-            <span (click)='blockUser(friendChat)'><i class="fas fa-ban"></i></span>
-            <span (click)="closeChat()"><i class="fas fa-sign-out-alt"></i></span>
-          </div>
-        </div>
-        <span id="action_menu_btn"><i class="fas fa-ellipsis-v"></i></span>
-        <div class="action_menu">
-          <ul>
-            <li><i class="fas fa-user-circle"></i> View profile</li>
-            <li><i class="fas fa-users"></i> Add to close friends</li>
-            <li><i class="fas fa-plus"></i> Add to group</li>
-            <li><i class="fas fa-ban"></i> Block</li>
-          </ul>
-        </div>
-      </div>
-      <!--Messages from friends or groups, to the left go friends messages and then the messages from user  chatsBlocked[friendChat.nickname]-->
-      <div #msgBox *ngIf="friendIsBlocked == false && chatsBlocked[friendChat.nickname] == false" class="card-body msg_card_body">
-        <div *ngFor="let msg of messages">
-          <div *ngIf="msg.owner != chatPreference.userInfo.nickname" class="d-flex justify-content-start mb-4">
-            <div class="img_cont_msg">
-              <img src={{friendChat.avatar}} class="rounded-circle user_img_msg">
-            </div>
-            <div id="{{msg.date}}" class="msg_cotainer">
-              {{msg.message}}
-              <span class="msg_time"> {{msg.msgDateString}} </span>
-            </div>
-          </div>
-          <div *ngIf="msg.owner == chatPreference.userInfo.nickname" class="d-flex justify-content-end mb-4">
-            <div id="{{msg.date}}" class="msg_cotainer_send">
-              {{msg.message}}
-              <span class="msg_time_send"> {{msg.msgDateString}} </span>
-            </div>
-            <div class="img_cont_msg">
-              <img src={{chatPreference.userInfo.avatar}} class="rounded-circle user_img_msg">
-            </div>
-          </div>
-        </div>
-        <!--  <div hidden="hidden" *ngIf='length && scrollDown()'></div> -->      
-        <div class="card-footer">
-          <div class="input-group">
-            <textarea [(ngModel)]="message" name="" class="form-control type_msg" placeholder="Type your message..."></textarea>
-            <div class="input-group-append">
-              <span class="input-group-text send_btn" (click)="sendMessage()"><i class="fas fa-location-arrow"></i></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- else print out user is blocked->-->
-      <div *ngIf="friendIsBlocked == true" class="card-body msg_card_body">
-        <div class="d-flex justify-content-center mb-4">
-          <div>
-            <span>{{friendChat.nickname}} is blocked</span>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="chatsBlocked[friendChat.nickname] == true" class="card-body msg_card_body">
-        <div class="d-flex justify-content-center mb-4">
-          <div>
-            <span>{{friendChat.nickname}} blocked you </span>
-          </div>
-        </div>
-      </div>
-  </div>
-</div>
+<div class="fill">
+	<div class="row mx-0">
+		<div class="col-3 left-container scrool">
+			<div class="child border-bottom border-light  mb-2">
+				<div class="room-ctn">
+					<button class="fa-btn" (click)="hideShowChannels()">
+						<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showChannels, 'fa-caret-right' : !showChannels}"></span>
+					</button>
+					<p>Channels</p>	
+					<div *ngIf="showChannels" class="room-ctn ms-2">
+						<div class="room-ctn">
+							<button class="fa-btn" (click)="hideShowPublicChannels()">
+								<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showPublicChannels, 'fa-caret-right' : !showPublicChannels}"></span>
+							</button>
+							<p>Public</p>
+							<div class="room-ctn">
+								<div *ngIf="showPublicChannels">
+									<div class="item" *ngFor="let room of publicRooms" [ngClass]="{'selected-item' : isSelected(room)}">
+										<!---->
+										<!--Para: no más control-Z-->
+										<div class="item-ctn" (click)="selectChatRoom(room)">
+											<img class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/public.png" alt="image">
+											<div *ngIf="room.unreadMsg > 0" class="unread">
+												{{room.unreadMsg}}
+											</div>
+											<div class="lock d-flex justify-content-start">
+												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+											</div>
+										</div>
+										<div class="col-9 pl-0" (click)="selectChatRoom(room)">
+											<span class="item-wht cut-text">{{room.name}}</span>
+										</div>
+										<div class="col-1 d-flex justify-content-end" data-mdb-toggle="tooltip" title="Leave Chat">
+											<span class="fas fa-trash-alt fa-lg icon-btn" (click)="leaveChat(room)"></span>
+										</div>
+										<!---->
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="room-ctn">
+							<button class="fa-btn" (click)="hideShowPrivateChannels()">
+								<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showPrivateChannels, 'fa-caret-right' : !showPrivateChannels}"></span>
+							</button>
+							<p>Private</p>
+							<div class="room-ctn">
+								<div *ngIf="showPrivateChannels">
+									<div class="item" *ngFor="let room of privateRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+										<div class="item-ctn">
+											<img  class="ico_xs p-1 img-fluid me-1 bd-none" src="/assets/img/ico/private.png" alt="image">
+											<div *ngIf="room.unreadMsg > 0" class="unread">
+												{{room.unreadMsg}}
+											</div>
+											<div class="lock">
+												<i *ngIf='room.protected' class="fa fa-lock lock"></i>
+											</div>
+										</div>
+										<span class="cut-text">{{room.name}}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div data-mdb-toggle="tooltip" data-delay='{"show":"500", "hide":"300"}' title="Search chat" class="mt-1">
+							<button class="fa-btn" data-mdb-toggle="tooltip" title="Find and add channels" (click)="openModal('channel')">
+								<span class="fa fa-search-plus fa-icon"></span>
+								<p>LookUp channels</p>
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="room-ctn">
+					<button class="fa-btn" (click)="hideShowDM()">
+						<span class="fa fa-icon" [ngClass]="{'fa-caret-down' : showDM, 'fa-caret-right' : !showDM}"></span>
+					</button>
+					<p class="mb-1">Dirrect messages</p>
+				</div>
+				<div *ngIf="showDM">
+					<div class="item ps-2" *ngFor="let room of directRooms" (click)="selectChatRoom(room)" [ngClass]="{'selected-item' : isSelected(room)}">
+						<div class="item-ctn">
+							<img  class="ico_xs img-fluid me-1" src="{{room.img}}" alt="image">
+							<div *ngIf="room.unreadMsg > 0" class="unread">
+								{{room.unreadMsg}}
+							</div>
+						</div>
+						<span class="cut-text">{{room.name}}</span>
+					</div>
+					<div class="mt-1">
+						<button class="fa-btn" data-mdb-toggle="tooltip" title="Find and add people to chat" (click)="openModal('friend')">
+							<span class="fa fa-user-plus fa-icon"> </span>
+							<p>Find people</p>
+						</button>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="col-9 right-container">
+			<app-messaging *ngIf="showRoom" [msgPreference]='chatPreference' (closeRoomEvent)='closeRoom()' (addMemberEvent)="addMemberToChat()"></app-messaging>
+			<div *ngIf="!showRoom">
+				<i><small > There is nothing to show. Please select channel or person to start chat.</small></i>			
+			</div>
+		</div>
+	</div>
+	

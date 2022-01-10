@@ -9,6 +9,8 @@ export class HashService {
 		return (bcrypt.hashSync(pwd, salt));
 	}
 	async compare(pwd: string, hashed: string): Promise<boolean>{
+		if (pwd == undefined)
+			return (false)
 		return (await bcrypt.compare(pwd, hashed));
 	}
 }

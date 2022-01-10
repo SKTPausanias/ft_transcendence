@@ -1,0 +1,255 @@
+<div class="cont">
+	
+<div class="position-relative w-100">
+	<div class="position-absolute w-100" [ngClass]="{'msg-box' : !msgError, 'msg-box-error' : msgError}">
+		<div *ngIf="showMsgBox" class="row">
+			<div class="d-flex col-11 justify-content-center py-2">
+				{{update_message}}
+			</div>
+			<div class="d-flex col-1 justify-content-end">
+				<button (click)="closeMsg()">X</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="vh-100">
+		<div class="row ">
+			<div class="col-3 vh-100 p-4 d-flex justify-content-center">
+				<div class="position-relative">
+					<div class="avatar">
+							<img src="{{settingsPreference.userInfo.avatar}}" alt="" class="">
+						<div class="edit">
+							<input type="file" style="display: none" #file (change)="editAvatar($event)"/>
+							<button (click)="file.click()">Edit</button>
+						</div>
+					</div>
+					<div *ngIf="settingsPreference.userInfo.factor_enabled" class="qr mt-4">
+						<div class="separator my-3">Two Factor</div>
+						<div *ngIf="showQrImg">
+							<img src="{{qrUrl}}" alt="">
+						</div>
+						<div *ngIf="showCodeInput">
+							<form ngNativeValidate class="form-group" #qrCode="ngForm" (ngSubmit)="validate(qrCode.value)" class="mx-2 my-2">
+								<div class="form-group mb-1">
+									<input 
+									ngModel={{code}} 
+									type="number" 
+									placeholder="Enter validation code" 
+									name="code"
+									class="form-control"
+									required />
+								</div>
+								<small id="validateHelp" class="form-text text-muted">Check your email and enter code</small>
+								<div class="mt-2">
+									<button ctype="submit" class="btn-factor">Validate</button>
+								</div>
+							</form>
+						</div>
+						<div *ngIf="!showQrImg" class="mx-2 my-2">
+							<button ctype="submit" class="btn-factor" (click)="showQr()">{{qrButtonValue}}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-9 vh-100 p-5">
+				<h3>User Settings</h3><hr>
+					<form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitSettings(set.value)">
+						<div>
+							<div class="row mt-5">
+								<div class="col-4 form-group">
+									<label for="exampleInputEmail1">First name</label>
+									<input
+										type="text"
+										ngModel = {{settingsPreference.userInfo.first_name}}
+										name="first_name"
+										class="form-control"
+										readonly
+									/>
+								</div>
+								<div class="col-4 form-group">
+									<label for="exampleInputEmail1">Last name</label>
+									<input
+										type="text"
+										ngModel = {{settingsPreference.userInfo.last_name}}
+										name="last_name"
+										class="form-control"
+										readonly
+									/>
+								</div>
+								<div class="col-4 form-group">
+									<label for="exampleInputEmail1">Login</label>
+									<input
+										type="text"
+										ngModel = {{settingsPreference.userInfo.login}}
+										name="login"
+										class="form-control"
+										readonly
+									/>
+								</div>
+							</div>						
+							
+							<div class="row mt-3">
+								<div class="col-6 form-group">
+									<label for="exampleInputEmail1">Nickname</label>
+									<input 
+										[(ngModel)]="formNickname"
+										name="nickname"
+										type="text"
+										minlength="3"
+										class="form-control"
+										required
+									/>								
+									<small id="nicknameHelp" class="form-text text-muted">This is how other users will see you.</small>
+
+							</div>
+							
+							<div class="col-6 form-group">
+								<label for="exampleInputEmail1">Email</label>
+								<input
+									type="email"
+									class="form-control"
+									aria-describedby="emailHelp"
+									ngModel = "{{settingsPreference.userInfo.email}}"
+									name="email"
+									required
+		
+								/>
+								<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+							</div>
+							</div>
+							
+							<div class="form-group mt-5">
+								<div class="form-check mt-2 d-flex align-items-center">
+									<input
+									#factor_input
+									name="factor"
+									type="checkbox"
+									class="form-check-input me-2"
+									(change)="factorCheckbox($event)"
+									[(ngModel)]="formFactor"
+								/>
+								<label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
+								</div>
+								
+							</div>
+						</div>
+						<div class="btn_container d-flex justify-content-end mt-4">
+							<button type="submit" class="saveChanges"
+							[disabled]="disableSaveButton(set.value)">Save changes</button>
+							<button class="deleteAccount" (click)="deleteAccount()">Delete Account</button> 
+						</div>
+					</form>	
+			</div>
+		</div>
+</div>
+
+</div>
+<!-- <div style="width: 100%;height: 100%; background-color: #647578; text-align: center;">
+	<div *ngIf="show" class="row">
+		<div class="col-10">
+			<small>{{update_message}}</small>
+		</div>
+		<div class="col-2">
+			<button (click)="closeMsg()">X</button>
+		</div>
+	</div>
+</div>
+<div class="mx-3 mt-3 mb-3 avatar">
+	<img src="{{settingsPreference.userInfo.avatar}}" alt="" class="img img-fluid rounded-circle">
+	<div class="edit">
+		<input type="file" style="display: none" #file (change)="editAvatar($event)"/>
+		<button (click)="file.click()">Edit</button>
+	</div>
+</div> -->
+<!-- <div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="box">
+		<div class="container">
+			<form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onSubmitSettings(set.value)">
+				<div>
+					<h3>User settings</h3>
+					<hr />
+					<div *ngIf="show" class="row">
+						<div class="col-10">
+							<small>{{update_message}}</small>
+						</div>
+						<div class="col-2">
+							<button (click)="closeMsg()">X</button>
+						</div>
+					</div>
+					<div class="form-group mb-3">
+						<label for="login">42 Login</label>
+						<input
+							type="text"
+							ngModel = {{user.login}}
+							name="login"
+							class="form-control"
+							readonly
+							required
+						/>
+					</div>
+					<div class="form-group mb-3">
+						<label for="nickname">Nickname</label>
+							<input 
+								ngModel={{user.nickname}}
+								name="nickname"
+								type="text"
+								minlength="5"
+								class="form-control"
+								required
+							/>
+					</div>
+					
+					<div class="form-group mb-3">
+						<label for="exampleInputEmail1">Email Address</label>
+						<input
+							type="email"
+							class="form-control"
+							aria-describedby="emailHelp"
+							ngModel = "{{user.email}}"
+							name="email"
+							required
+
+						/>
+						<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+					</div>
+                    <div class="form-group mb-3">
+                        <label for="2factorAuthentication">Enable 2 Factor authentication</label>
+                        <div class="form-check mt-2 d-flex align-items-center">
+                            <input
+                            #factor_input
+                            name="factor"
+                            type="checkbox"
+                            class="form-check-input me-2"
+                            (change)="factorCheckbox($event)"
+							[(ngModel)]="user.factor_enabled"
+                        />
+                        <label class="form-check-label" for="factor"><small><i>Enable 2-factor authentication</i></small></label>
+                        </div>
+                        
+                    </div>
+				</div>
+				<div class="btn_container">
+					<button type="submit" class="btn_register p-2 px-5 mt-4">Save changes</button>
+					<button class="btn-danger p-2 px-5 m-4" (click)="deleteAccount()">Delete Account</button> 
+				</div>
+			</form>
+			<form ngNativeValidate class="form-group" #set="ngForm" (ngSubmit)="onUploadAvatar(set.value)">
+				<div class="form-group mb-3">
+					<label for="avatar">Avatar</label>
+					comment this line ---- requiredFileType="image/png"
+						<input
+							#imageInput
+							name="avatar"
+							type="file"
+							accept="image/*"
+							
+							class="form-control image-upload-container"
+						/>
+				</div>
+				<button type="submit" class="btn_register p-2 px-5 mt-4">Upload avatar</button>
+
+			</form>
+		  </div>
+	</div>
+</div>
+ -->

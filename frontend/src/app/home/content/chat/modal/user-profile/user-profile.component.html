@@ -1,0 +1,129 @@
+<div class="bg-img"></div>
+<div class="profile-ctn">
+	<div class="d-flex justify-content-end close-ctn" (click)="close()">
+		<div id="close">
+			<span class="fa fa-times"></span>
+		</div>
+	</div>
+	<div class="row content">
+		<div class="col-3 game">
+			<div class="text-center">
+				<div class="stats-ctn total">
+					<span class="fa fa-globe fa-2x"></span>
+					<h2 ><i>200</i></h2>
+				</div>
+				<div class="stats-ctn wins">
+					<span class="fa fa-trophy fa-2x"></span>
+					<h2 ><i>180</i></h2>
+				</div>
+				<div class="stats-ctn loses">
+					<span class="fa fa-heart-broken fa-2x"></span>
+					<h2 ><i>20</i></h2>
+				</div>
+			</div>
+		</div>
+		<div class="col-6 profile-info">
+			<img src="{{user.avatar}}" class="img-fluid ico_xxl mt-3" alt="">
+			<i><h1 class="mt-3 mb-0">{{user.nickname}}</h1></i>
+			<div class="status">
+				<h5 ><i>(In game)</i></h5>
+				<span class="fa fa-tv fa-2x p-2"><i><small> watch live</small></i></span>
+			</div>
+			<div class="row justify-content-center action-ctn">
+				<div class="col-4 me-4" data-toggle="tooltip" title="Chat with {{user.nickname}}" (click)="startChat()">
+					<span class="fa fa-comment-dots fa-2x icon-btn" ></span>
+				</div>
+				<div class="col-4 me-4" data-toggle="tooltip" title="Play Pong with {{user.nickname}}" (click)="playPong()">
+					<span class="fa fa-table-tennis  fa-2x icon-btn"></span>
+				</div>
+				<div class="col-4" (click)="handleFriendship()">
+					<span *ngIf="!isFriend()" class="fa fa-user-plus fa-2x icon-btn" title="Start friendship with {{user.nickname}}" ></span>
+					<span *ngIf="isFriend()" class="fa fa-user-times fa-2x icon-btn" title="Break friendship with {{user.nickname}}" ></span>
+				</div>
+
+			</div>
+		</div>
+		<div class="col-3 stats">
+			<div class="text-center">
+				<div class="stats-ctn rank">
+					<span class="fa fa-crown fa-2x"></span>
+					<h2 ><i>101</i></h2>
+				</div>
+				<div class="stats-ctn points">
+					<span>PTS</span>
+					<h2 ><i>1800</i></h2>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+
+	<!-- <div class="">
+
+		<div class="row m-0">
+			<div class="col-4">
+				<img src="{{user.avatar}}" class="img-fluid ico_xxl m-4" alt="">
+			</div>
+			<div class="col-7 mb-2">
+				<div class="d-flex justify-content-center" style="height: 30%; align-items: center;">
+					<div class="text-center my-2">
+							<i><h1>{{user.nickname}}</h1></i>
+					</div>
+				</div>
+				<div class="d-flex justify-content-center" style="height: 15%; align-items: center;">
+					<div class="row table-title h-100 w-100 mb-2">
+						<div class="col-4 d-flex justify-content-center border-right border-bottom border-top  border-light pt-1" style="height: 100%; align-items: center;"><h4> Rank</h4></div>
+						<div class="col-4 d-flex justify-content-center border-right border-bottom border-top  border-light pt-1" style="height: 100%; align-items: center;"><h4> Points</h4></div>
+						<div class="col-4 d-flex justify-content-center border-bottom border-top  border-light pt-1" style="height: 100%; align-items: center;"><h4> Games</h4></div>
+		
+					</div>
+				</div>
+				<div class="d-flex justify-content-center " style="height: 55%; align-items: center;">
+					<div class="row h-100 w-100 mb-2">
+						<div class="col-4 table-content d-flex justify-content-center border-right border-light rank" style="height: 100%; align-items: center;">
+							<h1>101</h1>
+						</div>
+						<div class="col-4 table-content d-flex justify-content-center border-right border-light points" style="height: 100%; align-items: center;">
+							<h1>100K</h1>
+						</div>
+						<div class="col-4 p-0 m-0">
+							<div class="row m-0 pt-1 table-content justify-content-center border-bottom border-light" style="height: 40%; align-items: center;">
+								<h2 class="text-center total">200</h2>
+							</div>
+							<div class="d-flex justify-content-center table-content" style="height: 60%; align-items: center;">
+								<div class="d-flex justify-content-center border-right border-light" style="height: 100%; width: 50%; align-items: center;">
+									<h3 class="text-center wins">180</h3>
+								</div>
+								<div class="d-flex justify-content-center " style="height: 100%; width: 50%; align-items: center;">
+									<h3 class="text-center loses">20</h3>
+								</div>
+							</div>
+							
+						</div>
+		
+					</div>
+				</div>
+				
+				
+			</div>
+			<div class="col-1 p-0">
+				<div class="h-100 action-ctn">
+					<div class="d-flex justify-content-center" style="height: 33%; align-items: center;">
+						<span class="fa fa-comment-dots fa-lg icon-btn" ></span>
+					</div>
+					<div class="d-flex justify-content-center" style="height: 33%; align-items: center;">
+						<span class="fa fa-table-tennis  fa-lg icon-btn"></span>
+					</div>
+					<div class="d-flex justify-content-center" style="height: 33%; align-items: center;">
+						<span class="fa fa-user-plus fa-lg icon-btn"></span>
+						<span class="fa fa-user-times fa-lg icon-btn"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> -->
+		
+	<!-- <span class="fa fa-trophy"></span>
+	<span class="fa fa-heart-broken"></span>
+	<span class="fa fa-crown"></span> -->

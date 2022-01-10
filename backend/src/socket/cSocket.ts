@@ -1,3 +1,4 @@
+import { FriendEntity } from "src/home/friends/friend.entity";
 import { UserEntity } from "src/home/user/user.entity";
 import { User } from "src/home/user/userClass";
 import { UserPublicInfoI } from "src/home/user/userI";

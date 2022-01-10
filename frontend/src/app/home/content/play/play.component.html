@@ -1,8 +1,6 @@
+<p>play works!</p>
+<!-- if user not in game, show button to search game-->
+<button *ngIf="!playPreference.in_game" (click)="search_game()">Search Game</button>
+<button (click)="winplayer1()">win player1 </button> <!-- only for testing -->
+<button (click)="winplayer2()">win player2 </button>
 
-<canvas #game width="400" height="300" style="border: 1px solid black"></canvas>
-<p>
-    <button (click)="move('right')">Right</button>
-    <button (click)="move('left')">Left</button>
-    <button (click)="move('up')">Up</button>
-    <button (click)="move('down')">Down</button>
-</p>

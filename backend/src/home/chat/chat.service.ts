@@ -1,392 +1,613 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Like, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
-import { ChatEntity } from "./chat.entity";
-import { MessageEntity } from "./message.entity";
-import { Response } from 'src/shared/response/responseClass';
 import { UserService } from "../user/user.service";
-import { SessionService } from "src/session/session.service";
-import { UserPublicInfoI } from "../user/userI";
-import { ChatUsersEntity } from "./chatUsers.entity";
 import { User } from "../user/userClass";
+import { UserPublicInfoI } from "../user/userI";
+import { ChatEntity } from "./entities/chat.entity";
+import { ChatI, ChatInfoI, ChatPasswordUpdateI, ChatRoomI, ChatUserI, MessagesI, NewMessageI, RoomKeyI, SearchRoomI } from "./iChat";
+import { MessageEntity } from "./entities/message.entity";
+import { ChatUsersEntity } from "./entities/chatUsers.entity";
+import { Response } from "src/shared/response/responseClass";
+import { Exception } from "src/shared/utils/exception";
+import { eChatType } from "./eChat";
+import { ActiveRoomEntity } from "./entities/activeRoom.entity";
+import { SessionService } from "src/session/session.service";
+import { HashService } from "src/shared/hash/hash.service";
+import { UnreadMessageEntity } from "./entities/unread-message.entity";
 
 @Injectable()
 export class ChatService {
-	private chatData = new ChatEntity();
-	
-	constructor(
-		@InjectRepository(ChatEntity) private chatRepository: Repository<ChatEntity>,
-		@InjectRepository(MessageEntity) private messageRepository: Repository<MessageEntity>,
-		@InjectRepository(ChatUsersEntity) private chatUserRepository: Repository<ChatUsersEntity>,
-		private sessionService: SessionService,
-		//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
-		@Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
-		private userService: UserService,
-	) { }
+	chatName: string;
+	constructor(@InjectRepository(ChatEntity)
+				private chatRepository: Repository<ChatEntity>,
+				@InjectRepository(ChatUsersEntity)
+				private chatUserRepository: Repository<ChatUsersEntity>,
+				@InjectRepository(MessageEntity)
+				private msgRepository: Repository<MessageEntity>,
+				@InjectRepository(ActiveRoomEntity)
+				private activeRoomRepository: Repository<ActiveRoomEntity>,
+				@InjectRepository(UnreadMessageEntity)
+				private unreadedMsgRepository: Repository<UnreadMessageEntity>,
+				//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
+				@Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
+				private userService: UserService,
+				private sessionService: SessionService,
+				private hashService: HashService){}
 
-	async queryOneChat(users: any[]): Promise<any>{
-		console.log("members of body: ", users);
-		return (await this.chatRepository.findOne({
-			where: [
-				{name_chat: users[0].id + '_' + users[1].id}, //Or expresion searching for prevous existing chat OneOnOne
-				{name_chat: users[1].id + '_' + users[0].id}]
-			}));
+	async onStart(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI): Promise<ChatRoomI>
+	{
+		try {
+			const room = await this.findChatRoom(me, members, chatInfo);
+			await this.activateOneUserRoom(me, room);
+			const chatMe = await this.chatUserRepository.findOne({
+				relations: ['user', "unreadMessages"],
+				where: {user: me.id}});
+			return (this.parseChatRoom(room, chatMe));
+		} catch (error) {
+			return (<ChatRoomI>{});
+		}
 	}
 
-	async saveChatGroup(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
+	async getActiveChatRooms(me: UserEntity){
+		var ret: ChatRoomI[] = [];
 		try {
-			if (body.chat_type == "oneToOne") {
-				if (await this.queryOneChat(body.members) !== undefined){
-					return (Response.makeResponse(200, { ok: "Chat oneOnOne was restored" }));
-				}
-				this.chatData.name_chat = body.members[0].id + '_' + body.members[1].id;
-				console.log("name_chat: ", this.chatData.name_chat);
-			}
-			else
-				this.chatData.name_chat = body.name_chat;
-			if (await this.chatRepository.findOne({where: {name_chat: this.chatData.name_chat}}) !== undefined)
-				return (Response.makeResponse(600, { error: 'Name chat already exists'}));
-			this.chatData.type_chat = body.chat_type;
-			//this.chatData.password = body.password; // this must be created in the frontend -- undefined if is one to one after adding friendship?
-			//this.chatData.protected = body.protected;
-			this.chatData.password = "";
-			this.chatData.protected = false;
-			const ret = await this.chatRepository.insert(this.chatData);
-			body.members.forEach(async user => {
-				let usr = await this.userService.findByNickname(user.nickname);
-				if (usr !== undefined && ret !== undefined)
-					await this.chatUserRepository.insert({owner: true,  user: usr, chat: this.chatData});
+			const active: ActiveRoomEntity[] = await this.activeRoomRepository.find({
+				relations: ['user', 'chat', 'chat.members', "chat.members.user", "chat.members.unreadMessages"],
+				where: { user: me.id}
 			});
-			return (Response.makeResponse(200, { ok: "Successful operation" }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'unable to create' }));
-		}
-	}
-
-	/*
-	* When a message comes from the frontend chat, we need to check if emiter and receiver has a chat oneToOne created
-	* if is correct, we save the message, chatID which both user belong and the id of the user propietary
-	*/
-	async saveMessage(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		var eMsg = new MessageEntity();
-		try {
-
-			const session = await this.sessionService.findSessionWithRelation(token);
-			const friend = await this.userService.findByNickname(body.receiver);
-			eMsg.message = body.message;
-			eMsg.user = session.userID;
-			eMsg.date = body.timestamp;
-			var name_chat = session.userID.id + '_' + friend.id;
-			var name_chat2 = friend.id + '_' + session.userID.id;
-
-			const chat = await this.chatRepository.findOne({
-				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
-			}); // this is an OR
-			const tmp = await this.chatRepository.find({relations: ['chats', 'chats.user']});
-			console.log("length of tmp: ", tmp.length);
-			
-			for (var i = 0; i < tmp.length; i++) {
-				const room = tmp[i];
-				console.log(room.id);
-				console.log("length of chats: ", room.chats.length);
-				for(var j = 0; j < room.chats.length; j++){
-					let usr = room.chats[j].user;
-					console.log("nickName: ", usr.nickname);					
-				}
-				console.log("----------------------------------------------------------------");
-			}
-
-			eMsg.chat = chat;
-			const ret = await this.messageRepository.save(eMsg);
-			return (Response.makeResponse(200, { ok: "Message has been saved" }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to save message' }));
-		}
-	}
-
-	async saveGroupMessage(body:any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		var eMsg = new MessageEntity();
-		console.log("Data from channel body save group message: ", body);
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			eMsg.message = body.message;
-			eMsg.user = session.userID;
-			eMsg.date = body.timestamp;
-			const chat = await this.chatRepository.findOne({
-				where: { name_chat: body.receiver.name_chat }
-			});
-			eMsg.chat = chat;
-			const ret = await this.messageRepository.save(eMsg);
-			return (Response.makeResponse(200, { ok: "Message has been saved" }));
-		}
-		catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to save message' }));
-		}
-	}
-
-	async getMessages(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			const friend = await this.userService.findByNickname(body.receiver);
-			const name_chat = session.userID.id + '_' + friend.id;
-			const name_chat2 = friend.id + '_' + session.userID.id;
-			const chat = await this.chatRepository.findOne({
-				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
-			}); // this is an OR
-			// find all messages from chat with relations
-			// get messages from chat in order 
-			const messages = await this.messageRepository.find({
-				relations: ['user'],
-				where: { chat: chat },
-				order: { date: "ASC" }
-			});
-			//const messages = await this.messageRepository.find({ relations: ['user'], where: { chat: chat } }); // old cause the order was not working
-			//console.log("Messages in backend getMessages(): ", messages);
-			return (Response.makeResponse(200, { messages: messages }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
-		}
-	}
-
-	async getGroupMessages(body : any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			const chat = await this.chatRepository.findOne({
-				where: { name_chat: body.channel.name_chat }
-			});
-			const messages = await this.messageRepository.find({
-				relations: ['user'],
-				where: { chat: chat },
-				order: { date: "ASC" }
-			});
-			return (Response.makeResponse(200, { messages: messages }));
-		}
-		catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get messages' }));
-		}
-	}
-
-	async getChatGroups(header: any): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			//find all chats where type_chat = group 
-			const chats = await this.chatRepository.find({ where: [{ type_chat: 'public' }, { type_chat: 'private' }]});
-			return (Response.makeResponse(200, { chats: chats }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
-		}
-	}
-	async getOwnChannels(header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			const chatUsers = await this.chatUserRepository.find({relations: ['chat'], where: {user: session.userID}});
-			var chats: any[] = [];
-			for (var i = 0; i < chatUsers.length; i++)
-				chatUsers[i].chat.type_chat != 'oneToOne'? chats.push(chatUsers[i].chat) : null;
-			return (Response.makeResponse(200, { chats: chats }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
-		}
-	}
-
-	async getChatUsers(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-
-			var retUsers: UserPublicInfoI[] = [];
-			
-			const chat = await this.chatRepository.findOne({where: { id: body.id}});
-			
-			const users = await this.chatUserRepository.find({relations: ['user'], where: {'chat': chat}});
-			
-			for (var i = 0; i < users.length; i++)
-				retUsers.push(User.getPublicInfo(users[i].user));
-			
-			return (Response.makeResponse(200, { users: retUsers }));
-		} catch (error) {
-			console.log("Error.---");
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
-		}
-		
-	}
-
-	async blockUser(body: any, header: string){
-		const token = header.split(' ')[1];
-		console.log("body: ", body);
-		var users: any[] = [];
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			/* await members.forEach( async element => { */
-			for (var i = 0; i < body.members.length; i++)
-				users.push(await this.userService.findByNickname(body.members[i].nickname));
-			const ret = await this.queryOneChat(users);
-			//console.log("members to ban: ", ret);
-			if (ret !== undefined)
+			for (var i = 0; i < active.length; i++)
 			{
-				if (body.isBlocked == false)
-					await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: true});
-				else
-					await this.chatUserRepository.update({user: users[1], chat: ret} , {muted: false});
-				return (Response.makeResponse(200, { ok: "User has been banned" }));
+				var chatUser = active[i].chat.members.find(item => item.user.id == me.id);
+				ret.push(this.parseChatRoom(active[i].chat, chatUser));
+			}
+			return (ret);
+		} catch (error) {
+			return (ret);
+		}
+	}
+
+	async getAllMessages(data:any){
+		const msg = await this.msgRepository.find({
+			relations : ["chat", "owner"],
+			where: {chat : data.room.id},
+			order: {id : "ASC"}
+		}) 
+		return (this.parseMessages(msg));
+	}
+	async newMessage(owner: UserEntity, data: any): Promise<NewMessageI>
+	{
+		try {
+			const room = await this.getChatRoomById(data.room.id);
+			const userEntities = this.chatUserToUserEntity(room.members);
+			await this.activateUserRooms(userEntities, room);
+			const msgEntity = await this.saveMsg(room, owner, data.msg);
+			await this.markAsUnreaded(msgEntity)
+			return (<NewMessageI>{
+				emitTo : userEntities,
+				message : this.parseOneMessage(msgEntity)
+			});
+		} catch (error) {
+			return (<NewMessageI>{});
+		}
+	}
+	
+	async markAsUnreaded(msgEntity: MessageEntity): Promise<void>
+	{
+		const members = msgEntity.chat.members;
+		try {
+			for (let i = 0; i < members.length; i++) {
+				const unreadedMessage = new UnreadMessageEntity();
+				const member = members[i];
+				if (member.user.id == msgEntity.owner.id)
+					continue ;
+				unreadedMessage.message = msgEntity;
+				unreadedMessage.chatUser = member;
+				member.unreadMessages.push(unreadedMessage);
+				await this.chatUserRepository.save(member)
+				await this.unreadedMsgRepository.save(unreadedMessage);
 			}
 		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to ban user' }));
+			console.log(error)
+		}
+	}
+	
+	async markAsReaded(user: UserEntity, room: ChatRoomI): Promise<number>
+	{
+		try {
+			var chatUser = await this.chatUserRepository.findOne({
+				relations: ["room", "user", "unreadMessages"],
+				where: {
+					room:{
+						id : room.id
+					},
+					user: user.id
+				}
+			})
+			if (chatUser != undefined)
+			{
+				await this.unreadedMsgRepository.remove(chatUser.unreadMessages);
+				chatUser.unreadMessages = [];
+				chatUser = await this.chatUserRepository.save(chatUser);
+			}
+			return (await this.getUnreadedMsg(user));
+		} catch (error) {
+			console.log(error)
+			return (0);
+		}
+	}
+	async getUnreadedMsg(user: UserEntity): Promise<number>
+	{
+		var unreaded = 0;
+		try {
+			var chatUsers = await this.chatUserRepository.find({
+				relations: ["user", "unreadMessages"],
+				where: {user : user.id}
+			})
+			if (chatUsers != undefined)
+				for (let i = 0; i < chatUsers.length; i++) {
+					unreaded += chatUsers[i].unreadMessages.length;
+				}
+			return (unreaded);
+		} catch (error) {
+			console.log(error)
+			return (0);
 		}
 	}
 
-	async iAmBlocked(friend: any, header: string){
+	async getChatRoomById(roomId: number): Promise<ChatEntity | undefined>
+	{
+		try {
+			const room = await this.chatRepository.findOne({
+				relations: ["members", "members.user", "members.unreadMessages"],
+				where : {id : roomId}
+			});
+			return (room);
+		} catch (error) {
+			return (undefined);
+		}
+	}
+
+	async deleteRoom(id: number): Promise<void> {
+		const room = await this.chatRepository.findOne({where: {id: id}});
+		await this.chatRepository.delete(room);
+	}
+	async leaveRoom(data: ChatRoomI): Promise<ChatEntity | undefined>{
+
+		try {
+			const room = await this.chatRepository.findOne({
+				relations: ["members", "members.user"],
+				where: {id : data.id}
+			}) 
+			var userToDelete = room.members.find(item => item.user.login == data.me.login);
+			room.members = room.members.filter(item => item != userToDelete);
+			if (room.members.length == 0){
+				await this.deleteRoom(data.id);
+				return (undefined);
+			}
+			if (userToDelete.owner){
+				var newOwner = room.members.find(item => !item.banned && !item.muted)
+				if (newOwner == undefined)
+					if ((newOwner = room.members.find(item => !item.banned)) == undefined)
+						newOwner = room.members[0];
+				newOwner.admin = true;
+				newOwner.owner = true;
+				newOwner.banned = false;
+				newOwner.muted = false;
+				await this.chatUserRepository.save(newOwner);
+			}
+			await this.deActivateRoom(userToDelete.user, room);
+			await this.chatUserRepository.delete(userToDelete);
+			return (room);
+		} catch (error) {//create response
+			console.log(error)
+			return (undefined);
+		}
+	}
+
+	async onBlockUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
+		const roomEntity = await this.getChatRoomById(room.id);
+		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
+		chatUser.banned = chatUser.banned ? false : true;
+		const ret = await this.chatUserRepository.save(chatUser);
+		return (roomEntity);
+	}
+	async onMuteUser(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity>{
+		const roomEntity = await this.getChatRoomById(room.id);
+		const chatUser = roomEntity.members.find(item => item.user.login == user.login);
+		chatUser.muted = chatUser.muted ? false : true;
+		await this.chatUserRepository.save(chatUser);
+		return (roomEntity);
+	}
+
+	private async findChatRoom(me: UserEntity, members: UserPublicInfoI[], chatInfo: ChatI):Promise<ChatEntity>{
+		try {
+			var room: ChatEntity;
+			var users = await this.infoToUserEntities(members);
+			users.push(me);
+			users = users.sort((a,b)=> { return a.id > b.id ? 1 : -1});
+			this.setChatName(users);
+			if (chatInfo.type == eChatType.DIRECT)
+			{
+				room = await this.chatRepository.findOne({
+					relations: ["members", "members.user"],
+					where: {name: this.chatName}
+				});
+				if (room == undefined){
+					const roomInfo = this.newChatInfo(this.chatName, chatInfo.type);
+					const chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
+					room = await this.newChatRoom(chatMembers, roomInfo);
+				}
+			}
+			return (room);
+		} catch (error) {
+			console.log(error);
+			return (<ChatEntity>{});
+		}
+	}
+	private async newChatRoom(members: ChatUsersEntity[], chatInfo: ChatI): Promise<ChatEntity | undefined>
+	{
+		try {
+			var room = new ChatEntity();
+
+			room.members = members;
+			room.name = chatInfo.name;
+			room.type = chatInfo.type;
+			if (chatInfo.password != undefined)
+				room.password = this.hashService.hash(chatInfo.password);
+			room.protected = chatInfo.protected;
+			
+			if ((room = await this.chatRepository.save(room)) === undefined) //warn: if any issue change to insert
+				return (undefined);
+			for (let i = 0; i < room.members.length; i++)
+			{
+				room.members[i].room = room;
+				await this.chatUserRepository.save(room.members[i]); //warn: if any issue change to insert
+			}
+			return (room);
+		} catch (error) {
+			return (undefined);
+		}
+	}
+	 async addChanel(channelInfo: ChatI, header: string): Promise<any> {
 		const token = header.split(' ')[1];
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
-			const friendObj = await this.userService.findByNickname(friend.nickname);
-			const name_chat = session.userID.id + '_' + friendObj.id;
-			const name_chat2 = friendObj.id + '_' + session.userID.id;
-			const chat = await this.chatRepository.findOne({
-				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			const check = await this.chatRepository.findOne({
+				where: { name: channelInfo.name }
 			});
-			const chatUser = await this.chatUserRepository.findOne({ where: { user: session.userID, chat: chat } });
-			return (Response.makeResponse(200, { blocked: chatUser.muted }));		}
-		catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to check friend' }));
+			if (check !== undefined)
+				return (Response.makeResponse(600, { error: "Channel already exists" }));
+
+			var users: UserEntity[] = await this.infoToUserEntities(channelInfo.members);
+			var chatMembers =  this.getChatUserEntities(users, this.newChatUserInfo(false));
+			chatMembers[0].owner = true;
+			chatMembers[0].admin = true;
+			chatMembers[0].hasRoomKey = true;
+			const room = await this.newChatRoom(chatMembers, channelInfo);
+			if ( room === undefined ) 
+				return (Response.makeResponse(500, { error: "can't creat channel" }));	
+			await this.activateUserRooms(this.chatUserToUserEntity(chatMembers), room);
+
+			var chatUser = room.members.find(member => member.user.id == session.userID.id);
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));
+		} catch (error) {
+			console.log(error)
+			return (Response.makeResponse(500, { error: "can't creat channel" }));
 		}
 	}
-
-	async friendIsBlocked(friend: any, header: string) {
-		const token = header.split(' ')[1];
+	async unlockRoom(key: RoomKeyI, header: string): Promise<any>{
+		const token = header.split(' ')[1]; 
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
-			const friendObj = await this.userService.findByNickname(friend.nickname);
-			const name_chat = session.userID.id + '_' + friendObj.id;
-			const name_chat2 = friendObj.id + '_' + session.userID.id;
-			const chat = await this.chatRepository.findOne({
-				where: [{ name_chat: name_chat }, { name_chat: name_chat2 }]
-			});
-			const chatUser = await this.chatUserRepository.findOne({ where: { user: friendObj, chat: chat } });
-			return (Response.makeResponse(200, { blocked: chatUser.muted }));
-		}
-		catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to check friend' }));
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+
+			const room = await this.getChatRoomById(key.id);
+			if (!await this.hashService.compare(key.password, room.password))
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+
+			var chatUser = room.members.find(member => member.user.id == session.userID.id);
+			if (chatUser == undefined)
+				return (Response.makeResponse(500, { error: "can't unlock room" }));
+				chatUser.hasRoomKey = true;
+				chatUser = await this.chatUserRepository.save(chatUser);
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));	
+		} catch (error) {
+			console.log("errro");
+			return (Response.makeResponse(500, { error: "can't unlock room" }));
+
 		}
 	}
-
-	async updatePassChannel(channelInfo: any, header: string): Promise<any> {
+	async updatePassChannel(channelInfo: ChatPasswordUpdateI, header: string): Promise<any> {
 		const token = header.split(' ')[1]; //must check is session is active before continue
 		try {
-			const register = await this.chatRepository.findOne({where: {name_chat: channelInfo.name_chat}}); 
-			const ret = await this.chatRepository.update(register, {password: channelInfo.password, protected: channelInfo.protected});//maybe we can solve this in one call: where id or chatName;
-			return (Response.makeResponse(200, { ok: "Successful operation", result: ret }));
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			var room = await this.getChatRoomById(channelInfo.chatId)
+			if (channelInfo.protected &&  await this.hashService.compare(channelInfo.password, room.password))
+				return (Response.makeResponse(600, {error : "Can't use same password"}));
+			if ((room.protected = channelInfo.protected) && channelInfo.password != undefined)
+				room.password =  this.hashService.hash(channelInfo.password);
+			if (!room.protected)
+				room.password = '';
+			room = await this.chatRepository.save(room);
+			var chatUser = room.members.find(member => member.user.id == session.userID.id); //owner
+			var members = room.members.filter(member => member.user.id != chatUser.user.id); //members
+			members = members.map(item => ({ ...item, hasRoomKey: false})); //all members lost room key
+			await this.chatUserRepository.save(members); //update members
+			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser))); //return parsed room
 		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'unable to create' }));
+			return (Response.makeResponse(410, {error: "Cant change password" }));
 		}
 	}
-
-	async updateMembersChannel(content: any, header: string): Promise<any> {
-		const token = header.split(' ')[1]; //must check is session is active before continue
+	async addMemberToChat(room: ChatRoomI, user: UserPublicInfoI): Promise<ChatEntity | undefined>
+	{
 		try {
-			console.log("ChannelInfo content: ", content);
-			const register = await this.chatRepository.findOne({where: {name_chat: content.channelInfo.name_chat}});
-			console.log("Chat to modify their members: ", register);
-			content.channelInfo.members.forEach(element => {
-			//	this.chatUserRepository.save({where: {}});
-				console.log("User to add: ", element);
-			});
-			//if member exist on chat_user and is selected to be delete, we should delete it
-			//if member is a new member of the group, we should insert
-			//two member object have to come in the body, newMembers[] deleteMembers[]
-			//iterate them en delete or insert when have to. 
-			return (Response.makeResponse(200, { ok: "Successful operation" }));
+			var chatRoom = await this.getChatRoomById(room.id);
+			if (chatRoom.members.find(member => member.user.login == user.login) != undefined)
+				return (undefined)
+			var chatUser = this.getChatUserEntity(user, this.newChatUserInfo(false));
+			chatUser.room = chatRoom;
+			chatUser.user = await this.userService.findByLogin(user.login);
+			chatUser = await this.chatUserRepository.save(chatUser);
+			chatRoom.members.push(chatUser);
+			chatRoom = await this.chatRepository.save(chatRoom)
+			await this.activateUserRooms([chatUser.user], chatRoom);
+			return (await this.getChatRoomById(chatRoom.id));
 		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'unable to create' }));
+			console.log("error",error);
+			return (undefined)
 		}
 	}
 
-	async findChatByName(chat_name: string): Promise<any> {
+	private searchRoomParser(roomEntity: ChatEntity): SearchRoomI {
+		return (<SearchRoomI>{
+			id: roomEntity.id,
+			name: roomEntity.name,
+			type: roomEntity.type,
+			protected: roomEntity.protected
+		});
+	}
+
+	private searchRoomsParser(roomEntity: ChatEntity[]): SearchRoomI[] {
+		var rooms: SearchRoomI[] = [];
+		for (var i = 0; i < roomEntity.length; i++)
+			rooms.push(this.searchRoomParser(roomEntity[i]));
+		return (rooms);
+	}
+
+	async searchRoom(value: any, header: string): Promise<any>{
+		const token = header.split(' ')[1];
 		try {
-			const chat = await this.chatRepository.findOne({ where: { name_chat: chat_name } });
-			return (chat);
+			var myRooms: SearchRoomI[] = [];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			const onwRooms = await this.chatUserRepository.find({
+				relations: ['room', "unreadMessages"],
+				where: [{ user: session.userID, room: {name: Like(value + "%")} }]
+			})
+			for (var i = 0; i < onwRooms.length; i++) {
+				if (onwRooms[i].room.type == eChatType.PRIVATE)
+					myRooms.push(this.searchRoomParser(onwRooms[i].room));
+			}
+			const rooms = await this.chatRepository.find({where: { type: eChatType.PUBLIC, name: Like(value + "%")}});
+			myRooms = myRooms.concat(this.searchRoomsParser(rooms));
+			return (Response.makeResponse(200, myRooms ));
 		} catch (error) {
 			if (error.statusCode == 410)
 				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to get chat' }));
+			return (Response.makeResponse(500, { error: 'Unable to get chats' }));
 		}
 	}
 
-	async isMuted(body: any, header: string): Promise<any> {
+	async joinRoom(room: any, header: string): Promise<any> {
 		const token = header.split(' ')[1];
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
-			const chat = await this.chatRepository.findOne({ where: { name_chat: body.channel.name_chat } });
-			const chatUser = await this.chatUserRepository.findOne({ where: { user: session.userID, chat: chat } });
-			return (Response.makeResponse(200, { muted: chatUser.muted }));
-		}
-		catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to check if user muted' }));
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+				var chatRoom = await this.getChatRoomById(room.id);
+				var chatUser = await this.chatUserRepository.findOne({
+					relations: ['room', 'user', 'unreadMessages'],
+					where: [{ user: session.userID, room: { id: room.id } }]
+				});
+				if (chatUser != undefined)
+				{
+					await this.activateOneUserRoom(session.userID, chatRoom);
+					return (Response.makeResponse(200, this.parseChatRoom(chatRoom, chatUser)));
+				}
+			chatRoom = await this.addMemberToChat(room, session.userID);
+			chatUser = chatRoom.members.find(item => item.user.login == session.userID.login);
+			if (chatUser == undefined)
+				return (Response.makeResponse(500, { error: 'Unable to join chat' }));
+			return (Response.makeResponse(200, this.parseChatRoom(chatRoom, chatUser)));
+		} catch (error) {
+			return (Response.makeResponse(500, { error: 'Unable to join chat' }));
 		}
 	}
 
-	async muteUserGroup(body: any, header: string): Promise<any> {
-		const token = header.split(' ')[1];
-		try {
-			const session = await this.sessionService.findSessionWithRelation(token);
-			const user = await this.userService.findByNickname(body.user.nickname);
-			const chat = await this.chatRepository.findOne({ where: { name_chat: body.channel.name_chat } });
-			const chatUser = await this.chatUserRepository.findOne({ where: { user: user, chat: chat } });
-			if (chatUser.muted == false)
-				await this.chatUserRepository.update({ user: user, chat: chat }, { muted: true });
-			else
-				await this.chatUserRepository.update({ user: user, chat: chat }, { muted: false });
-			return (Response.makeResponse(200, { ok: "User has been muted" }));
-		} catch (error) {
-			if (error.statusCode == 410)
-				return (error);
-			return (Response.makeResponse(500, { error: 'Unable to mute user' }));
+	async changeUserRole(roomId: number, login: string): Promise<ChatEntity> {
+		const room = await this.getChatRoomById(roomId);
+		const chatUser = room.members.find(item => item.user.login == login);
+		if (chatUser.owner)
+			return (null);
+		chatUser.admin ? (chatUser.admin = false) : (chatUser.admin = true);
+		await this.chatUserRepository.save(chatUser);
+		return (room);
+	}
+
+	private chatUserToUserEntity(chatUsers: ChatUsersEntity[]){
+		let users: UserEntity[] = [];
+		for (let i = 0; i < chatUsers.length; i++) {
+			const element = chatUsers[i];
+			users.push(element.user);
 		}
+		return (users);
+	}
+	getChatUserEntities(members: UserPublicInfoI[], info: ChatUserI): ChatUsersEntity[]{
+		var ret: ChatUsersEntity[] = []
+		for (let i = 0; i < members.length; i++)
+			ret.push(this.getChatUserEntity(members[i], info));
+		return (ret);
+	}
+	getChatUserEntity(member: UserPublicInfoI, info: ChatUserI){
+		return (<ChatUsersEntity>{
+			user: member,
+			owner: info.owner
+		})
+	}
+	private async infoToUserEntities(members: UserPublicInfoI[]): Promise<UserEntity[]>
+	{
+		var entities: UserEntity[] = [];
+		try {
+			for (let i = 0; i < members.length; i++) {
+				const login = members[i].login;
+				const user = await this.userService.findByLogin(login);
+				entities.push(user);
+			}
+			return (entities);
+		} catch (error) {
+			return (entities);
+		}
+	}
+	private  chatUserToUserInfo(members: ChatUsersEntity[]): UserPublicInfoI[]
+	{
+		var userList: UserPublicInfoI[] = [];
+		try {
+			for (let i = 0; i < members.length; i++) {
+				const chatUser = members[i];
+				userList.push(User.getPublicInfo(chatUser.user));
+			}
+			return (userList);
+		} catch (error) {
+			return (userList);
+		}
+	}
+
+	async saveMsg(room: ChatEntity, owner: UserEntity, msg: string){
+		var msgEntity: MessageEntity = <MessageEntity>{
+			owner : owner,
+			chat : room,
+			date : new Date().toLocaleString(),
+			message : msg
+		}
+		return (await this.msgRepository.save(msgEntity));
+	}
+
+
+	parseChatRoom(chatRoom: ChatEntity, me: ChatUsersEntity): ChatRoomI{
+
+		var parsed: ChatRoomI = <ChatRoomI>{};
+		parsed.id = chatRoom.id;
+		parsed.me = User.getPublicInfo(me.user);
+		parsed.members = this.chatUserToUserInfo(chatRoom.members.filter(member => member.user.id != me.user.id));
+		parsed.onlineStatus = (parsed.members.find(usr => usr.online == true) != undefined);
+		parsed.owner = me.owner;
+		parsed.admin = me.admin;
+		parsed.imBanned = me.banned;
+		parsed.imMuted = me.muted;
+		parsed.muted = this.chatUserToUserInfo(chatRoom.members.filter(member => member.muted));
+		parsed.banned = this.chatUserToUserInfo(chatRoom.members.filter(member => member.banned));
+		parsed.admins = this.chatUserToUserInfo(chatRoom.members.filter(member => member.admin));
+		parsed.type = chatRoom.type;
+		parsed.protected = chatRoom.protected;
+		parsed.hasRoomKey = me.hasRoomKey;
+		if (me.unreadMessages != undefined)
+			parsed.unreadMsg = me.unreadMessages.length;
+		if (chatRoom.type != eChatType.DIRECT)
+		{
+			parsed.name = chatRoom.name;
+			parsed.ownerInfo = User.getPublicInfo(chatRoom.members.find(item => item.owner).user);
+		}
+		else
+		{
+			parsed.ownerInfo = <UserPublicInfoI>{};
+			parsed.img = parsed.members[0].avatar;
+			parsed.name = parsed.members[0].nickname;
+		}
+		return (parsed);
+	}
+
+	private parseMessages(messages: MessageEntity[]){
+		var parsedMsgList: MessagesI[] = [];
+
+		for (let i = 0; i < messages.length; i++) {
+			var msgEntity = messages[i];
+			parsedMsgList.push(this.parseOneMessage(msgEntity));
+		}
+		return(parsedMsgList);	}
+
+	private parseOneMessage(msgEntity: MessageEntity){
+		var msg: MessagesI = {
+			id: msgEntity.id,
+			owner: User.getPublicInfo(msgEntity.owner),
+			message: msgEntity.message,
+			timeStamp: msgEntity.date,
+			chatId: msgEntity.chat.id
+		}
+		return(msg);	
+	}
+
+
+	setChatName(users: UserEntity[]){
+		this.chatName = '';
+		for (let i = 0; i < users.length; i++) {
+			this.chatName += users[i].id;
+			if (i < users.length - 1)
+				this.chatName += '_';	
+		}
+	}
+	newChatInfo(name: string, type: string, password?: string, lock?: boolean): any
+	{
+		return (<ChatI>{
+			name : name,
+			type : type,
+			password : password,
+			protected: lock
+		})
+	}
+	
+	newChatUserInfo(owner: boolean): any
+	{
+		return (<ChatUserI>{
+			owner: owner,
+			muted: false,
+			baned: false
+		})
+	}
+
+	private async activateOneUserRoom(user: UserEntity, chatRoom: ChatEntity): Promise<ActiveRoomEntity>{
+		var active: ActiveRoomEntity = new ActiveRoomEntity();
+		var ret: ActiveRoomEntity;
+		active.user = user;
+		active.chat = chatRoom;
+		const cmpActive = await this.activeRoomRepository.findOne({
+			relations: ['chat', 'user'],
+			where: {chat: chatRoom.id, user: user.id}
+		})
+		if (cmpActive == undefined)
+			ret = await this.activeRoomRepository.save(active);
+		return (ret);
+	}
+
+	private async activateUserRooms(users: UserEntity[], chatRoom: ChatEntity): Promise<void>{
+		for (var i = 0; i < users.length; i++) {
+			await this.activateOneUserRoom(users[i], chatRoom);
+		}
+	}
+
+	async deActivateRoom(user: UserEntity, chatRoom: ChatEntity): Promise<void>{
+		const active = await this.activeRoomRepository.findOne({
+			relations: ['user', 'chat'],
+			where: { user: user.id , chat: chatRoom.id}
+		});
+		if (active !== undefined)
+			await this.activeRoomRepository.delete(active);
 	}
 }
-
-/*
-	blocked muted
-
-	CASE OF ONETOONE
-	1: info ChatInfoUser -> blocked or muted
-	2: - if blocked: no retrieve data from db messages: -> show menssage user blocked
-	   - send messages aren't allowed -> X-send-X
-	2.2: user that blcoked friend -> can be blocked too => go to step 2
-*/

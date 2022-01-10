@@ -1,195 +1,157 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
-import { ChatService } from './chat.service';
 import { SocketService } from '../../socket.service';
-import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { ChatRoomI, SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
-import { Messages } from 'src/app/shared/class/cMessages';
-import { ChannelI } from 'src/app/shared/interface/iChat';
+import { ChatService } from './chat.service';
+import { eChat, eChatType } from 'src/app/shared/ft_enums';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChatModalComponent } from './modal/chat-modal.component';
+import { UserProfileComponent } from './modal/user-profile/user-profile.component';
 
 @Component({
-  selector: 'app-chat',
-  templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  selector: "app-chat",
+  templateUrl: "./chat.component.html",
+  styleUrls: ["./chat.component.css"],
 })
 export class ChatComponent implements OnInit {
-  @ViewChild('msgBox') msgBoxElement: ElementRef;
-  @Input() chatPreference: SharedPreferencesI
-  
-  identifier: string = "";
-  //length: number = 0;
-  showPrivate: boolean = true;
-  showChat: boolean = false;
-  showGroupChat: boolean = false;
-  friendIsBlocked: boolean = false;
-  imBlocked: boolean = false;
-  showMembers: boolean = false;
-  members: UserPublicInfoI[] = [];
-  channels: any[] = [];
-  channel: any;
-  messages: Messages[] = [];
-  //must retrieve messages from message DB to this array {message, from<userInfo>{}, to<userInfo>{}, timestamp}
-  message = "";
-  recievedMessage = "";
-	session = this.sQuery.getSessionToken();
-  receiver : UserPublicInfoI = <UserPublicInfoI>{};
-  friendChat: UserPublicInfoI = <UserPublicInfoI>{};
-  //create dictionary with nicknames as keys and one value that is a boolean
-  chatsBlocked: {[key: string]: boolean} = {};
-
-	constructor(
-    private chatService: ChatService,
+  @Input() chatPreference: SharedPreferencesI;
+  @Output() closeRoomEvent = new EventEmitter<any>();
+  directRooms: ChatRoomI[] = [];
+  privateRooms: ChatRoomI[] = [];
+  publicRooms: ChatRoomI[] = [];
+  showChannels: boolean = true;
+  showPublicChannels: boolean = true;
+  showPrivateChannels: boolean = true;
+  showDM: boolean = true;
+  showRoom = false;
+  messages: any[] = [];
+  session = this.sQuery.getSessionToken();
+  friends: UserPublicInfoI[] = [];
+  subscription: any;
+  prefSubscription: any;
+  constructor(
     private sQuery: SessionStorageQueryService,
-    private socketService: SocketService,
-  ){}
-  
-  ngOnInit(){
-    //for friend in chatPreference.friends fill chatsBlocked with false
-    this.chatPreference.friends.forEach(friend => {
-      this.chatsBlocked[friend.nickname] = false;
-    });
-    console.log("chatsBlocked: ", this.chatsBlocked);
-    this.socketService.chatFilter.subscribe(
-      (data : any) => {
-        if (data) {
-          console.log("data from subscribe: ", data);
-          this.messages.push(data);
-        }
-      }
-    );
-    this.socketService.chatBlockFilter.subscribe(
-      (data : any) => {
-        if (data != undefined) {
-          if (data.isBlocked == false)
-            this.chatsBlocked[data.members[0].nickname] = true;
-          else
-            this.chatsBlocked[data.members[0].nickname] = false;
-          /*if (data.isBlocked == false)
-            this.imBlocked = true;
-          else
-            this.imBlocked = false;*/
-        }
-      }
-    );
-    this.socketService.chatMuteFilter.subscribe(
-      (data : any) => {
-        if (data) {
-          console.log("data from subscribe: ", data);
+    private chatService: ChatService,
+    private modalService: NgbModal
+  ) {}
 
-        }
-      }
+  async ngOnInit() {
+	    this.subscription = this.chatService.chatEmiter.subscribe((data: any) => {
+		this.distinguishRooms();
+		this.chatService.chatFragmentEmmiter.emit(data);
+		if (data == undefined)
+			return;
+		if (data.room != undefined) 
+			this.selectChatRoom(data.room);
+		else if (data.onDestroy != undefined) 
+			this.closeRoom();
+		else if (data.close != undefined)
+		{
+			if (this.chatPreference.chat.active_room != undefined && 
+				this.chatPreference.chat.active_room.id == data.close.id && !data.close.owner && data.close.protected)
+				this.closeRoom()
+		}
+    });
+    this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
+    if (this.chatPreference.chat.active_room != undefined)
+      this.selectChatRoom(this.chatPreference.chat.active_room);
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    //this.prefSubscription.unsubscribe();
+  }
+  hideShowChannels() {
+    this.showChannels
+      ? (this.showChannels = false)
+      : (this.showChannels = true);
+  }
+  hideShowPublicChannels() {
+    this.showPublicChannels
+      ? (this.showPublicChannels = false)
+      : (this.showPublicChannels = true);
+  }
+
+  hideShowPrivateChannels() {
+    this.showPrivateChannels
+      ? (this.showPrivateChannels = false)
+      : (this.showPrivateChannels = true);
+  }
+  hideShowDM() {
+    this.showDM ? (this.showDM = false) : (this.showDM = true);
+  }
+  selectChatRoom(item: ChatRoomI) {
+	if (item.protected && !item.owner && !item.hasRoomKey)
+		return (this.openModal("protected", item));
+	this.chatPreference.chat.active_room = item;
+	this.showRoom = true;
+	this.chatService.chatFragmentEmmiter.emit({ changeRoom: item });
+  }
+  distinguishRooms() {
+    var rooms = this.chatPreference.chat.rooms;
+    this.directRooms = rooms.filter((room) => room.type == eChatType.DIRECT);
+    this.privateRooms = rooms.filter((room) => room.type == eChatType.PRIVATE);
+    this.publicRooms = rooms.filter((room) => room.type == eChatType.PUBLIC);
+  }
+  getPrivateRooms() {
+    return this.chatPreference.chat.rooms.filter(
+      (room) => room.img != undefined
     );
+  }
+  getGroupRooms() {
+    return this.chatPreference.chat.rooms.filter(
+      (room) => room.img == undefined
+    );
+  }
+  isSelected(room: ChatRoomI) {
+    return (
+      this.chatPreference.chat.active_room != undefined &&
+      room.id == this.chatPreference.chat.active_room.id
+    );
+  }
+  isMemberOnline(room: ChatRoomI) {
+    return room.onlineStatus;
+  }
+
+  closeRoom() {
+    this.showRoom = false;
+    this.closeRoomEvent.emit();
+    console.log("Close the chat.");
+  }
+
+  leaveChat(room: any){
+		console.log("Leaving....");
+		/* room.id, me*/
+		if (confirm("Are you sure you want to leave?")){
+      console.log("Leaving room comfirmed.");
+			this.chatService.emit(eChat.ON_LEAVE_ROOM, room);
+    }
 	}
 
-  async sendMessage() {
-    this.message = this.message.trim();
-    if (this.message.length) {
-      await this.chatService.sendMessage(this.message, this.session, this.receiver, mDate.timeNowInSec(), this.chatPreference.userInfo.nickname);
-      this.message = "";
-    }
+  addMemberToChat() {
+    this.openModal("member");
   }
+  changePassword(){
+	  console.log("lets open modal pwd")
+	//this.openModal("pwd");
+}
+  openModal(name: string, room?: ChatRoomI) {
+    const modal = this.modalService.open(ChatModalComponent, {
+      centered: false,
+      animation: true,
+    });
+    modal.componentInstance.type = name;
+    modal.componentInstance.room = room;
+    modal.componentInstance.preferences = this.chatPreference;
+    modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+		if (receivedEntry == undefined)
+			this.chatService.emit(eChat.ON_LOAD_ACTIVE_ROOMS);
+		else if (receivedEntry.room != undefined)
+		{
+			this.selectChatRoom(receivedEntry.room);
 
-  async sendGroupMessage() {
-    this.message = this.message.trim();
-    if (this.message.length) {
-      await this.chatService.sendGroupMessage(this.message, this.session, this.channel, mDate.timeNowInSec(), this.chatPreference.userInfo.nickname);
-      this.message = "";
-    }
-  }
-
-  async selectChat(friend: any) {
-    //this.closeChat();
-    this.receiver = friend;
-    this.friendChat = friend;
-    this.showChat = true;
-    this.showGroupChat = false;
-    this.chatsBlocked[this.friendChat.nickname] = await this.chatService.iAmBlocked(this.session, this.receiver);
-    console.log("imBlocked: ", this.imBlocked);
-    //if (this.chatsBlocked[this.friendChat.nickname] == false)
-    //{
-      //delete messages from messages array
-      this.messages = [];
-      this.messages = await this.chatService.getMessages(this.session, this.receiver);
-    //var pepe = this.msgBoxElement.nativeElement.lastElementChild;
-      if (this.messages.length)
-        this.identifier = this.messages[this.messages.length - 1 ].date.toString();
-    //}
-    //msgBox.child[this.messages[this.messages.size - 1]].id == messages.timeStamp scrollDown();
-  }
-
-  async selectChatGroup(channel: any){
-    console.log("channel: ", channel);
-    this.showGroupChat = true;
-    this.showChat = false;
-    //this.receiver = channel;
-    this.channel = channel;
-    this.messages = [];
-    //if ((await this.chatService.isMuted(this.session, this.channel)) == false) // banned not muted
-    this.messages = await this.chatService.getGroupMessages(this.session, this.channel);
-    if (this.messages.length)
-      this.identifier = this.messages[this.messages.length - 1 ].date.toString();
-  }
-  
-  scrollDown(){
-    var pepe = document.getElementById(this.identifier);
-    console.log('pepeElement: ', pepe );
-    pepe?.scrollIntoView();
-    
-    return (true);
-  }
-  playPong(friend: any){
-    alert("You're gonna dare your friend " + friend.nickname);
-  }
-
-  getPrivates(){
-    this.showPrivate = true;
-    //this.closeChat();
-  }
-
-  async getChatGroups(){
-    this.showPrivate = false;
-    //this.closeChat();
-    this.channels = await this.chatService.getChatGroups(this.session);
-    console.log("channels: ", this.channels);
-  }
-
-  async listMembers()
-  {
-    if (this.showMembers)
-      this.showMembers = false;
-    else
-      this.showMembers = true;
-    const ret = await this.chatService.getChatUsers(this.session, this.channel);
-    this.members = ret.data.users;
-  }
-  
-  async blockUser(friend: any): Promise<void>{
-    var members: UserPublicInfoI[] = [];
-    this.messages = [];
-    members.push(this.chatPreference.userInfo);
-    members.push(this.friendChat);
-    await this.chatService.blockUser(this.session, members, this.friendIsBlocked);
-    if (this.friendIsBlocked == true)
-    {
-      this.friendIsBlocked = false;
-      this.messages = await this.chatService.getMessages(this.session, this.receiver);
-    }
-    else
-      this.friendIsBlocked = true;
-  }
-
-  async muteUserGroup(user : UserPublicInfoI) {
-    console.log("user: ", user);
-    const ret = await this.chatService.muteUserGroup(this.session, this.channel, user);
-    console.log("ret: ", ret);
-  }
-
-  async banUserGroup(user : UserPublicInfoI) {
-    //const ret = await this.chatService.banUserGroup(this.session, this.channel, user);
-  }
-
-  closeChat(){
-    this.showChat = false;
+		}
+    });
   }
 }

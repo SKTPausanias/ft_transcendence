@@ -11,16 +11,19 @@ import { MailService } from 'src/shared/mail/mail.service';
 import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 import { FriendEntity } from '../friends/friend.entity';
 import { FriendService } from '../friends/friend.service';
-import { ChatEntity } from '../chat/chat.entity';
+import { ActiveRoomEntity } from '../chat/entities/activeRoom.entity';
+import { ChatUsersEntity } from '../chat/entities/chatUsers.entity';
+import { UnreadMessageEntity } from '../chat/entities/unread-message.entity';
+import { MessageEntity } from '../chat/entities/message.entity';
 import { ChatService } from '../chat/chat.service';
-import { MessageEntity } from '../chat/message.entity';
-import { ChatUsersEntity } from '../chat/chatUsers.entity';
+import { ChatEntity } from '../chat/entities/chat.entity';
+import { HashService } from 'src/shared/hash/hash.service';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity, ChatEntity, MessageEntity, ChatUsersEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, TwoFactorEntity, FriendEntity, ActiveRoomEntity, ChatUsersEntity, UnreadMessageEntity, MessageEntity, ChatEntity])],
     controllers: [SettingsController],
     providers: [
-		SettingsService,UserService, SessionService, TwoFactorService, MailService, FriendService, ChatService
+		SettingsService, UserService, SessionService, TwoFactorService, MailService, FriendService, ChatService, HashService
 	]
 })
 export class SettingsModule {}
