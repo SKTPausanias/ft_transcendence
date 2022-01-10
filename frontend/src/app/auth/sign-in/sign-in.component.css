@@ -56,7 +56,10 @@ margin-right: 5px;
 i{
 	color: #673D76;
 }
-i:hover{
+label i{
+	margin-right: 30px;
+}
+span i:hover{
 	cursor: pointer;
 	color: #673D76;
 	font-weight: 700;
