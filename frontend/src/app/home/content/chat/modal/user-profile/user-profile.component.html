@@ -25,11 +25,11 @@
 		<div class="col-6 profile-info">
 			<img src="{{user.avatar}}" class="img-fluid ico_xxl mt-3" alt="">
 			<i><h1 class="mt-3 mb-0">{{user.nickname}}</h1></i>
-			<div class="status">
+			<div *ngIf="!isMe" class="status">
 				<h5 ><i>(In game)</i></h5>
 				<span class="fa fa-tv fa-2x p-2"><i><small> watch live</small></i></span>
 			</div>
-			<div class="row justify-content-center action-ctn">
+			<div *ngIf="!isMe" class="row justify-content-center action-ctn">
 				<div class="col-4 me-4" data-toggle="tooltip" title="Chat with {{user.nickname}}" (click)="startChat()">
 					<span class="fa fa-comment-dots fa-2x icon-btn" ></span>
 				</div>

@@ -17,6 +17,7 @@ import { PlayService } from "../../../play/play.service";
 export class UserProfileComponent implements OnInit {
 	@Input() public preferences: SharedPreferencesI;
 	@Input() public user: UserPublicInfoI;
+	@Input() public isMe: boolean;
 	@Output() passEntry: EventEmitter<any> = new EventEmitter();
 	session = this.sQuery.getSessionToken();
 	constructor(private router: Router,

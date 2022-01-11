@@ -128,9 +128,21 @@ export class RightNavComponent implements OnInit {
 			windowClass : "user-profile"
 		  });
 		  modal.componentInstance.user = user;
+		  modal.componentInstance.isMe = user.login == this.rigtNavPreference.userInfo.login;
 		  modal.componentInstance.preferences = this.rigtNavPreference ;
 		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
 			  console.log("pass entry resived: ", receivedEntry);
 		  });
+	}
+	openMyProfile()
+	{
+		this.openProfile({
+			login: this.rigtNavPreference.userInfo.login,
+			first_name: this.rigtNavPreference.userInfo.first_name,
+			last_name: this.rigtNavPreference.userInfo.last_name,
+			nickname: this.rigtNavPreference.userInfo.nickname,
+			avatar: this.rigtNavPreference.userInfo.avatar,
+			online: true
+		});
 	}
 }
