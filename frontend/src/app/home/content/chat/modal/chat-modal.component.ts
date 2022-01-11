@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { eChat, eChatType, Nav } from 'src/app/shared/ft_enums';
+import { eChat, eChatType, ePlay, Nav } from 'src/app/shared/ft_enums';
 import { SharedPreferencesI, ChatI, ChatRoomI, RoomKeyI, SearchRoomI } from 'src/app/shared/ft_interfaces';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { DashboardService } from '../../dashboard/dashboard.service';
+import { PlayService } from '../../play/play.service';
 import { ChatService } from '../chat.service';
 import { StatusMessageI } from './statusMsgI';
 import { UserProfileComponent } from './user-profile/user-profile.component';
@@ -40,7 +41,8 @@ export class ChatModalComponent implements OnInit {
 				private dashboardService: DashboardService,
 	  			private sQuery: SessionStorageQueryService,
 				private router: Router,
-				private chatService: ChatService) {
+				private chatService: ChatService,
+				private playService: PlayService) {
 					  this.initVariables(true);
 				   }
 
@@ -280,5 +282,10 @@ export class ChatModalComponent implements OnInit {
 		this.repassword = undefined;
 		if (dismiss)
 			this.searchResult = [];
+	}
+	playPong(user: any)
+	{
+		this.playService.emit(ePlay.ON_REQUEST_INVITATION, user)
+		this.modal.dismiss();
 	}
 }

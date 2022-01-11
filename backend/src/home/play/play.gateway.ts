@@ -36,7 +36,12 @@ export class PlayGateway {
 		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player1.login, {data, finished: true});
 		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player2.login, {data, finished: true});
 	}
-	
+	@SubscribeMessage(ePlay.ON_LOAD_ALL_GAME_INVITATIONS)
+	async onLoadAllGameInvitations(client, data) {
+		const me = await this.getSessionUser(client);
+		const invitations = await this.playService.getAllGameInvitations(me);
+		this.server.to(client.id).emit(ePlay.ON_LOAD_ALL_GAME_INVITATIONS, me.login, invitations);
+	}
 	@SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
 	async onRequestInvitation(client, data) {
 		
@@ -50,11 +55,19 @@ export class PlayGateway {
 	@SubscribeMessage(ePlay.ON_ACCEPT_INVITATION)
 	async onAcceptInvitation(client, data) {
 		console.log("<debug> onAcceptInvitation:", data);
+		const me = await this.getSessionUser(client);
+		const oponent = await this.playService.acceptGameInvitation(me, data);
+		this.server.to(client.id).emit(ePlay.ON_ACCEPT_INVITATION, me.login, data);
+		console.log("me accepted: ", User.getPublicInfo(me));
+		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, oponent, User.getPublicInfo(me));
 	}
 
 	@SubscribeMessage(ePlay.ON_DECLINE_INVITATION)
 	async onDeclineInvitation(client, data) {
-		console.log("<debug> onAcceptInvitation:", data);
+		console.log("<debug> onDeclineInvitation:", data);
+		const me = await this.getSessionUser(client);
+		await this.playService.declineGameInvitation(me, data);
+		this.server.to(client.id).emit(ePlay.ON_DECLINE_INVITATION, data);
 	}
 
 	private async getSession(client: any)
@@ -69,5 +82,16 @@ export class PlayGateway {
 	{
 		const session = await this.getSession(client);	
 		return (session.userID);	
+	}
+
+	@SubscribeMessage(ePlay.ON_PLAY_TEST)
+	async onPlayTest(client, data) {
+		
+		const me = await this.getSessionUser(client);
+		const resp = await this.playService.onTest(me, data.oponent);
+		
+		console.log("on test client id: ", client.id);
+		this.server.to(client.id).emit(ePlay.ON_PLAY_TEST, me.login, data.msg);
+		this.socketService.emitToOne(this.server, ePlay.ON_PLAY_TEST, me.login, resp, data.msg);
 	}
 }

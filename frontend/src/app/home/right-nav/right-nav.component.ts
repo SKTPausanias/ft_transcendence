@@ -1,13 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { eChat, eChatType, Nav, wSocket } from 'src/app/shared/ft_enums';
+import { eChat, eChatType, ePlay, Nav, wSocket } from 'src/app/shared/ft_enums';
 import { ChatI, SessionI, SharedPreferencesI } from 'src/app/shared/ft_interfaces'
 import { SessionStorageQueryService, UserService } from 'src/app/shared/ft_services'
 import { UserInfoI, UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
 import { mDate } from 'src/app/utils/date';
 import { UserProfileComponent } from '../content/chat/modal/user-profile/user-profile.component';
 import { DashboardService } from '../content/dashboard/dashboard.service';
+import { PlayService } from '../content/play/play.service';
 import { SocketService } from '../socket.service';
 @Component({
   selector: 'app-right-nav',
@@ -28,11 +29,13 @@ export class RightNavComponent implements OnInit {
 		private dashboardService: DashboardService,
 		private socketService: SocketService,
 		private router: Router,
-		private modalService: NgbModal) {
+		private modalService: NgbModal,
+		private playService: PlayService) {
 		}
 		
 	async ngOnInit(): Promise<void> {
 		this.me = this.rigtNavPreference.userInfo;
+		this.socketService.emit(ePlay.ON_LOAD_ALL_GAME_INVITATIONS);
 		//const resp = await this.userServie.getOnlineFriends(this.token);
 		//this.onlineUsers = resp.data;
 	}
@@ -63,12 +66,15 @@ export class RightNavComponent implements OnInit {
 
 	async acceptGameInvitation(){
 		const user = this.rigtNavPreference.game_invitation[this.gamePos];
-		return (await this.dashboardService.addFriendShip(user, this.session))// create a call and query to save state of accepted invitation
+		this.playService.emit(ePlay.ON_ACCEPT_INVITATION, user);
+		//return (await this.dashboardService.addFriendShip(user, this.session))// create a call and query to save state of accepted invitation
 
 	}
 	async declineGameInvitation(){
 		const user = this.rigtNavPreference.game_invitation[this.gamePos];
-		return (await this.dashboardService.removeFriendShip(user, this.session))// create a call and query to save state of declined invitation
+		console.log("declineGameInvitation: ", user);
+		this.playService.emit(ePlay.ON_DECLINE_INVITATION, user);
+		//return (await this.dashboardService.removeFriendShip(user, this.session))// create a call and query to save state of declined invitation
 	}
 	nextGameInvitation(){
 		if (this.gamePos < this.rigtNavPreference.game_invitation.length - 1)

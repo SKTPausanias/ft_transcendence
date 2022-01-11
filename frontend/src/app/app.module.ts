@@ -28,6 +28,7 @@ import { MessagingComponent } from './home/content/chat/messaging/messaging.comp
 import { ChatModalComponent } from './home/content/chat/modal/chat-modal.component';
 import { ChangePasswordComponent } from './home/content/chat/modal/change-password/change-password.component';
 import { UserProfileComponent } from './home/content/chat/modal/user-profile/user-profile.component';
+import { GameWaitRoomComponent } from './home/content/play/game-wait-room/game-wait-room.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { UserProfileComponent } from './home/content/chat/modal/user-profile/use
   MessagingComponent,
   ChatModalComponent,
   ChangePasswordComponent,
-  UserProfileComponent
+  UserProfileComponent,
+  GameWaitRoomComponent
   ],
   imports: [
     BrowserModule,

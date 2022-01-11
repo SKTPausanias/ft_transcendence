@@ -1,9 +1,12 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services'
+import { ePlay } from '../shared/ft_enums';
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
-import { UserInfoI } from '../shared/interface/iUserInfo';
+import { UserInfoI, UserPublicInfoI } from '../shared/interface/iUserInfo';
 import { ChatService } from './content/chat/chat.service';
+import { GameWaitRoomComponent } from './content/play/game-wait-room/game-wait-room.component';
 import { PlayService } from './content/play/play.service';
 import { HomeService } from './home.service';
 import { SocketService } from './socket.service';
@@ -22,13 +25,15 @@ export class HomeComponent implements OnInit {
 	socketEmiter: any;
 	chatEmiter: any;
 	playEmiter: any;
+	tmpString: String;
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
 	private homeService: HomeService,
 	private socketService: SocketService,
 	private chatService: ChatService,
-	private playService: PlayService
+	private playService: PlayService,
+    private modalService: NgbModal
 	) {
 		this.sharedPreference.userInfo = <UserInfoI>{};
 		this.sharedPreference.friends = [];
@@ -111,17 +116,45 @@ export class HomeComponent implements OnInit {
 	}
 
 	private subscribeToPlayEmiter(): void {
+		var invitations = this.sharedPreference.game_invitation;
 		this.playEmiter = this.playService.playEmiter.subscribe((data: any) => {
 			console.log("Data subscribed on playEmiter function: ", data);
 			if (data.invitation !== undefined)
 				this.sharedPreference.game_invitation.push(data.invitation);
-			else if (data.declination !== undefined)
-				console.log("Game declination...");
-			else if (data.acceptation !== undefined)
-				console.log("Game acceptation...");
+			else if (data.declination !== undefined){
+				this.sharedPreference.game_invitation = invitations.filter(item => 
+											(item.login != data.declination.login));
+			}
+			else if (data.acceptation !== undefined){
+				this.sharedPreference.game_invitation = invitations.filter(item => 
+					(item.login != data.acceptation.login));
+				this.openGameWaitRoom(data.acceptation);
+				
+			}
+			else if (data.allInvitations !== undefined)
+				this.sharedPreference.game_invitation = data.allInvitations;
+			else if (data.test)
+				this.tmpString = data.test;
 		});
 	}
 
+	private openGameWaitRoom(oponent: UserPublicInfoI)
+	{
+		const modal = this.modalService.open(GameWaitRoomComponent, {
+			centered: false,
+			animation: true,
+			backdrop: false
+		  });
+		
+		modal.componentInstance.player1 = this.sharedPreference.userInfo;
+		modal.componentInstance.player2 = oponent;
+		modal.componentInstance.msg = this.tmpString;
+		modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+			//this.tmpString = receivedEntry;
+			modal.componentInstance.msg = this.tmpString;
+			//this.subscribeToPlayEmiter();
+		});
+	}
 
 	@HostListener('window:keydown', [ '$event' ])
 	async keydown(event: any) {

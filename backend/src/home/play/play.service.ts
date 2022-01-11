@@ -1,9 +1,14 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { Session } from "inspector";
+import { SessionEntity } from "src/session/session.entity";
+import { SocketService } from "src/socket/socket.service";
 import { In, Like, Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
+import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
+import { ePlay } from "./ePlay";
 import { PlayEntity } from "./play.entity";
 
 @Injectable()
@@ -13,7 +18,8 @@ export class PlayService {
                 @InjectRepository(PlayEntity)
                 private playRepository: Repository<PlayEntity>,
                 @Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
-				private userService: UserService,){}
+				private userService: UserService,
+				private socketService: SocketService){}
     
     async newInviation(me: UserEntity, oponent: UserPublicInfoI): Promise<UserEntity>{
         try {
@@ -58,5 +64,43 @@ export class PlayService {
         }
     }
 
+	async getAllGameInvitations(user: UserEntity): Promise<UserPublicInfoI[]>
+	{
+		var userProfiles: UserPublicInfoI[] = [];
+		const invitations = await this.playRepository.find({
+			relations: ["player_1", "player_2"],
+			where: {player_2: user.id, confirmed: false}
+		});
+		for (let i = 0; i < invitations.length; i++) {
+			const element = invitations[i].player_1;
+			userProfiles.push(User.getPublicInfo(element))
+		}
+		return (userProfiles);
+	}
+
+	async acceptGameInvitation(me: UserEntity, user: UserPublicInfoI): Promise<UserEntity>{
+		const usrEntity = await this.userService.findByLogin(user.login);
+		const invitation = await this.playRepository.findOne({
+			where: {player_1: usrEntity.id, player_2: me.id}
+		})
+		invitation.confirmed = true;
+		await this.playRepository.save(invitation);
+		return (usrEntity);
+	}
+	async declineGameInvitation(me: UserEntity, user: UserPublicInfoI){
+		const usrEntity = await this.userService.findByLogin(user.login);
+		const invitation = await this.playRepository.findOne({
+			where: {player_1: usrEntity.id, player_2: me.id}
+		})
+		if (invitation !== undefined)
+			await this.playRepository.delete(invitation);
+	}
+
+	async onTest(me: UserEntity, user: UserPublicInfoI){
+		const usrEntity = await this.userService.findByLogin(user.login);
+		return (usrEntity);
+		//await this.playRepository.delete(invitation);
+	}
+	
     
 }
