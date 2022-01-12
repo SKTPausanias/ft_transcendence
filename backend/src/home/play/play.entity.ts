@@ -16,4 +16,10 @@ export class PlayEntity {
 
     @Column('boolean', {default: false})
     confirmed: boolean;
+    
+    @Column('boolean', {default: false})
+    ready_p1: boolean;
+
+    @Column('boolean', {default: false})
+    ready_p2: boolean;
 }

@@ -16,7 +16,7 @@ import { HomeService } from '../../home.service';
 export class DashboardComponent implements OnInit {
 	@Input() dashboardPreference: SharedPreferencesI;
 	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
-	@ViewChild('friendship') frindInput : ElementRef;
+	@ViewChild('friendship') friendInput : ElementRef;
   
 	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();

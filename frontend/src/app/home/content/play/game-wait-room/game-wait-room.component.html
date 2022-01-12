@@ -1,5 +1,5 @@
 <h1>{{msg}}</h1>
-<h2>Time left to accept{{timer}}</h2>
+<h2>Time left to accept: {{timer}} sec.</h2>
 <h3>{{player1.nickname}} vs {{player2.nickname}}</h3>
-<button (click)="close()">Im ready to play!</button>
-<button (click)="cancel()">Cancel!</button>
+<button #ready (click)="readyPlay()">Im ready to play!</button>
+<button (click)="rejectPlay()">Reject play!</button>

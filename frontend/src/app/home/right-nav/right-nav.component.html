@@ -14,7 +14,7 @@
 			<div class="d-flex justify-content-center">
 				<span class="notification "*ngIf="!rigtNavPreference.expandRightNav"><span>PLAY</span></span>
 				<div *ngIf="rigtNavPreference.expandRightNav">
-						<p class="notification text-center mb-4" *ngIf="rigtNavPreference.expandRightNav">Lets play</p>
+						<p class="notification text-center mb-4" *ngIf="rigtNavPreference.expandRightNav">Challenge</p>
 						<div class="d-flex justify-content-center">
 							<p  *ngIf="rigtNavPreference.game_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prevGameInvitation()"></p>
 							<img src="{{getGameInvitation().avatar}}" class="ico_s img-fluid me-3" alt="">

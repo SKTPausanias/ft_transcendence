@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
 	chatEmiter: any;
 	playEmiter: any;
 	tmpString: String;
+	modal: any;
 	constructor(
 	private router: Router,
 	private sQuery: SessionStorageQueryService,
@@ -140,26 +141,37 @@ export class HomeComponent implements OnInit {
 
 	private openGameWaitRoom(oponent: UserPublicInfoI)
 	{
-		const modal = this.modalService.open(GameWaitRoomComponent, {
+		console.log("Data acceptation from home component: ", oponent);
+		this.modal = this.modalService.open(GameWaitRoomComponent, {
 			centered: false,
 			animation: true,
 			backdrop: false
 		  });
 		
-		modal.componentInstance.player1 = this.sharedPreference.userInfo;
-		modal.componentInstance.player2 = oponent;
-		modal.componentInstance.msg = this.tmpString;
-		modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
+		this.modal.componentInstance.player1 = this.sharedPreference.userInfo;
+		this.modal.componentInstance.player2 = oponent;
+		this.modal.componentInstance.msg = this.tmpString;
+		this.modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
 			//this.tmpString = receivedEntry;
-			modal.componentInstance.msg = this.tmpString;
+			if (receivedEntry == true) {
+				console.log("ReceivedEntry from home component: ");
+				
+				/* receivedEntry.readyElement.nativeElement.hidden = true; */
+			}
+			this.modal.componentInstance.msg = this.tmpString + " - Holaaa";
 			//this.subscribeToPlayEmiter();
 		});
+	}
+
+	closeGameWaitRoom(){
+		this.modal.dismiss();
 	}
 
 	@HostListener('window:keydown', [ '$event' ])
 	async keydown(event: any) {
 		await this.homeService.listenActivity();
 	}
+	
 	@HostListener('window:mousemove', [ '$event' ])
 	async mousemove(event: any) {
 		await this.homeService.listenActivity();

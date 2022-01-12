@@ -84,14 +84,14 @@ export class PlayGateway {
 		return (session.userID);	
 	}
 
-	@SubscribeMessage(ePlay.ON_PLAY_TEST)
+	@SubscribeMessage(ePlay.ON_PLAY_READY)
 	async onPlayTest(client, data) {
 		
 		const me = await this.getSessionUser(client);
 		const resp = await this.playService.onTest(me, data.oponent);
 		
-		console.log("on test client id: ", client.id);
-		this.server.to(client.id).emit(ePlay.ON_PLAY_TEST, me.login, data.msg);
-		this.socketService.emitToOne(this.server, ePlay.ON_PLAY_TEST, me.login, resp, data.msg);
+		console.log("on test client id from play.gateway: ", client.id);
+		this.server.to(client.id).emit(ePlay.ON_PLAY_READY, me.login, data.msg);
+		this.socketService.emitToOne(this.server, ePlay.ON_PLAY_READY, me.login, resp, data.msg);
 	}
 }

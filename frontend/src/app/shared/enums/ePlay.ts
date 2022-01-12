@@ -5,6 +5,6 @@ export enum ePlay {
 	ON_ACCEPT_INVITATION = "on-accept-invitation",
 	ON_DECLINE_INVITATION = "on-declien-invitation",
 	ON_LOAD_ALL_GAME_INVITATIONS = "on-load-all-game-invitations",
-	ON_PLAY_TEST = "on-play-test",
+	ON_PLAY_READY = "on-play-ready",
 
 }

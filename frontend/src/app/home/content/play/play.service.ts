@@ -24,7 +24,7 @@ export class PlayService {
 		this.onDeclineInvitation();
 		this.onStartGame();
 		this.onStopGame();
-		this.onTest();
+		this.onPlaychallenge();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -79,7 +79,7 @@ export class PlayService {
 	}
 
 	emit(action: string, data?: any){
-		console.log("emit", action, data);
+		console.log("emit from playService: ", action, data);
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
 
@@ -87,8 +87,8 @@ export class PlayService {
 		alert("Waiting for oponent..." + oponent.nickname);
 	}
 
-	private onTest(){
-		this.socket.on(ePlay.ON_PLAY_TEST, (emiter: string, data: any) => {
+	private onPlaychallenge(){ ///Change test name for another more convenient
+		this.socket.on(ePlay.ON_PLAY_READY, (emiter: string, data: any) => {
 			try {
 				console.log("onStopGame", emiter, data);
 				this.playEmiter.emit({test: data});
