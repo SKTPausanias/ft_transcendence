@@ -100,6 +100,7 @@ export class PlayGateway {
 		else
 			oponent = await this.playService.getPlayer(data.player1);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, oponent, data);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, me, data);
 	}
 
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
@@ -112,6 +113,7 @@ export class PlayGateway {
 		else
 			oponent = await this.playService.getPlayer(data.player1);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
 	}
 
 	private	createPlayer(user: UserEntity, status: string): PlayerI
