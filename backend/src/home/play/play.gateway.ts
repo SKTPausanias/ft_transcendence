@@ -61,9 +61,9 @@ export class PlayGateway {
 		var waitRoom: WaitRoomI = <WaitRoomI>{};
 		const me = await this.getSessionUser(client);
 		const oponent = await this.playService.acceptGameInvitation(me, data);
-		waitRoom.player1 = this.createPlayer(me);
-		waitRoom.player2 = this.createPlayer(oponent);
-		waitRoom.expires = mDate.setExpirationTime(20);
+		waitRoom.player1 = this.createPlayer(oponent, eRequestPlayer.WAITING);
+		waitRoom.player2 = this.createPlayer(me, eRequestPlayer.ACCEPTED);
+		waitRoom.expires = mDate.setExpirationTime(120);
 		this.server.to(client.id).emit(ePlay.ON_ACCEPT_INVITATION, me.login, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, oponent, waitRoom);
 	}
@@ -90,35 +90,38 @@ export class PlayGateway {
 		return (session.userID);	
 	}
 
-	@SubscribeMessage(ePlay.ON_PLAY_READY)
-	async onPlayTest(client, data) {
+	@SubscribeMessage(ePlay.ON_WAIT_ROOM_ACCEPT)
+	async onWaitRoomAccept(client, data) {
 		
 		const me = await this.getSessionUser(client);
-		const resp = await this.playService.onTest(me, data.oponent);
-		
-		console.log("on test client id from play.gateway: ", client.id);
-		this.server.to(client.id).emit(ePlay.ON_PLAY_READY, me.login, data.msg);
-		this.socketService.emitToOne(this.server, ePlay.ON_PLAY_READY, me.login, resp, data.msg);
+		var oponent;
+		if (me.login == data.player1.login)
+		 	oponent = await this.playService.getPlayer(data.player2);
+		else
+			oponent = await this.playService.getPlayer(data.player1);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, oponent, data);
 	}
 
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
-	async onWaitRoomReject(client, data) {
-		
+	async onWaitRoomReject(client, data: WaitRoomI) {
+		await this.playService.removePlayRoom(data);
 		const me = await this.getSessionUser(client);
-		const resp = await this.playService.onTest(me, data.oponent);
-		
-		this.server.to(client.id).emit(ePlay.ON_WAIT_ROOM_REJECT, me.login, ePlay.ON_WAIT_ROOM_REJECT);
-		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, resp, ePlay.ON_WAIT_ROOM_REJECT);
+		var oponent;
+		if (me.login == data.player1.login)
+		 	oponent = await this.playService.getPlayer(data.player2);
+		else
+			oponent = await this.playService.getPlayer(data.player1);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
 	}
 
-	private	createPlayer(user: UserEntity,): PlayerI
+	private	createPlayer(user: UserEntity, status: string): PlayerI
 	{
 		return ({
 			id : user.id,
 			nickname : user.nickname,
 			login: user.login,
 			avatar : user.avatar,
-			status : eRequestPlayer.WAITING
+			status : status
 		})
 		
 	}

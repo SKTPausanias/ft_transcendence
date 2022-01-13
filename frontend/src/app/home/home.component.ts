@@ -135,8 +135,8 @@ export class HomeComponent implements OnInit {
 			}
 			else if (data.allInvitations !== undefined)
 				this.sharedPreference.game_invitation = data.allInvitations;
-			else if (data.reject !== undefined)
-				this.waitRoomStatus = data.reject;
+			else if (data.waitRoomStatus !== undefined)
+				this.waitRoomStatus = data.waitRoomStatus;
 		});
 	}
 
@@ -150,11 +150,9 @@ export class HomeComponent implements OnInit {
 			backdrop: false
 		  });
 		this.modal.componentInstance.waitRoom = waitRoom;
-	
+		this.modal.componentInstance.me = this.sharedPreference.userInfo;
 		this.modal.componentInstance.waitRoomEntry.subscribe((reload: any) => {
-			//this.waitRoomStatus = receivedEntry;
 			this.modal.componentInstance.waitRoom = this.waitRoomStatus;
-	
 		});
 	}
 

@@ -9,6 +9,7 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ePlay } from "./ePlay";
+import { PlayerI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
 
 @Injectable()
@@ -84,6 +85,14 @@ export class PlayService {
 			where: {player_1: usrEntity.id, player_2: me.id}
 		})
 		invitation.confirmed = true;
+		const tmp = await this.playRepository.find({
+			where: [
+				{player_1: usrEntity.id, confirmed: true},
+				{player_2: usrEntity.id, confirmed: true}
+			]
+		})
+		if (tmp.length > 0)
+			console.log("Sorry your oponent is in game");
 		await this.playRepository.save(invitation);
 		return (usrEntity);
 	}
@@ -96,6 +105,21 @@ export class PlayService {
 			await this.playRepository.delete(invitation);
 	}
 
+	async removePlayRoom(waitRoom: WaitRoomI)
+	{
+		const playRoom = await this.playRepository.findOne({
+			where: [
+				{player_1: waitRoom.player1.id, player_2: waitRoom.player2.id},
+				{player_1: waitRoom.player2.id, player_2: waitRoom.player1.id}
+			]
+		})
+		if (playRoom !== undefined)
+			await this.playRepository.delete(playRoom);
+	}
+	async getPlayer(player: PlayerI): Promise<UserEntity>
+	{
+		return (await this.userService.findByLogin(player.login));
+	}
 	async onTest(me: UserEntity, user: UserPublicInfoI){
 		const usrEntity = await this.userService.findByLogin(user.login);
 		return (usrEntity);

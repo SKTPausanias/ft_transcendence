@@ -1,6 +1,6 @@
 
 <h2>Time left to accept: {{timer}} sec.</h2>
-<h3>{{waitRoom.player1.nickname}} vs {{waitRoom.player2.nickname}}</h3>
-<h3>{{waitRoom.player1.status}}  ---  {{waitRoom.player2.status}}</h3>
-<button #ready (click)="readyPlay()">Im ready to play!</button>
-<button (click)="rejectPlay()">Reject play!</button>
+<h3>{{waitRoom.player1.nickname}} ---> {{waitRoom.player1.status}}</h3>
+<h3>{{waitRoom.player2.nickname}} ---> {{waitRoom.player2.status}}</h3>
+<button #ready (click)="acceptPlay()">Im ready to play!</button>
+<button #reject (click)="rejectPlay()">Reject play!</button>
