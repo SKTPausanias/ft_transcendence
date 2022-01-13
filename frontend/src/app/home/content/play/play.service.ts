@@ -25,6 +25,7 @@ export class PlayService {
 		this.onStartGame();
 		this.onStopGame();
 		this.onPlaychallenge();
+		this.onWaitRoomReject();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -92,6 +93,14 @@ export class PlayService {
 			try {
 				console.log("onStopGame", emiter, data);
 				this.playEmiter.emit({test: data});
+			}catch(error){}
+		})
+	}
+	private onWaitRoomReject(){ ///Change test name for another more convenient
+		this.socket.on(ePlay.ON_WAIT_ROOM_REJECT, (emiter: string, data: any) => {
+			try {
+				console.log("onStopGame", emiter, data);
+				this.playEmiter.emit({reject: data});
 			}catch(error){}
 		})
 	}

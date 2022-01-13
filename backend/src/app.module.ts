@@ -28,7 +28,7 @@ import {PlayEntity } from './home/play/play.entity'
 @Module({
   imports: [ConfigModule.forRoot({
 	isGlobal: true,
-	  //envFilePath: './.env_test',
+	  envFilePath: './.env_test',
   }),
 	TypeOrmModule.forRoot({
 		type: 'postgres',

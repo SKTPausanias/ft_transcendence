@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SessionStorageQueryService } from 'src/app/shared/ft_services'
 import { ePlay } from '../shared/ft_enums';
+import { WaitRoomI } from '../shared/ft_interfaces';
 import { SharedPreferencesI } from '../shared/interface/iSharedPreferences';
 import { UserInfoI, UserPublicInfoI } from '../shared/interface/iUserInfo';
 import { ChatService } from './content/chat/chat.service';
@@ -25,7 +26,7 @@ export class HomeComponent implements OnInit {
 	socketEmiter: any;
 	chatEmiter: any;
 	playEmiter: any;
-	tmpString: String;
+	waitRoomStatus: WaitRoomI = <WaitRoomI>{};
 	modal: any;
 	constructor(
 	private router: Router,
@@ -119,7 +120,7 @@ export class HomeComponent implements OnInit {
 	private subscribeToPlayEmiter(): void {
 		var invitations = this.sharedPreference.game_invitation;
 		this.playEmiter = this.playService.playEmiter.subscribe((data: any) => {
-			console.log("Data subscribed on playEmiter function: ", data);
+			console.log("Data subscribed on playEmiter function!!!: ", data);
 			if (data.invitation !== undefined)
 				this.sharedPreference.game_invitation.push(data.invitation);
 			else if (data.declination !== undefined){
@@ -128,38 +129,32 @@ export class HomeComponent implements OnInit {
 			}
 			else if (data.acceptation !== undefined){
 				this.sharedPreference.game_invitation = invitations.filter(item => 
-					(item.login != data.acceptation.login));
+					(item.nickname != data.acceptation.player1.nickname));
 				this.openGameWaitRoom(data.acceptation);
 				
 			}
 			else if (data.allInvitations !== undefined)
 				this.sharedPreference.game_invitation = data.allInvitations;
-			else if (data.test)
-				this.tmpString = data.test;
+			else if (data.reject !== undefined)
+				this.waitRoomStatus = data.reject;
 		});
 	}
 
-	private openGameWaitRoom(oponent: UserPublicInfoI)
+	private openGameWaitRoom(waitRoom: WaitRoomI)
 	{
-		console.log("Data acceptation from home component: ", oponent);
+		this.waitRoomStatus = waitRoom;
+		console.log("Data acceptation from home component: ", waitRoom);
 		this.modal = this.modalService.open(GameWaitRoomComponent, {
 			centered: false,
 			animation: true,
 			backdrop: false
 		  });
-		
-		this.modal.componentInstance.player1 = this.sharedPreference.userInfo;
-		this.modal.componentInstance.player2 = oponent;
-		this.modal.componentInstance.msg = this.tmpString;
-		this.modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-			//this.tmpString = receivedEntry;
-			if (receivedEntry == true) {
-				console.log("ReceivedEntry from home component: ");
-				
-				/* receivedEntry.readyElement.nativeElement.hidden = true; */
-			}
-			this.modal.componentInstance.msg = this.tmpString + " - Holaaa";
-			//this.subscribeToPlayEmiter();
+		this.modal.componentInstance.waitRoom = waitRoom;
+	
+		this.modal.componentInstance.waitRoomEntry.subscribe((reload: any) => {
+			//this.waitRoomStatus = receivedEntry;
+			this.modal.componentInstance.waitRoom = this.waitRoomStatus;
+	
 		});
 	}
 
