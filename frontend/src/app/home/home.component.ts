@@ -119,6 +119,7 @@ export class HomeComponent implements OnInit {
 
 	private subscribeToPlayEmiter(): void {
 		var invitations = this.sharedPreference.game_invitation;
+		this.playService.emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM);
 		this.playEmiter = this.playService.playEmiter.subscribe((data: any) => {
 			console.log("Data subscribed on playEmiter function!!!: ", data);
 			if (data.invitation !== undefined)

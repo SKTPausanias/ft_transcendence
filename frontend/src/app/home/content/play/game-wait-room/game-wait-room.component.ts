@@ -50,7 +50,7 @@ export class GameWaitRoomComponent implements OnInit {
 			if (counter-- == 0 ||  mDate.expired(this.waitRoom.expires) || this.isRejected())
 			{
 				this.modal.dismiss();
-				this.playService.emit(ePlay.ON_DECLINE_INVITATION, this.waitRoom.player2)
+				this.playService.emit(ePlay.ON_WAIT_ROOM_REJECT, this.waitRoom)
 				clearInterval(intervalId)
 			}
 		}, 100)

@@ -6,11 +6,13 @@ import { UserEntity } from '../user/user.entity';
 import { User } from '../user/userClass';
 import { ePlay, eRequestPlayer } from './ePlay';
 import { PlayerI, WaitRoomI } from './iPlay';
+import { PlayEntity } from './play.entity';
 import { PlayService } from './play.service';
 
 @WebSocketGateway({ cors: true })
 export class PlayGateway {
 	server: any;
+	timeLap: number = 120;
 	constructor(private socketService: SocketService,
                 private playService: PlayService,
 				private sessionService: SessionService){}
@@ -60,12 +62,10 @@ export class PlayGateway {
 		console.log("<debug> onAcceptInvitation:", data);
 		var waitRoom: WaitRoomI = <WaitRoomI>{};
 		const me = await this.getSessionUser(client);
-		const oponent = await this.playService.acceptGameInvitation(me, data);
-		waitRoom.player1 = this.createPlayer(oponent, eRequestPlayer.WAITING);
-		waitRoom.player2 = this.createPlayer(me, eRequestPlayer.ACCEPTED);
-		waitRoom.expires = mDate.setExpirationTime(120);
-		this.server.to(client.id).emit(ePlay.ON_ACCEPT_INVITATION, me.login, waitRoom);
-		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, oponent, waitRoom);
+		const invitation = await this.playService.acceptGameInvitation(me, data);
+		waitRoom = this.createWaitRoom(invitation);
+		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_1, waitRoom);
+		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_2, waitRoom);
 	}
 
 	@SubscribeMessage(ePlay.ON_DECLINE_INVITATION)
@@ -94,13 +94,10 @@ export class PlayGateway {
 	async onWaitRoomAccept(client, data) {
 		
 		const me = await this.getSessionUser(client);
-		var oponent;
-		if (me.login == data.player1.login)
-		 	oponent = await this.playService.getPlayer(data.player2);
-		else
-			oponent = await this.playService.getPlayer(data.player1);
-		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, oponent, data);
-		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, me, data);
+		const invitation = await this.playService.acceptWaitRoom(me, data);
+		const waitRoom = this.createWaitRoom(invitation);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_1, waitRoom);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_2, waitRoom);
 	}
 
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
@@ -115,7 +112,25 @@ export class PlayGateway {
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
 	}
+	@SubscribeMessage(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM)
+	async onLoadActiveWaitRoom(client, data) {
+		
+		const me = await this.getSessionUser(client);
+		const playRoom = await this.playService.getActivePlayRoom(me);
+		var waitRoom;
+		if (playRoom !== undefined)
+			this.server.to(client.id).emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, this.createWaitRoom(playRoom));
+	}
 
+	createWaitRoom(invitation: PlayEntity): WaitRoomI
+	{
+		return ({
+			id: invitation.id,
+			player1: this.createPlayer(invitation.player_1, invitation.p1_status),
+			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
+			expires: invitation.expiration_time
+		})
+	}
 	private	createPlayer(user: UserEntity, status: string): PlayerI
 	{
 		return ({

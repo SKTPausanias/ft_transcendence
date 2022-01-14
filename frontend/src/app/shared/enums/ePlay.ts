@@ -7,7 +7,8 @@ export enum ePlay {
 	ON_LOAD_ALL_GAME_INVITATIONS = "on-load-all-game-invitations",
 	ON_PLAY_READY = "on-play-ready",
 	ON_WAIT_ROOM_ACCEPT = "on-wait-room-accept",
-	ON_WAIT_ROOM_REJECT = "on-wait-room-reject"
+	ON_WAIT_ROOM_REJECT = "on-wait-room-reject",
+	ON_LOAD_ACTIVE_WAIT_ROOM = "on-load-active-wait-room"
 }
 
 export enum eRequestPlayer{

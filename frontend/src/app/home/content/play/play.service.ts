@@ -27,6 +27,7 @@ export class PlayService {
 		this.onPlaychallenge();
 		this.onWaitRoomReject();
 		this.onWaitRoomAccept();
+		this.onLoadActiveWaitRoom();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -109,6 +110,14 @@ export class PlayService {
 			try {
 				console.log("onWaitRoomAccept(): ", data);
 				this.playEmiter.emit({waitRoomStatus: data});
+			}catch(error){}
+		})
+	}
+	private onLoadActiveWaitRoom(){ ///Change test name for another more convenient
+		this.socket.on(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, (data: any) => {
+			try {
+				console.log("onWaitRoomAccept(): ", data);
+				this.playEmiter.emit({acceptation: data});
 			}catch(error){}
 		})
 	}
