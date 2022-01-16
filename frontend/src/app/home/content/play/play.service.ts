@@ -22,9 +22,6 @@ export class PlayService {
 		this.onRequestInvitation();
 		this.onAcceptInvitation();
 		this.onDeclineInvitation();
-		this.onStartGame();
-		this.onStopGame();
-		this.onPlaychallenge();
 		this.onWaitRoomReject();
 		this.onWaitRoomAccept();
 		this.onLoadActiveWaitRoom();
@@ -35,6 +32,14 @@ export class PlayService {
 			try {
 				console.log("onLoadAllGameInvitations from playService: ", emiter, data);
 				this.playEmiter.emit({allInvitations: data});
+			}catch(error){}
+		})
+	}
+	private onLoadActiveWaitRoom(){ ///Change test name for another more convenient
+		this.socket.on(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, (data: any) => {
+			try {
+				console.log("onWaitRoomAccept(): ", data);
+				this.playEmiter.emit({acceptation: data});
 			}catch(error){}
 		})
 	}
@@ -62,42 +67,6 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
-
-	private onStartGame(){
-		this.socket.on(ePlay.ON_START_PLAY, (emiter: string, data: any) => {
-			try {
-				console.log("onStartGame", emiter, data);
-				this.playEmiter.emit({game: data});
-			}catch(error){}
-		})
-	}
-
-	private onStopGame(){
-		this.socket.on(ePlay.ON_STOP_PLAY, (emiter: string, data: any) => {
-			try {
-				console.log("onStopGame", emiter, data);
-				this.playEmiter.emit({game: data});
-			}catch(error){}
-		})
-	}
-
-	emit(action: string, data?: any){
-		console.log("emit from playService: ", action, data);
-		data ? this.socket.emit(action, data) : this.socket.emit(action);
-	}
-
-	playPongInvitation(oponent: UserPublicInfoI): void {
-		alert("Waiting for oponent..." + oponent.nickname);
-	}
-
-	private onPlaychallenge(){ ///Change test name for another more convenient
-		this.socket.on(ePlay.ON_PLAY_READY, (emiter: string, data: any) => {
-			try {
-				console.log("onStopGame", emiter, data);
-				this.playEmiter.emit({test: data});
-			}catch(error){}
-		})
-	}
 	private onWaitRoomReject(){ ///Change test name for another more convenient
 		this.socket.on(ePlay.ON_WAIT_ROOM_REJECT, (emiter: string, data: any) => {
 			try {
@@ -113,12 +82,8 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
-	private onLoadActiveWaitRoom(){ ///Change test name for another more convenient
-		this.socket.on(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, (data: any) => {
-			try {
-				console.log("onWaitRoomAccept(): ", data);
-				this.playEmiter.emit({acceptation: data});
-			}catch(error){}
-		})
+	emit(action: string, data?: any){
+		console.log("emit from playService: ", action, data);
+		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
 }

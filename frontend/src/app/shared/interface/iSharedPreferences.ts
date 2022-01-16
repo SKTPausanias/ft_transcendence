@@ -1,4 +1,5 @@
 import { UserInfoI } from "../ft_interfaces";
+import { WaitRoomI } from "./iPlay";
 import { UserPublicInfoI } from "./iUserInfo";
 
 export interface SharedPreferencesI {
@@ -14,4 +15,5 @@ export interface SharedPreferencesI {
 	 	rooms: any[];
 	}
 	unreaded_messages: number;
+	game: WaitRoomI;
 }

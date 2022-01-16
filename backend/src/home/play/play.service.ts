@@ -68,7 +68,7 @@ export class PlayService {
 		})
 		invitation.confirmed = true;
 		invitation.p2_status = eRequestPlayer.ACCEPTED;
-		invitation.expiration_time = mDate.setExpirationTime(120);
+		invitation.expiration_time = mDate.setExpirationTime(Number(process.env.WAIT_ROOM_EXPIRES));
 		const tmp = await this.playRepository.find({
 			where: [
 				{player_1: usrEntity.id, confirmed: true},
@@ -108,22 +108,12 @@ export class PlayService {
 			invitation.p1_status = eRequestPlayer.ACCEPTED;
 		else
 			invitation.p2_status = eRequestPlayer.ACCEPTED;
+		if (invitation.p1_status == eRequestPlayer.ACCEPTED && invitation.p2_status == eRequestPlayer.ACCEPTED)
+			invitation.ready = true;
 		await this.playRepository.save(invitation);
 		return(invitation);
 	}
 
-	async rejecttWaitRoom(me: UserEntity, waitRoom: WaitRoomI): Promise<PlayEntity>
-	{
-		const invitation = await this.playRepository.findOne({
-			relations: ["player_1", "player_2"],
-			where: {id: waitRoom.id}
-		})
-		if (invitation.player_1.login == me.login)
-			invitation.p1_status = eRequestPlayer.REJECTED;
-		else
-			invitation.p2_status = eRequestPlayer.REJECTED;
-		return(invitation);
-	}
 	async getPlayer(player: PlayerI): Promise<UserEntity>
 	{
 		return (await this.userService.findByLogin(player.login));
@@ -139,37 +129,4 @@ export class PlayService {
 		})
 		return (playRoom);
 	}
-
-
-
-
-	async onTest(me: UserEntity, user: UserPublicInfoI){
-		const usrEntity = await this.userService.findByLogin(user.login);
-		return (usrEntity);
-		//await this.playRepository.delete(invitation);
-	}
-	
-
-	async endGame(data: any): Promise<any> {
-        console.log("<debug> PlayService.endGame:", data);
-        if (data.game.player1.winner == true) {
-			//find user and update score
-            let user1 = await this.userRepository.findOne({login: data.game.player1.login});
-            user1.victories += 1;
-            await this.userRepository.save(user1);
-            let user2 = await this.userRepository.findOne({login: data.game.player2.login});
-            user2.defeats += 1;
-            await this.userRepository.save(user2);
-		}
-        else if (data.game.player2.winner == true) {
-            //find user and update score
-            let user2 = await this.userRepository.findOne({login: data.game.player2.login});
-            user2.victories += 1;
-            await this.userRepository.save(user2);
-            let user1 = await this.userRepository.findOne({login: data.game.player1.login});
-            user1.defeats += 1;
-            await this.userRepository.save(user1);
-        }
-    }
-    
 }

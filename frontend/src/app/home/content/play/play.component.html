@@ -1,6 +1,10 @@
-<p>play works!</p>
-<!-- if user not in game, show button to search game-->
-<button *ngIf="!playPreference.in_game" (click)="search_game()">Search Game</button>
-<button (click)="winplayer1()">win player1 </button> <!-- only for testing -->
-<button (click)="winplayer2()">win player2 </button>
+<div *ngIf="playPreference.game != undefined && playPreference.game.ready">
+	<h1>GAME IN PROGRESS </h1>
+	<h3>{{playPreference.game.player1.nickname}} : {{playPreference.game.player1.status}}</h3>
+	<h3>{{playPreference.game.player2.nickname}} : {{playPreference.game.player2.status}}</h3>
+	<button (click)="cancelGame()">Cancel game</button>
+</div>
+<div *ngIf="playPreference.game == undefined || !playPreference.game.ready">
+	<h1>NO GAME IN PROGRESS</h1>
+</div>
 

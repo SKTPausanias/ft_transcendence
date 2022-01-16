@@ -1,6 +1,32 @@
 
-<h2>Time left to accept: {{timer}} sec.</h2>
-<h3>{{waitRoom.player1.nickname}} ---> {{waitRoom.player1.status}}</h3>
-<h3>{{waitRoom.player2.nickname}} ---> {{waitRoom.player2.status}}</h3>
-<button #ready (click)="acceptPlay()">Im ready to play!</button>
-<button #reject (click)="rejectPlay()">Reject play!</button>
+<div class="bg"></div>
+<div class="cont">
+	<div class="inner">
+		<div class="d-flex justify-content-center">
+			<h4 class="title">YOUR MATCH IS READY</h4>
+		</div>
+		<div class="p1" [ngClass]="{'ready' : waitRoom.player1.status == 'accepted'}">
+			<div class="d-flex justify-content-end me-3">
+				<div class="d-block">
+					<img src="{{waitRoom.player1.avatar}}" class="img-fluid ico_m" alt="">
+					<p class="text-center">{{waitRoom.player1.nickname}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="p2"[ngClass]="{'ready' : waitRoom.player2.status == 'accepted'}">
+			<div class="d-flex justify-content-start ms-3">
+				<div class="d-block">
+					<img src="{{waitRoom.player2.avatar}}" class="img-fluid ico_m" alt="">
+					<p class="text-center">{{waitRoom.player2.nickname}}</p>
+				</div>
+			</div>
+		</div>
+		<div class="d-flex justify-content-center">
+			<div class="d-block action">
+				<button *ngIf="showAcceptBtn" id="gradient" class="mb-1" (click)="acceptPlay()">ACCEPT</button>
+				<p *ngIf="!showAcceptBtn" id="gradient" class="mb-1 text-center">Waiting for oponent...</p>
+				<p class="text-center">{{timer}}</p>
+			</div>
+		</div>
+	</div>
+</div>

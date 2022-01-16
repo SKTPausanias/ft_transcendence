@@ -5,6 +5,7 @@ import { WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { UserPublicInfoI, UserInfoI } from 'src/app/shared/interface/iUserInfo';
 import { PlayService } from '../play.service';
 import { mDate } from 'src/app/utils/date'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game-wait-room',
@@ -12,25 +13,29 @@ import { mDate } from 'src/app/utils/date'
   styleUrls: ['./game-wait-room.component.css']
 })
 export class GameWaitRoomComponent implements OnInit {
-	@ViewChild("ready") ready: ElementRef<HTMLInputElement>;
-	@ViewChild("reject") reject: ElementRef<HTMLInputElement>;
 	@Input() public waitRoom: WaitRoomI;
 	@Input() public me: UserInfoI;
 	@Output() waitRoomEntry: EventEmitter<any> = new EventEmitter();
 	timer: string;
 	lapTime: number = 60;
+	showAcceptBtn= true;
 
-	constructor(public modal: NgbActiveModal, private playService: PlayService) {
+	constructor(public modal: NgbActiveModal, 
+		private playService: PlayService,
+		private router: Router) {
 	
 	}
 
 	ngOnInit(): void {
+		if (this.me.login == this.waitRoom.player1.login && this.waitRoom.player1.status == eRequestPlayer.ACCEPTED)
+			this.showAcceptBtn = false;
+		if (this.me.login == this.waitRoom.player2.login && this.waitRoom.player2.status == eRequestPlayer.ACCEPTED)
+			this.showAcceptBtn = false;
 		console.log("onInit(): ", this.waitRoom);
 		this.startGameWaitTimer();
 	}
 
 	acceptPlay() {
-		this.reject.nativeElement.hidden = true;
 		this.changeMyStatus(eRequestPlayer.ACCEPTED);
 		this.playService.emit(ePlay.ON_WAIT_ROOM_ACCEPT, this.waitRoom);
 	}
@@ -45,13 +50,20 @@ export class GameWaitRoomComponent implements OnInit {
 		let intervalId = setInterval(() => {
 			var timeLeft = (this.waitRoom.expires - mDate.timeNowInSec());
 			timeLeft < 0 ? (timeLeft = 0) : 0;
-			this.timer = "" + timeLeft;
+			this.timer = "0:" + (timeLeft < 10 ? "0" :"") + timeLeft;
 			this.waitRoomEntry.emit(true);
 			if (counter-- == 0 ||  mDate.expired(this.waitRoom.expires) || this.isRejected())
 			{
 				this.modal.dismiss();
 				this.playService.emit(ePlay.ON_WAIT_ROOM_REJECT, this.waitRoom)
 				clearInterval(intervalId)
+			}
+			if (this.waitRoom.ready)
+			{
+				this.router.navigateByUrl('/play');
+				this.modal.dismiss();
+				clearInterval(intervalId);
+
 			}
 		}, 100)
 	}
@@ -70,20 +82,3 @@ export class GameWaitRoomComponent implements OnInit {
 		return (false);
 	}
 }
-/**
- {
-	wait_room {
-		player1: player,
-		player2: player,
-		expires : number
-	}
-	player = {
-		id: number,
-		nickname: string,
-		avatar: string,
-		status: waiting | accepted | rejected
-	}
-
-
- }
- */

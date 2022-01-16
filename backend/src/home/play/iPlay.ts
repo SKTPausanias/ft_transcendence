@@ -2,7 +2,8 @@ export interface WaitRoomI {
 	id: number,
 	player1: PlayerI,
 	player2: PlayerI,
-	expires : number
+	expires : number,
+	ready: boolean
 }
 export interface PlayerI  {
 	id: number,

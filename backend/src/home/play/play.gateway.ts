@@ -21,32 +21,22 @@ export class PlayGateway {
 		this.server = server;
 	}
 
-	@SubscribeMessage(ePlay.ON_START_PLAY)
-	async onStart(client, data) {
-        console.log("<debug> onStart:", data);
-		//emit to both players
-		await this.socketService.emitToSelf(this.server, ePlay.ON_START_PLAY, data.player1.login, data);
-		await this.socketService.emitToSelf(this.server, ePlay.ON_START_PLAY, data.player2.login, data);
-	}
-
-	@SubscribeMessage(ePlay.ON_STOP_PLAY)
-	async onStop(client, data) {
-		console.log("<debug> onStop:", data);
-		await this.playService.endGame(data);
-		// add boolean to data to know if the game is finished
-
-		//emit to all players
-		//emit to both players / habrá que pasarselo a todos
-		//rename emitToSelf
-		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player1.login, {data, finished: true});
-		await this.socketService.emitToSelf(this.server, ePlay.ON_STOP_PLAY, data.game.player2.login, {data, finished: true});
-	}
 	@SubscribeMessage(ePlay.ON_LOAD_ALL_GAME_INVITATIONS)
 	async onLoadAllGameInvitations(client, data) {
 		const me = await this.getSessionUser(client);
 		const invitations = await this.playService.getAllGameInvitations(me);
 		this.server.to(client.id).emit(ePlay.ON_LOAD_ALL_GAME_INVITATIONS, me.login, invitations);
 	}
+	@SubscribeMessage(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM)
+	async onLoadActiveWaitRoom(client, data) {
+		
+		const me = await this.getSessionUser(client);
+		const playRoom = await this.playService.getActivePlayRoom(me);
+		var waitRoom;
+		if (playRoom !== undefined)
+			this.server.to(client.id).emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, this.createWaitRoom(playRoom));
+	}
+
 	@SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
 	async onRequestInvitation(client, data) {
 		
@@ -76,20 +66,6 @@ export class PlayGateway {
 		this.server.to(client.id).emit(ePlay.ON_DECLINE_INVITATION, data);
 	}
 
-	private async getSession(client: any)
-	{
-		try {
-			const token = client.handshake.headers.authorization.split(' ')[1];
-			const session = await this.sessionService.findSessionWithRelation(token);
-			return (session);
-		} catch (error) {}
-	}
-	private async getSessionUser(client: any)
-	{
-		const session = await this.getSession(client);	
-		return (session.userID);	
-	}
-
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_ACCEPT)
 	async onWaitRoomAccept(client, data) {
 		
@@ -109,28 +85,36 @@ export class PlayGateway {
 		 	oponent = await this.playService.getPlayer(data.player2);
 		else
 			oponent = await this.playService.getPlayer(data.player1);
+		data.ready = false;
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
 	}
-	@SubscribeMessage(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM)
-	async onLoadActiveWaitRoom(client, data) {
-		
-		const me = await this.getSessionUser(client);
-		const playRoom = await this.playService.getActivePlayRoom(me);
-		var waitRoom;
-		if (playRoom !== undefined)
-			this.server.to(client.id).emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, this.createWaitRoom(playRoom));
+
+	private async getSession(client: any)
+	{
+		try {
+			const token = client.handshake.headers.authorization.split(' ')[1];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			return (session);
+		} catch (error) {}
+	}
+	private async getSessionUser(client: any)
+	{
+		const session = await this.getSession(client);	
+		return (session.userID);	
 	}
 
-	createWaitRoom(invitation: PlayEntity): WaitRoomI
+	private createWaitRoom(invitation: PlayEntity): WaitRoomI
 	{
 		return ({
 			id: invitation.id,
 			player1: this.createPlayer(invitation.player_1, invitation.p1_status),
 			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
-			expires: invitation.expiration_time
+			expires: invitation.expiration_time,
+			ready: invitation.ready
 		})
 	}
+
 	private	createPlayer(user: UserEntity, status: string): PlayerI
 	{
 		return ({
@@ -140,6 +124,5 @@ export class PlayGateway {
 			avatar : user.avatar,
 			status : status
 		})
-		
 	}
 }

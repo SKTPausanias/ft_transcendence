@@ -1,0 +1,88 @@
+.bg{
+	background: linear-gradient( rgba(172, 160, 160, 0.5), rgba(0, 0, 0, 0.5) ), url("src/assets/img/pong.jpeg");
+	filter: blur(4px);
+	-webkit-filter: blur(4px);
+	height: 300px;
+	width: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.cont{
+	display: flex;
+    align-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	color: #ffffff;
+	margin: auto;
+}
+.inner{
+	margin: auto;
+}
+.p1{
+	display: inline-block;
+	width: 50%;
+	opacity: 0.3;
+
+}
+.p2{
+	display: inline-block;
+	width: 50%;
+	opacity: 0.3;
+}
+.title{
+	border-bottom: 1px solid #57b323;
+	margin-top: 25px;
+	margin-bottom: 25px;
+}
+.action{
+	margin-top: 6px;
+}
+
+.action button{
+	all: unset;
+}
+.action button:hover{
+	cursor: pointer;
+
+}
+#gradient
+{
+	padding: 10px 15px 10px 15px;
+	color: #ffffff;
+	text-shadow: 2px 2px #328303;
+	border-radius: 4px;
+	font-size: 18px;
+    background: linear-gradient(90deg, #57b323, #b9fa93, #57b323);
+    background-size: 200% 200%;
+
+    -webkit-animation: Animation 2s ease infinite;
+    -moz-animation: Animation 2s ease infinite;
+    animation: Animation 2s ease infinite;
+}
+
+@-webkit-keyframes Animation {
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
+}
+@-moz-keyframes Animation {
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
+}
+@keyframes Animation { 
+    0%{background-position:10% 0%}
+    50%{background-position:91% 100%}
+    100%{background-position:10% 0%}
+}
+
+img{
+	border: 1px solid #ffffff;
+}
+.ready{
+	opacity: 1;
+}

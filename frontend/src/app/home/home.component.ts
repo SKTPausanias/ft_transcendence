@@ -131,13 +131,16 @@ export class HomeComponent implements OnInit {
 			else if (data.acceptation !== undefined){
 				this.sharedPreference.game_invitation = invitations.filter(item => 
 					(item.nickname != data.acceptation.player1.nickname));
-				this.openGameWaitRoom(data.acceptation);
-				
+				this.sharedPreference.game = data.acceptation;
+				if (data.acceptation.ready)
+					this.router.navigateByUrl('/play')
+				else
+					this.openGameWaitRoom(data.acceptation);	
 			}
 			else if (data.allInvitations !== undefined)
 				this.sharedPreference.game_invitation = data.allInvitations;
 			else if (data.waitRoomStatus !== undefined)
-				this.waitRoomStatus = data.waitRoomStatus;
+				this.sharedPreference.game = data.waitRoomStatus;
 		});
 	}
 
@@ -148,12 +151,13 @@ export class HomeComponent implements OnInit {
 		this.modal = this.modalService.open(GameWaitRoomComponent, {
 			centered: false,
 			animation: true,
-			backdrop: false
+			backdrop: false,
+			windowClass : "game-wait-room"
 		  });
 		this.modal.componentInstance.waitRoom = waitRoom;
 		this.modal.componentInstance.me = this.sharedPreference.userInfo;
 		this.modal.componentInstance.waitRoomEntry.subscribe((reload: any) => {
-			this.modal.componentInstance.waitRoom = this.waitRoomStatus;
+			this.modal.componentInstance.waitRoom = this.sharedPreference.game;
 		});
 	}
 

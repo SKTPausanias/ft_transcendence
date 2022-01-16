@@ -18,6 +18,9 @@ export class PlayEntity {
     @Column('boolean', {default: false})
     confirmed: boolean;
 
+	@Column('boolean', {default: false})
+    ready: boolean;
+
 	@Column({nullable: true})
     expiration_time: number;
     
