@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { Router } from "@angular/router";
-import { SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
+import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { LiveService } from "./live.service";
 
 @Component({
@@ -11,12 +12,20 @@ import { LiveService } from "./live.service";
 export class LiveComponent implements OnInit {
 	@Input() livePreference: SharedPreferencesI;
 	liveEventReciver: any;
+	session = this.sQuery.getSessionToken();
+	games: WaitRoomI[] = [];
+	isStreaming: boolean = false;
+	streaming: WaitRoomI = <WaitRoomI>{};
 
 	constructor(private liveService: LiveService,
-				private router: Router) {}
+				private router: Router,
+				private sQuery: SessionStorageQueryService) {}
 
-	ngOnInit(): void {
+	async ngOnInit(): Promise<void> {
 		this.initLiveEventReciver();
+		const response = await this.liveService.getLiveGames(this.session);
+		if (response.statusCode == 200)
+			this.games = response.data;
 	}
 	ngOnDestroy(): void {
 		this.liveEventReciver.unsubscribe();
@@ -25,5 +34,15 @@ export class LiveComponent implements OnInit {
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
 			console.log("data from live service recived: ", data);
 		})
+	}
+
+	startStreaming(game: WaitRoomI): void {
+		this.isStreaming = true;
+		this.streaming = game;
+	}
+
+	cancelStreaming(): void {
+		this.isStreaming = false;
+		this.streaming = <WaitRoomI>{};
 	}
 }

@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Session } from "inspector";
 import { SessionEntity } from "src/session/session.entity";
+import { SessionService } from "src/session/session.service";
 import { mDate } from "src/shared/utils/date";
 import { SocketService } from "src/socket/socket.service";
 import { In, Like, Repository } from "typeorm";
@@ -12,6 +13,7 @@ import { UserPublicInfoI } from "../user/userI";
 import { ePlay, eRequestPlayer } from "./ePlay";
 import { PlayerI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
+import { Response } from "src/shared/response/responseClass";
 
 @Injectable()
 export class PlayService {
@@ -21,7 +23,8 @@ export class PlayService {
                 private playRepository: Repository<PlayEntity>,
                 @Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
 				private userService: UserService,
-				private socketService: SocketService){}
+				private socketService: SocketService,
+				private sessionService: SessionService){}
     
     async newInviation(me: UserEntity, oponent: UserPublicInfoI): Promise<UserEntity>{
         try {
@@ -130,6 +133,60 @@ export class PlayService {
 				{player_2: me.id, confirmed: true}
 			]
 		})
+		if (playRoom != undefined)
+            console.log("viewers: ", playRoom.viewers);
 		return (playRoom);
 	}
+
+	async getLiveGames(header: string): Promise<any>
+	{
+		const token = header.split(' ')[1];
+		try {
+			var array: WaitRoomI[] = [];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			//get games
+			const games = await this.playRepository.find({ 
+				relations: ["player_1", "player_2"],
+				where: { ready: true } 
+			});
+			if (games.length == 0)
+				return (Response.makeResponse(200, array ));
+			for (let i = 0; i < games.length; i++)
+				array.push(this.createWaitRoom(games[i]));
+			return (Response.makeResponse(200, array ));					
+		}
+		catch (e) {
+			return (Response.makeResponse(500, { error: "internal server error" }));
+		}
+	}
+
+	public createWaitRoom(invitation: PlayEntity): WaitRoomI
+	{
+		return ({
+			id: invitation.id,
+			player1: this.createPlayer(invitation.player_1, invitation.p1_status),
+			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
+			expires: invitation.expiration_time,
+			ready: invitation.ready
+		})
+	}
+
+	public	createPlayer(user: UserEntity, status: string): PlayerI
+	{
+		return ({
+			id : user.id,
+			nickname : user.nickname,
+			login: user.login,
+			avatar : user.avatar,
+			status : status
+		})
+	}
+
+	/*
+    play = find(by id with relations[ player_1, player_2, viewers]);
+    for (...)
+        this.socketService.emitToOne(this.server, ePlay.ON_STREAM, me.login, play.viewers[i], data);
+	*/
 }

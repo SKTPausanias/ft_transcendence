@@ -29,4 +29,7 @@ export class PlayEntity {
 
     @Column({default: eRequestPlayer.WAITING})
     p2_status: string;
+
+    @OneToMany(() => UserEntity, viewer=>viewer.live)
+    viewers: UserEntity[];
 }

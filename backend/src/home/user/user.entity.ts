@@ -6,6 +6,7 @@ import { ChatUsersEntity } from "../chat/entities/chatUsers.entity";
 import { MessageEntity } from "../chat/entities/message.entity";
 import { StatsEntity } from "../play/stats.entity";
 import { FriendEntity } from "../friends/friend.entity";
+import { PlayEntity } from "../play/play.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -88,5 +89,9 @@ export class UserEntity {
     //Relation with activeRooms: one user can have many activeRooms
     @OneToMany(() => ActiveRoomEntity, (activeRoom) => activeRoom.id)
     activeRooms: ActiveRoomEntity[];
+
+    @ManyToOne(() => PlayEntity)
+    @JoinColumn()
+    live: PlayEntity;
 }
 

@@ -34,7 +34,7 @@ export class PlayGateway {
 		const playRoom = await this.playService.getActivePlayRoom(me);
 		var waitRoom;
 		if (playRoom !== undefined)
-			this.server.to(client.id).emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, this.createWaitRoom(playRoom));
+			this.server.to(client.id).emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, this.playService.createWaitRoom(playRoom));
 	}
 
 	@SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
@@ -55,7 +55,7 @@ export class PlayGateway {
 		const invitation = await this.playService.acceptGameInvitation(me, data);
 		if (invitation == null)
 			return ;
-		waitRoom = this.createWaitRoom(invitation);
+		waitRoom = this.playService.createWaitRoom(invitation);
 		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_2, waitRoom);
 	}
@@ -73,7 +73,7 @@ export class PlayGateway {
 		
 		const me = await this.getSessionUser(client);
 		const invitation = await this.playService.acceptWaitRoom(me, data);
-		const waitRoom = this.createWaitRoom(invitation);
+		const waitRoom = this.playService.createWaitRoom(invitation);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_2, waitRoom);
 	}
@@ -104,27 +104,5 @@ export class PlayGateway {
 	{
 		const session = await this.getSession(client);	
 		return (session.userID);	
-	}
-
-	private createWaitRoom(invitation: PlayEntity): WaitRoomI
-	{
-		return ({
-			id: invitation.id,
-			player1: this.createPlayer(invitation.player_1, invitation.p1_status),
-			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
-			expires: invitation.expiration_time,
-			ready: invitation.ready
-		})
-	}
-
-	private	createPlayer(user: UserEntity, status: string): PlayerI
-	{
-		return ({
-			id : user.id,
-			nickname : user.nickname,
-			login: user.login,
-			avatar : user.avatar,
-			status : status
-		})
 	}
 }
