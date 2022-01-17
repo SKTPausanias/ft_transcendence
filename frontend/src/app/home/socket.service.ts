@@ -7,6 +7,7 @@ import { UserPublicInfoI } from "../shared/interface/iUserInfo";
 import { Router } from "@angular/router";
 import { ChatService } from "./content/chat/chat.service";
 import { PlayService } from "./content/play/play.service";
+import { LiveService } from "./content/live/live.service";
 
 @Injectable({
 	providedIn: "root",
@@ -17,7 +18,8 @@ export class SocketService {
 	chatEmiter: EventEmitter<any>;
 	playEmiter: EventEmitter<any>;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
-	constructor(private router: Router, private chatService: ChatService, private playService: PlayService) {
+	constructor(private router: Router, private chatService: ChatService, 
+	private playService: PlayService, private liveService: LiveService) {
 	}
 	
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
@@ -37,6 +39,7 @@ export class SocketService {
 		this.onDeleteAccount();
 		this.chatService.initGateway(this.socket, sharedPreference);
 		this.playService.initGateway(this.socket, sharedPreference);
+		this.liveService.initGateway(this.socket, sharedPreference);
 	}
 	public disconnect()
 	{

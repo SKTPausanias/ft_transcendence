@@ -137,7 +137,25 @@ export class PlayService {
             console.log("viewers: ", playRoom.viewers);
 		return (playRoom);
 	}
-
+	async onGetLiveGames(): Promise<WaitRoomI[]>
+	{
+		try {
+			var array: WaitRoomI[] = [];
+			
+			const games = await this.playRepository.find({ 
+				relations: ["player_1", "player_2", "viewers"],
+				where: { ready: true } 
+			});
+			if (games.length == 0)
+				return (array);
+			for (let i = 0; i < games.length; i++)
+				array.push(this.createWaitRoom(games[i]));
+			return (array);					
+		}
+		catch (e) {
+			return (array);
+		}
+	}
 	async getLiveGames(header: string): Promise<any>
 	{
 		const token = header.split(' ')[1];

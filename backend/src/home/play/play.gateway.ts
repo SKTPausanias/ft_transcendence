@@ -76,6 +76,7 @@ export class PlayGateway {
 		const waitRoom = this.playService.createWaitRoom(invitation);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_2, waitRoom);
+		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, [waitRoom]);
 	}
 
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
@@ -90,6 +91,12 @@ export class PlayGateway {
 		data.ready = false;
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
+	}
+	@SubscribeMessage(ePlay.ON_GET_LIVE_GAMES)
+	async onGetLiveGames(client) {
+		const me = await this.getSessionUser(client);
+		const games = await this.playService.onGetLiveGames();
+		this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_GAMES, me.login, me, games);
 	}
 
 	private async getSession(client: any)

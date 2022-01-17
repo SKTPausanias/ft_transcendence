@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { Router } from "@angular/router";
+import { ePlay } from "src/app/shared/ft_enums";
 import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { LiveService } from "./live.service";
@@ -21,11 +22,12 @@ export class LiveComponent implements OnInit {
 				private router: Router,
 				private sQuery: SessionStorageQueryService) {}
 
-	async ngOnInit(): Promise<void> {
+	ngOnInit(): void {
 		this.initLiveEventReciver();
-		const response = await this.liveService.getLiveGames(this.session);
+		this.liveService.emit(ePlay.ON_GET_LIVE_GAMES);
+	/* 	const response = await this.liveService.getLiveGames(this.session);
 		if (response.statusCode == 200)
-			this.games = response.data;
+			this.games = response.data; */
 	}
 	ngOnDestroy(): void {
 		this.liveEventReciver.unsubscribe();
@@ -33,6 +35,8 @@ export class LiveComponent implements OnInit {
 	initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
 			console.log("data from live service recived: ", data);
+			if (data.games)
+				this.games = data.games;
 		})
 	}
 
