@@ -53,6 +53,8 @@ export class PlayGateway {
 		var waitRoom: WaitRoomI = <WaitRoomI>{};
 		const me = await this.getSessionUser(client);
 		const invitation = await this.playService.acceptGameInvitation(me, data);
+		if (invitation == null)
+			return ;
 		waitRoom = this.createWaitRoom(invitation);
 		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_ACCEPT_INVITATION, me.login, invitation.player_2, waitRoom);

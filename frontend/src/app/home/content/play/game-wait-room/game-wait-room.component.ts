@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output,EventEmitter, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output,EventEmitter, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ePlay, eRequestPlayer } from 'src/app/shared/ft_enums';
 import { WaitRoomI } from 'src/app/shared/ft_interfaces';

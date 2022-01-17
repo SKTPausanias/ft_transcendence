@@ -152,7 +152,8 @@ export class HomeComponent implements OnInit {
 			centered: false,
 			animation: true,
 			backdrop: false,
-			windowClass : "game-wait-room"
+			windowClass : "game-wait-room",
+			keyboard  : false
 		  });
 		this.modal.componentInstance.waitRoom = waitRoom;
 		this.modal.componentInstance.me = this.sharedPreference.userInfo;

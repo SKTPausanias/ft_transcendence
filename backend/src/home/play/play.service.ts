@@ -33,8 +33,6 @@ export class PlayService {
             {player_1: me.id, player_2: opUsr.id},
             {player_2: me.id, player_1: opUsr.id}
         ]});
-        
-
         if (invitation !== undefined)
             return (null);
             await this.playRepository.insert({player_1: me, player_2: opUsr});
@@ -71,12 +69,17 @@ export class PlayService {
 		invitation.expiration_time = mDate.setExpirationTime(Number(process.env.WAIT_ROOM_EXPIRES));
 		const tmp = await this.playRepository.find({
 			where: [
-				{player_1: usrEntity.id, confirmed: true},
-				{player_2: usrEntity.id, confirmed: true}
+				{player_1: invitation.player_1.id, confirmed: true},
+           		{player_2: invitation.player_1.id, confirmed: true},
+				{player_2: invitation.player_2.id, confirmed: true},
+				{player_1: invitation.player_2.id, confirmed: true}
 			]
 		})
 		if (tmp.length > 0)
+		{
 			console.log("Sorry your oponent is in game");
+			return (null);
+		}
 		await this.playRepository.save(invitation);
 		return (invitation);
 	}

@@ -1,10 +1,13 @@
-<div *ngIf="playPreference.game != undefined && playPreference.game.ready">
-	<h1>GAME IN PROGRESS </h1>
-	<h3>{{playPreference.game.player1.nickname}} : {{playPreference.game.player1.status}}</h3>
-	<h3>{{playPreference.game.player2.nickname}} : {{playPreference.game.player2.status}}</h3>
-	<button (click)="cancelGame()">Cancel game</button>
-</div>
-<div *ngIf="playPreference.game == undefined || !playPreference.game.ready">
-	<h1>NO GAME IN PROGRESS</h1>
+<div class="cont vh-100">
+
+	<div *ngIf="playPreference.game != undefined && playPreference.game.ready" >
+		<h1>GAME IN PROGRESS </h1>
+		<h3>{{playPreference.game.player1.nickname}} : {{playPreference.game.player1.status}}</h3>
+		<h3>{{playPreference.game.player2.nickname}} : {{playPreference.game.player2.status}}</h3>
+		<button (click)="cancelGame()">Cancel game</button>
+	</div>
+	<div *ngIf="playPreference.game == undefined || !playPreference.game.ready">
+		<h1>NO GAME IN PROGRESS</h1>
+	</div>
 </div>
 

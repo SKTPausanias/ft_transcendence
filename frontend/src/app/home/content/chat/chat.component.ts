@@ -9,6 +9,7 @@ import { eChat, eChatType } from 'src/app/shared/ft_enums';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ChatModalComponent } from './modal/chat-modal.component';
 import { UserProfileComponent } from './modal/user-profile/user-profile.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: "app-chat",
@@ -34,7 +35,8 @@ export class ChatComponent implements OnInit {
   constructor(
     private sQuery: SessionStorageQueryService,
     private chatService: ChatService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+	private router: Router
   ) {}
 
   async ngOnInit() {

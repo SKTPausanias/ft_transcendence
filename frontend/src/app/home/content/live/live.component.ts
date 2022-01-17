@@ -1,4 +1,6 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Input } from "@angular/core";
+import { Router } from "@angular/router";
+import { SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { LiveService } from "./live.service";
 
 @Component({
@@ -7,9 +9,11 @@ import { LiveService } from "./live.service";
 	styleUrls: ["./live.component.css"],
 })
 export class LiveComponent implements OnInit {
+	@Input() livePreference: SharedPreferencesI;
 	liveEventReciver: any;
 
-	constructor(private liveService: LiveService) {}
+	constructor(private liveService: LiveService,
+				private router: Router) {}
 
 	ngOnInit(): void {
 		this.initLiveEventReciver();
