@@ -13,6 +13,7 @@ export enum eChat {
 	ON_UNREAD_MSG = "on-unread-msg",
 	ON_READ_MSG = "on-read-msg",
 	ON_GET_UNREAD_MSG = "on-get-unread-msg",
+	ON_WATCH_LIVE = "on-watch-live"
 
 }
 export enum eChatType{

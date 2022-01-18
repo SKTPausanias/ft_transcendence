@@ -16,6 +16,7 @@ import { MessageEntity } from '../chat/entities/message.entity';
 import { ChatService } from "../chat/chat.service"
 import { ChatRoomI } from "../chat/iChat";
 import { ChatEntity } from '../chat/entities/chat.entity';
+import { UserPublicInfoI } from './userI';
 
 @Injectable()
 export class UserService {
@@ -193,6 +194,19 @@ export class UserService {
 			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}
 	}
+	async getUserPublicInfo(token: string, user: UserPublicInfoI) //body
+	{
+		
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, {error : "Unauthorized"}));
+			const usr = await this.findByLogin(user.login);
+			return (Response.makeResponse(200, User.getPublicInfo(usr)));
+		} catch (error) {
+			return (Response.makeResponse(401, {error : "Unauthorized"}));
+		}
+	}
 	async getOnlineUsers(header: any){
 		const token = header.authorization.split(' ')[1];
 		try {
@@ -214,6 +228,11 @@ export class UserService {
 		} catch (error) {
 			return (error);
 		}
+	}
+
+	async changeInGameStatus(user: UserEntity)
+	{
+		await this.userRepository.save(user);
 	}
 	/* async activateRoom(users: UserEntity[], roomId: number){
 		users.forEach(async user => {

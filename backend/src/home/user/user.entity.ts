@@ -49,6 +49,8 @@ export class UserEntity {
 	
 	@Column({nullable: false, default : false})
     online: boolean;
+	@Column({nullable: false, default : false})
+    in_game: boolean;
 
     @OneToMany(type => SessionEntity, session => session.token,
 		{

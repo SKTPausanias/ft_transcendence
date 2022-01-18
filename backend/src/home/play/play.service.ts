@@ -95,14 +95,22 @@ export class PlayService {
 	async removePlayRoom(waitRoom: WaitRoomI)
 	{
 		const playRoom = await this.playRepository.findOne({
+			relations: ["player_1", "player_2"],
 			where: {id: waitRoom.id}
 		})
 		if (playRoom !== undefined)
+		{
+			playRoom.player_1.in_game = false;
+			playRoom.player_2.in_game = false;
+			await this.userService.changeInGameStatus(playRoom.player_1);
+			await this.userService.changeInGameStatus(playRoom.player_2);
 			await this.playRepository.delete(playRoom);
+		}
 	}
 
 	async acceptWaitRoom(me: UserEntity, waitRoom: WaitRoomI): Promise<PlayEntity>
 	{
+		console.log("accepting");
 		const invitation = await this.playRepository.findOne({
 			relations: ["player_1", "player_2", "viewers"],
 			where: {id: waitRoom.id}
@@ -113,6 +121,10 @@ export class PlayService {
 			invitation.p2_status = eRequestPlayer.ACCEPTED;
 		if (invitation.p1_status == eRequestPlayer.ACCEPTED && invitation.p2_status == eRequestPlayer.ACCEPTED)
 			invitation.ready = true;
+		invitation.player_1.in_game = true;
+		invitation.player_2.in_game = true;
+		await this.userService.changeInGameStatus(invitation.player_1);
+		await this.userService.changeInGameStatus(invitation.player_2);
 		await this.playRepository.save(invitation);
 		return(invitation);
 	}
@@ -172,6 +184,27 @@ export class PlayService {
 		game.viewers = game.viewers.filter(item => item.login != viewer.login);
 		await this.playRepository.save(game);
 		return (game);
+	}
+	async getGame(token: string, user: UserPublicInfoI)
+	{
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, {error : "Unauthorized"}));
+			const usrEntity = await this.userService.findByLogin(user.login);
+			const game = await this.playRepository.findOne({
+				relations: ["player_1", "player_2", "viewers"],
+				where: [
+					{player_1 : usrEntity.id, ready: true},
+					{player_2 : usrEntity.id, ready: true},
+				]
+			})
+			return (Response.makeResponse(200, this.createWaitRoom(game)));
+		}
+		catch (error) {
+			console.log(error);
+			return (Response.makeResponse(500, {error: "Internal server error"}));
+		}
 	}
 	async getPlayer(player: PlayerI): Promise<UserEntity>
 	{

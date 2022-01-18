@@ -11,5 +11,9 @@ export class PlayController {
     async getLiveGames(@Headers() headers): Promise<WaitRoomI[]> {
         return await this.playService.getLiveGames(headers.authorization);
     }
+	@Post('/watchLive')
+	async getPublicInfo(@Body() body){
+		return (await this.playService.getGame(body.token, body.user));
+	}
     
 }

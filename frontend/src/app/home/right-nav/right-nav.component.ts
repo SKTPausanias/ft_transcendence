@@ -143,7 +143,8 @@ export class RightNavComponent implements OnInit {
 			last_name: this.rigtNavPreference.userInfo.last_name,
 			nickname: this.rigtNavPreference.userInfo.nickname,
 			avatar: this.rigtNavPreference.userInfo.avatar,
-			online: true
+			online: true,
+			in_game: this.rigtNavPreference.userInfo.in_game
 		});
 	}
 }

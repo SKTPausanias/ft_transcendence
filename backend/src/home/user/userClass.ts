@@ -99,7 +99,8 @@ export class User implements UserI {
 			email : data.email,
 			avatar : data.avatar,
 			factor_enabled : data.factor_enabled,
-			online: data.online
+			online: data.online,
+			in_game: data.in_game
 	//		friends: aux
 		});
 	}
@@ -110,7 +111,8 @@ export class User implements UserI {
 			first_name : data.first_name,
 			last_name : data.last_name,
 			avatar : data.avatar,
-			online: data.online
+			online: data.online,
+			in_game: data.in_game
 			});
 	}
 	static getMultipleUserInfo(users: UserEntity[], user: UserEntity): UserPublicInfoI[]{

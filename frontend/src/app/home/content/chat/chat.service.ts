@@ -3,6 +3,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { eChat, Nav } from "src/app/shared/ft_enums";
 import { ChatI, ChatPasswordUpdateI, ChatRoomI, RoomKeyI, SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
+import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { SocketService } from "../../socket.service";
 
 @Injectable({providedIn: "root"})
@@ -202,10 +203,20 @@ export class ChatService {
 		const url = '/api/users/chat/joinRoom';
 		try{
 			const ret = await (this.http.post<any>(url, room, { headers: new HttpHeaders({
-				Authorization: 'Bearer ' + session.token})}).toPromise());
+				Authorization: 'Bearer ' + session.token})},).toPromise());
 			return (ret);
 		}catch(e){
 			return (e);
+		}
+	}
+	async getUserInfo(user: UserPublicInfoI, session: SessionI)
+	{
+		const url = '/api/users/publicInfo ';
+		try{
+			const response = await this.http.post<any>(url, {token : session.token, user : user}).toPromise();
+			return (response);
+		}catch(e){
+			return ([]);
 		}
 	}
 }

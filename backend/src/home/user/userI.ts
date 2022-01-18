@@ -35,6 +35,7 @@ export interface UserInfoI {
     avatar: string;
     factor_enabled: boolean;
 	online: boolean;
+	in_game: boolean;
 }
 export interface UserPublicInfoI {
 	login: string,
@@ -43,4 +44,5 @@ export interface UserPublicInfoI {
     nickname: string;
     avatar: string;
 	online: boolean;
+	in_game: boolean;
 }

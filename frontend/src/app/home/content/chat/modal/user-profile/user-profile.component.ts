@@ -1,13 +1,14 @@
 import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
 import { Router } from "@angular/router";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { eChat, eChatType, ePlay } from "src/app/shared/ft_enums";
+import { eChat, eChatType, ePlay, Nav } from "src/app/shared/ft_enums";
 import { ChatI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { DashboardService } from "../../../dashboard/dashboard.service";
 import { ChatService } from "../../chat.service";
 import { PlayService } from "../../../play/play.service";
+import { LiveService } from "../../../live/live.service";
 
 @Component({
 	selector: "app-user-profile",
@@ -25,9 +26,13 @@ export class UserProfileComponent implements OnInit {
 				private dashboardService: DashboardService,
 				private chatService: ChatService,
 				private playService: PlayService,
+				private liveService: LiveService,
 				private sQuery: SessionStorageQueryService) {}
 
-	ngOnInit(): void {
+	async ngOnInit(): Promise<void> {
+		const resp = await this.chatService.getUserInfo(this.user, this.session);
+		if (resp.statusCode == 200)
+			this.user = resp.data;
 	}
 	close() {
 		this.modal.dismiss();
@@ -61,6 +66,16 @@ export class UserProfileComponent implements OnInit {
 		
 		//this.playService.emit(ePlay.ON_START_PLAY, {player1: this.preferences.userInfo, player2: this.user});
 	}
-
+	async watchLive(){
+		const resp = await this.liveService.watchLive(this.session, this.user);
+		if (resp.statusCode == 200)
+		{
+			this.modal.dismiss();
+			if (this.preferences.path == Nav.LIVE)
+				this.liveService.liveEventEmitter.emit({stream : resp.data});
+			else
+				this.router.navigateByUrl("/live?game_id=" + resp.data.id);
+		}
+	}
 
 }

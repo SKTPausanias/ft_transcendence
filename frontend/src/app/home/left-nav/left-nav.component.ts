@@ -36,7 +36,7 @@ export class LeftNavComponent implements OnInit {
 				this.url = '/';
 			}
 			if (event instanceof NavigationEnd) {
-				this.url = event.url;
+				this.url = event.url.split('?')[0];
 				this.newItemEvent.emit(this.url);
 			}
 			if (event instanceof NavigationError) {

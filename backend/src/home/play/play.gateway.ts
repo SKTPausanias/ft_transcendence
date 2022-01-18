@@ -10,6 +10,7 @@ import { PlayerI, WaitRoomI } from './iPlay';
 import { PlayEntity } from './play.entity';
 import { PlayService } from './play.service';
 import { UserService } from '../user/user.service';
+import { wSocket } from 'src/socket/eSocket';
 
 
 @WebSocketGateway({ cors: true })

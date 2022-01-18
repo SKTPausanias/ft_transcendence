@@ -3,6 +3,7 @@ import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { ePlay } from "src/app/shared/ft_enums";
 import { SessionI, SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
+import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
 import { SocketService } from "../../socket.service";
 
 @Injectable({
@@ -37,14 +38,16 @@ export class LiveService {
 			}catch(error){}
 		})
 	}
-	async getLiveGames(session: SessionI): Promise<any> {
-		const url = "/api/users/play/liveGames";
+	async watchLive(session: SessionI, user: UserPublicInfoI): Promise<any> {
+		const url = "/api/users/play/watchLive";
 
 		try{
-			const ret = await (this.http.get<any>(url, { headers: new HttpHeaders({
-				Authorization: 'Bearer ' + session.token})
-				}).toPromise());
-				return (ret);
+			try{
+				const response = await this.http.post<any>(url, {token : session.token, user : user}).toPromise();
+				return (response);
+			}catch(e){
+				return ([]);
+			}
 		}catch(e){
 			return ([]);
 		}
