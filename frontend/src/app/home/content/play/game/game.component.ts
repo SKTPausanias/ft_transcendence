@@ -11,8 +11,9 @@
  import { EventEmitter } from "@angular/core";
  import { SocketService } from '../../../socket.service';
  import { io, Socket } from "socket.io-client";
- /* import { iBallPosition } from './classes/iBallPosition';
- import { Ball } from './classes/ball'; */
+ import { iBallPosition } from './classes/iBallPosition';
+ import { Ball } from './classes/ball';
+ import { Boundaries } from './classes/iPosition'
  
  @Component({
    selector: 'app-game',
@@ -24,61 +25,76 @@
    private socket: Socket;
    width: number;
    height: number;
-   y: number;
    gameOptFilter: EventEmitter<any>;
    context: CanvasRenderingContext2D | null;
-   /* private position: iBallPosition;
-   public ball: Ball; */
-   //paddle_a: Paddle;
+   ball: Ball;
+   boundaries: Boundaries;
+   fps: number = 60;
    
    constructor(private socketService: SocketService,) {
         this.width = 600;
-        this.height = 400;   
-        this.y = (this.height / 2) - 25;
+        this.height = 400;  
+        this.fps = 60;
+        this.ball = new Ball(15, 15, 2, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+        this.boundaries = this.ball.getCollisionBoundaries();
+        console.log("Ball data from game: ", this.ball);
     }
  
    ngOnInit(): void {
      this.socket = this.socketService.getSocket();
-    
    }
- 
+   
+   //Call when the whole elements in the html document were loaded
    ngAfterViewInit(){
     this.context = this.gameCanvas.nativeElement.getContext('2d');
+   // this.renderFrame();
     try {
-          this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-          this.context?.fillRect(100, this.y, 10, 50);
-         
-          //this.renderFrame();
-    } catch(error){}
-   }
- 
-   move(direction: string){
-        this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-        this.context?.fillRect(100, this.y, 10, 50);
+            this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+            this.context?.fillRect(this.ball.getPosition().x, this.ball.getPosition().y, this.ball.getWidth(), this.ball.getHeight());
+            this.renderFrame();
+            setInterval(() => this.fpsService(), 1 / this.fps); //call fpsService at 60hz (1/60), we can set this time
+        } catch(error){}
     }
- 
-   renderFrame(): void {
-     // Run rendering logic ...
-      //draw(this.ball);
-     //draw(paddle_a);
-     
-     window.requestAnimationFrame(() => this.renderFrame());
+    
+    //Checks objects collisions. 'Till now only checks collision of the ball with four sides
+    checkCollisions() {
+        // Bottom/Top Collision
+        let ballBounds = this.ball.getCollisionBoundaries();
+        if (ballBounds.bottom >= this.height || ballBounds.top <= 0)
+            this.ball.reverseY();
+
+        // Right left/right collision
+        if (ballBounds.left <= 0 || ballBounds.right >= this.width) {
+            this.ball.reverseX();   
+        }
+    }
+
+    //This function moves the elements and check if it is any colide
+    fpsService() {
+        this.ball.move();
+        this.checkCollisions();
+    }
+
+    //renders every frame cleaning and drawing the elements
+    renderFrame(): void {
+        this.boundaries = this.ball.getCollisionBoundaries();
+        this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+        this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
+        window.requestAnimationFrame(() => this.renderFrame());
    }
- 
-   @HostListener('window:keydown', ['$event'])
-   keyUp(event: KeyboardEvent) {
-     if (event.code == "ArrowUp") {
-        //console.log("start upping: ", event.code);
-        this.y -= 20;
-        this.move("up");
-       //this.controlState.upPressed = true;
-     }
-     if (event.code == "ArrowDown") {
-       //console.log("start downing: ", event.code);
-       this.y += 20;
-       this.move("down");
-       //this.controlState.downPressed = true;
-     }
+  
+   move(direction: string) {
+       this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+    }
+   
+    @HostListener('window:keydown', ['$event'])
+    keyUp(event: KeyboardEvent) {
+        if (event.code == "ArrowUp") {
+            this.move("up");
+        }
+        if (event.code == "ArrowDown") {
+            this.move("down");
+        }
    }
  
   /*  @HostListener('window:keyup', ['$event'])
