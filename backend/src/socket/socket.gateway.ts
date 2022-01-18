@@ -32,22 +32,19 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
 				sessionData.friends, User.getPublicInfo(sessionData.userInfo));
 				this.server.to(client.id).emit(wSocket.SESSION_INIT, sessionData);
-
-				await this.chatGateway.goOnlineOffline(sessionData.userInfo.login);
-				console.log("Connected: there are ", ++this.clientsConnected, " clients connected!: ", client.id);
+				++this.clientsConnected;
 			} catch (error) {
 				console.error(error);
 				this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
 			}
 		}
-	async handleDisconnect(client) {
-		console.log("Disconnected: there are ", --this.clientsConnected, " clients connected");
+	async handleDisconnect(client) { //set another way of counting users: This is not a good way
+		--this.clientsConnected
 	}
+	//What does it do???... if not neccessary, delete it
 	@SubscribeMessage(wSocket.SESSION_INIT)
-	async handshake(client, message) {
-		//console.log(SocketClass.findSocket(this.sockets, client.id).session.userID.nickname, " : ", message);
+	async handshake(client, message) {}
 
-	}
 	@SubscribeMessage(wSocket.USER_UPDATE)
 	async friendConnect(client, message) {
 		const sessionData = await this.getSessionData(client);
@@ -102,7 +99,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await this.userService.save(session.userID);
 			await this.socketService.emitToAllFriends(this.server, wSocket.USER_UPDATE, session.userID.login, 
 				friends, User.getPublicInfo(session.userID));
-			await this.chatGateway.goOnlineOffline(session.userID.login);
 		}
 		this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
 	}

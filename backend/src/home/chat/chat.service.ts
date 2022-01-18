@@ -108,9 +108,7 @@ export class ChatService {
 				await this.chatUserRepository.save(member)
 				await this.unreadedMsgRepository.save(unreadedMessage);
 			}
-		} catch (error) {
-			console.log(error)
-		}
+		} catch (error) {}
 	}
 	
 	async markAsReaded(user: UserEntity, room: ChatRoomI): Promise<number>
@@ -133,7 +131,6 @@ export class ChatService {
 			}
 			return (await this.getUnreadedMsg(user));
 		} catch (error) {
-			console.log(error)
 			return (0);
 		}
 	}
@@ -151,7 +148,6 @@ export class ChatService {
 				}
 			return (unreaded);
 		} catch (error) {
-			console.log(error)
 			return (0);
 		}
 	}
@@ -201,7 +197,6 @@ export class ChatService {
 			await this.chatUserRepository.delete(userToDelete);
 			return (room);
 		} catch (error) {//create response
-			console.log(error)
 			return (undefined);
 		}
 	}
@@ -242,7 +237,6 @@ export class ChatService {
 			}
 			return (room);
 		} catch (error) {
-			console.log(error);
 			return (<ChatEntity>{});
 		}
 	}
@@ -295,7 +289,6 @@ export class ChatService {
 			var chatUser = room.members.find(member => member.user.id == session.userID.id);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));
 		} catch (error) {
-			console.log(error)
 			return (Response.makeResponse(500, { error: "can't creat channel" }));
 		}
 	}
@@ -317,7 +310,6 @@ export class ChatService {
 				chatUser = await this.chatUserRepository.save(chatUser);
 			return (Response.makeResponse(200, this.parseChatRoom(room, chatUser)));	
 		} catch (error) {
-			console.log("errro");
 			return (Response.makeResponse(500, { error: "can't unlock room" }));
 
 		}
@@ -360,7 +352,6 @@ export class ChatService {
 			await this.activateUserRooms([chatUser.user], chatRoom);
 			return (await this.getChatRoomById(chatRoom.id));
 		} catch (error) {
-			console.log("error",error);
 			return (undefined)
 		}
 	}

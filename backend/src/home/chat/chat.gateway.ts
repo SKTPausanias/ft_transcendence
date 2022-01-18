@@ -35,9 +35,7 @@ export class ChatGateway {
 			if (room != undefined && room.members != undefined)
 				await this.emitRoomUpdateToAll(room, data.me.login, false);
 			await this.socketService.emitToSelf(this.server, eChat.ON_LEAVE_ROOM, data.me.login, data);
-		} catch (error) {
-			console.log("<error> onLeaveRoom:", error);
-		}
+		} catch (error) {}
 	}
 
 	@SubscribeMessage(eChat.ON_LOAD_ACTIVE_ROOMS)
@@ -55,13 +53,10 @@ export class ChatGateway {
 			const resp = await this.chatService.getAllMessages(data);
 			await this.server.to(client.id).emit(eChat.ON_All_MSG, me.login, resp);
 			const unreaded = await this.chatService.markAsReaded(me, data.room);
-			console.log("unreaded: ", unreaded);
 			await this.socketService.emitToSelf(this.server, eChat.ON_GET_UNREAD_MSG, me.login ,unreaded);
 			const room = await this.chatService.getChatRoomById(data.room.id);
 			await this.emitRoomUpdateToAll(room, me.login, true);
-		} catch (error) {
-			console.log(error);
-		}
+		} catch (error) {}
 	}
 	@SubscribeMessage(eChat.ON_NEW_MSG)
 	async onNewMsg(client, data) {
@@ -138,12 +133,6 @@ export class ChatGateway {
 		const room = await this.chatService.changeUserRole(data.roomId, data.user);
 		if (room)
 			await this.emitRoomUpdateToAll(room, me.login, false)
-	}
-
-
-	async goOnlineOffline(login: string){
-		console.log(login, " now is offline");;
-
 	}
 
 	async emitRoomUpdateToAll(room: ChatEntity, me: string, selfOnly: boolean){

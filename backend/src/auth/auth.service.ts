@@ -160,14 +160,11 @@ export class AuthService {
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
 			const sessions = await this.sessionService.findByUser(session.userID);
-			console.log("sessions: ", sessions.length);
 			if (sessions.length == 1)
 			{
-				console.log("changing to offline");
 				session.userID.online = false;
 				await this.userService.save(session.userID);
-			}else
-				console.log("skipping...");
+			}
 			return (await this.sessionService.removeByToken(token));
 		} catch (error) {
 			return (error);

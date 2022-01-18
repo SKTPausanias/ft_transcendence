@@ -41,7 +41,7 @@ export class PlayService {
             await this.playRepository.insert({player_1: me, player_2: opUsr});
         return (opUsr);
         } catch(e){
-            console.log("Error invitating oponent... from playService");
+            console.log(e);
             return (null);
         }
     }
@@ -79,10 +79,7 @@ export class PlayService {
 			]
 		})
 		if (tmp.length > 0)
-		{
-			console.log("Sorry your oponent is in game");
 			return (null);
-		}
 		await this.playRepository.save(invitation);
 		return (invitation);
 	}
@@ -129,8 +126,6 @@ export class PlayService {
 				{player_2: me.id, confirmed: true}
 			]
 		})
-		if (playRoom != undefined)
-            console.log("viewers: ", playRoom.viewers);
 		return (playRoom);
 	}
 

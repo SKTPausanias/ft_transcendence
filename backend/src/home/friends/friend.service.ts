@@ -31,7 +31,7 @@ export class FriendService {
 				ret.sort((a,b) => { return (a.nickname > b.nickname ? 1 : -1)} );	
 				return (ret);
 			} catch (error) {
-				console.log("ERROR");
+				console.log(error);
 				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));
 			}
 		}
@@ -82,7 +82,7 @@ export class FriendService {
 				});
 				return (ret);
 			} catch (error) {
-				console.log("ERROR");
+				console.log(error);
 				throw new Exception(Response.makeResponse(500, {error : "Can't find friends"}));
 			}
 	}

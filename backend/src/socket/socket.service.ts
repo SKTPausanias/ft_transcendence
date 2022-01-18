@@ -88,7 +88,6 @@ export class SocketService {
 	async emitToOneSession(server: any, action: string, token: string, data: any)
 	{
 		const session = await this.sessionService.findSession(token);
-		console.log("emiting to: ", session.socket_id);
 		server.to(session.socket_id).emit(action, session.userID.login, data);
 	}
 	

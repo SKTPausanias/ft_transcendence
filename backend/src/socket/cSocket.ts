@@ -43,7 +43,6 @@ export class SocketClass implements wSocketI{
 	onDeleteAccount(server: any, sockets: wSocketI[], friendsE: UserPublicInfoI[]){
 		friendsE.forEach(element => {
 			var friends = this.findAllSocketsByNickname(sockets, element.nickname);
-			console.log(friends);
 			if (friends !== undefined)
 				friends.forEach(friend => {
 					server.to(friend.socket_id).emit(wSocket.USER_DELETE, this.me.nickname, User.getPublicInfo(this.session.userID));

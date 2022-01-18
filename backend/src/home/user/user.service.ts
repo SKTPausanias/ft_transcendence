@@ -87,7 +87,6 @@ export class UserService {
 	}
 	private setChatRoom(user: UserEntity, chatUsers: ChatUsersEntity, chat: ChatEntity): ChatRoomI {
 		var chatRoom: ChatRoomI = <ChatRoomI>{};
-		console.log("Found obj: ", chatUsers);
 		chatRoom.id = chat.id;
 		chatRoom.name = chat.name;
 		chatRoom.me = user; //UserPublicInfoI;
@@ -95,19 +94,6 @@ export class UserService {
 		chatRoom.imMuted = chatUsers.muted; // false;
 		chatRoom.owner = chatUsers.owner; //: boolean;
 		chatRoom.admin = chatUsers.admin //: boolean;
-		
-		
-		/*banned: UserPublicInfoI[];
-		chatRoom.members = chat.members; // UserPublicInfoI[];
-		img: string | undefined;
-		ownerInfo: UserPublicInfoI;
-		muted: UserPublicInfoI[];
-		admins: UserPublicInfoI[];
-		onlineStatus: boolean;
-		type: string;
-		protected: boolean;
-		hasRoomKey: boolean;
-		unreadMsg: number; */
 		return (chatRoom)
 	}
 	async deleteUser(usr: any): Promise<any>
@@ -118,35 +104,32 @@ export class UserService {
 		try {
 			/* This user will be used to reasign all messages to itself */
 			var nobody: UserEntity = await this.findByLogin("nobody");
-			console.log("Looking for friendships...");
 			var user: UserEntity = await this.findByLogin(usr.login);
 			
 			/**Looking for friendship to lacate the chats directs if they exists */
-			console.log("User found...");
 			const friendships = await this.friendRepository.find({
 				relations: ['user_1', 'user_2'],
 				where: [{user_1: user.id}, {user_2 : user.id} ]
 			});
 			/**If the friendship is present, it will be removed */
 			await this.friendRepository.remove(friendships);
-			console.log("Friendship was removed...");
 			
 			/* const session = await this.sessionRepository.find({relations: ["userID"], where: {userID: user}});
 			await this.sessionRepository.remove(session);
-			console.log("Sessions were removed...");
+			
  			*/
 			/**Looking for actives rooms of the user, including the ones that are direct or private */
 			const activeRoom = await this.activeRoomRepository.find({relations: ["user"], where: {user: user}});
-			console.log("Active rooms were found...");
+			
 			/**Then they'll be removed */
 			await this.activeRoomRepository.remove(activeRoom);
-			console.log("Active rooms were removed...");
+			
 
 			/**Locate unread messages on the proper table, next, in an iteration they will be removed */
 			const chatUsers = await this.chatUserRepository.find({relations: ["user", "unreadMessages"], where: {user: user}});
 			for (var i = 0; i < chatUsers.length; i++)
 				await this.unreadMessagesRepository.remove(chatUsers[i].unreadMessages);
-			console.log("Unread messages were removed...");
+			
 
 			/**This step will found all messages belonging to the user accaout that will be deleted */
 			const messages = await this.messagesRepository.find({relations: ["owner", "chat", "chat.members" /*, "chat.members.user"*/], where: { owner: user }});
@@ -162,15 +145,15 @@ export class UserService {
 			/**After reasigning the messages (Maybe before... I'll check those cases to see what is the best solution) */
 			//select * FROM chat_users, chat where chat_users."userId" = 6 AND chat_users."roomId" = chat."id" AND chat.type != 'direct';
 			const rooms = await this.chatUserRepository.find({relations: ["user", "room"], where: {user: user}});
-			//console.log("Rooms found where: ", rooms);
+			
 			//Must get all non-Direct chats to leave these chats
 			//after that we can delete those chats which are directs or change all references to noboy
 			for (var i = 0; i < rooms.length; i++) {
 				if (rooms[i].room.type != "direct") {
-					console.log("Setting on channel: ", i);
+					
 					this.chatService.leaveRoom(this.setChatRoom(user, rooms[i], rooms[i].room));
 				} else if (rooms[i].room.type == "direct") {
-					console.log("Room direct find the chatUserID to delete: ", rooms[i].room.id)
+					
 					const toDelete = await this.chatUserRepository.find({relations: ["room"], where: {"room.id": rooms[i].room.id}})
 					this.chatUserRepository.remove(toDelete);
 					this.chatRepository.remove(rooms[i].room);
@@ -247,9 +230,9 @@ export class UserService {
 	async desactivateRoom(users: UserEntity[], roomId: number){
 		users.forEach(async user => {
 			user.active_chat_rooms = user.active_chat_rooms.filter(id => id != roomId);
-			console.log("llega3");
+			
 			await this.save(user);
-			console.log("llega4");
+			
 		});
 	} */
 }

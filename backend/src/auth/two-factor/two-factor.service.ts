@@ -43,7 +43,6 @@ export class TwoFactorService {
 				secret: twoFactor.base,
 				encoding: 'base32'
 			});
-			console.log("generate token: ", token);
 			return (token);	
 		} catch (error) {
 			throw new Exception(Response.makeResponse(500, {error : "Can't generate token"}))

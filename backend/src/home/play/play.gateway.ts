@@ -53,7 +53,6 @@ export class PlayGateway {
 
 	@SubscribeMessage(ePlay.ON_ACCEPT_INVITATION)
 	async onAcceptInvitation(client, data) {
-		console.log("<debug> onAcceptInvitation:", data);
 		var waitRoom: WaitRoomI = <WaitRoomI>{};
 		const me = await this.getSessionUser(client);
 		const invitation = await this.playService.acceptGameInvitation(me, data);
@@ -66,7 +65,6 @@ export class PlayGateway {
 
 	@SubscribeMessage(ePlay.ON_DECLINE_INVITATION)
 	async onDeclineInvitation(client, data) {
-		console.log("<debug> onDeclineInvitation:", data);
 		const me = await this.getSessionUser(client);
 		await this.playService.declineGameInvitation(me, data);
 		this.server.to(client.id).emit(ePlay.ON_DECLINE_INVITATION, data);
@@ -163,7 +161,6 @@ export class PlayGateway {
 	{
 		for (let i = 0; i < recivers.length; i++) {
 			const reciver = await this.userService.findByLogin(recivers[i].login);
-			console.log("emiting to: ", reciver.login);
 			this.socketService.emitToOne(this.server, ePlay.ON_GAME_END, undefined, reciver, data);	
 		}
 	}

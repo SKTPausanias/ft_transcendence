@@ -34,7 +34,6 @@ export class SettingsService {
 		async updateUser(user: any, header: any){
 			const token = header.authorization.split(' ')[1];
 			try {
-				console.log("Update user");
 				const session = await this.sessionService.findSessionWithRelation(token);
 				/* if (session.userID.factor_enabled && !user.factor_enabled)
 					await this.twoFactorService.removeSecret(session.userID); */
@@ -86,7 +85,6 @@ export class SettingsService {
 				const token = header.authorization.split(' ')[1];
 				const session = await this.sessionService.findSessionWithRelation(token);
 				const validate = await this.twoFactorService.validateToken(session.userID, body.code)
-				console.log(validate, body.code);
 				if (!validate)
 					return (Response.makeResponse(401, {error : 'Code is not valid!'}));
 				const qr = await this.twoFactorService.generateQr(session.userID);
@@ -111,7 +109,6 @@ export class SettingsService {
 			return cb(null, true);
 		}
 		static fileNemaHelper(req, file, cb):void {
-			//console.log("Value of req: ", req);
 			cb(null, file.originalname)
 		}
 	
@@ -132,9 +129,8 @@ export class SettingsService {
 			del = process.cwd() + '/public/' + del;
 			try {
 				fs.unlinkSync(del);
-				console.log("DELETED");
-			} catch(err) {
-				console.error(err)
+			} catch(e) {
+				console.error(e)
 			}
 		}
 }
