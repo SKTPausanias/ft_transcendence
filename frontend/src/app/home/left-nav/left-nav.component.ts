@@ -61,14 +61,6 @@ export class LeftNavComponent implements OnInit {
 		snd.volume = 0.1;
 		snd.play();
 		this.modalService.open(this.MODALS[name], { centered: true, animation: true });
-
-		/* var answer = window.confirm("Logout?");
-		if (answer) {
-			const resp = await this.authService.logout(this.sQuery.getSessionToken());
-			console.log(resp);
-			this.sQuery.removeAll();
-			this.router.navigateByUrl('logIn');
-		} */
 	}
 	parseRouterUrl(): string{
 		const routerUrl = this.router.url;

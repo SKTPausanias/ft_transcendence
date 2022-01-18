@@ -253,7 +253,6 @@ export class ChatModalComponent implements OnInit {
 		  modal.componentInstance.user = item;
 		  modal.componentInstance.preferences = this.preferences;
 		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-			  console.log("pass entry resived: ", receivedEntry);
 		  });
 	}
 	startStatusMsgTimer(msgStatus: StatusMessageI)

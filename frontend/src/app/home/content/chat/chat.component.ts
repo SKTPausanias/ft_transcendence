@@ -119,25 +119,19 @@ export class ChatComponent implements OnInit {
   closeRoom() {
     this.showRoom = false;
     this.closeRoomEvent.emit();
-    console.log("Close the chat.");
   }
 
   leaveChat(room: any){
-		console.log("Leaving....");
-		/* room.id, me*/
+	console.log("Leaving....");
+	/* room.id, me*/
 		if (confirm("Are you sure you want to leave?")){
-      console.log("Leaving room comfirmed.");
 			this.chatService.emit(eChat.ON_LEAVE_ROOM, room);
-    }
+		}
 	}
 
   addMemberToChat() {
     this.openModal("member");
   }
-  changePassword(){
-	  console.log("lets open modal pwd")
-	//this.openModal("pwd");
-}
   openModal(name: string, room?: ChatRoomI) {
     const modal = this.modalService.open(ChatModalComponent, {
       centered: false,

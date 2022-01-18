@@ -28,7 +28,6 @@ export class UserProfileComponent implements OnInit {
 				private sQuery: SessionStorageQueryService) {}
 
 	ngOnInit(): void {
-		console.log(this.user);
 	}
 	close() {
 		this.modal.dismiss();
@@ -42,7 +41,6 @@ export class UserProfileComponent implements OnInit {
 			resp = await (this.dashboardService.addFriendShip(this.user, this.session));
 		else
 			resp = await this.dashboardService.removeFriendShip(this.user, this.session);
-		console.log(resp);
 	}
 	startChat(){
 		this.modal.dismiss();
