@@ -102,3 +102,6 @@ main{
 .user-profile .modal-dialog{
 	max-width: calc(100vw - 40%); 
 }
+.disabled_nav{
+	pointer-events: none;
+  }

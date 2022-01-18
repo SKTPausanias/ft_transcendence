@@ -4,10 +4,13 @@ import { mDate } from 'src/shared/utils/date';
 import { SocketService } from 'src/socket/socket.service';
 import { UserEntity } from '../user/user.entity';
 import { User } from '../user/userClass';
+import { UserPublicInfoI } from '../user/userI';
 import { ePlay, eRequestPlayer } from './ePlay';
 import { PlayerI, WaitRoomI } from './iPlay';
 import { PlayEntity } from './play.entity';
 import { PlayService } from './play.service';
+import { UserService } from '../user/user.service';
+
 
 @WebSocketGateway({ cors: true })
 export class PlayGateway {
@@ -15,7 +18,8 @@ export class PlayGateway {
 	timeLap: number = 120;
 	constructor(private socketService: SocketService,
                 private playService: PlayService,
-				private sessionService: SessionService){}
+				private sessionService: SessionService,
+				private userService: UserService){}
 
 	init(server: any){
 		this.server = server;
@@ -76,7 +80,7 @@ export class PlayGateway {
 		const waitRoom = this.playService.createWaitRoom(invitation);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_2, waitRoom);
-		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, [waitRoom]);
+		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, await this.playService.onGetLiveGames());
 	}
 
 	@SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
@@ -98,6 +102,47 @@ export class PlayGateway {
 		const games = await this.playService.onGetLiveGames();
 		this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_GAMES, me.login, me, games);
 	}
+	@SubscribeMessage(ePlay.ON_START_STREAM)
+	async onStartStream(client, data: WaitRoomI) {
+		const me = await this.getSessionUser(client);
+		const game = await this.playService.addViewer(me, data);
+		if (game == undefined)
+			return ;
+		var gameI = this.playService.createWaitRoom(game);
+		// ON_WAIT_ROOM_ACCEPT has to be changed to ON_ROOM_UPDATE
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, game.player_1, gameI);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, game.player_2, gameI);
+		
+	}
+
+	@SubscribeMessage(ePlay.ON_STOP_STREAM)
+	async onStopStream(client, data: WaitRoomI) {
+		const me = await this.getSessionUser(client);
+		const game = await this.playService.removeViewer(me, data);
+		if (game == undefined)
+			return ;
+		var gameI = this.playService.createWaitRoom(game);
+		// ON_WAIT_ROOM_ACCEPT has to be changed to ON_ROOM_UPDATE
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, game.player_1, gameI);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, game.player_2, gameI);
+		
+	}
+
+	@SubscribeMessage(ePlay.ON_GAME_END)
+	async onGameEnd(client, data: WaitRoomI) {
+		await this.playService.removePlayRoom(data);
+		const me = await this.getSessionUser(client);
+		var oponent;
+		if (me.login == data.player1.login)
+		 	oponent = await this.playService.getPlayer(data.player2);
+		else
+			oponent = await this.playService.getPlayer(data.player1);
+		data.ready = false;
+		// ON_WAIT_ROOM_REJECT has to be changed to ON_ROOM_UPDATE
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
+		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
+		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, await this.playService.onGetLiveGames());
+	}
 
 	private async getSession(client: any)
 	{
@@ -111,5 +156,15 @@ export class PlayGateway {
 	{
 		const session = await this.getSession(client);	
 		return (session.userID);	
+	}
+
+	//Posibly can be deleted
+	private async emitToAll(recivers: UserPublicInfoI[], data?: any)
+	{
+		for (let i = 0; i < recivers.length; i++) {
+			const reciver = await this.userService.findByLogin(recivers[i].login);
+			console.log("emiting to: ", reciver.login);
+			this.socketService.emitToOne(this.server, ePlay.ON_GAME_END, undefined, reciver, data);	
+		}
 	}
 }

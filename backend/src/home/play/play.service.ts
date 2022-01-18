@@ -51,7 +51,7 @@ export class PlayService {
 	{
 		var userProfiles: UserPublicInfoI[] = [];
 		const invitations = await this.playRepository.find({
-			relations: ["player_1", "player_2"],
+			relations: ["player_1", "player_2", "viewers"],
 			where: {player_2: user.id, confirmed: false}
 		});
 		for (let i = 0; i < invitations.length; i++) {
@@ -64,7 +64,7 @@ export class PlayService {
 	async acceptGameInvitation(me: UserEntity, user: UserPublicInfoI): Promise<PlayEntity>{
 		const usrEntity = await this.userService.findByLogin(user.login);
 		const invitation = await this.playRepository.findOne({
-			relations: ["player_1", "player_2"],
+			relations: ["player_1", "player_2", "viewers"],
 			where: {player_1: usrEntity.id, player_2: me.id}
 		})
 		invitation.confirmed = true;
@@ -107,7 +107,7 @@ export class PlayService {
 	async acceptWaitRoom(me: UserEntity, waitRoom: WaitRoomI): Promise<PlayEntity>
 	{
 		const invitation = await this.playRepository.findOne({
-			relations: ["player_1", "player_2"],
+			relations: ["player_1", "player_2", "viewers"],
 			where: {id: waitRoom.id}
 		})
 		if (invitation.player_1.login == me.login)
@@ -120,14 +120,10 @@ export class PlayService {
 		return(invitation);
 	}
 
-	async getPlayer(player: PlayerI): Promise<UserEntity>
-	{
-		return (await this.userService.findByLogin(player.login));
-	}
 	async getActivePlayRoom(me: UserEntity): Promise<PlayEntity>
 	{
 		const playRoom = await this.playRepository.findOne({
-			relations: ["player_1", "player_2"],
+			relations: ["player_1", "player_2", "viewers"],
 			where: [
 				{player_1: me.id, confirmed: true},
 				{player_2: me.id, confirmed: true}
@@ -137,6 +133,7 @@ export class PlayService {
             console.log("viewers: ", playRoom.viewers);
 		return (playRoom);
 	}
+
 	async onGetLiveGames(): Promise<WaitRoomI[]>
 	{
 		try {
@@ -156,28 +153,34 @@ export class PlayService {
 			return (array);
 		}
 	}
-	async getLiveGames(header: string): Promise<any>
+
+	async addViewer(viewer: UserEntity, gameRoom: WaitRoomI): Promise<PlayEntity>
 	{
-		const token = header.split(' ')[1];
-		try {
-			var array: WaitRoomI[] = [];
-			const session = await this.sessionService.findSessionWithRelation(token);
-			if (session == undefined)
-				return (Response.makeResponse(401, { error: "unauthorized" }));
-			//get games
-			const games = await this.playRepository.find({ 
-				relations: ["player_1", "player_2"],
-				where: { ready: true } 
-			});
-			if (games.length == 0)
-				return (Response.makeResponse(200, array ));
-			for (let i = 0; i < games.length; i++)
-				array.push(this.createWaitRoom(games[i]));
-			return (Response.makeResponse(200, array ));					
-		}
-		catch (e) {
-			return (Response.makeResponse(500, { error: "internal server error" }));
-		}
+		const game = await this.playRepository.findOne({
+			relations: ["player_1", "player_2", "viewers"],
+			where: {id: gameRoom.id}
+		})
+		if (game == undefined)
+			return (game);
+		game.viewers.push(viewer);
+		await this.playRepository.save(game);
+		return (game);
+	}
+	async removeViewer(viewer: UserPublicInfoI, gameRoom: WaitRoomI): Promise<PlayEntity>
+	{
+		var game = await this.playRepository.findOne({
+			relations: ["player_1", "player_2", "viewers"],
+			where: {id: gameRoom.id}
+		})
+		if (game == undefined)
+			return (game);
+		game.viewers = game.viewers.filter(item => item.login != viewer.login);
+		await this.playRepository.save(game);
+		return (game);
+	}
+	async getPlayer(player: PlayerI): Promise<UserEntity>
+	{
+		return (await this.userService.findByLogin(player.login));
 	}
 
 	public createWaitRoom(invitation: PlayEntity): WaitRoomI
@@ -187,7 +190,8 @@ export class PlayService {
 			player1: this.createPlayer(invitation.player_1, invitation.p1_status),
 			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
 			expires: invitation.expiration_time,
-			ready: invitation.ready
+			ready: invitation.ready,
+			viewers: invitation.viewers
 		})
 	}
 
@@ -202,6 +206,30 @@ export class PlayService {
 		})
 	}
 
+	/** Get live games for controler. Can be deleted */
+	async getLiveGames(header: string): Promise<any>
+	{
+		const token = header.split(' ')[1];
+		try {
+			var array: WaitRoomI[] = [];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, { error: "unauthorized" }));
+			//get games
+			const games = await this.playRepository.find({ 
+				relations: ["player_1", "player_2", "viewers"],
+				where: { ready: true } 
+			});
+			if (games.length == 0)
+				return (Response.makeResponse(200, array ));
+			for (let i = 0; i < games.length; i++)
+				array.push(this.createWaitRoom(games[i]));
+			return (Response.makeResponse(200, array ));					
+		}
+		catch (e) {
+			return (Response.makeResponse(500, { error: "internal server error" }));
+		}
+	}
 	/*
     play = find(by id with relations[ player_1, player_2, viewers]);
     for (...)

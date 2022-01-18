@@ -6,7 +6,10 @@ export enum ePlay {
 	ON_DECLINE_INVITATION = "on-declien-invitation",
 	ON_WAIT_ROOM_ACCEPT = "on-wait-room-accept",
 	ON_WAIT_ROOM_REJECT = "on-wait-room-reject",
-	ON_GET_LIVE_GAMES = "on-get-live-games"
+	ON_GET_LIVE_GAMES = "on-get-live-games",
+	ON_START_STREAM = "on-start-stream",
+	ON_STOP_STREAM = "on-stop-stream",
+	ON_GAME_END = "on-game-end"
 }
 export enum eRequestPlayer{
 	WAITING = "waiting",

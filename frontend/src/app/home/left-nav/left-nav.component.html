@@ -1,4 +1,4 @@
-<div class="" style="background-color: #222B3C;">
+<div class="" style="background-color: #222B3C;" [ngClass]="{'disabled_nav': leftNavPreference.in_game}">
 	<div class="d-flex flex-column align-items-center align-items-start text-white min-vh-100 pt-3 pb-3">
 		<img src="/assets/img/logo.png"class="ico ico_m img-fluid" (click)="home()" alt="home" #home_e [ngClass]="{'selected' : url == navL.HOME}" (mouseenter) ="mouseEnter()">
 		<div id="sep" class="pt-3"></div>
@@ -16,3 +16,4 @@
 		</div>
 	</div>
 </div>
+

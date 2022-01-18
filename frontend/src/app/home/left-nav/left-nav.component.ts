@@ -57,8 +57,6 @@ export class LeftNavComponent implements OnInit {
 	chat(): void { this.selectSnd.play();this.navigate(Nav.CHAT); }
 	conf(): void { this.selectSnd.play();this.navigate(Nav.CONF); }
 	async open(name: string) {
-		if (this.leftNavPreference.game != undefined && this.leftNavPreference.game.ready)
-			return ;
 		var snd = new Audio("../../../assets/sounds/logout.wav");
 		snd.volume = 0.1;
 		snd.play();
@@ -79,8 +77,6 @@ export class LeftNavComponent implements OnInit {
 		return (this.url)
 	}
 	navigate(path: string){
-		if (this.leftNavPreference.game != undefined && this.leftNavPreference.game.ready)
-			return ;	
 		this.newItemEvent.emit(path);
 		this.router.navigateByUrl(path);
 	}

@@ -141,6 +141,10 @@ export class HomeComponent implements OnInit {
 				this.sharedPreference.game_invitation = data.allInvitations;
 			else if (data.waitRoomStatus !== undefined)
 				this.sharedPreference.game = data.waitRoomStatus;
+			if (this.sharedPreference.game != undefined && this.sharedPreference.game.ready)
+				this.sharedPreference.in_game = true;
+			else
+				this.sharedPreference.in_game = false;
 		});
 	}
 

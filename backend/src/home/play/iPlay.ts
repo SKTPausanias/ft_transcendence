@@ -1,9 +1,12 @@
+import { UserPublicInfoI } from "../user/userI"
+
 export interface WaitRoomI {
 	id: number,
 	player1: PlayerI,
 	player2: PlayerI,
 	expires : number,
-	ready: boolean
+	ready: boolean,
+	viewers: UserPublicInfoI[]
 }
 export interface PlayerI  {
 	id: number,

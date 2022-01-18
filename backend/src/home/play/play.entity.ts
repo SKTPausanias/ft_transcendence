@@ -30,6 +30,7 @@ export class PlayEntity {
     @Column({default: eRequestPlayer.WAITING})
     p2_status: string;
 
-    @OneToMany(() => UserEntity, viewer=>viewer.live)
+    @OneToMany(() => UserEntity, viewer=>viewer.live,
+	{onDelete: "CASCADE"})
     viewers: UserEntity[];
 }

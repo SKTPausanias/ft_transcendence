@@ -17,8 +17,10 @@ export class PlayComponent implements OnInit {
 
 	ngOnInit(): void {}
 
+	ngOnDestroy(): void {
+	}
 	cancelGame(){
-		this.playService.emit(ePlay.ON_WAIT_ROOM_REJECT, this.playPreference.game);
+		this.playService.emit(ePlay.ON_GAME_END, this.playPreference.game);
 		this.playPreference.game = <WaitRoomI>{};
 	}
 }

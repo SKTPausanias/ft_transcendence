@@ -90,7 +90,8 @@ export class UserEntity {
     @OneToMany(() => ActiveRoomEntity, (activeRoom) => activeRoom.id)
     activeRooms: ActiveRoomEntity[];
 
-    @ManyToOne(() => PlayEntity)
+    @ManyToOne(() => PlayEntity,
+	{onDelete: "SET NULL"})
     @JoinColumn()
     live: PlayEntity;
 }

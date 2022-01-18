@@ -30,6 +30,7 @@ export class LiveComponent implements OnInit {
 			this.games = response.data; */
 	}
 	ngOnDestroy(): void {
+		this.cancelStreaming();
 		this.liveEventReciver.unsubscribe();
 	}
 	initLiveEventReciver(){
@@ -37,15 +38,22 @@ export class LiveComponent implements OnInit {
 			console.log("data from live service recived: ", data);
 			if (data.games)
 				this.games = data.games;
+			if (this.games.find(item => item.id == this.streaming.id) == undefined)
+			{
+				this.isStreaming = false;
+				this.streaming = <WaitRoomI>{};
+			}
 		})
 	}
 
 	startStreaming(game: WaitRoomI): void {
 		this.isStreaming = true;
 		this.streaming = game;
+		this.liveService.emit(ePlay.ON_START_STREAM, game);
 	}
 
 	cancelStreaming(): void {
+		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;
 		this.streaming = <WaitRoomI>{};
 	}
