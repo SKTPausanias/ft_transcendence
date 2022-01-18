@@ -31,7 +31,6 @@ export class GameWaitRoomComponent implements OnInit {
 			this.showAcceptBtn = false;
 		if (this.me.login == this.waitRoom.player2.login && this.waitRoom.player2.status == eRequestPlayer.ACCEPTED)
 			this.showAcceptBtn = false;
-		console.log("onInit(): ", this.waitRoom);
 		this.startGameWaitTimer();
 	}
 

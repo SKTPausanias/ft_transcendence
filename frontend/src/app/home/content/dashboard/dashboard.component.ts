@@ -41,7 +41,6 @@ export class DashboardComponent implements OnInit {
 	async onSubmitFriends(): Promise<void> {
 	  this.users = (await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value));
 	  this.users = this.users.filter(item => item.login != "nobody");
-	  console.log("Users found From dashboard: ", this.users);
 	}
   
 	initSearchboxListener(){

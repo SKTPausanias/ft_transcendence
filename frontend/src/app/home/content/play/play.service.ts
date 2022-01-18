@@ -30,7 +30,6 @@ export class PlayService {
 	private onLoadAllGameInvitations(){
 		this.socket.on(ePlay.ON_LOAD_ALL_GAME_INVITATIONS, (emiter: string, data: any) => {
 			try {
-				console.log("onLoadAllGameInvitations from playService: ", emiter, data);
 				this.playEmiter.emit({allInvitations: data});
 			}catch(error){}
 		})
@@ -38,7 +37,6 @@ export class PlayService {
 	private onLoadActiveWaitRoom(){ ///Change test name for another more convenient
 		this.socket.on(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM, (data: any) => {
 			try {
-				console.log("onWaitRoomAccept(): ", data);
 				this.playEmiter.emit({acceptation: data});
 			}catch(error){}
 		})
@@ -46,7 +44,6 @@ export class PlayService {
 	private onRequestInvitation(){
 		this.socket.on(ePlay.ON_REQUEST_INVITATION, (emiter: string, data: any) => {
 			try {
-				console.log("onRequestInvitation from playService: ", emiter, data);
 				this.playEmiter.emit({invitation: data});
 			}catch(error){}
 		})
@@ -54,7 +51,6 @@ export class PlayService {
 	private onDeclineInvitation(){
 		this.socket.on(ePlay.ON_DECLINE_INVITATION, (data: any) => {
 			try {
-				console.log("onDeclineInvitation from playService: ", data);
 				this.playEmiter.emit({declination: data});
 			}catch(error){}
 		})
@@ -62,7 +58,6 @@ export class PlayService {
 	private onAcceptInvitation(){
 		this.socket.on(ePlay.ON_ACCEPT_INVITATION, (emiter: string, data: any) => {
 			try {
-				console.log("onAcceptInvitation from playService: ", data);
 				this.playEmiter.emit({acceptation: data});
 			}catch(error){}
 		})
@@ -77,13 +72,11 @@ export class PlayService {
 	private onWaitRoomAccept(){ ///Change test name for another more convenient
 		this.socket.on(ePlay.ON_WAIT_ROOM_ACCEPT, (emiter: string, data: any) => {
 			try {
-				console.log("onWaitRoomAccept(): ", data);
 				this.playEmiter.emit({waitRoomStatus: data});
 			}catch(error){}
 		})
 	}
 	emit(action: string, data?: any){
-		console.log("emit from playService: ", action, data);
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
 }

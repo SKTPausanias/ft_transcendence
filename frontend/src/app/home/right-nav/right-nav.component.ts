@@ -67,14 +67,11 @@ export class RightNavComponent implements OnInit {
 	async acceptGameInvitation(){
 		const user = this.rigtNavPreference.game_invitation[this.gamePos];
 		this.playService.emit(ePlay.ON_ACCEPT_INVITATION, user);
-		//return (await this.dashboardService.addFriendShip(user, this.session))// create a call and query to save state of accepted invitation
 
 	}
 	async declineGameInvitation(){
 		const user = this.rigtNavPreference.game_invitation[this.gamePos];
-		console.log("declineGameInvitation: ", user);
 		this.playService.emit(ePlay.ON_DECLINE_INVITATION, user);
-		//return (await this.dashboardService.removeFriendShip(user, this.session))// create a call and query to save state of declined invitation
 	}
 	nextGameInvitation(){
 		if (this.gamePos < this.rigtNavPreference.game_invitation.length - 1)
@@ -127,7 +124,6 @@ export class RightNavComponent implements OnInit {
 	}
 	/** END: Friend invitation */
 	openProfile(user: UserPublicInfoI){
-		console.log("open profile from right nav")
 		const modal = this.modalService.open(UserProfileComponent, {
 			centered: false,
 			animation: true,
@@ -137,7 +133,6 @@ export class RightNavComponent implements OnInit {
 		  modal.componentInstance.isMe = user.login == this.rigtNavPreference.userInfo.login;
 		  modal.componentInstance.preferences = this.rigtNavPreference ;
 		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
-			  console.log("pass entry resived: ", receivedEntry);
 		  });
 	}
 	openMyProfile()

@@ -106,14 +106,6 @@ export class HomeComponent implements OnInit {
 				this.sharedPreference.chat.rooms = data.rooms;
 			else if (data.unreaded != undefined)
 				this.sharedPreference.unreaded_messages = data.unreaded;
-
-		/* 	console.log("DATA: ", data);
-			var activeRoom = this.sharedPreference.chat.active_room;
-			console.log("SP: ", this.sharedPreference.chat);
-			if (activeRoom != undefined)
-				this.sharedPreference.chat.active_room = data.rooms.find((item: any) => item.id == activeRoom.id);
-			this.sharedPreference.chat.rooms = data.rooms; */
-
 		});
 	}
 
@@ -121,7 +113,6 @@ export class HomeComponent implements OnInit {
 		var invitations = this.sharedPreference.game_invitation;
 		this.playService.emit(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM);
 		this.playEmiter = this.playService.playEmiter.subscribe((data: any) => {
-			console.log("Data subscribed on playEmiter function!!!: ", data);
 			if (data.invitation !== undefined)
 				this.sharedPreference.game_invitation.push(data.invitation);
 			else if (data.declination !== undefined){
@@ -151,7 +142,6 @@ export class HomeComponent implements OnInit {
 	private openGameWaitRoom(waitRoom: WaitRoomI)
 	{
 		this.waitRoomStatus = waitRoom;
-		console.log("Data acceptation from home component: ", waitRoom);
 		this.modal = this.modalService.open(GameWaitRoomComponent, {
 			centered: false,
 			animation: true,

@@ -26,7 +26,6 @@ export class LiveService {
 	private onGetLiveGames(){
 		this.socket.on(ePlay.ON_GET_LIVE_GAMES, (emiter: string, data: any) => {
 			try {
-				console.log("onGetLiveGames liveService: ", emiter, data);
 				this.liveEventEmitter.emit({games: data});
 			}catch(error){}
 		})
@@ -34,7 +33,6 @@ export class LiveService {
 	private onGameEnd(){
 		this.socket.on(ePlay.ON_GAME_END, (emiter: string, data: any) => {
 			try {
-				console.log("onGameEnd liveService: ", emiter, data);
 				this.liveEventEmitter.emit({game_end: data});
 			}catch(error){}
 		})
@@ -52,7 +50,6 @@ export class LiveService {
 		}
 	}
 	emit(action: string, data?: any){
-		console.log("emit from playService: ", action, data);
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}
 }
