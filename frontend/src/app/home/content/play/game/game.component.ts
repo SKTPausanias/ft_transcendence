@@ -14,6 +14,7 @@
  import { iBallPosition } from './classes/iBallPosition';
  import { Ball } from './classes/ball';
  import { Boundaries } from './classes/iPosition'
+import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
  
  @Component({
    selector: 'app-game',
@@ -22,6 +23,7 @@
  })
  export class gameComponent implements OnInit, AfterViewInit {
    @ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
+   @Input() prefs: SharedPreferencesI;
    private socket: Socket;
    width: number;
    height: number;

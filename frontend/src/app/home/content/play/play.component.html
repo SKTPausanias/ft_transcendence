@@ -2,7 +2,7 @@
 
 	<div *ngIf="playPreference.game != undefined && playPreference.game.ready" >
 		<h1>GAME IN PROGRESS </h1>
-		<app-game></app-game>
+		<app-game class="ms-3" [prefs]="playPreference"></app-game>
 		<h3>{{playPreference.game.player1.nickname}} : {{playPreference.game.player1.status}}</h3>
 		<h3>{{playPreference.game.player2.nickname}} : {{playPreference.game.player2.status}}</h3>
 		<p>There is {{playPreference.game.viewers.length}} waching this game</p>
