@@ -15,6 +15,8 @@
  import { Ball } from './classes/ball';
  import { Boundaries } from './classes/iPosition'
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { Paddle } from './classes/paddle';
+import { toHash } from 'ajv/dist/compile/util';
  
  @Component({
    selector: 'app-game',
@@ -30,7 +32,9 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
    gameOptFilter: EventEmitter<any>;
    context: CanvasRenderingContext2D | null;
    ball: Ball;
+   paddle: Paddle;
    boundaries: Boundaries;
+   paddle_boundaries: Boundaries;
    fps: number = 60;
    
    ballImg = new Image();
@@ -40,8 +44,10 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
         this.width = 600;
         this.height = 400;  
         this.fps = 60;
-        this.ball = new Ball(40, 40, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(20, 20, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+        this.paddle = new Paddle(100, 15, 5000, { x: 15, y: (this.height / 2) });
         this.boundaries = this.ball.getCollisionBoundaries();
+        this.paddle_boundaries = this.paddle.getCollisionBoundaries();
         console.log("Ball data from game: ", this.ball);
     }
  
@@ -57,7 +63,9 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
    
     try {
             this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-            this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, 40, 40);
+            this.context?.fillRect(this.paddle_boundaries.left, this.paddle_boundaries.top, this.paddle.getWidth(), this.paddle.getHeight());
+            this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
+            //this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, 40, 40);
             this.renderFrame();
             setInterval(() => this.fpsService(), 1 / this.fps); //call fpsService at 60hz (1/60), we can set this time
         } catch(error){}
@@ -67,13 +75,29 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
     checkCollisions() {
         // Bottom/Top Collision
         let ballBounds = this.ball.getCollisionBoundaries();
+
+        // Paddle Collision
+        let paddleBounds = this.paddle.getCollisionBoundaries();
+
+        // Left Collision
+        if (ballBounds.left <= paddleBounds.right && ballBounds.bottom >= paddleBounds.top && ballBounds.top <= paddleBounds.bottom) {
+            this.ball.reverseX();
+        }
+
+        if (ballBounds.left <= 0 /*ballBounds.right >= this.width*/) {
+          //this.ball.reverseX();
+          this.ball.setPosition({ x: this.width / 2, y: this.height / 2 });
+        }
+
+        else if (ballBounds.right >= this.width) {
+          this.ball.reverseX();
+        }
+        
         if (ballBounds.bottom >= this.height || ballBounds.top <= 0)
             this.ball.reverseY();
 
         // Right left/right collision
-        if (ballBounds.left <= 0 || ballBounds.right >= this.width) {
-            this.ball.reverseX();   
-        }
+  
     }
 
     //This function moves the elements and check if it is any colide
@@ -85,8 +109,11 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
     //renders every frame cleaning and drawing the elements
     renderFrame(): void {
         this.boundaries = this.ball.getCollisionBoundaries();
+        this.paddle_boundaries = this.paddle.getCollisionBoundaries();
         this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-        this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
+        this.context?.fillRect(this.paddle_boundaries.left, this.paddle_boundaries.top, this.paddle.getWidth(), this.paddle.getHeight());
+        this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
+        //this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
         window.requestAnimationFrame(() => this.renderFrame());
    }
   
@@ -96,11 +123,11 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
    
     @HostListener('window:keydown', ['$event'])
     keyUp(event: KeyboardEvent) {
-        if (event.code == "ArrowUp") {
-            this.move("up");
+        if (event.code == "ArrowUp" && this.paddle_boundaries.top > 0) {
+            this.paddle.moveUp();
         }
-        if (event.code == "ArrowDown") {
-            this.move("down");
+        if (event.code == "ArrowDown" && this.paddle_boundaries.bottom < this.height) {
+            this.paddle.moveDown();
         }
    }
  

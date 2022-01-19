@@ -29,4 +29,6 @@ export abstract class Moveable {
     getWidth(): number { return (this.width); }
 
     getHeight(): number { return (this.height); }
+
+    setPosition(position: iPosition): void { this.position = position; }
 }
