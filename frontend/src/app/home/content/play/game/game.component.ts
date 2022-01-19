@@ -31,11 +31,14 @@
    boundaries: Boundaries;
    fps: number = 60;
    
+   ballImg = new Image();
+
+
    constructor(private socketService: SocketService,) {
         this.width = 600;
         this.height = 400;  
         this.fps = 60;
-        this.ball = new Ball(15, 15, 2, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(40, 40, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
         this.boundaries = this.ball.getCollisionBoundaries();
         console.log("Ball data from game: ", this.ball);
     }
@@ -47,10 +50,12 @@
    //Call when the whole elements in the html document were loaded
    ngAfterViewInit(){
     this.context = this.gameCanvas.nativeElement.getContext('2d');
-   // this.renderFrame();
+    this.ballImg.src = '../../.../../../../../assets/img/logo.png';
+    this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, 40, 40);
+   
     try {
             this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-            this.context?.fillRect(this.ball.getPosition().x, this.ball.getPosition().y, this.ball.getWidth(), this.ball.getHeight());
+            this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, 40, 40);
             this.renderFrame();
             setInterval(() => this.fpsService(), 1 / this.fps); //call fpsService at 60hz (1/60), we can set this time
         } catch(error){}
@@ -79,7 +84,7 @@
     renderFrame(): void {
         this.boundaries = this.ball.getCollisionBoundaries();
         this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-        this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
+        this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
         window.requestAnimationFrame(() => this.renderFrame());
    }
   
