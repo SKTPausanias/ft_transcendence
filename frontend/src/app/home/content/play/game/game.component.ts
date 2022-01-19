@@ -36,6 +36,8 @@ import { toHash } from 'ajv/dist/compile/util';
    boundaries: Boundaries;
    paddle_boundaries: Boundaries;
    fps: number = 60;
+   moving_up = false;
+   moving_down = false;
    
    ballImg = new Image();
 
@@ -45,7 +47,7 @@ import { toHash } from 'ajv/dist/compile/util';
         this.height = 400;  
         this.fps = 60;
         this.ball = new Ball(20, 20, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
-        this.paddle = new Paddle(100, 15, 5000, { x: 15, y: (this.height / 2) });
+        this.paddle = new Paddle(100, 10, 10000, { x: 15, y: (this.height / 2) });
         this.boundaries = this.ball.getCollisionBoundaries();
         this.paddle_boundaries = this.paddle.getCollisionBoundaries();
         console.log("Ball data from game: ", this.ball);
@@ -92,7 +94,7 @@ import { toHash } from 'ajv/dist/compile/util';
         else if (ballBounds.right >= this.width) {
           this.ball.reverseX();
         }
-        
+
         if (ballBounds.bottom >= this.height || ballBounds.top <= 0)
             this.ball.reverseY();
 
@@ -103,6 +105,12 @@ import { toHash } from 'ajv/dist/compile/util';
     //This function moves the elements and check if it is any colide
     fpsService() {
         this.ball.move();
+        if (this.moving_up && this.paddle_boundaries.top > 0) {
+            this.paddle.moveUp();
+        }
+        if (this.moving_down && this.paddle_boundaries.bottom < this.height) {
+            this.paddle.moveDown();
+        }
         this.checkCollisions();
     }
 
@@ -123,24 +131,19 @@ import { toHash } from 'ajv/dist/compile/util';
    
     @HostListener('window:keydown', ['$event'])
     keyUp(event: KeyboardEvent) {
-        if (event.code == "ArrowUp" && this.paddle_boundaries.top > 0) {
-            this.paddle.moveUp();
+        if (event.code == "ArrowUp") {
+            this.moving_up = true;
         }
-        if (event.code == "ArrowDown" && this.paddle_boundaries.bottom < this.height) {
-            this.paddle.moveDown();
+        if (event.code == "ArrowDown") {
+            this.moving_down = true;
         }
    }
  
-  /*  @HostListener('window:keyup', ['$event'])
+   @HostListener('window:keyup', ['$event'])
    keyDown(event: KeyboardEvent) {
-     console.log("pressed: ", event.code);
-     if (event.code == "ArrowUp") {
-      console.log("stop upping: ", event.code);
-       //this.controlState.upPressed = false;
-     }
-     if (event.code == "ArrowDown") {
-      console.log("stop downing: ", event.code);
-       //this.controlState.downPressed = false;
-     }
-   } */
+     if (event.code == "ArrowUp")
+        this.moving_up = false;
+     if (event.code == "ArrowDown")
+        this.moving_down = false;
+   }
  }
