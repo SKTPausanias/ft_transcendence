@@ -9,7 +9,8 @@ export enum ePlay {
 	ON_GET_LIVE_GAMES = "on-get-live-games",
 	ON_START_STREAM = "on-start-stream",
 	ON_STOP_STREAM = "on-stop-stream",
-	ON_GAME_END = "on-game-end"
+	ON_GAME_END = "on-game-end",
+	ON_MATCH_DATA = "on-match-data"
 }
 
 export enum eRequestPlayer{

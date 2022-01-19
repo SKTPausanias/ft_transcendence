@@ -143,6 +143,15 @@ export class PlayGateway {
 		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, await this.playService.onGetLiveGames());
 	}
 
+	@SubscribeMessage(ePlay.ON_MATCH_DATA)
+	async onMatchData(client, data: any) {
+		const game = await this.playService.findGameById(data.id);
+		if (game != undefined)
+			this.emitToAll(game.viewers,ePlay.ON_MATCH_DATA, data);
+
+	}
+
+
 	private async getSession(client: any)
 	{
 		try {
@@ -158,11 +167,11 @@ export class PlayGateway {
 	}
 
 	//Posibly can be deleted
-	private async emitToAll(recivers: UserPublicInfoI[], data?: any)
+	private async emitToAll(recivers: UserPublicInfoI[], action: string, data?: any)
 	{
 		for (let i = 0; i < recivers.length; i++) {
 			const reciver = await this.userService.findByLogin(recivers[i].login);
-			this.socketService.emitToOne(this.server, ePlay.ON_GAME_END, undefined, reciver, data);	
+			this.socketService.emitToOne(this.server, action, undefined, reciver, data);	
 		}
 	}
 }

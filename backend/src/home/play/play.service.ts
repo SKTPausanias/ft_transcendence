@@ -206,6 +206,20 @@ export class PlayService {
 			return (Response.makeResponse(500, {error: "Internal server error"}));
 		}
 	}
+
+	async findGameById(id: number)
+	{
+		try {
+			const game = await this.playRepository.findOne({
+				relations: ["player_1", "player_2", "viewers"],
+				where: {id: id}
+			})
+			return (game);
+		}
+		catch (error) {
+			return (undefined)
+		}
+	}
 	async getPlayer(player: PlayerI): Promise<UserEntity>
 	{
 		return (await this.userService.findByLogin(player.login));

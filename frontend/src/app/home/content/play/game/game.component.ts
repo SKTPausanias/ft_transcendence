@@ -6,8 +6,8 @@
  * https://www.youtube.com/watch?v=SZcY8cB8nhQ
  */
 
- import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener } from '@angular/core';
- import { wSocket } from 'src/app/shared/ft_enums';
+ import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER } from '@angular/core';
+ import { ePlay, wSocket } from 'src/app/shared/ft_enums';
  import { EventEmitter } from "@angular/core";
  import { SocketService } from '../../../socket.service';
  import { io, Socket } from "socket.io-client";
@@ -17,6 +17,7 @@
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { Paddle } from './classes/paddle';
 import { toHash } from 'ajv/dist/compile/util';
+import { PlayService } from '../play.service';
  
  @Component({
    selector: 'app-game',
@@ -42,7 +43,8 @@ import { toHash } from 'ajv/dist/compile/util';
    ballImg = new Image();
 
 
-   constructor(private socketService: SocketService,) {
+   constructor(private socketService: SocketService,
+				private playService: PlayService) {
         this.width = 600;
         this.height = 400;  
         this.fps = 60;
@@ -104,6 +106,11 @@ import { toHash } from 'ajv/dist/compile/util';
 
     //This function moves the elements and check if it is any colide
     fpsService() {
+		this.playService.emit(ePlay.ON_MATCH_DATA, {
+			id: this.prefs.game.id,
+			ball: this.ball.getPosition(),
+			paddle1: this.paddle.getPosition()
+		})
         this.ball.move();
         if (this.moving_up && this.paddle_boundaries.top > 0) {
             this.paddle.moveUp();
@@ -112,6 +119,7 @@ import { toHash } from 'ajv/dist/compile/util';
             this.paddle.moveDown();
         }
         this.checkCollisions();
+		//console.log((this.ball.getPosition()));
     }
 
     //renders every frame cleaning and drawing the elements
