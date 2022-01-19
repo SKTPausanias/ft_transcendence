@@ -32,7 +32,7 @@ export class LiveComponent implements OnInit {
 	paddle_boundaries: Boundaries;
 	width: number;
 	height: number;
-	viewInited: boolean;
+	renderInited: boolean;
 
 	constructor(private liveService: LiveService,
 				private router: Router,
@@ -107,7 +107,11 @@ export class LiveComponent implements OnInit {
 		this.playService.matchDataEmiter.subscribe((data: any) => {
 			this.ball.setPosition(data.ball);
 			this.paddle.setPosition(data.paddle1);
-			this.renderFrame();
+			if (!this.renderInited)
+			{
+				this.renderInited = true;
+				this.renderFrame();
+			}
 
 		});
 	}
