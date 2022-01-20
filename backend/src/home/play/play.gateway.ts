@@ -44,7 +44,6 @@ export class PlayGateway {
 
 	@SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
 	async onRequestInvitation(client, data) {
-		
 		const me = await this.getSessionUser(client);
 		const opUser = await this.playService.newInviation(me, data);
 		if (opUser != null)
@@ -77,6 +76,7 @@ export class PlayGateway {
 		const me = await this.getSessionUser(client);
 		const invitation = await this.playService.acceptWaitRoom(me, data);
 		const waitRoom = this.playService.createWaitRoom(invitation);
+		//create new server
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_1, waitRoom);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_ACCEPT, me.login, invitation.player_2, waitRoom);
 		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, await this.playService.onGetLiveGames());
@@ -141,15 +141,23 @@ export class PlayGateway {
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, oponent, data);
 		this.socketService.emitToOne(this.server, ePlay.ON_WAIT_ROOM_REJECT, me.login, me, data);
 		this.server.emit(ePlay.ON_GET_LIVE_GAMES, me.login, await this.playService.onGetLiveGames());
+		//close socket && server
 	}
 
 	@SubscribeMessage(ePlay.ON_MATCH_DATA)
 	async onMatchData(client, data: any) {
 		const game = await this.playService.findGameById(data.id);
+		//game.viewers ==> sessionEntity[];
+		//viewr.socketId
 		if (game != undefined)
 			this.emitToAll(game.viewers,ePlay.ON_MATCH_DATA, data);
+		if (data.ball)
+			this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
+		else
+			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);
 
 	}
+	
 
 
 	private async getSession(client: any)

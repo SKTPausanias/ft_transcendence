@@ -9,12 +9,14 @@ import { SocketService } from "../../socket.service";
 @Injectable({providedIn: "root"})
 export class PlayService {
 	playEmiter: EventEmitter<any>;
-	matchDataEmiter: EventEmitter<any>;
+	liveDataEmiter: EventEmitter<any>;
+	gameDataEmiter: EventEmitter<any>;
 	private socket: Socket;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
 		this.playEmiter = new EventEmitter<any>();
-		this.matchDataEmiter = new EventEmitter<any>();
+		this.liveDataEmiter = new EventEmitter<any>();
+		this.gameDataEmiter = new EventEmitter<any>();
 	}
 
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
@@ -47,6 +49,7 @@ export class PlayService {
 	private onRequestInvitation(){
 		this.socket.on(ePlay.ON_REQUEST_INVITATION, (emiter: string, data: any) => {
 			try {
+				console.log(this.socket);
 				this.playEmiter.emit({invitation: data});
 			}catch(error){}
 		})
@@ -76,6 +79,7 @@ export class PlayService {
 		this.socket.on(ePlay.ON_WAIT_ROOM_ACCEPT, (emiter: string, data: any) => {
 			try {
 				this.playEmiter.emit({waitRoomStatus: data});
+				//connect to new game socket 
 			}catch(error){}
 		})
 	}
@@ -83,7 +87,8 @@ export class PlayService {
 	private onMatchData(){ ///Change test name for another more convenient
 		this.socket.on(ePlay.ON_MATCH_DATA, (emiter: string, data: any) => {
 			try {
-				this.matchDataEmiter.emit(data);
+				this.gameDataEmiter.emit(data);
+				this.liveDataEmiter.emit(data);
 				//console.log("match data: ", data.ball, data.paddle1);
 			}catch(error){}
 		})

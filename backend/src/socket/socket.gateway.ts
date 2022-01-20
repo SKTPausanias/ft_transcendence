@@ -32,6 +32,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				this.server, wSocket.USER_UPDATE, sessionData.userInfo.login, 
 				sessionData.friends, User.getPublicInfo(sessionData.userInfo));
 				this.server.to(client.id).emit(wSocket.SESSION_INIT, sessionData);
+				console.log("_connectionKey: ", this.server.httpServer._connectionKey);
+				console.log("onConnect(): engine : ", this.server.sockets.adapter.rooms);
+				console.log("onConnect(): Client count : ", this.server.engine.clientsCount);
 				++this.clientsConnected;
 			} catch (error) {
 				console.error(error);
@@ -40,6 +43,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	async handleDisconnect(client) { //set another way of counting users: This is not a good way
 		--this.clientsConnected
+		console.log("onDisconect(): Client count : ", this.server.engine.clientsCount);
+
 	}
 	//What does it do???... if not neccessary, delete it
 	@SubscribeMessage(wSocket.SESSION_INIT)

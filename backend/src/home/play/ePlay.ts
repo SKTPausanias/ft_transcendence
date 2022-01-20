@@ -10,7 +10,10 @@ export enum ePlay {
 	ON_START_STREAM = "on-start-stream",
 	ON_STOP_STREAM = "on-stop-stream",
 	ON_GAME_END = "on-game-end",
-	ON_MATCH_DATA = "on-match-data"
+	ON_MATCH_DATA = "on-match-data",
+	ON_MATCH_DATA_BALL = "on-match-data-ball",
+	ON_MATCH_DATA_P1 = "on-match-data-p1",
+	ON_MATCH_DATA_P2 = "on-match-data-p2",
 }
 export enum eRequestPlayer{
 	WAITING = "waiting",

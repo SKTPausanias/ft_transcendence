@@ -104,9 +104,11 @@ export class LiveComponent implements OnInit {
 		this.liveService.emit(ePlay.ON_START_STREAM, game);
 		this.context = this.liveCanvas.nativeElement.getContext('2d');
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-		this.playService.matchDataEmiter.subscribe((data: any) => {
-			this.ball.setPosition(data.ball);
-			this.paddle.setPosition(data.paddle1);
+		this.playService.liveDataEmiter.subscribe((data: any) => {
+			if (data.ball != undefined)
+				this.ball.setPosition(data.ball);
+			if (data.paddle1 != undefined)
+				this.paddle.setYPosition(data.paddle1);
 			if (!this.renderInited)
 			{
 				this.renderInited = true;

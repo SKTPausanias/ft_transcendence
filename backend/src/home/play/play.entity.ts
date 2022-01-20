@@ -33,4 +33,5 @@ export class PlayEntity {
     @OneToMany(() => UserEntity, viewer=>viewer.live,
 	{onDelete: "CASCADE"})
     viewers: UserEntity[];
+	//viewers: SessionEntity[]
 }

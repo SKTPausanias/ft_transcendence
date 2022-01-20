@@ -41,15 +41,15 @@ import { PlayService } from '../play.service';
    moving_down = false;
    
    ballImg = new Image();
-
+	lastY: number;
 
    constructor(private socketService: SocketService,
 				private playService: PlayService) {
         this.width = 600;
         this.height = 400;  
         this.fps = 60;
-        this.ball = new Ball(20, 20, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
-        this.paddle = new Paddle(100, 10, 10000, { x: 15, y: (this.height / 2) });
+        this.ball = new Ball(20, 20, 3, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+        this.paddle = new Paddle(100, 10, 15000, { x: 15, y: (this.height / 2) });
         this.boundaries = this.ball.getCollisionBoundaries();
         this.paddle_boundaries = this.paddle.getCollisionBoundaries();
         console.log("Ball data from game: ", this.ball);
@@ -57,6 +57,19 @@ import { PlayService } from '../play.service';
  
    ngOnInit(): void {
      this.socket = this.socketService.getSocket();
+	 this.playService.gameDataEmiter.subscribe((data: any) => {
+		if (data.ball != undefined )
+			this.ball.setPosition(data.ball);
+		if (data.paddle1 != undefined )
+		{
+			this.paddle.setYPosition(data.paddle1);
+			this.lastY = data.paddle1;
+		}
+		//if (data.paddle1 != undefined)
+		//	this.paddle.setPosition(data.paddle1);
+		
+
+	});
    }
    
    //Call when the whole elements in the html document were loaded
@@ -67,12 +80,28 @@ import { PlayService } from '../play.service';
    
     try {
             this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-            this.context?.fillRect(this.paddle_boundaries.left, this.paddle_boundaries.top, this.paddle.getWidth(), this.paddle.getHeight());
+			this.context?.fillRect(this.paddle_boundaries.left, this.paddle_boundaries.top, this.paddle.getWidth(), this.paddle.getHeight());
             this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());
             //this.context?.drawImage(this.ballImg, this.boundaries.left, this.boundaries.top, 40, 40);
             this.renderFrame();
             setInterval(() => this.fpsService(), 1 / this.fps); //call fpsService at 60hz (1/60), we can set this time
-        } catch(error){}
+			setInterval(() => {
+
+				if (this.prefs.userInfo.login == this.prefs.game.player1.login)
+				{
+					this.emitBall();
+					this.emitPaddle1();
+				}
+				
+
+				/* this.playService.emit(ePlay.ON_MATCH_DATA, {
+					id: this.prefs.game.id,
+					ball: this.ball.getPosition(),
+					paddle1: this.paddle.getPosition()
+				}) */
+			}, 20);
+		} catch(error){}
+	
     }
     
     //Checks objects collisions. 'Till now only checks collision of the ball with four sides
@@ -106,18 +135,16 @@ import { PlayService } from '../play.service';
 
     //This function moves the elements and check if it is any colide
     fpsService() {
-		this.playService.emit(ePlay.ON_MATCH_DATA, {
-			id: this.prefs.game.id,
-			ball: this.ball.getPosition(),
-			paddle1: this.paddle.getPosition()
-		})
-        this.ball.move();
-        if (this.moving_up && this.paddle_boundaries.top > 0) {
-            this.paddle.moveUp();
-        }
-        if (this.moving_down && this.paddle_boundaries.bottom < this.height) {
-            this.paddle.moveDown();
-        }
+		if (this.prefs.userInfo.login == this.prefs.game.player1.login)
+       	{
+			this.ball.move();
+			if (this.moving_up && this.paddle_boundaries.top > 0) {
+				this.paddle.moveUp();
+			}
+			if (this.moving_down && this.paddle_boundaries.bottom < this.height) {
+				this.paddle.moveDown();
+			}
+		}
         this.checkCollisions();
 		//console.log((this.ball.getPosition()));
     }
@@ -136,7 +163,21 @@ import { PlayService } from '../play.service';
    move(direction: string) {
        this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
     }
-   
+	emitBall()
+	{
+		this.playService.emit(ePlay.ON_MATCH_DATA, {
+			id: this.prefs.game.id,
+			ball: this.ball.getPosition()
+		})
+	}
+	emitPaddle1()
+	{
+		if (this.paddle.getPosition().y != this.lastY)
+			this.playService.emit(ePlay.ON_MATCH_DATA, {
+				id: this.prefs.game.id,
+				paddle1: this.paddle.getPosition().y
+			})
+	}
     @HostListener('window:keydown', ['$event'])
     keyUp(event: KeyboardEvent) {
         if (event.code == "ArrowUp") {
