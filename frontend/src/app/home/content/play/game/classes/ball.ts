@@ -28,6 +28,10 @@ export class Ball extends Moveable {
         this.speedRatio.y = -this.speedRatio.y;
     }
 
+    getSpeedRatio() : iSpeedRatio {
+        return (this.speedRatio);
+    }
+
     /**
      * Sets new vertical speed ratio of max speed
      */

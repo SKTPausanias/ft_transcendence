@@ -151,10 +151,14 @@ export class PlayGateway {
 		//viewr.socketId
 		if (game != undefined)
 			this.emitToAll(game.viewers,ePlay.ON_MATCH_DATA, data);
-		if (data.ball)
-			this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
-		else
-			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);
+		if (data.b){
+			data.b.x += 3 * data.s.x;
+			data.b.y += 3 * data.s.y;
+			//this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
+		}
+		this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);
+		/*else
+			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);*/
 
 	}
 	

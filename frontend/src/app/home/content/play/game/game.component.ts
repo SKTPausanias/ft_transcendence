@@ -143,7 +143,7 @@ export class gameComponent implements OnInit, AfterViewInit {
 	fpsService() {
 		this.checkCollisions();
 		if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
-			this.ball.move();
+			//this.ball.move();
 			if (this.moving_up && this.boundPad_1.top > 0) {
 				this.pad_1.moveUp();
 			}
@@ -180,7 +180,8 @@ export class gameComponent implements OnInit, AfterViewInit {
 	emitBall() {
 		this.playService.emit(ePlay.ON_MATCH_DATA, {
 			id: this.prefs.game.id,
-			b: this.ball.getPosition()
+			b: this.ball.getPosition(),
+			s: this.ball.getSpeedRatio()
 		})
 	}
 	emitPaddle1() {
