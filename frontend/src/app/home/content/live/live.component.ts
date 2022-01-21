@@ -27,9 +27,11 @@ export class LiveComponent implements OnInit {
 	gameId: any;
 	context: CanvasRenderingContext2D | null;
 	ball: Ball;
-	paddle: Paddle;
-	boundaries: Boundaries;
-	paddle_boundaries: Boundaries;
+	pad_1: Paddle;
+	pad_2: Paddle;
+	boundBall: Boundaries;
+	boundPad_1: Boundaries;
+	boundPad_2: Boundaries;
 	width: number;
 	height: number;
 	renderInited: boolean;
@@ -43,7 +45,8 @@ export class LiveComponent implements OnInit {
 				this.width = 600;
 				this.height = 400;  
 				this.ball = new Ball(20, 20, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
-				this.paddle = new Paddle(100, 10, 10000, { x: 15, y: (this.height / 2) });
+				this.pad_1 = new Paddle(75, 10, 10000, { x: 15, y: (this.height / 2) });
+				this.pad_2 = new Paddle(75, 10, 10000, { x: this.width - 15, y: (this.height / 2) });
 				}
 
 	ngOnInit(): void {
@@ -73,11 +76,11 @@ export class LiveComponent implements OnInit {
 
     //renders every frame cleaning and drawing the elements
     renderFrame(): void {
-		this.boundaries = this.ball.getCollisionBoundaries();
-        this.paddle_boundaries = this.paddle.getCollisionBoundaries();
+		this.boundBall = this.ball.getCollisionBoundaries();
+        this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-        this.context?.fillRect(this.paddle_boundaries.left, this.paddle_boundaries.top, this.paddle.getWidth(), this.paddle.getHeight());
-        this.context?.fillRect(this.boundaries.left, this.boundaries.top, this.ball.getWidth(), this.ball.getHeight());        
+        this.context?.fillRect(this.boundPad_1.left, this.boundPad_1.top, this.pad_1.getWidth(), this.pad_1.getHeight());
+        this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight());        
 		window.requestAnimationFrame(() => this.renderFrame());
    }
 	initLiveEventReciver(){
@@ -108,7 +111,7 @@ export class LiveComponent implements OnInit {
 			if (data.ball != undefined)
 				this.ball.setPosition(data.ball);
 			if (data.paddle1 != undefined)
-				this.paddle.setYPosition(data.paddle1);
+				this.pad_1.setYPosition(data.paddle1);
 			if (!this.renderInited)
 			{
 				this.renderInited = true;
