@@ -41,4 +41,24 @@ export class Ball extends Moveable {
     move() {
         super.move(this.speedRatio);
     }
+	moveTest(w:number, h: number) {
+		var ballPos = this.getPosition();
+		// W H campo
+		// POS BALL
+
+		//CAMPO PARTE ARRIBA ABAJO
+		if (ballPos.y <= 0 || ballPos.y + this.getHeight() >= h)
+		{
+			this.reverseY();
+			//console.log("ball pos: ", ballPos);
+		}
+			
+		//CAMPO PARTE DERECHA IZQUIERDA
+		else if (ballPos.x <=0 || ballPos.x + this.getWidth() >= w)
+		{
+			this.reverseX();
+			console.log("LOST: ", ballPos);
+		}
+        super.move(this.speedRatio);
+    }
 }

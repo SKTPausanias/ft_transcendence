@@ -15,14 +15,22 @@ export abstract class Moveable {
     }
 
     
-    getCollisionBoundaries(): Boundaries {
-        return {
-            top: this.position.y - this.height / 2,
-            bottom: this.position.y + this.height / 2,
-            right: this.position.x + this.width / 2,
-            left: this.position.x - this.width / 2
-        }
-    }
+	getCollisionBoundaries(): Boundaries {
+		return {
+			top: this.position.y - this.height / 2,
+			bottom: this.position.y + this.height / 2,
+			right: this.position.x + this.width / 2,
+			left: this.position.x - this.width / 2
+		}
+	}
+	getObjectCorners(): any {
+		return {
+			topLeft: this.position.y,
+			topRight: this.position.y + this.width,
+			bottomRight: this.position.x + this.width + this.height,
+			bottomLeft: this.position.x + this.height
+		}
+	}
     
     getPosition(): iPosition { return (this.position);}
 

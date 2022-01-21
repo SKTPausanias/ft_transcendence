@@ -22,12 +22,12 @@ export class Paddle extends Moveable {
     }
 
     moveUp() {
-        this.speedRatio.y = -0.0002;
+        this.speedRatio.y = -0.001;
         this.move();
     }
 
     moveDown() {
-        this.speedRatio.y = 0.0002;
+        this.speedRatio.y = 0.001;
         this.move();
     }
 }

@@ -50,9 +50,9 @@ export class gameComponent implements OnInit, AfterViewInit {
 		this.width = 600;
 		this.height = 400;
 		this.fps = 60;
-		this.ball = new Ball(20, 20, 3, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
-		this.pad_1 = new Paddle(75, 10, 15000, { x: 15, y: (this.height / 2) });
-		this.pad_2 = new Paddle(75, 10, 15000, { x: this.width - 15, y: (this.height / 2) });
+		this.ball = new Ball(10, 10, 3, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+		this.pad_1 = new Paddle(75, 10, 15000, { x: 50, y: (this.height / 2) });
+		this.pad_2 = new Paddle(75, 10, 15000, { x: this.width - 50, y: (this.height / 2) });
 		this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -62,15 +62,15 @@ export class gameComponent implements OnInit, AfterViewInit {
 	ngOnInit(): void {
 		this.socket = this.socketService.getSocket();
 		this.playService.gameDataEmiter.subscribe((data: any) => {
-			if (data.ball != undefined)
-				this.ball.setPosition(data.ball);
-			if (data.paddle1 != undefined) {
-				this.pad_1.setYPosition(data.paddle1);
-				this.oldPos1_Y = data.paddle1;
+			if (data.b != undefined)
+				this.ball.setPosition(data.b);
+			if (data.p1 != undefined) {
+				this.pad_1.setYPosition(data.p1);
+				this.oldPos1_Y = data.p1;
 			}
-			if (data.paddle2 != undefined) {
-				this.pad_2.setYPosition(data.paddle2);
-				this.oldPos2_Y = data.paddle2;
+			if (data.p2 != undefined) {
+				this.pad_2.setYPosition(data.p2);
+				this.oldPos2_Y = data.p2;
 			}
 		});
 	}
@@ -87,7 +87,7 @@ export class gameComponent implements OnInit, AfterViewInit {
 			this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight()); */
 			//this.context?.drawImage(this.ballImg, this.boundBall.left, this.boundBall.top, 40, 40);
 			this.renderFrame();
-			setInterval(() => this.fpsService(), 1 / this.fps); //call fpsService at 60hz (1/60), we can set this time
+			setInterval(() => this.fpsService(), 20); //call fpsService at 60hz (1/60), we can set this time
 			setInterval(() => {
 				if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
 					this.emitBall();
@@ -102,6 +102,10 @@ export class gameComponent implements OnInit, AfterViewInit {
 
 	//Checks objects collisions. 'Till now only checks collision of the ball with four sides
 	checkCollisions() {
+		
+			
+
+
 		// Bottom/Top Collision
 			this.boundBall = this.ball.getCollisionBoundaries();
 
@@ -114,18 +118,19 @@ export class gameComponent implements OnInit, AfterViewInit {
 			this.ball.reverseX();
 		}
 		// Right Collision
-		if (this.boundBall.right <= this.boundPad_2.left && this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom) {
+		if (this.boundBall.right >= this.boundPad_2.left && this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom) {
 			this.ball.reverseX();
-		}
+		} 
 
-		if (this.boundBall.left <= 0) {
-			//this.ball.reverseX();
+		if (this.boundBall.left <= 0 || this.boundBall.right >= this.width) {
+			this.ball.reverseX();
 			this.ball.setPosition({ x: this.width / 2, y: this.height / 2 });
 		}
 
-		else if (this.boundBall.right >= this.width) {
+		/* if (this.boundBall.right >= this.width) {
 			this.ball.reverseX();
-		}
+			this.ball.setPosition({ x: this.width / 2, y: this.height / 2 });
+		} */
 
 		if (this.boundBall.bottom >= this.height || this.boundBall.top <= 0)
 			this.ball.reverseY();
@@ -136,6 +141,7 @@ export class gameComponent implements OnInit, AfterViewInit {
 
 	//This function moves the elements and check if it is any colide
 	fpsService() {
+		this.checkCollisions();
 		if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
 			this.ball.move();
 			if (this.moving_up && this.boundPad_1.top > 0) {
@@ -152,7 +158,6 @@ export class gameComponent implements OnInit, AfterViewInit {
 				this.pad_2.moveDown();
 			}
 		}
-		this.checkCollisions();
 		//console.log((this.ball.getPosition()));
 	}
 
@@ -175,21 +180,21 @@ export class gameComponent implements OnInit, AfterViewInit {
 	emitBall() {
 		this.playService.emit(ePlay.ON_MATCH_DATA, {
 			id: this.prefs.game.id,
-			ball: this.ball.getPosition()
+			b: this.ball.getPosition()
 		})
 	}
 	emitPaddle1() {
 		if (this.pad_1.getPosition().y != this.oldPos1_Y)
 			this.playService.emit(ePlay.ON_MATCH_DATA, {
 				id: this.prefs.game.id,
-				paddle1: this.pad_1.getPosition().y
+				p1: this.pad_1.getPosition().y
 			})
 	}
 	emitPaddle2() {
 		if (this.pad_2.getPosition().y != this.oldPos2_Y)
 			this.playService.emit(ePlay.ON_MATCH_DATA, {
 				id: this.prefs.game.id,
-				paddle2: this.pad_2.getPosition().y
+				p2: this.pad_2.getPosition().y
 			})
 	}
 	@HostListener('window:keydown', ['$event'])
