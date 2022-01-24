@@ -44,9 +44,9 @@ export class LiveComponent implements OnInit {
 				//console.log(" params: ", this.router.parseUrl(this.router.url).queryParams);
 				this.width = 600;
 				this.height = 400;  
-				this.ball = new Ball(20, 20, 1, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
-				this.pad_1 = new Paddle(75, 10, 10000, { x: 15, y: (this.height / 2) });
-				this.pad_2 = new Paddle(75, 10, 10000, { x: this.width - 15, y: (this.height / 2) });
+				this.ball = new Ball(10, 10, 3, { x: this.height / 2, y: this.width / 2 }, { x: 1, y: 1 });
+				this.pad_1 = new Paddle(75, 10, 15000, { x: 50, y: (this.height / 2) });
+				this.pad_2 = new Paddle(75, 10, 15000, { x: this.width - 50, y: (this.height / 2) });
 				}
 
 	ngOnInit(): void {
@@ -78,9 +78,11 @@ export class LiveComponent implements OnInit {
     renderFrame(): void {
 		this.boundBall = this.ball.getCollisionBoundaries();
         this.boundPad_1 = this.pad_1.getCollisionBoundaries();
+        this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-        this.context?.fillRect(this.boundPad_1.left, this.boundPad_1.top, this.pad_1.getWidth(), this.pad_1.getHeight());
         this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight());        
+        this.context?.fillRect(this.boundPad_1.left, this.boundPad_1.top, this.pad_1.getWidth(), this.pad_1.getHeight());    
+        this.context?.fillRect(this.boundPad_2.left, this.boundPad_2.top, this.pad_2.getWidth(), this.pad_2.getHeight());
 		window.requestAnimationFrame(() => this.renderFrame());
    }
 	initLiveEventReciver(){
@@ -108,10 +110,12 @@ export class LiveComponent implements OnInit {
 		this.context = this.liveCanvas.nativeElement.getContext('2d');
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
 		this.playService.liveDataEmiter.subscribe((data: any) => {
-			if (data.ball != undefined)
-				this.ball.setPosition(data.ball);
-			if (data.paddle1 != undefined)
-				this.pad_1.setYPosition(data.paddle1);
+			if (data.b != undefined)
+				this.ball.setPosition(data.b);
+			if (data.p1 != undefined)
+				this.pad_1.setYPosition(data.p1);
+			if (data.p2 != undefined)
+				this.pad_2.setYPosition(data.p2);
 			if (!this.renderInited)
 			{
 				this.renderInited = true;
