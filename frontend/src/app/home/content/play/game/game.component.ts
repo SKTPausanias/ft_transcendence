@@ -6,7 +6,7 @@
  * https://www.youtube.com/watch?v=SZcY8cB8nhQ
  */
 
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy } from '@angular/core';
 import { ePlay, wSocket } from 'src/app/shared/ft_enums';
 import { EventEmitter } from "@angular/core";
 import { SocketService } from '../../../socket.service';
@@ -24,7 +24,7 @@ import { PlayService } from '../play.service';
 	templateUrl: './game.component.html',
 	styleUrls: ['./game.component.css']
 })
-export class gameComponent implements OnInit, AfterViewInit {
+export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() prefs: SharedPreferencesI;
 	private socket: Socket;
@@ -44,6 +44,8 @@ export class gameComponent implements OnInit, AfterViewInit {
 	ballImg = new Image();
 	oldPos1_Y: number;
 	oldPos2_Y: number;
+	fpsInterval: any;
+	emitInterval: any;
 
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -74,7 +76,10 @@ export class gameComponent implements OnInit, AfterViewInit {
 			}
 		});
 	}
-
+	ngOnDestroy(): void {
+		clearInterval(this.fpsInterval);
+		clearInterval(this.emitInterval);
+	}
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
@@ -87,8 +92,9 @@ export class gameComponent implements OnInit, AfterViewInit {
 			this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight()); */
 			//this.context?.drawImage(this.ballImg, this.boundBall.left, this.boundBall.top, 40, 40);
 			this.renderFrame();
-			setInterval(() => this.fpsService(), 20); //call fpsService at 60hz (1/60), we can set this time
-			setInterval(() => {
+			this.fpsInterval = setInterval(() => this.fpsService(), 20); //call fpsService at 60hz (1/60), we can set this time
+			this.emitInterval = setInterval(() => {
+				console.log("pff");
 				if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
 					this.emitBall();
 					this.emitPaddle1();
