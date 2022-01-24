@@ -31,6 +31,7 @@ export class PlayService {
 		this.onLoadActiveWaitRoom();
 		this.onMatchData();
 		this.onStartGame();
+		this.onGameMoving();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -98,6 +99,15 @@ export class PlayService {
 	private onStartGame() {
 		this.socket.on(ePlay.ON_START_GAME, (data: any) => {
 			try {
+				console.log("Printing from inStartGame: ", data);
+				this.gameDataEmiter.emit(data);
+			}catch(error){}
+		})
+	}
+	private onGameMoving() {
+		this.socket.on(ePlay.ON_GAME_MOVING, (data: any) => {
+			try {
+				console.log("Printing from onGameMoving: ", data);
 				this.gameDataEmiter.emit(data);
 			}catch(error){}
 		})

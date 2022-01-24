@@ -11,7 +11,8 @@ export enum ePlay {
 	ON_STOP_STREAM = "on-stop-stream",
 	ON_GAME_END = "on-game-end",
 	ON_MATCH_DATA = "on-match-data",
-	ON_START_GAME = "on-start-game"
+	ON_START_GAME = "on-start-game",
+	ON_GAME_MOVING = "on-game-moving"
 }
 
 export enum eRequestPlayer{

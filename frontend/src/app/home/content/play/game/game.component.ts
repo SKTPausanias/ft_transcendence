@@ -96,6 +96,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context?.drawImage(this.ballImg, this.boundBall.left, this.boundBall.top, 40, 40);*/
 
 		try {
+			this.emitInterval = setInterval(() => {
+				this.emitMoveable();
+			}, 20);
 			/* this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 			this.context?.fillRect(this.boundPad_1.left, this.boundPad_1.top, this.pad_1.getWidth(), this.pad_1.getHeight());
 			this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight()); */
@@ -124,13 +127,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
-		this.emitBall();
 		
 		window.requestAnimationFrame(() => this.renderFrame());
 	}
 
-	emitBall() {
-		this.playService.emit(ePlay.ON_MATCH_DATA, {
+	emitMoveable() {
+		this.playService.emit(ePlay.ON_GAME_MOVING, {
 			id: this.prefs.game.id,
 		})
 	}

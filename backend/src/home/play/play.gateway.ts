@@ -161,14 +161,7 @@ export class PlayGateway {
 
 				//this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
 			}*/
-			if (this.games.length >= 0){
-				var obj = this.games.find(item => (item.getId() == game.id));
-				if (obj !== undefined){
-					obj.ball.move();
-					this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, { gameInfo: obj.getMap() });
-					//console.log(obj);
-				}
-			}
+			
 		}
 		/*else
 			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);*/
@@ -178,7 +171,7 @@ export class PlayGateway {
 	@SubscribeMessage(ePlay.ON_START_GAME)
 	async onStartGame(client, data: number) {
 		const game = await this.playService.findGameById(data);
-		if (game != undefined) {
+		if (game !== undefined) {
 			var gameObj = new Game(game.id)
 			this.games.push(gameObj);
 			this.server.to(client.id).emit(ePlay.ON_START_GAME, { gameInfo: gameObj.getMap() });
@@ -186,6 +179,21 @@ export class PlayGateway {
 		}
 	}
 	
+	@SubscribeMessage(ePlay.ON_GAME_MOVING)
+	async onGameMoving(client, data: any){
+		const game = await this.playService.findGameById(data.id);
+		if (game !== undefined && this.games.length > 0) {
+			var obj = this.games.find(item => item.getId() == game.id);
+			//console.log("ID from onGameMoving backend: ", obj);
+			if (obj !== undefined){
+				obj.checkCollisions();
+				obj.ball.move();
+				this.server.to(client.id).emit(ePlay.ON_GAME_MOVING, {gameInfo: obj.getMap() })
+				//this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
+			} else
+				console.log("Not obj...");
+		}
+	}
 
 
 	private async getSession(client: any)
