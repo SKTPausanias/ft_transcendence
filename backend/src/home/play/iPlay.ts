@@ -1,4 +1,6 @@
 import { UserPublicInfoI } from "../user/userI"
+import { Ball } from "./classes/ball"
+import { Paddle } from "./classes/paddle"
 
 export interface WaitRoomI {
 	id: number,
@@ -14,4 +16,31 @@ export interface PlayerI  {
 	nickname: string,
 	avatar: string,
 	status: string
+}
+
+export interface MapI {
+	width: number,
+	height: number
+}
+
+export interface GameI {
+	map: MapI,
+	ball: BallI,
+	pad_1: PadI,
+	pad_2: PadI 
+}
+
+export interface GameMoveableI {
+	pos_x: number,
+	pos_y: number,
+	width: number,
+	height: number
+}
+
+export interface PadI extends GameMoveableI {
+
+}
+
+export interface BallI extends GameMoveableI {
+
 }

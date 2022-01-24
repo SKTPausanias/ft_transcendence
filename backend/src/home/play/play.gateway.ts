@@ -6,21 +6,25 @@ import { UserEntity } from '../user/user.entity';
 import { User } from '../user/userClass';
 import { UserPublicInfoI } from '../user/userI';
 import { ePlay, eRequestPlayer } from './ePlay';
-import { PlayerI, WaitRoomI } from './iPlay';
+import { GameI, PlayerI, WaitRoomI } from './iPlay';
 import { PlayEntity } from './play.entity';
 import { PlayService } from './play.service';
 import { UserService } from '../user/user.service';
 import { wSocket } from 'src/socket/eSocket';
+import { Game } from './classes/game';
 
 
 @WebSocketGateway({ cors: true })
 export class PlayGateway {
 	server: any;
 	timeLap: number = 120;
+	games: Game[] = [];
+
 	constructor(private socketService: SocketService,
                 private playService: PlayService,
 				private sessionService: SessionService,
-				private userService: UserService){}
+				private userService: UserService)
+				{}
 
 	init(server: any){
 		this.server = server;
@@ -149,17 +153,37 @@ export class PlayGateway {
 		const game = await this.playService.findGameById(data.id);
 		//game.viewers ==> sessionEntity[];
 		//viewr.socketId
-		if (game != undefined)
+		if (game !== undefined){
 			this.emitToAll(game.viewers,ePlay.ON_MATCH_DATA, data);
-		if (data.b){
-			data.b.x += 3 * data.s.x;
-			data.b.y += 3 * data.s.y;
-			//this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
+			/*f (data.b) {
+				data.b.x += 3 * data.s.x; //move ball x pos
+				data.b.y += 3 * data.s.y; //move ball y pos
+
+				//this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
+			}*/
+			if (this.games.length >= 0){
+				var obj = this.games.find(item => (item.getId() == game.id));
+				if (obj !== undefined){
+					obj.ball.move();
+					this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, { gameInfo: obj.getMap() });
+					//console.log(obj);
+				}
+			}
 		}
-		this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);
 		/*else
 			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);*/
+	}
+	
 
+	@SubscribeMessage(ePlay.ON_START_GAME)
+	async onStartGame(client, data: number) {
+		const game = await this.playService.findGameById(data);
+		if (game != undefined) {
+			var gameObj = new Game(game.id)
+			this.games.push(gameObj);
+			this.server.to(client.id).emit(ePlay.ON_START_GAME, { gameInfo: gameObj.getMap() });
+			//this.emitToAll([game.player_1, game.player_2], ePlay.ON_START_GAME, gameObj.getMap());
+		}
 	}
 	
 

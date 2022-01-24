@@ -15,3 +15,18 @@ export interface PlayerI  {
 	avatar: string,
 	status: string
 }
+
+export interface GameMoveableI {
+	pos_x: number,
+	pos_y: number,
+	width: number,
+	height: number
+}
+
+export interface PadI extends GameMoveableI {
+
+}
+
+export interface BallI extends GameMoveableI {
+
+}

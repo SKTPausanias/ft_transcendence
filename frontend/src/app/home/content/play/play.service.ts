@@ -30,6 +30,7 @@ export class PlayService {
 		this.onWaitRoomAccept();
 		this.onLoadActiveWaitRoom();
 		this.onMatchData();
+		this.onStartGame();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -90,6 +91,14 @@ export class PlayService {
 				this.gameDataEmiter.emit(data);
 				this.liveDataEmiter.emit(data);
 				//console.log("match data: ", data.ball, data.paddle1);
+			}catch(error){}
+		})
+	}
+
+	private onStartGame() {
+		this.socket.on(ePlay.ON_START_GAME, (data: any) => {
+			try {
+				this.gameDataEmiter.emit(data);
 			}catch(error){}
 		})
 	}
