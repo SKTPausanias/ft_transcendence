@@ -18,7 +18,7 @@ import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { Paddle } from './classes/paddle';
 import { toHash } from 'ajv/dist/compile/util';
 import { PlayService } from '../play.service';
-import { BallI, PadI } from 'src/app/shared/interface/iPlay';
+import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 
 @Component({
 	selector: 'app-game',
@@ -36,11 +36,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	ball: BallI;
 	pad_1: PadI;
 	pad_2: PadI;
+	movableInterval: any;
+	animationFrame: any;
 
 
-	boundBall: Boundaries;
-	boundPad_1: Boundaries;
-	boundPad_2: Boundaries;
+
+	//
 	fps: number = 60;
 	moving_up = false;
 	moving_down = false;
@@ -49,6 +50,11 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	oldPos2_Y: number;
 	fpsInterval: any;
 	emitInterval: any;
+	paddUpInterval: any;
+	paddDownInterval: any;
+	
+
+
 
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -66,57 +72,32 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		console.log("Ball data from game: ", this.ball); */
 	}
 
-	ngOnInit(): void {
-		console.log("OnInit before...");
-		
+	ngOnInit(): void {		
 		this.playService.gameDataEmiter.subscribe((data: any) => {
-			console.log("Game data from onstart gameComponent: ", data);
 			if (data.gameInfo !== undefined) {
 				this.width = data.gameInfo.map.width;
 				this.height = data.gameInfo.map.height;
 				this.ball = data.gameInfo.ball;
 				this.pad_1 = data.gameInfo.pad_1;
 				this.pad_2 = data.gameInfo.pad_2;
-				this.renderFrame();
+				if (this.animationFrame == undefined)
+					this.renderFrame();
 			}
 		});
-		console.log("OnInit after...");
 	}
 	ngOnDestroy(): void {
-		clearInterval(this.fpsInterval);
-		clearInterval(this.emitInterval);
+		/*clearInterval(this.fpsInterval);
+		clearInterval(this.emitInterval);*/
+		clearInterval(this.movableInterval);
+		window.cancelAnimationFrame(this.animationFrame);
 	}
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.playService.emit(ePlay.ON_START_GAME, this.prefs.game.id);
-		console.log("afterview ...");
-		
-		/*this.ballImg.src = '../../.../../../../../assets/img/logo.png';
-		this.context?.drawImage(this.ballImg, this.boundBall.left, this.boundBall.top, 40, 40);*/
-
-		try {
-			this.emitInterval = setInterval(() => {
-				this.emitMoveable();
-			}, 20);
-			/* this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
-			this.context?.fillRect(this.boundPad_1.left, this.boundPad_1.top, this.pad_1.getWidth(), this.pad_1.getHeight());
-			this.context?.fillRect(this.boundBall.left, this.boundBall.top, this.ball.getWidth(), this.ball.getHeight()); */
-			//this.context?.drawImage(this.ballImg, this.boundBall.left, this.boundBall.top, 40, 40);
-
-
-			/* this.renderFrame();
-			this.fpsInterval = setInterval(() => this.fpsService(), 20); //call fpsService at 60hz (1/60), we can set this time
-			this.emitInterval = setInterval(() => {
-				console.log("pff");
-				if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
-					this.emitBall();
-					this.emitPaddle1();
-				} else {
-					this.emitPaddle2();
-				}
-			}, 20); */
-		} catch (error) { }
+		 this.movableInterval = setInterval(() => {
+			this.emitMoveable();
+		}, 20);
 
 	}
 
@@ -127,14 +108,19 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
-		
-		window.requestAnimationFrame(() => this.renderFrame());
+		this.animationFrame = window.requestAnimationFrame(() => {
+			this.renderFrame()
+		});
 	}
 
 	emitMoveable() {
-		this.playService.emit(ePlay.ON_GAME_MOVING, {
-			id: this.prefs.game.id,
-		})
+		var gameData: GameDataI = <GameDataI>{};
+		gameData.id = this.prefs.game.id;
+		gameData.up = this.moving_up;
+		gameData.down = this.moving_down;
+		gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
+		
+		this.playService.emit(ePlay.ON_GAME_MOVING, gameData)
 	}
 
 	/* emitBall() {
@@ -160,14 +146,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	} */
 	@HostListener('window:keydown', ['$event'])
 	keyUp(event: KeyboardEvent) {
-		if (event.code == "ArrowUp") {
+		if (event.code == "ArrowUp")
 			this.moving_up = true;
-		}
-		if (event.code == "ArrowDown") {
+		if (event.code == "ArrowDown")
 			this.moving_down = true;
-		}
 	}
-
+	
 	@HostListener('window:keyup', ['$event'])
 	keyDown(event: KeyboardEvent) {
 		if (event.code == "ArrowUp")

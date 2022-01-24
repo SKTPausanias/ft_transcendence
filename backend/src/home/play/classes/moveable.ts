@@ -17,10 +17,10 @@ export abstract class Moveable {
     
 	getCollisionBoundaries(): Boundaries {
 		return {
-			top: this.position.y - this.height / 2,
-			bottom: this.position.y + this.height / 2,
-			right: this.position.x + this.width / 2,
-			left: this.position.x - this.width / 2
+			top: this.position.y,
+			bottom: this.position.y + this.height + 1,
+			right: this.position.x + this.width,
+			left: this.position.x 
 		}
 	}
 	getObjectCorners(): any {

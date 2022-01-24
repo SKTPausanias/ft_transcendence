@@ -32,6 +32,7 @@ export class PlayService {
 		this.onMatchData();
 		this.onStartGame();
 		this.onGameMoving();
+		this.onPaddleMove();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -99,7 +100,6 @@ export class PlayService {
 	private onStartGame() {
 		this.socket.on(ePlay.ON_START_GAME, (data: any) => {
 			try {
-				console.log("Printing from inStartGame: ", data);
 				this.gameDataEmiter.emit(data);
 			}catch(error){}
 		})
@@ -107,7 +107,13 @@ export class PlayService {
 	private onGameMoving() {
 		this.socket.on(ePlay.ON_GAME_MOVING, (data: any) => {
 			try {
-				console.log("Printing from onGameMoving: ", data);
+				this.gameDataEmiter.emit(data);
+			}catch(error){}
+		})
+	}
+	private onPaddleMove() {
+		this.socket.on(ePlay.ON_PADD_MOVE, (data: any) => {
+			try {
 				this.gameDataEmiter.emit(data);
 			}catch(error){}
 		})

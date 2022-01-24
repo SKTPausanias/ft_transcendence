@@ -18,8 +18,8 @@ export class Game {
     constructor(private id: number) {
         this.id = id;
         this.ball = new Ball(10, 10, 3, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
-        this.pad_1 = new Paddle(75, 10, 15000, { x: 50, y: (this.cHeight / 2) });
-	    this.pad_2 = new Paddle(75, 10, 15000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+        this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
+	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();

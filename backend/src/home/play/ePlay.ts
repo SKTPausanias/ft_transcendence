@@ -15,7 +15,8 @@ export enum ePlay {
 	ON_MATCH_DATA_P1 = "on-match-data-p1",
 	ON_MATCH_DATA_P2 = "on-match-data-p2",
 	ON_START_GAME = "on-start-game",
-	ON_GAME_MOVING = "on-game-moving"
+	ON_GAME_MOVING = "on-game-moving",
+	ON_PADD_MOVE = "on-pad-move"
 }
 export enum eRequestPlayer{
 	WAITING = "waiting",

@@ -180,7 +180,7 @@ export class PlayGateway {
 	}
 	
 	@SubscribeMessage(ePlay.ON_GAME_MOVING)
-	async onGameMoving(client, data: any){
+	async onGameMoving(client, data: any){		
 		const game = await this.playService.findGameById(data.id);
 		if (game !== undefined && this.games.length > 0) {
 			var obj = this.games.find(item => item.getId() == game.id);
@@ -188,7 +188,50 @@ export class PlayGateway {
 			if (obj !== undefined){
 				obj.checkCollisions();
 				obj.ball.move();
+				if (data.p1)
+				{
+					if (data.up)
+						obj.pad_1.moveUp();
+					else if (data.down)
+						obj.pad_1.moveDown();
+				}
+				else
+				{
+					if (data.up)
+						obj.pad_2.moveUp();
+					else if (data.down)
+						obj.pad_2.moveDown();
+				}
+
 				this.server.to(client.id).emit(ePlay.ON_GAME_MOVING, {gameInfo: obj.getMap() })
+				//this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
+			} else
+				console.log("Not obj...");
+		}
+	}
+	@SubscribeMessage(ePlay.ON_PADD_MOVE)
+	async onPadMove(client, data: any){
+		const me = await this.getSessionUser(client);
+		const game = await this.playService.findGameById(data.id);
+		if (game !== undefined && this.games.length > 0) {
+			var obj = this.games.find(item => item.getId() == game.id);
+			if (obj !== undefined){
+				obj.checkCollisions();
+				if (game.player_1.login ==  me.login)
+				{
+					if (data.up)
+						obj.pad_1.moveUp();
+					else if (data.down)
+						obj.pad_1.moveDown();
+				}
+				else
+				{
+					if (data.up)
+						obj.pad_2.moveUp();
+					else if (data.down)
+						obj.pad_2.moveDown();
+				}
+				this.server.to(client.id).emit(ePlay.ON_PADD_MOVE, {gameInfo: obj.getMap() })
 				//this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
 			} else
 				console.log("Not obj...");

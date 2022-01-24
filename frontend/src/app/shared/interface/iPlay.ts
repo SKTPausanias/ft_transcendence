@@ -30,3 +30,10 @@ export interface PadI extends GameMoveableI {
 export interface BallI extends GameMoveableI {
 
 }
+
+export interface GameDataI{
+	id: number,
+	up: boolean | undefined,
+	down: boolean | undefined,
+	p1: boolean
+}
