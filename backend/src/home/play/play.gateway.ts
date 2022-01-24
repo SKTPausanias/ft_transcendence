@@ -151,20 +151,8 @@ export class PlayGateway {
 	@SubscribeMessage(ePlay.ON_MATCH_DATA)
 	async onMatchData(client, data: any) {
 		const game = await this.playService.findGameById(data.id);
-		//game.viewers ==> sessionEntity[];
-		//viewr.socketId
-		if (game !== undefined){
+		if (game !== undefined)
 			this.emitToAll(game.viewers,ePlay.ON_MATCH_DATA, data);
-			/*f (data.b) {
-				data.b.x += 3 * data.s.x; //move ball x pos
-				data.b.y += 3 * data.s.y; //move ball y pos
-
-				//this.emitToAll([game.player_2], ePlay.ON_MATCH_DATA, data);
-			}*/
-			
-		}
-		/*else
-			this.emitToAll([game.player_1, game.player_2], ePlay.ON_MATCH_DATA, data);*/
 	}
 	
 
@@ -184,29 +172,26 @@ export class PlayGateway {
 		const game = await this.playService.findGameById(data.id);
 		if (game !== undefined && this.games.length > 0) {
 			var obj = this.games.find(item => item.getId() == game.id);
-			//console.log("ID from onGameMoving backend: ", obj);
 			if (obj !== undefined){
 				obj.checkCollisions();
 				obj.ball.move();
 				if (data.p1)
 				{
-					if (data.up)
+					if (data.up && obj.boundPad_1.top > 0)
 						obj.pad_1.moveUp();
-					else if (data.down)
+					else if (data.down && obj.boundPad_1.bottom < obj.cHeight - 2)
 						obj.pad_1.moveDown();
 				}
 				else
 				{
-					if (data.up)
+					if (data.up && obj.boundPad_2.top > 0)
 						obj.pad_2.moveUp();
-					else if (data.down)
+					else if (data.down && obj.boundPad_2.bottom < obj.cHeight - 2)
 						obj.pad_2.moveDown();
 				}
 
 				this.server.to(client.id).emit(ePlay.ON_GAME_MOVING, {gameInfo: obj.getMap() })
-				//this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
-			} else
-				console.log("Not obj...");
+			}
 		}
 	}
 	@SubscribeMessage(ePlay.ON_PADD_MOVE)

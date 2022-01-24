@@ -19,7 +19,7 @@ export abstract class Moveable {
 		return {
 			top: this.position.y,
 			bottom: this.position.y + this.height + 1,
-			right: this.position.x + this.width,
+			right: this.position.x + this.width + 1,
 			left: this.position.x 
 		}
 	}

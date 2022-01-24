@@ -57,7 +57,20 @@ export class Game {
         this.boundPad_1 = this.pad_1.getCollisionBoundaries();
         this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 
-		// Left Collision
+        //Collision ball with backPad -> may consider reabse back pad's limits
+        if ((this.boundBall.right >= this.boundPad_2.right && 
+            (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)) ||
+            (this.boundBall.right >= this.cWidth)){
+            this.ball.reverseX();
+            this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+        }
+        if ((this.boundBall.left <= this.boundPad_1.left && 
+            (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)) ||
+            (this.boundBall.left <= 0)){
+            this.ball.reverseX();
+            this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+        }
+        // Left Collision
 		if (this.boundBall.left <= this.boundPad_1.right && this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom) {
 			this.ball.reverseX();
 		}
@@ -66,10 +79,10 @@ export class Game {
 			this.ball.reverseX();
 		} 
 
-		if (this.boundBall.left <= 0 || this.boundBall.right >= this.cWidth) {
+		/* if (this.boundBall.left <= 0 || this.boundBall.right >= this.cWidth) {
 			this.ball.reverseX();
 			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-		}
+		} */
 
 		if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0)
 			this.ball.reverseY();
