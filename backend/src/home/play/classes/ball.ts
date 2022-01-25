@@ -45,6 +45,10 @@ export class Ball extends Moveable {
     move() {
         super.move(this.speedRatio);
     }
+	moveX(x: number){
+		while (x-- > 0)
+		this.move();
+	}
 	moveTest(w:number, h: number) {
 		var ballPos = this.getPosition();
 		// W H campo

@@ -17,8 +17,8 @@ export class Game {
 
     constructor(private id: number) {
         this.id = id;
-        this.ball = new Ball(10, 10, 3, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
-        this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
+        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+       	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
@@ -52,40 +52,72 @@ export class Game {
 
 	//Checks objects collisions. 'Till now only checks collision of the ball with four sides
 	checkCollisions() {
-
+		var left_touch = this.ball.getSpeedRatio().x < 0;
         this.boundBall = this.ball.getCollisionBoundaries();
         this.boundPad_1 = this.pad_1.getCollisionBoundaries();
-        this.boundPad_2 = this.pad_2.getCollisionBoundaries();
+        this.boundPad_2 = this.pad_2.getCollisionBoundaries();		
 
         //Collision ball with backPad -> may consider reabse back pad's limits
-        if ((this.boundBall.right >= this.boundPad_2.right && 
-            (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)) ||
-            (this.boundBall.right >= this.cWidth)){
-            this.ball.reverseX();
-            this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-        }
-        if ((this.boundBall.left <= this.boundPad_1.left && 
-            (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)) ||
-            (this.boundBall.left <= 0)){
-            this.ball.reverseX();
-            this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-        }
-        // Left Collision
-		if (this.boundBall.left <= this.boundPad_1.right && this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom) {
-			this.ball.reverseX();
+		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0)
+			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+		else if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0)
+			this.ball.reverseY();
+		else if (this.boundBall.left <= this.boundPad_1.right && left_touch)
+		{
+			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
+			{
+				var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
+				if (this.boundBall.left >= paddMid)
+				{
+					this.ball.reverseX();
+				}
+				else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
+				{
+					this.ball.reverseY();
+					this.ball.reverseX();
+				}
+			}
 		}
-		// Right Collision
-		if (this.boundBall.right >= this.boundPad_2.left && this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom) {
+		else if (this.boundBall.right >= this.boundPad_2.left && !left_touch)
+		{
+			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
+			{
+				var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
+				if (this.boundBall.right <= paddMid)
+					this.ball.reverseX();
+				else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
+				{
+					this.ball.reverseY();
+					this.ball.reverseX();
+				}
+			}	
+		}
+
+		/* if ((this.boundBall.right >= this.boundPad_2.right && 
+			(this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)) ||
+			(this.boundBall.right >= this.cW )){
+				this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+		}*/
+		/* else if ((this.boundBall.left <= this.boundPad_1.left && 
+			(this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)) ||
+			(this.boundBall.left <= 0)){
 			this.ball.reverseX();
+			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+		}
+
+		else if (this.boundBall.left <= this.boundPad_1.right && this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom) {
+			this.ball.reverseX(); //left collision
+		}
+		else if (this.boundBall.right >= this.boundPad_2.left && this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom) {
+			this.ball.reverseX(); // Right Collision
 		} 
+		 */
 
 		/* if (this.boundBall.left <= 0 || this.boundBall.right >= this.cWidth) {
 			this.ball.reverseX();
 			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
 		} */
 
-		if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0)
-			this.ball.reverseY();
 
         //Consider top/bottom pad collisions
 

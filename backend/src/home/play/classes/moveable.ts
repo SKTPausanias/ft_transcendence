@@ -6,7 +6,7 @@ export abstract class Moveable {
     constructor(private height: number, 
                 private width: number, 
                 private maxSpeed: number, 
-                private position: iPosition) {
+                public position: iPosition) {
     }
 
     move(speedRatio: iSpeedRatio): void {
@@ -18,8 +18,8 @@ export abstract class Moveable {
 	getCollisionBoundaries(): Boundaries {
 		return {
 			top: this.position.y,
-			bottom: this.position.y + this.height + 1,
-			right: this.position.x + this.width + 1,
+			bottom: this.position.y + this.height,
+			right: this.position.x + this.width,
 			left: this.position.x 
 		}
 	}
