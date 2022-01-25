@@ -14,15 +14,17 @@ export class Game {
     boundBall: Boundaries;
     boundPad_1: Boundaries;
     boundPad_2: Boundaries;
+	start: boolean;
 
     constructor(private id: number) {
         this.id = id;
-        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
        	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
+		this.start = false;
     }
     getId (): number{
         return (this.id);
@@ -58,8 +60,11 @@ export class Game {
         this.boundPad_2 = this.pad_2.getCollisionBoundaries();		
 
         //Collision ball with backPad -> may consider reabse back pad's limits
-		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0)
+		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
 			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
+			this.start = false;
+			this.ball.setSpeedBall(1);
+		}
 		else if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0)
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch)
@@ -76,6 +81,12 @@ export class Game {
 					this.ball.reverseY();
 					this.ball.reverseX();
 				}
+				if (!this.start) {
+					this.ball.setSpeedBall(2);
+					this.start = true;
+				}
+				else 
+					this.ball.incrementSpeed();
 			}
 		}
 		else if (this.boundBall.right >= this.boundPad_2.left && !left_touch)
@@ -90,6 +101,12 @@ export class Game {
 					this.ball.reverseY();
 					this.ball.reverseX();
 				}
+				if (!this.start) {
+					this.ball.setSpeedBall(2);
+					this.start = true;
+				}
+				else 
+					this.ball.incrementSpeed();
 			}	
 		}
 

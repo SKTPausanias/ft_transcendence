@@ -14,7 +14,6 @@ export abstract class Moveable {
         this.position.y += this.maxSpeed * speedRatio.y;
     }
 
-    
 	getCollisionBoundaries(): Boundaries {
 		return {
 			top: this.position.y,
@@ -41,4 +40,13 @@ export abstract class Moveable {
     setPosition(position: iPosition): void { this.position = position; }
 
     setYPosition(position: number): void { this.position.y = position; }
+
+	setSpeed(speed: number) {
+		this.maxSpeed = speed;
+	}
+	incrementSpeed() {
+		console.log(this.maxSpeed);
+		if (this.maxSpeed < 5)
+			this.maxSpeed += 0.1;
+	}
 }
