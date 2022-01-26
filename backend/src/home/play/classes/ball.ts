@@ -38,7 +38,7 @@ export class Ball extends Moveable {
     setVerticalSpeedRatio(verticalSpeedRatio: number): void {
         this.speedRatio.y = verticalSpeedRatio;
     }
-
+    
     /**
      * Moves object using existing speed ratio
      */

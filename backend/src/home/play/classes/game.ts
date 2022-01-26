@@ -18,7 +18,7 @@ export class Game {
 
     constructor(private id: number) {
         this.id = id;
-        this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
        	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
@@ -62,6 +62,7 @@ export class Game {
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
             this.start = false;
+			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBall(1);
             this.ball.reverseX();
             this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
@@ -72,6 +73,16 @@ export class Game {
 		{
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 			{
+				console.log(this.boundBall.top);
+				console.log(this.boundPad_1.top);
+				var middle = this.boundPad_1.top + this.pad_1.getHeight() / 2;
+				// abs value of distance
+				var distance = Math.abs(middle - this.boundBall.top);
+				// increment vertical speed ratio as distance incremenets
+				console.log("distance", distance);
+				this.ball.setVerticalSpeedRatio((distance / (this.pad_1.getHeight() / 5)));
+				console.log("vertial ratio", (distance / (this.pad_1.getHeight() / 5))); //modify only angle 
+				//this.ball.setVerticalSpeedRatio(5);
 				var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 				if (this.boundBall.left >= paddMid)
 				{
