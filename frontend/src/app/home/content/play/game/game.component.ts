@@ -7,16 +7,9 @@
  */
 
 import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy } from '@angular/core';
-import { ePlay, wSocket } from 'src/app/shared/ft_enums';
-import { EventEmitter } from "@angular/core";
+import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
-import { io, Socket } from "socket.io-client";
-import { iBallPosition } from './classes/iBallPosition';
-import { Ball } from './classes/ball';
-import { Boundaries } from './classes/iPosition'
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
-import { Paddle } from './classes/paddle';
-import { toHash } from 'ajv/dist/compile/util';
 import { PlayService } from '../play.service';
 import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 
@@ -28,48 +21,21 @@ import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() prefs: SharedPreferencesI;
-	private socket: Socket;
-	width: number;
-	height: number;
-	/* gameOptFilter: EventEmitter<any>; */
 	context: CanvasRenderingContext2D | null;
 	ball: BallI;
 	pad_1: PadI;
 	pad_2: PadI;
+	width: number;
+	height: number;
 	movableInterval: any;
 	animationFrame: any;
-
-
-
-	//
-	fps: number = 60;
 	moving_up = false;
 	moving_down = false;
-	ballImg = new Image();
-	oldPos1_Y: number;
-	oldPos2_Y: number;
-	fpsInterval: any;
-	emitInterval: any;
-	paddUpInterval: any;
-	paddDownInterval: any;
 	
-
-
-
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
 		this.width = 0;
 		this.height = 0;
-		this.fps = 60;
-		/* //inicializamos
-		this.ball = new Ball(10, 10, 3, { x: this.width / 2, y: this.height / 2 }, { x: 1, y: 1 });
-		this.pad_1 = new Paddle(75, 10, 15000, { x: 50, y: (this.height / 2) });
-		this.pad_2 = new Paddle(75, 10, 15000, { x: this.width - 50, y: (this.height / 2) });
-		//enviamos al backend
-		this.boundBall = this.ball.getCollisionBoundaries();
-		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
-		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
-		console.log("Ball data from game: ", this.ball); */
 	}
 
 	ngOnInit(): void {		
@@ -86,11 +52,10 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		});
 	}
 	ngOnDestroy(): void {
-		/*clearInterval(this.fpsInterval);
-		clearInterval(this.emitInterval);*/
 		clearInterval(this.movableInterval);
 		window.cancelAnimationFrame(this.animationFrame);
 	}
+
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
@@ -98,9 +63,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
 		}, 20);
-
 	}
-
 
 	//renders every frame cleaning and drawing the elements
 	renderFrame(): void {
@@ -123,27 +86,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.playService.emit(ePlay.ON_GAME_MOVING, gameData)
 	}
 
-	/* emitBall() {
-		this.playService.emit(ePlay.ON_MATCH_DATA, {
-			id: this.prefs.game.id,
-			b: this.ball.getPosition(),
-			s: this.ball.getSpeedRatio()
-		})
-	}
-	emitPaddle1() {
-		if (this.pad_1.getPosition().y != this.oldPos1_Y)
-			this.playService.emit(ePlay.ON_MATCH_DATA, {
-				id: this.prefs.game.id,
-				p1: this.pad_1.getPosition().y
-			})
-	}
-	emitPaddle2() {
-		if (this.pad_2.getPosition().y != this.oldPos2_Y)
-			this.playService.emit(ePlay.ON_MATCH_DATA, {
-				id: this.prefs.game.id,
-				p2: this.pad_2.getPosition().y
-			})
-	} */
 	@HostListener('window:keydown', ['$event'])
 	keyUp(event: KeyboardEvent) {
 		if (event.code == "ArrowUp")

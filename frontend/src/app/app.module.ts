@@ -30,6 +30,7 @@ import { ChangePasswordComponent } from './home/content/chat/modal/change-passwo
 import { UserProfileComponent } from './home/content/chat/modal/user-profile/user-profile.component';
 import { GameWaitRoomComponent } from './home/content/play/game-wait-room/game-wait-room.component';
 import { gameComponent } from './home/content/play/game/game.component';
+import { CanvasComponent } from './home/content/live/stream/canvas.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { gameComponent } from './home/content/play/game/game.component';
   ChangePasswordComponent,
   UserProfileComponent,
   GameWaitRoomComponent,
-  gameComponent
+  gameComponent,
+  CanvasComponent
   ],
   imports: [
     BrowserModule,

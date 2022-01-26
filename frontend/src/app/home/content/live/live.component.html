@@ -7,9 +7,6 @@
         </div>
     </div>
     <div *ngIf='isStreaming'>
-        <h1>STREAMING</h1>
-		<h3>{{streaming.player1.nickname}} vs {{streaming.player2.nickname}}</h3>
-        <button (click)='cancelStreaming()'>cancel</button>
+        <app-canvas [game]="streaming" [isStreaming]="isStreaming"></app-canvas>
     </div>
 </div>
-<canvas #live_watch width="{{width}}" height="{{height}}" style="border: 1px solid black"></canvas>

@@ -1,26 +1,26 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from "@angular/core";
-import { Router } from "@angular/router";
+import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
 import { ePlay } from "src/app/shared/ft_enums";
-import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
+import { WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
-import { LiveService } from "./live.service";
-import { Location } from '@angular/common';
-import { PlayService } from "../play/play.service";
 import { BallI, PadI } from "src/app/shared/interface/iPlay";
+import { PlayService } from "../../play/play.service";
+import { LiveService } from "../live.service";
+import { Location } from '@angular/common';
+import { Router } from "@angular/router";
 
 @Component({
-	selector: "app-live",
-	templateUrl: "./live.component.html",
-	styleUrls: ["./live.component.css"],
+	selector: "app-canvas",
+	templateUrl: "./canvas.component.html",
+	styleUrls: ["./canvas.component.css"],
 })
-export class LiveComponent implements OnInit {  
-	@ViewChild('live_watch') liveCanvas: ElementRef<HTMLCanvasElement>;
-	@Input() livePreference: SharedPreferencesI;
-	
+export class CanvasComponent implements OnInit {  
+	@ViewChild('canvas_watch') liveCanvas: ElementRef<HTMLCanvasElement>;
+	@Input() game: WaitRoomI;
+	@Input() isStreaming: boolean = false;
+
 	liveEventReciver: any;
 	session = this.sQuery.getSessionToken();
 	games: WaitRoomI[] = [];
-	isStreaming: boolean = false;
 	streaming: WaitRoomI = <WaitRoomI>{};
 	streamInterval: any;
 	animationFrame: any;
@@ -34,11 +34,11 @@ export class LiveComponent implements OnInit {
 	//gameId: number;
 
 	constructor(private liveService: LiveService,
-				//private router: Router,
 				private location: Location,
+				private router: Router,
 				private sQuery: SessionStorageQueryService,
 				private playService: PlayService) {
-				
+				this.streaming = this.game;
 				this.width = 0;
 				this.height = 0;
 				}
@@ -46,21 +46,20 @@ export class LiveComponent implements OnInit {
 	ngOnInit(): void {
 		this.width = 0;
 		this.height = 0;
-		this.initLiveEventReciver();
-		this.liveService.emit(ePlay.ON_GET_LIVE_GAMES);
-		//this.gameId = this.router.parseUrl(this.router.url).queryParams.game_id;
 		this.location.replaceState(this.location.path().split('?')[0], '');
+        console.log("game is: ", this.game);
 	}
 
-	ngAfterViewInit(){}
+	ngAfterViewInit(){
+        this.startStreaming(this.game);
+    }
 
 	ngOnDestroy(): void {
-		//this.cancelStreaming();
-		this.liveEventReciver.unsubscribe();
+		this.cancelStreaming();
 	}
 	
     //renders every frame cleaning and drawing the elements
-   /*  renderFrame(): void {
+    renderFrame(): void {
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
@@ -68,31 +67,37 @@ export class LiveComponent implements OnInit {
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
 		});
-   } */
+   }
    
-   initLiveEventReciver(){
-		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
-			if (data.games)
-				this.games = data.games;
-			if (this.games.find(item => item.id == this.streaming.id) == undefined)
-			{
-				this.isStreaming = false;
-				this.streaming = <WaitRoomI>{};
-			}
-		});
-	}
-
 	startStreaming(game: WaitRoomI): void {
 		this.isStreaming = true;
 		this.streaming = game;
+		this.context = this.liveCanvas.nativeElement.getContext('2d');
+		this.liveService.liveDataEmitter.subscribe((data: any) => {
+			if (data.gameInfo !== undefined) {
+				this.width = data.gameInfo.map.width;
+				this.height = data.gameInfo.map.height;
+				this.ball = data.gameInfo.ball;
+				this.pad_1 = data.gameInfo.pad_1;
+				this.pad_2 = data.gameInfo.pad_2;
+				if (this.animationFrame == undefined)
+					this.renderFrame();
+			}
+		});
+		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
+		
+		this.streamInterval = setInterval(() => {
+			this.playService.emit(ePlay.ON_START_STREAM, game)
+		}, 20);
 	}
 
-	/* cancelStreaming(): void {
+	cancelStreaming(): void {
 		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;
 		this.streaming = <WaitRoomI>{};
 		clearInterval(this.streamInterval);
 		window.cancelAnimationFrame(this.animationFrame);
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-	} */
+		this.router.navigateByUrl('/live'); //it must redirect to live onInit
+	}
 }

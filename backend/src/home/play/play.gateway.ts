@@ -159,44 +159,19 @@ export class PlayGateway {
       games
     );
   }
+
   @SubscribeMessage(ePlay.ON_START_STREAM)
   async onStartStream(client, data: WaitRoomI) {
     if (data !== undefined) {
       const game = await this.playService.findGameById(data.id);
-      const me = await this.getSessionUser(client);
-      /* const game = await this.playService.addViewer(me, data); */
+      //const gameViewers = await this.playService.addViewer(me, data);
       if (game !== undefined && this.games.length > 0) {
         var obj = this.games.find((item) => item.getId() == game.id);
-        
-      /*  this.server.emit(
-          ePlay.ON_START_STREAM,
-          me.login,
-          { gameInfo: obj.getMap() }
-        ); */
         this.server
             .to(client.id)
-            .emit(ePlay.ON_START_STREAM, me.login, { gameInfo: obj.getMap() });
+            .emit(ePlay.ON_START_STREAM, { gameInfo: obj.getMap() });
      }
-    else 
-      console.log("Data is : ", data);
     }
-    /* if (game == undefined) return;
-    var gameI = this.playService.createWaitRoom(game);
-    // ON_WAIT_ROOM_ACCEPT has to be changed to ON_ROOM_UPDATE
-    this.socketService.emitToOne(
-      this.server,
-      ePlay.ON_WAIT_ROOM_ACCEPT,
-      me.login,
-      game.player_1,
-      gameI
-    );
-    this.socketService.emitToOne(
-      this.server,
-      ePlay.ON_WAIT_ROOM_ACCEPT,
-      me.login,
-      game.player_2,
-      gameI
-    ); */
   }
 
   @SubscribeMessage(ePlay.ON_STOP_STREAM)
@@ -280,7 +255,7 @@ export class PlayGateway {
     if (game !== undefined && this.games.length > 0) {
       var obj = this.games.find((item) => item.getId() == game.id);
       if (obj !== undefined) {
-		obj.checkCollisions();
+		    obj.checkCollisions();
         obj.ball.move();
         if (data.p1) {
           if (data.up && obj.boundPad_1.top > 0) obj.pad_1.moveUp();

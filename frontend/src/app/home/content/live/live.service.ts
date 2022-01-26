@@ -11,11 +11,13 @@ import { SocketService } from "../../socket.service";
 })
 export class LiveService {
 	liveEventEmitter: EventEmitter<any>;
+	liveDataEmitter: EventEmitter<any>;
 
 	socket: Socket; 
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
 		this.liveEventEmitter = new EventEmitter<any>();
+		this.liveDataEmitter = new EventEmitter<any>();
 		//this.socket = this.socketService.getSocket();
 	}
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
@@ -40,9 +42,9 @@ export class LiveService {
 		})
 	}
 	private onGameStream(){
-		this.socket.on(ePlay.ON_START_STREAM, (emiter: string, data: any) => {
+		this.socket.on(ePlay.ON_START_STREAM, (data: any) => {
 			try {
-				this.liveEventEmitter.emit(data);
+				this.liveDataEmitter.emit(data);
 			}catch(error){}
 		})
 	}
