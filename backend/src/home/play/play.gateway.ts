@@ -161,9 +161,26 @@ export class PlayGateway {
   }
   @SubscribeMessage(ePlay.ON_START_STREAM)
   async onStartStream(client, data: WaitRoomI) {
-    const me = await this.getSessionUser(client);
-    const game = await this.playService.addViewer(me, data);
-    if (game == undefined) return;
+    if (data !== undefined) {
+      const game = await this.playService.findGameById(data.id);
+      const me = await this.getSessionUser(client);
+      /* const game = await this.playService.addViewer(me, data); */
+      if (game !== undefined && this.games.length > 0) {
+        var obj = this.games.find((item) => item.getId() == game.id);
+        
+      /*  this.server.emit(
+          ePlay.ON_START_STREAM,
+          me.login,
+          { gameInfo: obj.getMap() }
+        ); */
+        this.server
+            .to(client.id)
+            .emit(ePlay.ON_START_STREAM, me.login, { gameInfo: obj.getMap() });
+     }
+    else 
+      console.log("Data is : ", data);
+    }
+    /* if (game == undefined) return;
     var gameI = this.playService.createWaitRoom(game);
     // ON_WAIT_ROOM_ACCEPT has to be changed to ON_ROOM_UPDATE
     this.socketService.emitToOne(
@@ -179,7 +196,7 @@ export class PlayGateway {
       me.login,
       game.player_2,
       gameI
-    );
+    ); */
   }
 
   @SubscribeMessage(ePlay.ON_STOP_STREAM)

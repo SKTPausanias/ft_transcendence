@@ -61,9 +61,10 @@ export class Game {
 
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
-			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-			this.start = false;
-			this.ball.setSpeedBall(1);
+            this.start = false;
+            this.ball.setSpeedBall(1);
+            this.ball.reverseX();
+            this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
 		}
 		else if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0)
 			this.ball.reverseY();

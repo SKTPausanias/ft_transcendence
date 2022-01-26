@@ -31,7 +31,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	private socket: Socket;
 	width: number;
 	height: number;
-	gameOptFilter: EventEmitter<any>;
+	/* gameOptFilter: EventEmitter<any>; */
 	context: CanvasRenderingContext2D | null;
 	ball: BallI;
 	pad_1: PadI;
@@ -95,7 +95,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.playService.emit(ePlay.ON_START_GAME, this.prefs.game.id);
-		 this.movableInterval = setInterval(() => {
+		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
 		}, 20);
 

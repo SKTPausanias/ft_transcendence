@@ -23,6 +23,7 @@ export class LiveService {
 		this.sharedPreferences = sharedPreference;
 		this.onGetLiveGames();
 		this.onGameEnd();
+		this.onGameStream();
 	}
 	private onGetLiveGames(){
 		this.socket.on(ePlay.ON_GET_LIVE_GAMES, (emiter: string, data: any) => {
@@ -35,6 +36,13 @@ export class LiveService {
 		this.socket.on(ePlay.ON_GAME_END, (emiter: string, data: any) => {
 			try {
 				this.liveEventEmitter.emit({game_end: data});
+			}catch(error){}
+		})
+	}
+	private onGameStream(){
+		this.socket.on(ePlay.ON_START_STREAM, (emiter: string, data: any) => {
+			try {
+				this.liveEventEmitter.emit(data);
 			}catch(error){}
 		})
 	}
