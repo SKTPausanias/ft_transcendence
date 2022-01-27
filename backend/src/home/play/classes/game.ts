@@ -80,7 +80,7 @@ export class Game {
 				var distance = Math.abs(middle - this.boundBall.top);
 				// increment vertical speed ratio as distance incremenets
 				console.log("distance", distance);
-				this.ball.setVerticalSpeedRatio((distance / (this.pad_1.getHeight() / 5)));
+				this.ball.setVerticalSpeedRatio((distance / (this.pad_1.getHeight() / 2.5)));
 				console.log("vertial ratio", (distance / (this.pad_1.getHeight() / 5))); //modify only angle 
 				//this.ball.setVerticalSpeedRatio(5);
 				var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
@@ -105,6 +105,11 @@ export class Game {
 		{
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 			{
+				var middle = this.boundPad_2.top + this.pad_2.getHeight() / 2;
+				// abs value of distance
+				var distance = Math.abs(middle - this.boundBall.top);
+				// increment vertical speed ratio as distance incremenets
+				this.ball.setVerticalSpeedRatio((distance / (this.pad_2.getHeight() / 2.5)));
 				var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 				if (this.boundBall.right <= paddMid)
 					this.ball.reverseX();
