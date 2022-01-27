@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, Output, ViewChild, EventEmitter } from "@angular/core";
 import { ePlay } from "src/app/shared/ft_enums";
 import { WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
@@ -8,6 +8,7 @@ import { LiveService } from "../live.service";
 import { Location } from '@angular/common';
 import { Router } from "@angular/router";
 
+
 @Component({
 	selector: "app-canvas",
 	templateUrl: "./canvas.component.html",
@@ -16,7 +17,9 @@ import { Router } from "@angular/router";
 export class CanvasComponent implements OnInit {  
 	@ViewChild('canvas_watch') liveCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() game: WaitRoomI;
-	@Input() isStreaming: boolean = false;
+	@Output() sndEvent = new EventEmitter<boolean>();
+ 
+	isStreaming: boolean = false;
 
 	liveEventReciver: any;
 	session = this.sQuery.getSessionToken();
@@ -38,9 +41,9 @@ export class CanvasComponent implements OnInit {
 				private router: Router,
 				private sQuery: SessionStorageQueryService,
 				private playService: PlayService) {
-				this.streaming = this.game;
-				this.width = 0;
-				this.height = 0;
+					this.streaming = this.game;
+					this.width = 0;
+					this.height = 0;
 				}
 
 	ngOnInit(): void {
@@ -91,6 +94,9 @@ export class CanvasComponent implements OnInit {
 		}, 20);
 	}
 
+	sndCloseStreaming(val: boolean) {
+		this.sndEvent.emit(val);
+	}
 	cancelStreaming(): void {
 		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;

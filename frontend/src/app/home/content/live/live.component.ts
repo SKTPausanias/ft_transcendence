@@ -87,6 +87,12 @@ export class LiveComponent implements OnInit {
 		this.streaming = game;
 	}
 
+	rcvEvent(val: boolean){
+		console.log("Called from canvas component...");
+		if (val)
+			this.isStreaming = false;
+	}
+
 	/* cancelStreaming(): void {
 		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;

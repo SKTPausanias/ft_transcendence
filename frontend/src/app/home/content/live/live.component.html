@@ -7,6 +7,6 @@
         </div>
     </div>
     <div *ngIf='isStreaming'>
-        <app-canvas [game]="streaming" [isStreaming]="isStreaming"></app-canvas>
+        <app-canvas [game]="streaming" (sndEvent)="rcvEvent($event)"></app-canvas>
     </div>
 </div>
