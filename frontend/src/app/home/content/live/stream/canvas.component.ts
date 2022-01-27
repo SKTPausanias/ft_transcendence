@@ -6,8 +6,6 @@ import { BallI, PadI } from "src/app/shared/interface/iPlay";
 import { PlayService } from "../../play/play.service";
 import { LiveService } from "../live.service";
 import { Location } from '@angular/common';
-import { Router } from "@angular/router";
-
 
 @Component({
 	selector: "app-canvas",
@@ -23,7 +21,6 @@ export class CanvasComponent implements OnInit {
 
 	liveEventReciver: any;
 	session = this.sQuery.getSessionToken();
-	games: WaitRoomI[] = [];
 	streaming: WaitRoomI = <WaitRoomI>{};
 	streamInterval: any;
 	animationFrame: any;
@@ -34,31 +31,31 @@ export class CanvasComponent implements OnInit {
 	pad_2: PadI;
 	width: number;
 	height: number;
-	//gameId: number;
-
+	
 	constructor(private liveService: LiveService,
 				private location: Location,
-				private router: Router,
 				private sQuery: SessionStorageQueryService,
-				private playService: PlayService) {
-					this.streaming = this.game;
-					this.width = 0;
-					this.height = 0;
-				}
+		private playService: PlayService) {
+			this.streaming = this.game;
+			this.width = 0;
+			this.height = 0;
+		}
 
 	ngOnInit(): void {
 		this.width = 0;
 		this.height = 0;
 		this.location.replaceState(this.location.path().split('?')[0], '');
-        console.log("game is: ", this.game);
 	}
 
 	ngAfterViewInit(){
-        this.startStreaming(this.game);
+		this.isStreaming = true;
+		this.context = this.liveCanvas.nativeElement.getContext('2d');
+		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
+        this.startStreaming();
     }
 
 	ngOnDestroy(): void {
-		this.cancelStreaming();
+		this.sndCloseStreaming(true);
 	}
 	
     //renders every frame cleaning and drawing the elements
@@ -70,12 +67,9 @@ export class CanvasComponent implements OnInit {
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
 		});
-   }
+	}
    
-	startStreaming(game: WaitRoomI): void {
-		this.isStreaming = true;
-		this.streaming = game;
-		this.context = this.liveCanvas.nativeElement.getContext('2d');
+	startStreaming(): void {
 		this.liveService.liveDataEmitter.subscribe((data: any) => {
 			if (data.gameInfo !== undefined) {
 				this.width = data.gameInfo.map.width;
@@ -87,10 +81,8 @@ export class CanvasComponent implements OnInit {
 					this.renderFrame();
 			}
 		});
-		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-		
 		this.streamInterval = setInterval(() => {
-			this.playService.emit(ePlay.ON_START_STREAM, game)
+			this.playService.emit(ePlay.ON_START_STREAM, this.game)
 		}, 20);
 	}
 
@@ -102,8 +94,5 @@ export class CanvasComponent implements OnInit {
 		window.cancelAnimationFrame(this.animationFrame);
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
 		this.sndEvent.emit(val);
-	}
-	cancelStreaming(): void {
-		
 	}
 }

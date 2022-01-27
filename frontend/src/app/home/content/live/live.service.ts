@@ -1,10 +1,9 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable, EventEmitter } from "@angular/core";
 import { Socket } from "socket.io-client";
 import { ePlay } from "src/app/shared/ft_enums";
-import { SessionI, SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
+import { SessionI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
 import { UserPublicInfoI } from "src/app/shared/interface/iUserInfo";
-import { SocketService } from "../../socket.service";
 
 @Injectable({
 	providedIn: "root",
@@ -18,7 +17,6 @@ export class LiveService {
 	constructor(private http: HttpClient) {
 		this.liveEventEmitter = new EventEmitter<any>();
 		this.liveDataEmitter = new EventEmitter<any>();
-		//this.socket = this.socketService.getSocket();
 	}
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
 		this.socket = socket;
