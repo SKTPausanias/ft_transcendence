@@ -5,7 +5,6 @@ import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { LiveService } from "./live.service";
 import { Location } from '@angular/common';
-import { PlayService } from "../play/play.service";
 import { BallI, PadI } from "src/app/shared/interface/iPlay";
 
 @Component({
@@ -37,7 +36,7 @@ export class LiveComponent implements OnInit {
 				//private router: Router,
 				private location: Location,
 				private sQuery: SessionStorageQueryService,
-				private playService: PlayService) {
+				) {
 				
 				this.width = 0;
 				this.height = 0;
@@ -55,20 +54,8 @@ export class LiveComponent implements OnInit {
 	ngAfterViewInit(){}
 
 	ngOnDestroy(): void {
-		//this.cancelStreaming();
 		this.liveEventReciver.unsubscribe();
 	}
-	
-    //renders every frame cleaning and drawing the elements
-   /*  renderFrame(): void {
-		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
-		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
-		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
-		this.animationFrame = window.requestAnimationFrame(() => {
-			this.renderFrame()
-		});
-   } */
    
    initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
@@ -88,17 +75,7 @@ export class LiveComponent implements OnInit {
 	}
 
 	rcvEvent(val: boolean){
-		console.log("Called from canvas component...");
 		if (val)
 			this.isStreaming = false;
 	}
-
-	/* cancelStreaming(): void {
-		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
-		this.isStreaming = false;
-		this.streaming = <WaitRoomI>{};
-		clearInterval(this.streamInterval);
-		window.cancelAnimationFrame(this.animationFrame);
-		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-	} */
 }
