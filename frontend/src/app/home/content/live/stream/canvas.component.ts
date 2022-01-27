@@ -95,15 +95,15 @@ export class CanvasComponent implements OnInit {
 	}
 
 	sndCloseStreaming(val: boolean) {
-		this.sndEvent.emit(val);
-	}
-	cancelStreaming(): void {
 		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;
 		this.streaming = <WaitRoomI>{};
 		clearInterval(this.streamInterval);
 		window.cancelAnimationFrame(this.animationFrame);
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
-		this.router.navigateByUrl('/live'); //it must redirect to live onInit
+		this.sndEvent.emit(val);
+	}
+	cancelStreaming(): void {
+		
 	}
 }
