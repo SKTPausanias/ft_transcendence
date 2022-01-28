@@ -48,7 +48,19 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.pad_1 = data.gameInfo.pad_1;
 				this.pad_2 = data.gameInfo.pad_2;
 				if (data.gameInfo.score_p1 >= 3 || data.score_p2 >= 3) {
-					console.log("There is a winner!!!");
+					console.log("Game Over");
+					if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
+						if (data.gameInfo.score_p1 >= 3) {
+							console.log("Player 1 won");
+							this.playService.emit(ePlay.ON_GAME_WINNER, this.prefs.game.player1.login);
+							this.playService.emit(ePlay.ON_GAME_LOSER, this.prefs.game.player2.login);
+						}
+						else
+						{
+							this.playService.emit(ePlay.ON_GAME_WINNER, this.prefs.game.player2.login);
+							this.playService.emit(ePlay.ON_GAME_LOSER, this.prefs.game.player1.login);
+						}
+					}
 					this.sndWinner.emit(true);
 				}
 				if (this.animationFrame == undefined)

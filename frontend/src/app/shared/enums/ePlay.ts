@@ -13,7 +13,9 @@ export enum ePlay {
 	ON_MATCH_DATA = "on-match-data",
 	ON_START_GAME = "on-start-game",
 	ON_GAME_MOVING = "on-game-moving",
-	ON_PADD_MOVE = "on-pad-move"
+	ON_PADD_MOVE = "on-pad-move",
+	ON_GAME_LOSER = "on-game-loser",
+	ON_GAME_WINNER = "on-game-winner",
 }
 
 export enum eRequestPlayer{

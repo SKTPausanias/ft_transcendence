@@ -199,6 +199,7 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_GAME_END)
   async onGameEnd(client, data: WaitRoomI) {
+    console.log("ON_GAME_END", data);
     await this.playService.removePlayRoom(data);
     const me = await this.getSessionUser(client);
     var oponent;
@@ -248,6 +249,18 @@ export class PlayGateway {
         .emit(ePlay.ON_START_GAME, { gameInfo: gameObj.getMap() });
       //this.emitToAll([game.player_1, game.player_2], ePlay.ON_START_GAME, gameObj.getMap());
     }
+  }
+
+  @SubscribeMessage(ePlay.ON_GAME_WINNER)
+  async onGameWinner(client, data: any) {
+    console.log("ON_GAME_WINNER", data);
+    const winner = await this.playService.addVictory(data);
+  }
+
+  @SubscribeMessage(ePlay.ON_GAME_LOSER)
+  async onGameLoser(client, data: any) {
+    console.log("ON_GAME_LOSER", data);
+    const loser = await this.playService.addDefeat(data);
   }
 
   @SubscribeMessage(ePlay.ON_GAME_MOVING)
