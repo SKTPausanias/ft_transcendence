@@ -226,7 +226,8 @@ export class PlayGateway {
       me.login,
       await this.playService.onGetLiveGames()
     );
-    //close socket && server
+    if (data.id !== undefined)
+      this.games = this.games.filter(item => item.getId() != data.id);
   }
 
   @SubscribeMessage(ePlay.ON_MATCH_DATA)
