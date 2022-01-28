@@ -6,7 +6,7 @@
  * https://www.youtube.com/watch?v=SZcY8cB8nhQ
  */
 
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
@@ -21,6 +21,7 @@ import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() prefs: SharedPreferencesI;
+	@Output() sndWinner = new EventEmitter<boolean>();
 	context: CanvasRenderingContext2D | null;
 	ball: BallI;
 	pad_1: PadI;
@@ -31,11 +32,13 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
+	score_p2: number;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
 		this.width = 0;
 		this.height = 0;
+		this.score_p2 = 0;
 	}
 
 	ngOnInit(): void {		
@@ -46,6 +49,10 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.ball = data.gameInfo.ball;
 				this.pad_1 = data.gameInfo.pad_1;
 				this.pad_2 = data.gameInfo.pad_2;
+				if (data.gameInfo.score_p1 >= 3 || data.score_p2 >= 3) {
+					console.log("There is a winner!!!");
+					this.sndWinner.emit(true);
+				}
 				if (this.animationFrame == undefined)
 					this.renderFrame();
 			}

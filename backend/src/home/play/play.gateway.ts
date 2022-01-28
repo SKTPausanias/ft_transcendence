@@ -292,6 +292,8 @@ export class PlayGateway {
           .to(client.id)
           .emit(ePlay.ON_PADD_MOVE, { gameInfo: obj.getMap() });
         //this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
+        
+        
       } else console.log("Not obj...");
     }
   }

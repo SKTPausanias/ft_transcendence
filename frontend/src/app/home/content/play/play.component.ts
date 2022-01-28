@@ -19,6 +19,10 @@ export class PlayComponent implements OnInit {
 
 	ngOnDestroy(): void {
 	}
+	rcvWinner(val: boolean){
+		if (val)
+			this.cancelGame();
+	}
 	cancelGame(){
 		this.playService.emit(ePlay.ON_GAME_END, this.playPreference.game);
 		this.playPreference.game = <WaitRoomI>{};

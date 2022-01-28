@@ -7,14 +7,26 @@ export class StatsEntity {
     id: number;
 
     @Column()
-    user1_points: number;
+    hits_p1: number;
 
     @Column()
-    user2_points: number;
+    hits_p2: number;
 
-	@ManyToOne(type => UserEntity, user => user.stats)
+    @Column()
+    score_p1: number;
+
+    @Column()
+    score_p2: number;
+
+    @Column()
+    player_1: string; //login
+
+    @Column()
+    player_2: string; //login
+    
+	/* @ManyToOne(type => UserEntity, user => user.stats)
     user1: UserEntity;
 
 	@ManyToOne(type => UserEntity, user => user.stats2)
-    user2: UserEntity;
+    user2: UserEntity; */
 }

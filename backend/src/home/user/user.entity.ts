@@ -73,12 +73,12 @@ export class UserEntity {
     @OneToMany(type => MessageEntity, message => message.owner)
     messages: MessageEntity[];
 
-    // relation with user1 and user2 from statsEntity
+   /*  // relation with user1 and user2 from statsEntity
     @OneToMany(type => StatsEntity, stats => stats.user1)
     stats: StatsEntity[];
 
     @OneToMany(type => StatsEntity, stats => stats.user2)
-    stats2: StatsEntity[];
+    stats2: StatsEntity[]; */
 
     @Column({nullable: false, default: 0})
     victories: number;

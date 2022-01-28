@@ -14,10 +14,14 @@ export class Game {
     boundBall: Boundaries;
     boundPad_1: Boundaries;
     boundPad_2: Boundaries;
+	score_p1: number;
+	score_p2: number;
 	start: boolean;
 
     constructor(private id: number) {
         this.id = id;
+		this.score_p1 = 0;
+		this.score_p2 = 0;
         this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
        	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
@@ -37,7 +41,9 @@ export class Game {
             },
             ball: this.getMoveable(this.ball),
             pad_1: this.getMoveable(this.pad_1),
-            pad_2: this.getMoveable(this.pad_2) 
+            pad_2: this.getMoveable(this.pad_2),
+			score_p1: this.score_p1,
+			score_p2: this.score_p2
         });
     }
     
@@ -61,6 +67,8 @@ export class Game {
 
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
+			this.boundBall.left > this.cWidth ? this.score_p1++ : this.score_p2++;
+			console.log("Player 1 score: ", this.score_p1 , " - Palyer 2 score: ", this.score_p2);
             this.start = false;
 			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBall(1);
