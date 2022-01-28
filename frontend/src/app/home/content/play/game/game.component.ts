@@ -32,13 +32,11 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
-	score_p2: number;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
 		this.width = 0;
 		this.height = 0;
-		this.score_p2 = 0;
 	}
 
 	ngOnInit(): void {		
