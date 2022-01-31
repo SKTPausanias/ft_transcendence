@@ -9,7 +9,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
-import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
+import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
 import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 
@@ -32,6 +32,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
+	maxScore: number = 1000;
+	p1_score: number = 0;
+	p2_score: number = 0;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -47,10 +50,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.ball = data.gameInfo.ball;
 				this.pad_1 = data.gameInfo.pad_1;
 				this.pad_2 = data.gameInfo.pad_2;
-				if (data.gameInfo.score_p1 >= 3 || data.score_p2 >= 3) {
+				this.p1_score = data.gameInfo.score_p1;
+				this.p2_score = data.gameInfo.score_p2;
+				if (data.gameInfo.score_p1 >= this.maxScore || data.score_p2 >= this.maxScore) {
 					console.log("Game Over");
 					if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
-						if (data.gameInfo.score_p1 >= 3) {
+						if (data.gameInfo.score_p1 >= this.maxScore) {
 							console.log("Player 1 won");
 							this.playService.emit(ePlay.ON_GAME_WINNER, this.prefs.game.player1.login);
 							this.playService.emit(ePlay.ON_GAME_LOSER, this.prefs.game.player2.login);
@@ -99,8 +104,11 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		gameData.up = this.moving_up;
 		gameData.down = this.moving_down;
 		gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
-		
+		/* !gameFinished */
 		this.playService.emit(ePlay.ON_GAME_MOVING, gameData)
+	}
+	cancelGame(){
+		this.sndWinner.emit(true);
 	}
 
 	@HostListener('window:keydown', ['$event'])

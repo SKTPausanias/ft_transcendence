@@ -1,1 +1,27 @@
-<canvas #game width="{{width}}" height="{{height}}" style="border: 2px solid black"></canvas>
+<div class="cont">
+	<div class="d-flex justify-content-center mb-2">
+		<div class="d-flex justify-content-center px-5 py-2">
+
+			<div class="info_parent">
+				<img src="{{prefs.game.player1.avatar}}" alt="" class="img img-fuild ico_s">
+				<h4 class="d-inline ms-3 info_child">{{prefs.game.player1.nickname}}</h4>
+			</div>
+			<div class="mx-1 info_parent score">
+				<h5 class="d-inline info_child ms-2">{{p1_score}}</h5>
+				<h5 class="d-inline info_child">:</h5>
+				<h5 class="d-inline info_child me-2">{{p2_score}}</h5>
+			</div>
+			<div class="info_parent">
+				<h4 class="d-inline info_child me-3">{{prefs.game.player2.nickname}}</h4>
+				<img src="{{prefs.game.player2.avatar}}" alt="" class="img img-fuild ico_s">
+			</div>
+		</div>
+	</div>
+	<div>
+		<canvas #game width="{{width}}" height="{{height}}" style="border: 2px solid black"></canvas>
+	</div>
+	<div>
+		<button (click)="cancelGame()">Cancel game</button>
+	</div>
+
+</div>

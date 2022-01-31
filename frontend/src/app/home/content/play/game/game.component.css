@@ -1,0 +1,24 @@
+.cont{
+	width: 80%;
+	text-align: center;
+	margin: auto;
+	border: 1px solid #ffffff;
+	padding: 20px;
+}
+h3{
+	margin: 0;
+	padding: 0;
+}
+.info_parent{
+	height: 50px;
+}
+.info_child{
+	text-align: center;
+	vertical-align: middle;
+	line-height: 50px;
+}
+.score{
+	border: 1px solid #ffffff;
+	background-color: #ffffff;
+	border-radius: 12px;
+}
