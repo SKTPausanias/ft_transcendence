@@ -11,7 +11,7 @@ import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
 import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
-import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
+import { BallI, GameDataI, GameI, PadI } from 'src/app/shared/interface/iPlay';
 
 @Component({
 	selector: 'app-game',
@@ -21,7 +21,7 @@ import { BallI, GameDataI, PadI } from 'src/app/shared/interface/iPlay';
 export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() prefs: SharedPreferencesI;
-	@Output() sndWinner = new EventEmitter<boolean>();
+	@Output() sndWinner = new EventEmitter<GameI>();
 	context: CanvasRenderingContext2D | null;
 	ball: BallI;
 	pad_1: PadI;
@@ -46,7 +46,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	ngOnInit(): void {		
 		this.playService.gameDataEmiter.subscribe((data: any) => {
 			if (data.gameInfo !== undefined) {
-				console.log(data.gameInfo.gameFinished);
 				this.width = data.gameInfo.map.width;
 				this.height = data.gameInfo.map.height;
 				this.ball = data.gameInfo.ball;
@@ -54,11 +53,10 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.pad_2 = data.gameInfo.pad_2;
 				this.p1_score = data.gameInfo.score_p1;
 				this.p2_score = data.gameInfo.score_p2;
-				if (data.gameInfo.gameFinished && !this.gameFinished) {
-					this.gameFinished = true;
-					console.log("Game finished", this.gameFinished);
-					this.sndWinner.emit(true);
-				}
+				console.log(data.gameInfo.gameFinished);
+				this.gameFinished = data.gameInfo.gameFinished;
+				if (data.gameInfo.gameFinished)
+					this.sndWinner.emit(data.gameInfo);
 				if (this.animationFrame == undefined)
 					this.renderFrame();
 			}
@@ -103,8 +101,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		/* !gameFinished */
 		this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
 	}
-	cancelGame(){
-		this.sndWinner.emit(true);
+	cancelGame() {
+		//this.sndWinner.emit();
 	}
 
 	@HostListener('window:keydown', ['$event'])

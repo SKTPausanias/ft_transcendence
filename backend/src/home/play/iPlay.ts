@@ -30,7 +30,7 @@ export interface GameI {
 	pad_2: PadI,
 	score_p1: number,
 	score_p2: number,
-	gameFinished: boolean
+	gameFinished: boolean,
 }
 
 export interface GameMoveableI {

@@ -198,42 +198,40 @@ export class PlayGateway {
   }
 
   @SubscribeMessage(ePlay.ON_GAME_END)
-  async onGameEnd(client, data: WaitRoomI) {
-    const obj = this.games.find((item) => item.getId() == data.id);
+  async onGameEnd(client, data: any) {
+    //console.log("game end", data);
     const me = await this.getSessionUser(client);
     var oponent;
-    if (me.login == data.player1.login)
-    {
-      if (obj !== undefined)
-        await this.playService.endGame(obj.getMap(), data);
-      oponent = await this.playService.getPlayer(data.player2);
-    }
+    if (data.game !== undefined)
+      await this.playService.endGame(data.game, data.wRoom);
+    if (me.login == data.wRoom.player1.login)
+      oponent = await this.playService.getPlayer(data.wRoom.player2);
     else 
-      oponent = await this.playService.getPlayer(data.player1);
-    data.ready = false;
-    await this.playService.removePlayRoom(data);
+      oponent = await this.playService.getPlayer(data.wRoom.player1);
+    data.wRoom.ready = false;
+    await this.playService.removePlayRoom(data.wRoom);
     // ON_WAIT_ROOM_REJECT has to be changed to ON_ROOM_UPDATE
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_WAIT_ROOM_REJECT,
       me.login,
       oponent,
-      data
+      data.wRoom
     );
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_WAIT_ROOM_REJECT,
       me.login,
       me,
-      data
+      data.wRoom
     );
     this.server.emit(
       ePlay.ON_GET_LIVE_GAMES,
       me.login,
       await this.playService.onGetLiveGames()
     );
-    if (data.id !== undefined)
-      this.games = this.games.filter(item => item.getId() != data.id);
+    if (data.wRoom.id !== undefined)
+      this.games = this.games.filter(item => item.getId() != data.wRoom.id);
   }
 
   @SubscribeMessage(ePlay.ON_MATCH_DATA)
@@ -258,14 +256,24 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_GAME_WINNER)
   async onGameWinner(client, data: any) {
-    console.log("ON_GAME_WINNER", data);
-    const winner = await this.playService.addVictory(data);
-  }
+    var user = await this.userService.findByLogin(data.winner.login);
 
-  @SubscribeMessage(ePlay.ON_GAME_LOSER)
-  async onGameLoser(client, data: any) {
-    console.log("ON_GAME_LOSER", data);
-    const loser = await this.playService.addDefeat(data);
+    this.socketService.emitToOne(
+      this.server,
+      ePlay.ON_GAME_WINNER,
+      data.winner.login,
+      user,
+      "you win!"
+    );
+
+    user = await this.userService.findByLogin(data.loser.login);
+    this.socketService.emitToOne(
+      this.server,
+      ePlay.ON_GAME_WINNER,
+      data.winner.login,
+      user,
+      "you lose :("
+    ); 
   }
 
   @SubscribeMessage(ePlay.ON_GAME_MOVING)

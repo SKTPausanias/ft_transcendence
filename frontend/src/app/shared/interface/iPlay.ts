@@ -37,3 +37,18 @@ export interface GameDataI{
 	down: boolean | undefined,
 	p1: boolean
 }
+
+export interface MapI {
+	width: number,
+	height: number
+}
+
+export interface GameI {
+	map: MapI,
+	ball: BallI,
+	pad_1: PadI,
+	pad_2: PadI,
+	score_p1: number,
+	score_p2: number,
+	gameFinished: boolean
+}

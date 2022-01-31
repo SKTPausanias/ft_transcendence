@@ -33,6 +33,7 @@ export class PlayService {
 		this.onStartGame();
 		this.onGameMoving();
 		this.onPaddleMove();
+		this.onWinGame();
 	}
 
 	private onLoadAllGameInvitations(){
@@ -118,6 +119,16 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
+
+	private onWinGame(){
+		this.socket.on(ePlay.ON_GAME_WINNER, (emiter: string, data: any) => {
+			try {
+				console.log("data from on game win: ", data);
+				this.gameDataEmiter.emit(data);
+			}catch(error){}
+		})
+	}
+
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);
 	}

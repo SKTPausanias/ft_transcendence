@@ -32,7 +32,7 @@ export class Game {
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.start = false;
 		this.gameFinished = false;
-		this.max_score = 3;
+		this.max_score = 1;
     }
     getId (): number{
         return (this.id);

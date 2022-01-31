@@ -221,40 +221,6 @@ export class PlayService {
 		}
 	}
 
-	async addVictory(winner: string)
-	{
-		try {
-			//find user with login
-			const user = await this.userService.findByLogin(winner);
-			if (user == undefined)
-				return (Response.makeResponse(500, {error: "Internal server error"}));
-			//add victory
-			user.victories++;
-			await this.userService.save(user);
-			return (Response.makeResponse(200, {message: "Victory added"}));
-		}
-		catch (error) {
-			return (Response.makeResponse(500, {error: "Internal server error"}));
-		}
-	}
-
-	async addDefeat(loser: string)
-	{
-		try {
-			//find user with login
-			const user = await this.userService.findByLogin(loser);
-			if (user == undefined)
-				return (Response.makeResponse(500, {error: "Internal server error"}));
-			//add defeat
-			user.defeats++;
-			await this.userService.save(user);
-			return (Response.makeResponse(200, {message: "Defeat added"}));
-		}
-		catch (error) {
-			return (Response.makeResponse(500, {error: "Internal server error"}));
-		}
-	}
-
 	async endGame(obj: GameI, game: WaitRoomI)
 	{
 		try {
