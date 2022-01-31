@@ -17,6 +17,8 @@ export class Game {
 	score_p1: number;
 	score_p2: number;
 	start: boolean;
+	gameFinished: boolean;
+	max_score: number;
 
     constructor(private id: number) {
         this.id = id;
@@ -29,6 +31,8 @@ export class Game {
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.start = false;
+		this.gameFinished = false;
+		this.max_score = 3;
     }
     getId (): number{
         return (this.id);
@@ -43,7 +47,8 @@ export class Game {
             pad_1: this.getMoveable(this.pad_1),
             pad_2: this.getMoveable(this.pad_2),
 			score_p1: this.score_p1,
-			score_p2: this.score_p2
+			score_p2: this.score_p2,
+			gameFinished: this.gameFinished,
         });
     }
     
@@ -69,6 +74,9 @@ export class Game {
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
 			this.boundBall.left > this.cWidth ? this.score_p1++ : this.score_p2++;
 			console.log("Player 1 score: ", this.score_p1 , " - Palyer 2 score: ", this.score_p2);
+			if (this.score_p1 == this.max_score || this.score_p2 == this.max_score) {
+				this.gameFinished = true;
+			}
             this.start = false;
 			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBall(1);
@@ -134,57 +142,5 @@ export class Game {
 					this.ball.incrementSpeed();
 			}	
 		}
-
-		/* if ((this.boundBall.right >= this.boundPad_2.right && 
-			(this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)) ||
-			(this.boundBall.right >= this.cW )){
-				this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-		}*/
-		/* else if ((this.boundBall.left <= this.boundPad_1.left && 
-			(this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)) ||
-			(this.boundBall.left <= 0)){
-			this.ball.reverseX();
-			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-		}
-
-		else if (this.boundBall.left <= this.boundPad_1.right && this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom) {
-			this.ball.reverseX(); //left collision
-		}
-		else if (this.boundBall.right >= this.boundPad_2.left && this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom) {
-			this.ball.reverseX(); // Right Collision
-		} 
-		 */
-
-		/* if (this.boundBall.left <= 0 || this.boundBall.right >= this.cWidth) {
-			this.ball.reverseX();
-			this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
-		} */
-
-
-        //Consider top/bottom pad collisions
-
 	}
-
-	//This function moves the elements and check if it is any colide
-	fpsService() {
-	/* 	this.checkCollisions();
-		if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
-			//this.ball.move();
-			if (this.moving_up && this.boundPad_1.top > 0) {
-				this.pad_1.moveUp();
-			}
-			if (this.moving_down && this.boundPad_1.bottom < this.height) {
-				this.pad_1.moveDown();
-			}
-		} else {
-			if (this.moving_up && this.boundPad_2.top > 0) {
-				this.pad_2.moveUp();
-			}
-			if (this.moving_down && this.boundPad_2.bottom < this.height) {
-				this.pad_2.moveDown();
-			}
-		} */
-		//console.log((this.ball.getPosition()));
-	}
-
 }

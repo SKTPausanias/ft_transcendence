@@ -199,14 +199,19 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_GAME_END)
   async onGameEnd(client, data: WaitRoomI) {
-    console.log("ON_GAME_END", data);
-    await this.playService.removePlayRoom(data);
+    const obj = this.games.find((item) => item.getId() == data.id);
     const me = await this.getSessionUser(client);
     var oponent;
     if (me.login == data.player1.login)
+    {
+      if (obj !== undefined)
+        await this.playService.endGame(obj.getMap(), data);
       oponent = await this.playService.getPlayer(data.player2);
-    else oponent = await this.playService.getPlayer(data.player1);
+    }
+    else 
+      oponent = await this.playService.getPlayer(data.player1);
     data.ready = false;
+    await this.playService.removePlayRoom(data);
     // ON_WAIT_ROOM_REJECT has to be changed to ON_ROOM_UPDATE
     this.socketService.emitToOne(
       this.server,
@@ -268,7 +273,7 @@ export class PlayGateway {
     const game = await this.playService.findGameById(data.id);
     if (game !== undefined && this.games.length > 0) {
       var obj = this.games.find((item) => item.getId() == game.id);
-      if (obj !== undefined) {
+      if (obj !== undefined && !obj.gameFinished) {
 		    obj.checkCollisions();
         obj.ball.move();
         if (data.p1) {
@@ -286,7 +291,8 @@ export class PlayGateway {
       }
     }
   }
-  @SubscribeMessage(ePlay.ON_PADD_MOVE)
+
+  /*@SubscribeMessage(ePlay.ON_PADD_MOVE)
   async onPadMove(client, data: any) {
     const me = await this.getSessionUser(client);
     const game = await this.playService.findGameById(data.id);
@@ -309,7 +315,7 @@ export class PlayGateway {
         
       } else console.log("Not obj...");
     }
-  }
+  }*/
 
   private async getSession(client: any) {
     try {

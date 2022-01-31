@@ -32,9 +32,10 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
-	maxScore: number = 1000;
+	maxScore: number = 3;
 	p1_score: number = 0;
 	p2_score: number = 0;
+	gameFinished: boolean = false;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -45,6 +46,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	ngOnInit(): void {		
 		this.playService.gameDataEmiter.subscribe((data: any) => {
 			if (data.gameInfo !== undefined) {
+				console.log(data.gameInfo.gameFinished);
 				this.width = data.gameInfo.map.width;
 				this.height = data.gameInfo.map.height;
 				this.ball = data.gameInfo.ball;
@@ -52,20 +54,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.pad_2 = data.gameInfo.pad_2;
 				this.p1_score = data.gameInfo.score_p1;
 				this.p2_score = data.gameInfo.score_p2;
-				if (data.gameInfo.score_p1 >= this.maxScore || data.score_p2 >= this.maxScore) {
-					console.log("Game Over");
-					if (this.prefs.userInfo.login == this.prefs.game.player1.login) {
-						if (data.gameInfo.score_p1 >= this.maxScore) {
-							console.log("Player 1 won");
-							this.playService.emit(ePlay.ON_GAME_WINNER, this.prefs.game.player1.login);
-							this.playService.emit(ePlay.ON_GAME_LOSER, this.prefs.game.player2.login);
-						}
-						else
-						{
-							this.playService.emit(ePlay.ON_GAME_WINNER, this.prefs.game.player2.login);
-							this.playService.emit(ePlay.ON_GAME_LOSER, this.prefs.game.player1.login);
-						}
-					}
+				if (data.gameInfo.gameFinished && !this.gameFinished) {
+					this.gameFinished = true;
+					console.log("Game finished", this.gameFinished);
 					this.sndWinner.emit(true);
 				}
 				if (this.animationFrame == undefined)
@@ -99,13 +90,18 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	emitMoveable() {
+		if (this.gameFinished)
+		{
+			clearInterval(this.movableInterval);
+			return;
+		}
 		var gameData: GameDataI = <GameDataI>{};
 		gameData.id = this.prefs.game.id;
 		gameData.up = this.moving_up;
 		gameData.down = this.moving_down;
 		gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
 		/* !gameFinished */
-		this.playService.emit(ePlay.ON_GAME_MOVING, gameData)
+		this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
 	}
 	cancelGame(){
 		this.sndWinner.emit(true);

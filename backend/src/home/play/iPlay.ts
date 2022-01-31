@@ -29,7 +29,8 @@ export interface GameI {
 	pad_1: PadI,
 	pad_2: PadI,
 	score_p1: number,
-	score_p2: number
+	score_p2: number,
+	gameFinished: boolean
 }
 
 export interface GameMoveableI {

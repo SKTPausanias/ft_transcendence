@@ -11,7 +11,7 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { ePlay, eRequestPlayer } from "./ePlay";
-import { PlayerI, WaitRoomI } from "./iPlay";
+import { GameI, PlayerI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
 import { Response } from "src/shared/response/responseClass";
 
@@ -252,6 +252,30 @@ export class PlayService {
 		}
 		catch (error) {
 			return (Response.makeResponse(500, {error: "Internal server error"}));
+		}
+	}
+
+	async endGame(obj: GameI, game: WaitRoomI)
+	{
+		try {
+			const player1 = await this.userService.findByLogin(game.player1.login);
+			const player2 = await this.userService.findByLogin(game.player2.login);
+
+			if (obj.score_p1 > obj.score_p2)
+			{
+				player1.victories++;
+				player2.defeats++;
+			}
+			else if (obj.score_p1 < obj.score_p2)
+			{
+				player1.defeats++;
+				player2.victories++;
+			}
+			await this.userService.save(player1);
+			await this.userService.save(player2);
+		}
+		catch (error) {
+			console.log(error);
 		}
 	}
 
