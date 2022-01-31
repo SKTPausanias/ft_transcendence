@@ -319,8 +319,11 @@ export class PlayGateway {
     } catch (error) {}
   }
   private async getSessionUser(client: any) {
-    const session = await this.getSession(client);
-    return session.userID;
+	try {
+		const session = await this.getSession(client);
+		return session.userID;
+	} catch (error) {	
+	}
   }
 
   //Posibly can be deleted
