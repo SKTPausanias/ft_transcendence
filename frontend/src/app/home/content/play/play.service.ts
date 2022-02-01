@@ -11,12 +11,14 @@ export class PlayService {
 	playEmiter: EventEmitter<any>;
 	liveDataEmiter: EventEmitter<any>;
 	gameDataEmiter: EventEmitter<any>;
+	gameWinnerEmiter: EventEmitter<any>;
 	private socket: Socket;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
 		this.playEmiter = new EventEmitter<any>();
 		this.liveDataEmiter = new EventEmitter<any>();
 		this.gameDataEmiter = new EventEmitter<any>();
+		this.gameWinnerEmiter = new EventEmitter<any>();
 	}
 
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
@@ -123,8 +125,7 @@ export class PlayService {
 	private onWinGame(){
 		this.socket.on(ePlay.ON_GAME_WINNER, (emiter: string, data: any) => {
 			try {
-				console.log("data from on game win: ", data);
-				this.gameDataEmiter.emit(data);
+				this.gameWinnerEmiter.emit(data);
 			}catch(error){}
 		})
 	}

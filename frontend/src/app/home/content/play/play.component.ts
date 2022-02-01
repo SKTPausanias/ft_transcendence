@@ -16,7 +16,11 @@ export class PlayComponent implements OnInit {
 	//
 	}
 
-	ngOnInit(): void {}
+	ngOnInit(): void {
+		this.playService.gameWinnerEmiter.subscribe((data: any) => {
+			console.log("Winner from playComponent", data);
+		});
+	}
 
 	ngOnDestroy(): void {
 	}
