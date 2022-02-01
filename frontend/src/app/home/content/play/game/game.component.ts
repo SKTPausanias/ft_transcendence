@@ -32,15 +32,22 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
-	maxScore: number = 3;
-	p1_score: number = 0;
-	p2_score: number = 0;
+	maxScore: number;
+	p1_score: number;
+	p2_score: number;
+	hits_p1: number;
+	hits_p2: number;
 	gameFinished: boolean = false;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
 		this.width = 0;
 		this.height = 0;
+		this.maxScore = 0;
+		this.p1_score = 0;
+		this.p2_score = 0;
+		this.hits_p1 = 0;
+		this.hits_p2 = 0;
 	}
 
 	ngOnInit(): void {		
@@ -53,6 +60,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.pad_2 = data.gameInfo.pad_2;
 				this.p1_score = data.gameInfo.score_p1;
 				this.p2_score = data.gameInfo.score_p2;
+				this.hits_p1 = data.gameInfo.hits_p1;
+				this.hits_p2 = data.gameInfo.hits_p2;
 				console.log(data.gameInfo.gameFinished);
 				this.gameFinished = data.gameInfo.gameFinished;
 				if (data.gameInfo.gameFinished)

@@ -23,10 +23,4 @@ export class StatsEntity {
 
     @Column()
     player_2: string; //login
-    
-	/* @ManyToOne(type => UserEntity, user => user.stats)
-    user1: UserEntity;
-
-	@ManyToOne(type => UserEntity, user => user.stats2)
-    user2: UserEntity; */
 }

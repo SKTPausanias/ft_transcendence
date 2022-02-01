@@ -14,11 +14,14 @@ import { ePlay, eRequestPlayer } from "./ePlay";
 import { GameI, PlayerI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
 import { Response } from "src/shared/response/responseClass";
+import { StatsEntity } from "./stats.entity";
 
 @Injectable()
 export class PlayService {
     constructor(@InjectRepository(UserEntity)
                 private userRepository: Repository<UserEntity>,
+				@InjectRepository(StatsEntity)
+                private statsRepository: Repository<StatsEntity>,
                 @InjectRepository(PlayEntity)
                 private playRepository: Repository<PlayEntity>,
                 @Inject(forwardRef(() => UserService)) // forwardRef solves circular dependencies: 
@@ -223,6 +226,14 @@ export class PlayService {
 
 	async endGame(obj: GameI, game: WaitRoomI)
 	{
+		var stats = <StatsEntity>{};
+		stats.player_1 = game.player1.nickname;
+		stats.player_2 = game.player2.nickname;
+		stats.score_p1 = obj.score_p1;
+		stats.score_p2 = obj.score_p2;
+		stats.hits_p1 = obj.hits_p1;
+		stats.hits_p2 = obj.hits_p2;
+		
 		try {
 			const player1 = await this.userService.findByLogin(game.player1.login);
 			const player2 = await this.userService.findByLogin(game.player2.login);
@@ -239,6 +250,7 @@ export class PlayService {
 			}
 			await this.userService.save(player1);
 			await this.userService.save(player2);
+			await this.statsRepository.save(stats);
 		}
 		catch (error) {
 			console.log(error);

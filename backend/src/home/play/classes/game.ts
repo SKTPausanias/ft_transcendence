@@ -14,8 +14,11 @@ export class Game {
     boundBall: Boundaries;
     boundPad_1: Boundaries;
     boundPad_2: Boundaries;
+	padTouch: boolean;
 	score_p1: number;
 	score_p2: number;
+	hits_p1: number;
+	hits_p2: number;
 	start: boolean;
 	gameFinished: boolean;
 	max_score: number;
@@ -24,6 +27,9 @@ export class Game {
         this.id = id;
 		this.score_p1 = 0;
 		this.score_p2 = 0;
+		this.hits_p1 = 0;
+		this.hits_p2 = 0;
+		this.padTouch = false;
         this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
        	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
@@ -33,6 +39,7 @@ export class Game {
 		this.start = false;
 		this.gameFinished = false;
 		this.max_score = 1;
+
     }
     getId (): number{
         return (this.id);
@@ -48,6 +55,8 @@ export class Game {
             pad_2: this.getMoveable(this.pad_2),
 			score_p1: this.score_p1,
 			score_p2: this.score_p2,
+			hits_p1: this.hits_p1,
+			hits_p2: this.hits_p2,
 			gameFinished: this.gameFinished,
         });
     }
@@ -73,10 +82,8 @@ export class Game {
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
 			this.boundBall.left > this.cWidth ? this.score_p1++ : this.score_p2++;
-			console.log("Player 1 score: ", this.score_p1 , " - Palyer 2 score: ", this.score_p2);
-			if (this.score_p1 == this.max_score || this.score_p2 == this.max_score) {
+			if (this.score_p1 == this.max_score || this.score_p2 == this.max_score)
 				this.gameFinished = true;
-			}
             this.start = false;
 			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBall(1);
@@ -87,23 +94,24 @@ export class Game {
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch)
 		{
+			
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 			{
-				console.log(this.boundBall.top);
-				console.log(this.boundPad_1.top);
+				this.padTouch ? this.hits_p1++: null;
+				this.padTouch = false;
+				/* console.log(this.boundBall.top);
+				console.log(this.boundPad_1.top); */
 				var middle = this.boundPad_1.top + this.pad_1.getHeight() / 2;
 				// abs value of distance
 				var distance = Math.abs(middle - this.boundBall.top);
 				// increment vertical speed ratio as distance incremenets
-				console.log("distance", distance);
+				//console.log("distance", distance);
 				this.ball.setVerticalSpeedRatio((distance / (this.pad_1.getHeight() / 2.5)));
-				console.log("vertial ratio", (distance / (this.pad_1.getHeight() / 5))); //modify only angle 
+				//console.log("vertial ratio", (distance / (this.pad_1.getHeight() / 5))); //modify only angle 
 				//this.ball.setVerticalSpeedRatio(5);
 				var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 				if (this.boundBall.left >= paddMid)
-				{
 					this.ball.reverseX();
-				}
 				else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 				{
 					this.ball.reverseY();
@@ -121,6 +129,8 @@ export class Game {
 		{
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 			{
+				(!this.padTouch) ? this.hits_p2++: null;
+				this.padTouch = true;
 				var middle = this.boundPad_2.top + this.pad_2.getHeight() / 2;
 				// abs value of distance
 				var distance = Math.abs(middle - this.boundBall.top);

@@ -17,11 +17,12 @@ import { UnreadMessageEntity } from '../chat/entities/unread-message.entity';
 import { HashService } from 'src/shared/hash/hash.service';
 import { PlayService } from './play.service';
 import { PlayEntity } from './play.entity';
+import { StatsEntity } from './stats.entity';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity,
         ChatEntity, ChatUsersEntity, MessageEntity,
-        ActiveRoomEntity, UnreadMessageEntity, PlayEntity])],
+        ActiveRoomEntity, UnreadMessageEntity, PlayEntity, StatsEntity])],
 	providers: [SocketService, SessionService, FriendService, UserService, ChatService, HashService, PlayService],
 
 	controllers: [PlayController]

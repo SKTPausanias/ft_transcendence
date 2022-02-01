@@ -32,8 +32,8 @@ export class PlayService {
 		this.onMatchData();
 		this.onStartGame();
 		this.onGameMoving();
-		this.onPaddleMove();
 		this.onWinGame();
+		/* this.onPaddleMove(); */
 	}
 
 	private onLoadAllGameInvitations(){
@@ -112,13 +112,13 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
-	private onPaddleMove() {
+	/* private onPaddleMove() {
 		this.socket.on(ePlay.ON_PADD_MOVE, (data: any) => {
 			try {
 				this.gameDataEmiter.emit(data);
 			}catch(error){}
 		})
-	}
+	} */
 
 	private onWinGame(){
 		this.socket.on(ePlay.ON_GAME_WINNER, (emiter: string, data: any) => {

@@ -210,6 +210,7 @@ export class PlayGateway {
       oponent = await this.playService.getPlayer(data.wRoom.player1);
     data.wRoom.ready = false;
     await this.playService.removePlayRoom(data.wRoom);
+
     // ON_WAIT_ROOM_REJECT has to be changed to ON_ROOM_UPDATE
     this.socketService.emitToOne(
       this.server,

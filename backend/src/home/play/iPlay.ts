@@ -30,6 +30,8 @@ export interface GameI {
 	pad_2: PadI,
 	score_p1: number,
 	score_p2: number,
+	hits_p1: number,
+	hits_p2: number,
 	gameFinished: boolean,
 }
 
