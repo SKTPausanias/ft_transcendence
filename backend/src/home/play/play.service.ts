@@ -311,9 +311,20 @@ export class PlayService {
 			return (Response.makeResponse(500, { error: "internal server error" }));
 		}
 	}
-	/*
-    play = find(by id with relations[ player_1, player_2, viewers]);
-    for (...)
-        this.socketService.emitToOne(this.server, ePlay.ON_STREAM, me.login, play.viewers[i], data);
-	*/
+
+	async matchMaking(p1: UserEntity, p2: UserEntity): Promise<WaitRoomI> {
+		try {
+			var game: PlayEntity =<PlayEntity>{};
+			game.player_1 = p1;
+			game.player_2 = p2;
+			game.confirmed = true;
+			game.expiration_time = mDate.setExpirationTime(Number(process.env.WAIT_ROOM_EXPIRES));
+			var aux = await this.playRepository.save(game);
+			var playRoom: PlayEntity = await this.findGameById(aux.id);
+			
+			return (this.createWaitRoom(playRoom));
+		} catch (error) {
+			return (null);
+		}
+	}
 }

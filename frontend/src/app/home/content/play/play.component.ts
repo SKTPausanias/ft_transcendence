@@ -36,4 +36,7 @@ export class PlayComponent implements OnInit {
 			this.playService.emit(ePlay.ON_GAME_WINNER, {winner: this.playPreference.game.player2, loser: this.playPreference.game.player1});
 		this.playPreference.game = <WaitRoomI>{};
 	}
+	matchMaking(): void {
+		this.playService.emit(ePlay.ON_MATCH_MAKING)
+	}
 }

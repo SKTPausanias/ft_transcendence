@@ -129,6 +129,7 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
+	
 
 	emit(action: string, data?: any){
 		data ? this.socket.emit(action, data) : this.socket.emit(action);

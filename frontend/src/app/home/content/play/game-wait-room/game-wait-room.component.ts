@@ -37,6 +37,7 @@ export class GameWaitRoomComponent implements OnInit {
 	acceptPlay() {
 		this.changeMyStatus(eRequestPlayer.ACCEPTED);
 		this.playService.emit(ePlay.ON_WAIT_ROOM_ACCEPT, this.waitRoom);
+		this.showAcceptBtn = false;
 	}
 
 	rejectPlay(){

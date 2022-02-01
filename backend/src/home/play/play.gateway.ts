@@ -17,14 +17,18 @@ import { Game } from "./classes/game";
 export class PlayGateway {
   server: any;
   timeLap: number = 120;
-  games: Game[] = [];
+  games: Game[];
+  matchMaking: UserEntity[];
 
   constructor(
     private socketService: SocketService,
     private playService: PlayService,
     private sessionService: SessionService,
     private userService: UserService
-  ) {}
+  ) {
+    this.games = [];
+    this.matchMaking = [];
+  }
 
   init(server: any) {
     this.server = server;
@@ -73,6 +77,13 @@ export class PlayGateway {
     const invitation = await this.playService.acceptGameInvitation(me, data);
     if (invitation == null) return;
     waitRoom = this.playService.createWaitRoom(invitation);
+    for (var i = 0; i < this.matchMaking.length; i++)
+    {
+      if ((await this.playService.getActivePlayRoom(this.matchMaking[i])) !== undefined) {
+        console.log("Backend playGateway: Deleting from random players...");
+        this.matchMaking.splice(i, 1);
+      }
+    }
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_ACCEPT_INVITATION,
@@ -301,30 +312,42 @@ export class PlayGateway {
     }
   }
 
-  /*@SubscribeMessage(ePlay.ON_PADD_MOVE)
-  async onPadMove(client, data: any) {
-    const me = await this.getSessionUser(client);
-    const game = await this.playService.findGameById(data.id);
-    if (game !== undefined && this.games.length > 0) {
-      var obj = this.games.find((item) => item.getId() == game.id);
-      if (obj !== undefined) {
-        obj.checkCollisions();
-        if (game.player_1.login == me.login) {
-          if (data.up) obj.pad_1.moveUp();
-          else if (data.down) obj.pad_1.moveDown();
-        } else {
-          if (data.up) obj.pad_2.moveUp();
-          else if (data.down) obj.pad_2.moveDown();
+  @SubscribeMessage(ePlay.ON_MATCH_MAKING)
+  async onMatchMaking(client): Promise<void> {
+    const player_1 = await this.getSessionUser(client);
+    console.log("Random Gamers: ", this.matchMaking);
+    if (this.matchMaking.find(item => item.login == player_1.login) === undefined) {
+      if (this.matchMaking.length > 0){
+        for (var i = 0; i < this.matchMaking.length; i++)
+        {
+          if ((await this.playService.getActivePlayRoom(this.matchMaking[i])) !== undefined)
+            this.matchMaking.splice(i, 1);
         }
-        this.server
-          .to(client.id)
-          .emit(ePlay.ON_PADD_MOVE, { gameInfo: obj.getMap() });
-        //this.emitToAll([game.player_1, game.player_2], ePlay.ON_GAME_MOVING, { gameInfo: obj.getMap() });
-        
-        
-      } else console.log("Not obj...");
+     }
+      if (this.matchMaking.length <= 0 ) 
+        this.matchMaking.push(player_1);
+      else if (this.matchMaking.length > 0){
+        var player_2 = this.matchMaking.pop();
+        var waitRoom: WaitRoomI = await this.playService.matchMaking(player_1, player_2);
+        if (waitRoom != null){
+          this.socketService.emitToOne(
+            this.server,
+            ePlay.ON_ACCEPT_INVITATION,
+            player_1.login,
+            player_1,
+            waitRoom
+          );
+          this.socketService.emitToOne(
+            this.server,
+            ePlay.ON_ACCEPT_INVITATION,
+            player_1.login,
+            player_2,
+            waitRoom
+          );
+        }
+      }
     }
-  }*/
+  }
 
   private async getSession(client: any) {
     try {
