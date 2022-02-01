@@ -86,6 +86,9 @@ export class UserEntity {
     @Column({nullable: false, default: 0})
     defeats: number;
 
+    @Column({nullable: false, default: 0})
+    hits: number;
+
     /* @Column("int", {array: true , default: []})
 	  active_chat_rooms: number[]; */
     //Relation with activeRooms: one user can have many activeRooms

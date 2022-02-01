@@ -237,6 +237,8 @@ export class PlayService {
 		try {
 			const player1 = await this.userService.findByLogin(game.player1.login);
 			const player2 = await this.userService.findByLogin(game.player2.login);
+			player1.hits += obj.hits_p1;
+			player2.hits += obj.hits_p2;
 
 			if (obj.score_p1 > obj.score_p2)
 			{
