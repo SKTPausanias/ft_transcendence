@@ -72,6 +72,15 @@ export class UserService {
 		}
 	}
 
+	async findPosition(): Promise<UserEntity[]>{
+		return await this.userRepository.find({
+			order: {
+				victories: "DESC",
+				hits: "DESC"
+			}
+		});
+
+	}
 	async save(user: any): Promise<UserEntity | any>{
 		try {
 			return (await this.userRepository.save(user));
@@ -234,6 +243,26 @@ export class UserService {
 	{
 		await this.userRepository.save(user);
 	}
+
+	async getUserPosition(token: string, user: UserPublicInfoI){
+		try {
+			const session = await this.sessionService.findSessionWithRelation(token);
+			if (session == undefined)
+				return (Response.makeResponse(401, {error : "Unauthorized"}));
+				
+			var usr = await this.findPosition();
+			usr = usr.filter(item => item.login != "nobody");
+			for (var i = 0; i < usr.length; i++){
+				if (usr[i].login == user.login)
+				return (Response.makeResponse(200, {position: (i + 1)}));//set position
+			}
+			return (Response.makeResponse(200, {position: i + 1}));//set position
+		} catch (error) {
+			return (Response.makeResponse(401, {error : "Unauthorized"}));
+		}
+	}
+
+
 	/* async activateRoom(users: UserEntity[], roomId: number){
 		users.forEach(async user => {
 			if (user.active_chat_rooms)

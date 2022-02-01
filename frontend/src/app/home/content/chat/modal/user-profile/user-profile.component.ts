@@ -21,19 +21,25 @@ export class UserProfileComponent implements OnInit {
 	@Input() public isMe: boolean;
 	@Output() passEntry: EventEmitter<any> = new EventEmitter();
 	session = this.sQuery.getSessionToken();
+	position: number;
 	constructor(private router: Router,
 				private modal: NgbActiveModal,
 				private dashboardService: DashboardService,
 				private chatService: ChatService,
 				private playService: PlayService,
 				private liveService: LiveService,
-				private sQuery: SessionStorageQueryService) {}
+				private sQuery: SessionStorageQueryService) {
+					this.position = 0;
+				}
 
 	async ngOnInit(): Promise<void> {
 		const resp = await this.chatService.getUserInfo(this.user, this.session);
 		if (resp.statusCode == 200)
 			this.user = resp.data;
-			console.log("From user Profile: ", this.user);
+			const pos = (await this.chatService.getUserPosition(this.user, this.session));
+			if (pos.statusCode == 200)
+				this.position = pos.data.position;
+			
 	}
 	close() {
 		this.modal.dismiss();

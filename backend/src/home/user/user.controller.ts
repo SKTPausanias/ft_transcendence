@@ -20,8 +20,14 @@ export class UserController {
 	@Post('/publicInfo')
 	async getPublicInfo(@Body() body){
 		//return (await this.userService.getFriends(headers));
-		console.log("getPublicInfo() ", body);
+		//console.log("getPublicInfo() ", body);
 		
 		return (await this.userService.getUserPublicInfo(body.token, body.user));
+	}
+
+	@Post('/userPosition')
+	async getUserPosition(@Body() body) {
+
+		return (await this.userService.getUserPosition(body.token, body.user));
 	}
 }

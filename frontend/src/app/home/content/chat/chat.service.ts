@@ -219,4 +219,14 @@ export class ChatService {
 			return ([]);
 		}
 	}
+	async getUserPosition(user: UserPublicInfoI, session: SessionI)
+	{
+		const url = '/api/users/userPosition ';
+		try{
+			const response = await this.http.post<any>(url, {token : session.token, user : user}).toPromise();
+			return (response);
+		}catch(e){
+			return ([]);
+		}
+	}
 }
