@@ -76,6 +76,7 @@ export class UserService {
 		return await this.userRepository.find({
 			order: {
 				victories: "DESC",
+				defeats: "ASC",
 				hits: "DESC"
 			}
 		});

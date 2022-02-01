@@ -22,6 +22,10 @@ export class UserProfileComponent implements OnInit {
 	@Output() passEntry: EventEmitter<any> = new EventEmitter();
 	session = this.sQuery.getSessionToken();
 	position: number;
+	glob: string;
+	victories: string;
+	defeats: string;
+	pts: string;
 	constructor(private router: Router,
 				private modal: NgbActiveModal,
 				private dashboardService: DashboardService,
@@ -35,10 +39,20 @@ export class UserProfileComponent implements OnInit {
 	async ngOnInit(): Promise<void> {
 		const resp = await this.chatService.getUserInfo(this.user, this.session);
 		if (resp.statusCode == 200)
+		{
 			this.user = resp.data;
-			const pos = (await this.chatService.getUserPosition(this.user, this.session));
-			if (pos.statusCode == 200)
-				this.position = pos.data.position;
+			var v = this.user.victories;
+			var l = this.user.defeats;
+			var g = v + l;
+			var h = this.user.hits;
+			this.victories = v > 1000 ? ">" + String(v / 1000) + "K" : String(v);
+			this.defeats = l > 1000 ? ">" + String(l / 1000) + "K" : String(l);
+			this.glob = (v + l) > 1000 ?  ">" + String(Math.round((v+l) / 1000)) + "K": String(v+l);
+			this.pts = h > 1000 ? ">" + String(h / 1000) + "K" : String(h);
+		}
+		const pos = (await this.chatService.getUserPosition(this.user, this.session));
+		if (pos.statusCode == 200)
+			this.position = pos.data.position;
 			
 	}
 	close() {

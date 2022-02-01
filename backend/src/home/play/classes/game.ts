@@ -38,7 +38,7 @@ export class Game {
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.start = false;
 		this.gameFinished = false;
-		this.max_score = 1;
+		this.max_score = 3;
 
     }
     getId (): number{
@@ -97,8 +97,8 @@ export class Game {
 			
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 			{
-				this.padTouch ? this.hits_p1++: null;
-				this.padTouch = false;
+				//this.padTouch ? this.hits_p1++: null;
+				//this.padTouch = false;
 				/* console.log(this.boundBall.top);
 				console.log(this.boundPad_1.top); */
 				var middle = this.boundPad_1.top + this.pad_1.getHeight() / 2;
@@ -111,9 +111,13 @@ export class Game {
 				//this.ball.setVerticalSpeedRatio(5);
 				var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 				if (this.boundBall.left >= paddMid)
+				{
+					this.hits_p1++;
 					this.ball.reverseX();
+				}
 				else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 				{
+					this.hits_p1++;
 					this.ball.reverseY();
 					this.ball.reverseX();
 				}
@@ -129,8 +133,8 @@ export class Game {
 		{
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 			{
-				(!this.padTouch) ? this.hits_p2++: null;
-				this.padTouch = true;
+				//(!this.padTouch) ? this.hits_p2++: null;
+				//this.padTouch = true;
 				var middle = this.boundPad_2.top + this.pad_2.getHeight() / 2;
 				// abs value of distance
 				var distance = Math.abs(middle - this.boundBall.top);
@@ -138,9 +142,13 @@ export class Game {
 				this.ball.setVerticalSpeedRatio((distance / (this.pad_2.getHeight() / 2.5)));
 				var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 				if (this.boundBall.right <= paddMid)
+				{	
+					this.hits_p2++;
 					this.ball.reverseX();
+				}
 				else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
 				{
+					this.hits_p2++;
 					this.ball.reverseY();
 					this.ball.reverseX();
 				}
