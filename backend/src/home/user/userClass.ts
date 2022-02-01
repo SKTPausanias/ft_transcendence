@@ -100,7 +100,10 @@ export class User implements UserI {
 			avatar : data.avatar,
 			factor_enabled : data.factor_enabled,
 			online: data.online,
-			in_game: data.in_game
+			in_game: data.in_game,
+			hits: data.hits,
+			victories: data.victories,
+			defeats: data.defeats
 	//		friends: aux
 		});
 	}
@@ -112,7 +115,10 @@ export class User implements UserI {
 			last_name : data.last_name,
 			avatar : data.avatar,
 			online: data.online,
-			in_game: data.in_game
+			in_game: data.in_game,
+			hits: data.hits,
+			victories: data.victories,
+			defeats: data.defeats
 			});
 	}
 	static getMultipleUserInfo(users: UserEntity[], user: UserEntity): UserPublicInfoI[]{

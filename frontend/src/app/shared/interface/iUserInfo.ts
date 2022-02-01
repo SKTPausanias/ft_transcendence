@@ -8,6 +8,9 @@ export interface UserInfoI {
 	avatar: string;
 	factor_enabled: boolean;
 	in_game: boolean;
+	hits: number;
+	victories: number;
+	defeats: number;
 }
 export interface UserPublicInfoI {
 	login: string,
@@ -17,4 +20,7 @@ export interface UserPublicInfoI {
 	avatar: string;
 	online: boolean;
 	in_game: boolean;
+	hits: number;
+	victories: number;
+	defeats: number;
 }

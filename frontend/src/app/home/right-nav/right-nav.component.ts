@@ -16,7 +16,7 @@ import { SocketService } from '../socket.service';
   styleUrls: ['./right-nav.component.css']
 })
 export class RightNavComponent implements OnInit {
-	@Input() rigtNavPreference: SharedPreferencesI;
+	@Input() rightNavPreference: SharedPreferencesI;
 	session: SessionI = this.sQuery.getSessionToken();
 	me: UserInfoI;
 	onlineUsers: any;
@@ -34,7 +34,7 @@ export class RightNavComponent implements OnInit {
 		}
 		
 	async ngOnInit(): Promise<void> {
-		this.me = this.rigtNavPreference.userInfo;
+		this.me = this.rightNavPreference.userInfo;
 		this.socketService.emit(ePlay.ON_LOAD_ALL_GAME_INVITATIONS);
 		//const resp = await this.userServie.getOnlineFriends(this.token);
 		//this.onlineUsers = resp.data;
@@ -56,25 +56,25 @@ export class RightNavComponent implements OnInit {
 
 	/** START: Game invitation */
 	getGameInvitation(): UserPublicInfoI {
-		if (this.gamePos >= this.rigtNavPreference.game_invitation.length)
-			this.gamePos = this.rigtNavPreference.game_invitation.length - 1;
+		if (this.gamePos >= this.rightNavPreference.game_invitation.length)
+			this.gamePos = this.rightNavPreference.game_invitation.length - 1;
 		this.gamePos < 0 ? (this.gamePos = 0) : 0;
-		if (this.rigtNavPreference.game_invitation.length > 0)
-			return (this.rigtNavPreference.game_invitation[this.gamePos])
+		if (this.rightNavPreference.game_invitation.length > 0)
+			return (this.rightNavPreference.game_invitation[this.gamePos])
 		return (<UserPublicInfoI>{});
 	}
 
 	async acceptGameInvitation(){
-		const user = this.rigtNavPreference.game_invitation[this.gamePos];
+		const user = this.rightNavPreference.game_invitation[this.gamePos];
 		this.playService.emit(ePlay.ON_ACCEPT_INVITATION, user);
 
 	}
 	async declineGameInvitation(){
-		const user = this.rigtNavPreference.game_invitation[this.gamePos];
+		const user = this.rightNavPreference.game_invitation[this.gamePos];
 		this.playService.emit(ePlay.ON_DECLINE_INVITATION, user);
 	}
 	nextGameInvitation(){
-		if (this.gamePos < this.rigtNavPreference.game_invitation.length - 1)
+		if (this.gamePos < this.rightNavPreference.game_invitation.length - 1)
 			this.gamePos++;
 		else
 			this.gamePos = 0;
@@ -83,7 +83,7 @@ export class RightNavComponent implements OnInit {
 		if (this.gamePos > 0)
 			this.gamePos--;
 		else
-			this.gamePos = this.rigtNavPreference.game_invitation.length - 1;
+			this.gamePos = this.rightNavPreference.game_invitation.length - 1;
 		if (this.gamePos < 0)
 			this.gamePos = 0;
 	}
@@ -92,24 +92,24 @@ export class RightNavComponent implements OnInit {
 	/**START: Friend invitation */
 	getInvitation(): UserPublicInfoI{
 
-		if (this.pos >= this.rigtNavPreference.friend_invitation.length)
-			this.pos = this.rigtNavPreference.friend_invitation.length - 1;
+		if (this.pos >= this.rightNavPreference.friend_invitation.length)
+			this.pos = this.rightNavPreference.friend_invitation.length - 1;
 		this.pos < 0 ? (this.pos = 0) : 0;
-		if (this.rigtNavPreference.friend_invitation.length > 0)
-			return (this.rigtNavPreference.friend_invitation[this.pos])
+		if (this.rightNavPreference.friend_invitation.length > 0)
+			return (this.rightNavPreference.friend_invitation[this.pos])
 		return (<UserPublicInfoI>{});
 	}
 	async accept(){
-		const user = this.rigtNavPreference.friend_invitation[this.pos];
+		const user = this.rightNavPreference.friend_invitation[this.pos];
 		return (await this.dashboardService.addFriendShip(user, this.session))
 
 	}
 	async decline(){
-		const user = this.rigtNavPreference.friend_invitation[this.pos];
+		const user = this.rightNavPreference.friend_invitation[this.pos];
 		return (await this.dashboardService.removeFriendShip(user, this.session))
 	}
 	next(){
-		if (this.pos < this.rigtNavPreference.friend_invitation.length - 1)
+		if (this.pos < this.rightNavPreference.friend_invitation.length - 1)
 			this.pos++;
 		else
 			this.pos = 0;
@@ -118,7 +118,7 @@ export class RightNavComponent implements OnInit {
 		if (this.pos > 0)
 			this.pos--;
 		else
-			this.pos = this.rigtNavPreference.friend_invitation.length - 1;
+			this.pos = this.rightNavPreference.friend_invitation.length - 1;
 		if (this.pos < 0)
 			this.pos = 0;
 	}
@@ -130,21 +130,24 @@ export class RightNavComponent implements OnInit {
 			windowClass : "user-profile"
 		  });
 		  modal.componentInstance.user = user;
-		  modal.componentInstance.isMe = user.login == this.rigtNavPreference.userInfo.login;
-		  modal.componentInstance.preferences = this.rigtNavPreference ;
+		  modal.componentInstance.isMe = user.login == this.rightNavPreference.userInfo.login;
+		  modal.componentInstance.preferences = this.rightNavPreference ;
 		  modal.componentInstance.passEntry.subscribe((receivedEntry: any) => {
 		  });
 	}
 	openMyProfile()
 	{
 		this.openProfile({
-			login: this.rigtNavPreference.userInfo.login,
-			first_name: this.rigtNavPreference.userInfo.first_name,
-			last_name: this.rigtNavPreference.userInfo.last_name,
-			nickname: this.rigtNavPreference.userInfo.nickname,
-			avatar: this.rigtNavPreference.userInfo.avatar,
+			login: this.rightNavPreference.userInfo.login,
+			first_name: this.rightNavPreference.userInfo.first_name,
+			last_name: this.rightNavPreference.userInfo.last_name,
+			nickname: this.rightNavPreference.userInfo.nickname,
+			avatar: this.rightNavPreference.userInfo.avatar,
 			online: true,
-			in_game: this.rigtNavPreference.userInfo.in_game
+			in_game: this.rightNavPreference.userInfo.in_game,
+			hits: this.rightNavPreference.userInfo.hits,
+			victories: this.rightNavPreference.userInfo.victories,
+			defeats: this.rightNavPreference.userInfo.defeats
 		});
 	}
 }

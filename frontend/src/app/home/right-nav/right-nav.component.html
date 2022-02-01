@@ -1,25 +1,25 @@
-<div class="" style="background-color: #222B3C;" [ngClass]="{'disabled_nav': rigtNavPreference.in_game}">
-	<div class="d-flex flex-column text-white align-items-start min-vh-100 pt-3 pb-3 px-1" [ngClass]="{'align-items-center' : !rigtNavPreference.expandRightNav}">
+<div class="" style="background-color: #222B3C;" [ngClass]="{'disabled_nav': rightNavPreference.in_game}">
+	<div class="d-flex flex-column text-white align-items-start min-vh-100 pt-3 pb-3 px-1" [ngClass]="{'align-items-center' : !rightNavPreference.expandRightNav}">
 		<div class="parent mx-3" (click)="openMyProfile()">
 			<div>
-				<img src='{{rigtNavPreference.userInfo.avatar}}' class="ico_s" alt="">
+				<img src='{{rightNavPreference.userInfo.avatar}}' class="ico_s" alt="">
 			</div>
-			<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
-				<p id="nickname">{{rigtNavPreference.userInfo.nickname}}</p>
+			<div *ngIf="rightNavPreference.expandRightNav" class="ms-2">
+				<p id="nickname">{{rightNavPreference.userInfo.nickname}}</p>
 			</div>
 		</div>
 		<div id="sep"></div>
 		<!-- Game invitation-->
-		<div *ngIf="rigtNavPreference.game_invitation.length > 0" class="w-100 py-3 border-bottom">
+		<div *ngIf="rightNavPreference.game_invitation.length > 0" class="w-100 py-3 border-bottom">
 			<div class="d-flex justify-content-center">
-				<span class="notification "*ngIf="!rigtNavPreference.expandRightNav"><span>PLAY</span></span>
-				<div *ngIf="rigtNavPreference.expandRightNav">
-						<p class="notification text-center mb-4" *ngIf="rigtNavPreference.expandRightNav">Challenge</p>
+				<span class="notification "*ngIf="!rightNavPreference.expandRightNav"><span>PLAY</span></span>
+				<div *ngIf="rightNavPreference.expandRightNav">
+						<p class="notification text-center mb-4" *ngIf="rightNavPreference.expandRightNav">Challenge</p>
 						<div class="d-flex justify-content-center">
-							<p  *ngIf="rigtNavPreference.game_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prevGameInvitation()"></p>
+							<p  *ngIf="rightNavPreference.game_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prevGameInvitation()"></p>
 							<img src="{{getGameInvitation().avatar}}" class="ico_s img-fluid me-3" alt="">
 							<h5 class="d-inline mt-2">{{getGameInvitation().nickname}}</h5>
-							<p *ngIf="rigtNavPreference.game_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="nextGameInvitation()"></p>
+							<p *ngIf="rightNavPreference.game_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="nextGameInvitation()"></p>
 						</div>
 						<div class="d-flex justify-content-center mt-3">
 							<b class="fa fa-check fa-lg btn-outline-success mx-1 p-2" (click)="acceptGameInvitation()"></b>
@@ -30,16 +30,16 @@
 		</div>
 		<!-- Game invitation END-->
 		<!-- Friend invitation-->
-		<div *ngIf="rigtNavPreference.friend_invitation.length > 0" class="w-100 py-3 border-bottom">
+		<div *ngIf="rightNavPreference.friend_invitation.length > 0" class="w-100 py-3 border-bottom">
 			<div class="d-flex justify-content-center">
-				<span class="fa fa-user-plus fa-lg notification "*ngIf="!rigtNavPreference.expandRightNav"><span class="anim">{{rigtNavPreference.friend_invitation.length}}</span></span>
-				<div *ngIf="rigtNavPreference.expandRightNav">
-					<p class="notification text-center mb-4" *ngIf="rigtNavPreference.expandRightNav"> {{rigtNavPreference.friend_invitation.length}} new friend invitations</p>
+				<span class="fa fa-user-plus fa-lg notification "*ngIf="!rightNavPreference.expandRightNav"><span class="anim">{{rightNavPreference.friend_invitation.length}}</span></span>
+				<div *ngIf="rightNavPreference.expandRightNav">
+					<p class="notification text-center mb-4" *ngIf="rightNavPreference.expandRightNav"> {{rightNavPreference.friend_invitation.length}} new friend invitations</p>
 					<div class="d-flex justify-content-center">
-						<p  *ngIf="rigtNavPreference.friend_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prev()"></p>
+						<p  *ngIf="rightNavPreference.friend_invitation.length > 1" class="fa fa-angle-left fa-2x d-inline me-4 mt-2 px-1 btn-outline-light" (click)="prev()"></p>
 						<img src="{{getInvitation().avatar}}" class="ico_s img-fluid me-3" alt="">
 						<h5 class="d-inline mt-2">{{getInvitation().nickname}}</h5>
-						<p *ngIf="rigtNavPreference.friend_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="next()"></p>
+						<p *ngIf="rightNavPreference.friend_invitation.length > 1" class="fa fa-angle-right fa-2x d-inline ms-4 mt-2 px-1 btn-outline-light" (click)="next()"></p>
 					</div>
 					<div class="d-flex justify-content-center mt-3">
 						<b class="fa fa-check fa-lg btn-outline-success mx-1 p-2" (click)="accept()"></b>
@@ -49,16 +49,16 @@
 			</div>
 		</div>
 		<!-- Friend invitation END-->
-		<div *ngFor="let friend of rigtNavPreference.friends" class="w-100" [ngClass]="{'d-flex justify-content-center' : !rigtNavPreference.expandRightNav}">
+		<div *ngFor="let friend of rightNavPreference.friends" class="w-100" [ngClass]="{'d-flex justify-content-center' : !rightNavPreference.expandRightNav}">
 			<div class="parent friend-item" [ngClass]="{'offline' : !friend.online}" (click)="openProfile(friend)">
 
 
 
 				
 				<div>
-					<img src='{{friend.avatar}}' class="ico_s" alt="" [ngClass]="{'ms-2' : rigtNavPreference.expandRightNav}">
+					<img src='{{friend.avatar}}' class="ico_s" alt="" [ngClass]="{'ms-2' : rightNavPreference.expandRightNav}">
 				</div>
-				<div *ngIf="rigtNavPreference.expandRightNav" class="ms-2">
+				<div *ngIf="rightNavPreference.expandRightNav" class="ms-2">
 					<p id="nickname">{{friend.nickname}}</p>
 <!-- 					<button class="btn-danger" (click)="removeFriend(friend)">X</button>
 					<button class="btn-warning ms-3 fa fa-align-justify" (click)="startChat(friend)"></button> -->

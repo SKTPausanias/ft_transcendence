@@ -33,6 +33,7 @@ export class UserProfileComponent implements OnInit {
 		const resp = await this.chatService.getUserInfo(this.user, this.session);
 		if (resp.statusCode == 200)
 			this.user = resp.data;
+			console.log("From user Profile: ", this.user);
 	}
 	close() {
 		this.modal.dismiss();
