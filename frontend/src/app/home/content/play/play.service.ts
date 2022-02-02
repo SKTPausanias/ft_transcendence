@@ -90,7 +90,7 @@ export class PlayService {
 		})
 	}
 
-	private onMatchData(){ ///Change test name for another more convenient
+	private onMatchData(){ ///Change test name to another more convenient
 		this.socket.on(ePlay.ON_MATCH_DATA, (emiter: string, data: any) => {
 			try {
 				this.gameDataEmiter.emit(data);

@@ -36,7 +36,6 @@ export class CanvasComponent implements OnInit {
 				private location: Location,
 				private sQuery: SessionStorageQueryService,
 		private playService: PlayService) {
-			this.streaming = this.game;
 			this.width = 0;
 			this.height = 0;
 		}
@@ -45,6 +44,7 @@ export class CanvasComponent implements OnInit {
 		this.width = 0;
 		this.height = 0;
 		this.location.replaceState(this.location.path().split('?')[0], '');
+		this.streaming = this.game;
 	}
 
 	ngAfterViewInit(){

@@ -1,22 +1,19 @@
 import { WebSocketGateway, SubscribeMessage } from "@nestjs/websockets";
 import { SessionService } from "src/session/session.service";
-import { mDate } from "src/shared/utils/date";
 import { SocketService } from "src/socket/socket.service";
 import { UserEntity } from "../user/user.entity";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
-import { ePlay, eRequestPlayer } from "./ePlay";
-import { GameI, PlayerI, WaitRoomI } from "./iPlay";
-import { PlayEntity } from "./play.entity";
+import { ePlay } from "./ePlay";
+import { WaitRoomI } from "./iPlay";
 import { PlayService } from "./play.service";
 import { UserService } from "../user/user.service";
-import { wSocket } from "src/socket/eSocket";
 import { Game } from "./classes/game";
 
 @WebSocketGateway({ cors: true })
 export class PlayGateway {
   server: any;
-  timeLap: number = 120;
+  timeLap: number;
   games: Game[];
   matchMaking: UserEntity[];
 
@@ -26,6 +23,7 @@ export class PlayGateway {
     private sessionService: SessionService,
     private userService: UserService
   ) {
+    this.timeLap = 120;
     this.games = [];
     this.matchMaking = [];
   }
@@ -36,17 +34,17 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_LOAD_ALL_GAME_INVITATIONS)
   async onLoadAllGameInvitations(client, data) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const invitations = await this.playService.getAllGameInvitations(me);
     this.server
       .to(client.id)
       .emit(ePlay.ON_LOAD_ALL_GAME_INVITATIONS, me.login, invitations);
   }
+
   @SubscribeMessage(ePlay.ON_LOAD_ACTIVE_WAIT_ROOM)
   async onLoadActiveWaitRoom(client, data) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const playRoom = await this.playService.getActivePlayRoom(me);
-    var waitRoom;
     if (playRoom !== undefined)
       this.server
         .to(client.id)
@@ -58,7 +56,7 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_REQUEST_INVITATION)
   async onRequestInvitation(client, data) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const opUser = await this.playService.newInviation(me, data);
     if (opUser != null)
       this.socketService.emitToOne(
@@ -73,7 +71,7 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_ACCEPT_INVITATION)
   async onAcceptInvitation(client, data) {
     var waitRoom: WaitRoomI = <WaitRoomI>{};
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const invitation = await this.playService.acceptGameInvitation(me, data);
     if (invitation == null) return;
     waitRoom = this.playService.createWaitRoom(invitation);
@@ -102,17 +100,16 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_DECLINE_INVITATION)
   async onDeclineInvitation(client, data) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     await this.playService.declineGameInvitation(me, data);
     this.server.to(client.id).emit(ePlay.ON_DECLINE_INVITATION, data);
   }
 
   @SubscribeMessage(ePlay.ON_WAIT_ROOM_ACCEPT)
   async onWaitRoomAccept(client, data) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const invitation = await this.playService.acceptWaitRoom(me, data);
     const waitRoom = this.playService.createWaitRoom(invitation);
-    //create new server
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_WAIT_ROOM_ACCEPT,
@@ -137,7 +134,7 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_WAIT_ROOM_REJECT)
   async onWaitRoomReject(client, data: WaitRoomI) {
     await this.playService.removePlayRoom(data);
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     var oponent;
     if (me.login == data.player1.login)
       oponent = await this.playService.getPlayer(data.player2);
@@ -158,9 +155,10 @@ export class PlayGateway {
       data
     );
   }
+
   @SubscribeMessage(ePlay.ON_GET_LIVE_GAMES)
   async onGetLiveGames(client) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const games = await this.playService.onGetLiveGames();
     this.socketService.emitToOne(
       this.server,
@@ -187,11 +185,11 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_STOP_STREAM)
   async onStopStream(client, data: WaitRoomI) {
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     const game = await this.playService.removeViewer(me, data);
     if (game == undefined) return;
     var gameI = this.playService.createWaitRoom(game);
-    // ON_WAIT_ROOM_ACCEPT has to be changed to ON_ROOM_UPDATE
+
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_WAIT_ROOM_ACCEPT,
@@ -210,8 +208,7 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_GAME_END)
   async onGameEnd(client, data: any) {
-    //console.log("game end", data);
-    const me = await this.getSessionUser(client);
+    const me = await this.playService.getSessionUser(client);
     var oponent;
     if (data.game !== undefined)
       await this.playService.endGame(data.game, data.wRoom);
@@ -219,10 +216,9 @@ export class PlayGateway {
       oponent = await this.playService.getPlayer(data.wRoom.player2);
     else 
       oponent = await this.playService.getPlayer(data.wRoom.player1);
-    data.wRoom.ready = false;
+    data.wRoom.ready = false;//WTF
     await this.playService.removePlayRoom(data.wRoom);
 
-    // ON_WAIT_ROOM_REJECT has to be changed to ON_ROOM_UPDATE
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_WAIT_ROOM_REJECT,
@@ -246,12 +242,12 @@ export class PlayGateway {
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
   }
 
-  @SubscribeMessage(ePlay.ON_MATCH_DATA)
+  /* @SubscribeMessage(ePlay.ON_MATCH_DATA)//This one is not used Back nor Front
   async onMatchData(client, data: any) {
     const game = await this.playService.findGameById(data.id);
     if (game !== undefined)
       this.emitToAll(game.viewers, ePlay.ON_MATCH_DATA, data);
-  }
+  } */
 
   @SubscribeMessage(ePlay.ON_START_GAME)
   async onStartGame(client, data: number) {
@@ -262,7 +258,6 @@ export class PlayGateway {
       this.server
         .to(client.id)
         .emit(ePlay.ON_START_GAME, { gameInfo: gameObj.getMap() });
-      //this.emitToAll([game.player_1, game.player_2], ePlay.ON_START_GAME, gameObj.getMap());
     }
   }
 
@@ -314,22 +309,21 @@ export class PlayGateway {
 
   @SubscribeMessage(ePlay.ON_MATCH_MAKING)
   async onMatchMaking(client): Promise<void> {
-    const player_1 = await this.getSessionUser(client);
+    const player_1 = await this.playService.getSessionUser(client);
     console.log("Random Gamers: ", this.matchMaking);
     if (this.matchMaking.find(item => item.login == player_1.login) === undefined) {
-      if (this.matchMaking.length > 0){
-        for (var i = 0; i < this.matchMaking.length; i++)
-        {
+      if (this.matchMaking.length > 0) {
+        for (var i = 0; i < this.matchMaking.length; i++) {
           if ((await this.playService.getActivePlayRoom(this.matchMaking[i])) !== undefined)
             this.matchMaking.splice(i, 1);
         }
-     }
-      if (this.matchMaking.length <= 0 ) 
+      }
+      if (this.matchMaking.length <= 0)
         this.matchMaking.push(player_1);
-      else if (this.matchMaking.length > 0){
+      else if (this.matchMaking.length > 0) {
         var player_2 = this.matchMaking.pop();
         var waitRoom: WaitRoomI = await this.playService.matchMaking(player_1, player_2);
-        if (waitRoom != null){
+        if (waitRoom != null) {
           this.socketService.emitToOne(
             this.server,
             ePlay.ON_ACCEPT_INVITATION,
@@ -349,27 +343,9 @@ export class PlayGateway {
     }
   }
 
-  private async getSession(client: any) {
-    try {
-      const token = client.handshake.headers.authorization.split(" ")[1];
-      const session = await this.sessionService.findSessionWithRelation(token);
-      return session;
-    } catch (error) {}
-  }
-  private async getSessionUser(client: any) {
-	try {
-		const session = await this.getSession(client);
-		return session.userID;
-	} catch (error) {	
-	}
-  }
 
   //Posibly can be deleted
-  private async emitToAll(
-    recivers: UserPublicInfoI[],
-    action: string,
-    data?: any
-  ) {
+  /* private async emitToAll(recivers: UserPublicInfoI[], action: string, data?: any) {
     for (let i = 0; i < recivers.length; i++) {
       const reciver = await this.userService.findByLogin(recivers[i].login);
       this.socketService.emitToOne(
@@ -380,5 +356,5 @@ export class PlayGateway {
         data
       );
     }
-  }
+  } */
 }

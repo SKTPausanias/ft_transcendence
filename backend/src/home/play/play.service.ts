@@ -28,6 +28,22 @@ export class PlayService {
 				private userService: UserService,
 				private socketService: SocketService,
 				private sessionService: SessionService){}
+
+
+  async getSession(client: any) {
+    try {
+      const token = client.handshake.headers.authorization.split(" ")[1];
+      const session = await this.sessionService.findSessionWithRelation(token);
+      return session;
+    } catch (error) { }
+  }
+  
+  async getSessionUser(client: any) {
+    try {
+      const session = await this.getSession(client);
+      return session.userID;
+    } catch (error) { }
+  }
     
     async newInviation(me: UserEntity, oponent: UserPublicInfoI): Promise<UserEntity>{
         try {
@@ -176,6 +192,7 @@ export class PlayService {
 		await this.playRepository.save(game);
 		return (game);
 	}
+
 	async removeViewer(viewer: UserPublicInfoI, gameRoom: WaitRoomI): Promise<PlayEntity>
 	{
 		var game = await this.playRepository.findOne({
@@ -188,6 +205,7 @@ export class PlayService {
 		await this.playRepository.save(game);
 		return (game);
 	}
+	
 	async getGame(token: string, user: UserPublicInfoI)
 	{
 		try {
