@@ -11,7 +11,7 @@ import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
 import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
-import { BallI, GameDataI, GameI, PadI } from 'src/app/shared/interface/iPlay';
+import { BallI, GameDataI, GameI, GameMoveableI, PadI } from 'src/app/shared/interface/iPlay';
 
 @Component({
 	selector: 'app-game',
@@ -38,6 +38,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	hits_p1: number;
 	hits_p2: number;
 	gameFinished: boolean = false;
+	cont: any;
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -50,7 +51,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.hits_p2 = 0;
 	}
 
-	ngOnInit(): void {		
+	ngOnInit(): void {
 		this.playService.gameDataEmiter.subscribe((data: any) => {
 			if (data.gameInfo !== undefined) {
 				this.width = data.gameInfo.map.width;
@@ -62,8 +63,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.p2_score = data.gameInfo.score_p2;
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
-				console.log(data.gameInfo.gameFinished);
 				this.gameFinished = data.gameInfo.gameFinished;
+				this.resize();
 				if (data.gameInfo.gameFinished)
 					this.sndWinner.emit(data.gameInfo);
 				if (this.animationFrame == undefined)
@@ -79,6 +80,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
+		this.cont = document.getElementById("canvasCtn");
+		if (this.cont != undefined)
+		{
+			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
+			this.gameCanvas.nativeElement.height = this.cont.clientHeight;
+		}
 		this.playService.emit(ePlay.ON_START_GAME, this.prefs.game.id);
 		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
@@ -87,10 +94,15 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	//renders every frame cleaning and drawing the elements
 	renderFrame(): void {
+		
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
+		this.context?.fillRect(this.width - 10, this.height-10, 5, 5);
+		this.context?.fillRect(10, 10, 5, 5);
+		this.context?.fillRect(10, this.height -10, 5, 5);
+		this.context?.fillRect(this.width - 10, 10, 5, 5);
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
 		});
@@ -113,7 +125,32 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	cancelGame() {
 		//this.sndWinner.emit();
 	}
+	resize(){
+		
 
+		var padd_ratio_x = this.gameCanvas.nativeElement.width / this.width;
+		var padd_ratio_y = this.gameCanvas.nativeElement.height / this.height;
+		this.width = this.gameCanvas.nativeElement.width;
+		this.height = this.gameCanvas.nativeElement.height;
+		
+		this.resizeVector(this.pad_1, padd_ratio_x, padd_ratio_y);
+		this.resizeVector(this.pad_2, padd_ratio_x, padd_ratio_y);
+		this.resizeVector(this.ball, padd_ratio_x, padd_ratio_y);
+	/* 	var scale = this.width / this.height;
+
+		this.width = this.gameCanvas.nativeElement.width * scale;
+		this.height = this.gameCanvas.nativeElement.height * scale;
+
+		 */
+		//this.pad_2.pos_x = this.gameCanvas.nativeElement.width - 50;
+	}
+	resizeVector(obj: GameMoveableI, rx: number, ry: number)
+	{
+		obj.width *= rx;
+		obj.height *= ry;
+		obj.pos_x *= rx;
+		obj.pos_y *= ry;
+	}
 	@HostListener('window:keydown', ['$event'])
 	keyUp(event: KeyboardEvent) {
 		if (event.code == "ArrowUp")
@@ -129,4 +166,37 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		if (event.code == "ArrowDown")
 			this.moving_down = false;
 	}
+	@HostListener('window:resize', ['$event'])
+	onWindowResize(event: KeyboardEvent) {
+		if (this.cont != undefined)
+		{
+			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
+			this.gameCanvas.nativeElement.height = this.cont.clientHeight;
+		}	
+	}
 }
+/*
+var ratio = 1.0;
+		var ratio_w = this.gameCanvas.nativeElement.width/(this.width);
+		var ratio_h = this.gameCanvas.nativeElement.height/(this.height);
+
+		var ratio_max = Math.max(ratio_w, ratio_h);
+
+		if (ratio_max < 1.0)
+		{  
+		// width & height are larger than allowed
+		// scale to the larger scaling factor
+		ratio = ratio_max;
+		}
+		else
+		{
+		// pick a scaling factor <= 1.0
+			ratio = Math.min(ratio, ratio_w);
+			ratio = Math.min(ratio, ratio_h);
+		}
+		this.width *= ratio;
+		this.height *= ratio;
+		this.resizeVector(this.ball, ratio);
+		this.resizeVector(this.pad_1, ratio);
+		this.resizeVector(this.pad_2, ratio);
+		*/

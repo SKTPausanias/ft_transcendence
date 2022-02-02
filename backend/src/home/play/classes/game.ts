@@ -5,9 +5,9 @@ import { Moveable } from "./moveable";
 import { Paddle } from "./paddle";
 
 export class Game {
-
-    cWidth: number = 600;
-    cHeight: number = 400; 
+	//16 : 9 
+    cWidth: number = 800;
+    cHeight: number = 450; 
     ball: Ball;
     pad_1: Paddle;
     pad_2: Paddle;
@@ -38,10 +38,10 @@ export class Game {
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.start = false;
 		this.gameFinished = false;
-		this.max_score = 3;
+		this.max_score = 1000;
 
     }
-	
+
     getId (): number{
         return (this.id);
     }

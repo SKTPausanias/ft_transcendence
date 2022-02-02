@@ -1,7 +1,7 @@
 <div class="cont vh-100">
 
 	<div *ngIf="playPreference.game != undefined && playPreference.game.ready" >
-		<app-game class="ms-3" [prefs]="playPreference" (sndWinner)="rcvWinner($event)"></app-game>
+		<app-game class="ms-3 " [prefs]="playPreference" (sndWinner)="rcvWinner($event)"></app-game>
 	</div>
 	<div *ngIf="playPreference.game == undefined || !playPreference.game.ready">
 		<h1>NO GAME IN PROGRESS</h1>
