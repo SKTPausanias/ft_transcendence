@@ -2,9 +2,10 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { environment } from "src/environments/environment";
 import { AuthService } from "../auth/auth.service";
-import { eChat, wSocket } from "../shared/ft_enums";
+import { eChat, ePlay, wSocket } from "../shared/ft_enums";
 import { SessionStorageQueryService } from "../shared/ft_services";
 import { mDate } from "../utils/date";
+import { PlayService } from "./content/play/play.service";
 import { SocketService } from "./socket.service";
 
 @Injectable({
@@ -19,8 +20,10 @@ export class HomeService {
 	constructor(private sQuery: SessionStorageQueryService,
 				private authService: AuthService,
 				private router: Router, 
-				private socketService: SocketService) {}
+				private socketService: SocketService,
+				private playService: PlayService) {}
 	async closeSession(){
+		await this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING);
 		await this.socketService.emit(wSocket.DISCONNECT_USER);
 		//this.socketService.disconnect();
 		this.terminateWorker();

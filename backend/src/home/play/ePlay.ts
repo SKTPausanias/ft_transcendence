@@ -19,7 +19,8 @@ export enum ePlay {
 	ON_PADD_MOVE = "on-pad-move",
 	ON_GAME_LOSER = "on-game-loser",
 	ON_GAME_WINNER = "on-game-winner",
-	ON_MATCH_MAKING = "on-match-making"
+	ON_MATCH_MAKING = "on-match-making",
+	ON_CANCEL_MATCH_MAKING = "on-cancel-match-making"
 }
 export enum eRequestPlayer{
 	WAITING = "waiting",

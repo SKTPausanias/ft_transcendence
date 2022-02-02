@@ -39,4 +39,7 @@ export class PlayComponent implements OnInit {
 	matchMaking(): void {
 		this.playService.emit(ePlay.ON_MATCH_MAKING)
 	}
+	cancelMatchMaking(): void {
+		this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING);
+	}
 }

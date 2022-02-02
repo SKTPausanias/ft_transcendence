@@ -19,7 +19,6 @@ export class PlayGateway {
   constructor(
     private socketService: SocketService,
     private playService: PlayService,
-    private sessionService: SessionService,
     private userService: UserService
   ) {
     this.timeLap = 120;
@@ -330,5 +329,11 @@ export class PlayGateway {
         }
       }
     }
+  }
+
+  @SubscribeMessage(ePlay.ON_CANCEL_MATCH_MAKING)
+  async onCancelMatchMaking(client: any): Promise<void> {
+    const usr = await this.playService.getSessionUser(client);
+    this.matchMaking = this.matchMaking.filter(item => item.login != usr.login);
   }
 }
