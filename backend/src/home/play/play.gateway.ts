@@ -3,7 +3,6 @@ import { SessionService } from "src/session/session.service";
 import { SocketService } from "src/socket/socket.service";
 import { UserEntity } from "../user/user.entity";
 import { User } from "../user/userClass";
-import { UserPublicInfoI } from "../user/userI";
 import { ePlay } from "./ePlay";
 import { WaitRoomI } from "./iPlay";
 import { PlayService } from "./play.service";
@@ -75,13 +74,11 @@ export class PlayGateway {
     const invitation = await this.playService.acceptGameInvitation(me, data);
     if (invitation == null) return;
     waitRoom = this.playService.createWaitRoom(invitation);
+
     for (var i = 0; i < this.matchMaking.length; i++)
-    {
-      if ((await this.playService.getActivePlayRoom(this.matchMaking[i])) !== undefined) {
-        console.log("Backend playGateway: Deleting from random players...");
+      if ((await this.playService.getActivePlayRoom(this.matchMaking[i])) !== undefined)
         this.matchMaking.splice(i, 1);
-      }
-    }
+
     this.socketService.emitToOne(
       this.server,
       ePlay.ON_ACCEPT_INVITATION,
@@ -242,13 +239,6 @@ export class PlayGateway {
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
   }
 
-  /* @SubscribeMessage(ePlay.ON_MATCH_DATA)//This one is not used Back nor Front
-  async onMatchData(client, data: any) {
-    const game = await this.playService.findGameById(data.id);
-    if (game !== undefined)
-      this.emitToAll(game.viewers, ePlay.ON_MATCH_DATA, data);
-  } */
-
   @SubscribeMessage(ePlay.ON_START_GAME)
   async onStartGame(client, data: number) {
     const game = await this.playService.findGameById(data);
@@ -310,7 +300,6 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_MATCH_MAKING)
   async onMatchMaking(client): Promise<void> {
     const player_1 = await this.playService.getSessionUser(client);
-    console.log("Random Gamers: ", this.matchMaking);
     if (this.matchMaking.find(item => item.login == player_1.login) === undefined) {
       if (this.matchMaking.length > 0) {
         for (var i = 0; i < this.matchMaking.length; i++) {
@@ -342,19 +331,4 @@ export class PlayGateway {
       }
     }
   }
-
-
-  //Posibly can be deleted
-  /* private async emitToAll(recivers: UserPublicInfoI[], action: string, data?: any) {
-    for (let i = 0; i < recivers.length; i++) {
-      const reciver = await this.userService.findByLogin(recivers[i].login);
-      this.socketService.emitToOne(
-        this.server,
-        action,
-        undefined,
-        reciver,
-        data
-      );
-    }
-  } */
 }

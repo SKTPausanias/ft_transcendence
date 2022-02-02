@@ -114,13 +114,6 @@ export class PlayService {
 			}catch(error){}
 		})
 	}
-	/* private onPaddleMove() {
-		this.socket.on(ePlay.ON_PADD_MOVE, (data: any) => {
-			try {
-				this.gameDataEmiter.emit(data);
-			}catch(error){}
-		})
-	} */
 
 	private onWinGame(){
 		this.socket.on(ePlay.ON_GAME_WINNER, (emiter: string, data: any) => {
