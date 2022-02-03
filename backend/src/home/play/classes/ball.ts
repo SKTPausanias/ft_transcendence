@@ -48,6 +48,11 @@ export class Ball extends Moveable {
 	setSpeedBall(speed: number): void {
 		super.setSpeed(speed);
 	}
+
+    getSpeedBall(): number {
+        return (super.getSpeed());
+    }
+    
 	incrementBallSpeed(){
 		super.incrementSpeed();
 	}

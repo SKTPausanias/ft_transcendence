@@ -44,9 +44,13 @@ export abstract class Moveable {
 	setSpeed(speed: number) {
 		this.maxSpeed = speed;
 	}
+
+	getSpeed(): number {
+		return (this.maxSpeed);
+	}
+
 	incrementSpeed() {
-		console.log(this.maxSpeed);
 		if (this.maxSpeed < 5)
-			this.maxSpeed += 0.1;
+			this.maxSpeed += 0.2;
 	}
 }

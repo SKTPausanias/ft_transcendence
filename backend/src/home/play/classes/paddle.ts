@@ -3,6 +3,7 @@ import { Moveable } from "./moveable";
 
 export class Paddle extends Moveable {
     private speedRatio: iSpeedRatio;
+    boost: boolean;
 
     constructor(height: number,
         width: number,
@@ -12,6 +13,7 @@ export class Paddle extends Moveable {
     {
         super(height, width, maxSpeed, position);
         this.speedRatio = {x: 0, y: 0};
+        this.boost = false;
     }
 
     /**
@@ -29,5 +31,9 @@ export class Paddle extends Moveable {
     moveDown() {
         this.speedRatio.y = 0.001;
         this.move();
+    }
+
+    setBoost(boost: boolean) {
+        this.boost = boost;
     }
 }
