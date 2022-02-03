@@ -64,7 +64,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.gameFinished = data.gameInfo.gameFinished;
-				this.resize();
 				if (data.gameInfo.gameFinished)
 					this.sndWinner.emit(data.gameInfo);
 				if (this.animationFrame == undefined)
@@ -94,7 +93,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	//renders every frame cleaning and drawing the elements
 	renderFrame(): void {
-		
+		this.resize();
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
