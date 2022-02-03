@@ -1,5 +1,6 @@
 /**
- * http://andrewbar.net/blog/pong-with-angular-4/
+ * git pull
+ * 
  * https://github.com/Abarn279/angular-pong/blob/master/src/app/pong/pong.component.ts
  * https://www.youtube.com/watch?v=cXxEiWudIUY
  * https://www.thepolyglotdeveloper.com/2019/04/using-socketio-create-multiplayer-game-angular-nodejs/
@@ -32,6 +33,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	animationFrame: any;
 	moving_up = false;
 	moving_down = false;
+	shoots: boolean = false;
 	maxScore: number;
 	p1_score: number;
 	p2_score: number;
@@ -117,6 +119,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		gameData.id = this.prefs.game.id;
 		gameData.up = this.moving_up;
 		gameData.down = this.moving_down;
+		gameData.shoots = this.shoots;
 		gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
 		/* !gameFinished */
 		this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
@@ -156,6 +159,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.moving_up = true;
 		if (event.code == "ArrowDown")
 			this.moving_down = true;
+		if (event.code == "Space")
+			this.shoots = true;
+		console.log("Event keyCodeUp space: ", this.shoots);
 	}
 	
 	@HostListener('window:keyup', ['$event'])
@@ -164,6 +170,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.moving_up = false;
 		if (event.code == "ArrowDown")
 			this.moving_down = false;
+		if (event.code == "Space")
+			this.shoots = false;
+		console.log("Event keyCodeDown space: ", this.shoots);
 	}
 	@HostListener('window:resize', ['$event'])
 	onWindowResize(event: KeyboardEvent) {

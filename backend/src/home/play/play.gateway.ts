@@ -281,14 +281,14 @@ export class PlayGateway {
 		    obj.checkCollisions();
         obj.ball.move();
         if (data.p1) {
-          if (data.boost)
-            obj.pad_1.setBoost(data.boost);
+          if (data.shoots)
+            obj.pad_1.setShoots(data.shoots);
           if (data.up && obj.boundPad_1.top > 0) obj.pad_1.moveUp();
           else if (data.down && obj.boundPad_1.bottom < obj.cHeight)
             obj.pad_1.moveDown();
         } else {
-          if (data.boost)
-            obj.pad_2.setBoost(data.boost);
+          if (data.shoots)
+            obj.pad_2.setShoots(data.shoots);
           if (data.up && obj.boundPad_2.top > 0) obj.pad_2.moveUp();
           else if (data.down && obj.boundPad_2.bottom < obj.cHeight)
             obj.pad_2.moveDown();

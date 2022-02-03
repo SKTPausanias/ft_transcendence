@@ -35,7 +35,8 @@ export interface GameDataI{
 	id: number,
 	up: boolean | undefined,
 	down: boolean | undefined,
-	p1: boolean
+	p1: boolean,
+	shoots: boolean
 }
 
 export interface MapI {

@@ -31,8 +31,8 @@ export class Game {
 		this.hits_p2 = 0;
 		this.padTouch = false;
         this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
-       	this.pad_1 = new Paddle(200, 10, 10000, { x: 50, y: (this.cHeight / 2) });
-	    this.pad_2 = new Paddle(200, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+       	this.pad_1 = new Paddle(450, 10, 10000, { x: 50, y: (this.cHeight / 2) });
+	    this.pad_2 = new Paddle(450, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -94,28 +94,30 @@ export class Game {
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch) // left padd collision
 		{
+			if (this.pad_1.shoots)
+				console.log("shoots_1", this.pad_1.shoots);
+			else {
+				console.log("Shoots_1 is disabled...");
+			}
+			this.pad_1.setShoots(false);
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 				this.leftPadCollision();
 		}
 		else if (this.boundBall.right >= this.boundPad_2.left && !left_touch) // right pad collision
 		{
+			if (this.pad_2.shoots)
+				console.log("shoots_2", this.pad_2.shoots);
+			else
+				console.log("Shoots_2 is disabled...");
+			this.pad_2.setShoots(false);
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 				this.rightPadCollision();
 		}
 	}
 
 	leftPadCollision(){
-		if (this.pad_1.boost)
-		{
-			console.log("boost", this.pad_1.boost);
-			this.ball.setSpeedBall(3);
-			console.log("speed", this.ball.getSpeedBall());
-			//this.pad_1.boost = false;
-		}
-		/*else
-		{
-			this.ball.setSpeedBall(this.ball.getSpeedBall() - 3);
-		}*/
+		
+		
 		this.setSpeedRatio(this.boundPad_1, this.pad_1);
 		var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 		if (this.boundBall.left >= paddMid)
@@ -126,17 +128,6 @@ export class Game {
 	}
 
 	rightPadCollision(){
-		if (this.pad_2.boost)
-		{
-			//console.log("boost", this.pad_2.boost);
-			this.ball.setSpeedBall(this.ball.getSpeedBall() + 3);
-			//console.log("speed", this.ball.getSpeedBall());
-
-		}
-		/*else
-		{
-			this.ball.setSpeedBall(this.ball.getSpeedBall() - 3);
-		}*/
 		this.setSpeedRatio(this.boundPad_2, this.pad_2);
 		var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 		if (this.boundBall.right <= paddMid)
