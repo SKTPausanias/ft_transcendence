@@ -30,7 +30,7 @@ export class Game {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.padTouch = false;
-        this.ball = new Ball(10, 10, 1, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
+        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
        	this.pad_1 = new Paddle(450, 10, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(450, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
@@ -94,50 +94,59 @@ export class Game {
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch) // left padd collision
 		{
-			if (this.pad_1.shoots)
-				console.log("shoots_1", this.pad_1.shoots);
-			else {
-				console.log("Shoots_1 is disabled...");
-			}
-			this.pad_1.setShoots(false);
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 				this.leftPadCollision();
 		}
 		else if (this.boundBall.right >= this.boundPad_2.left && !left_touch) // right pad collision
 		{
-			if (this.pad_2.shoots)
-				console.log("shoots_2", this.pad_2.shoots);
-			else
-				console.log("Shoots_2 is disabled...");
-			this.pad_2.setShoots(false);
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 				this.rightPadCollision();
 		}
 	}
 
 	leftPadCollision(){
-		
-		
-		this.setSpeedRatio(this.boundPad_1, this.pad_1);
+		this.setVerticalSpeedRatio(this.boundPad_1, this.pad_1);
 		var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 		if (this.boundBall.left >= paddMid)
+		{
 			this.hits_p1 = this.reverseX(this.hits_p1);
+			this.boost(this.pad_1, 1);
+		}
 		else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 			this.hits_p1 = this.reverseXY(this.hits_p1);
 		this.incrementSpeed();
 	}
 
 	rightPadCollision(){
-		this.setSpeedRatio(this.boundPad_2, this.pad_2);
+		//this.pad_1.shots = false;
+		this.setVerticalSpeedRatio(this.boundPad_2, this.pad_2);
 		var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 		if (this.boundBall.right <= paddMid)
+		{
 			this.hits_p2 = this.reverseX(this.hits_p2)
+			this.boost(this.pad_2, -1);
+		}
 		else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
 			this.hits_p2 = this.reverseXY(this.hits_p2)
 		this.incrementSpeed();	
 	}
+
+	boost(pad: Paddle, dir: number){
+		if (pad.shots && pad.shot_number > 0)
+		{
+			//pad.setOldX(this.ball.getHorizontalSpeedRatio());
+			//this.ball.setOldX(Math.abs(this.ball.getHorizontalSpeedRatio()));
+			//console.log("boost", this.ball.getOldX());
+			this.ball.setHorizontalSpeedRatio(3 * dir);
+			pad.shot_number--;
+			pad.shots = false;
+		}
+		else {
+			this.ball.setHorizontalSpeedRatio(1 * dir);
+		}
+	}
 	
-	setSpeedRatio(bound: Boundaries, pad: Paddle)
+	setVerticalSpeedRatio(bound: Boundaries, pad: Paddle)
 	{
 		var middle = bound.top + pad.getHeight() / 2;
 		// abs value of distance
@@ -163,6 +172,6 @@ export class Game {
 			this.start = true;
 		}
 		else 
-			this.ball.incrementSpeed();
+			this.ball.incrementBallSpeed();
 	}
 }

@@ -3,6 +3,7 @@ import { Moveable } from "./moveable";
 
 export class Ball extends Moveable {
     private speedRatio: iSpeedRatio;
+    oldX: number;
 
     constructor(height: number,
         width: number,
@@ -12,6 +13,7 @@ export class Ball extends Moveable {
     {
         super(height, width, maxSpeed, position);
         this.speedRatio = speedRatio;
+        this.oldX = speedRatio.x;
     }
 
     /**
@@ -38,6 +40,14 @@ export class Ball extends Moveable {
     setVerticalSpeedRatio(verticalSpeedRatio: number): void {
         this.speedRatio.y = verticalSpeedRatio;
     }
+
+    setHorizontalSpeedRatio(horizontalSpeedRatio: number): void {
+        this.speedRatio.x = horizontalSpeedRatio;
+    }
+
+    getHorizontalSpeedRatio(): number {
+        return (this.speedRatio.x);
+    }
     
     /**
      * Moves object using existing speed ratio
@@ -54,26 +64,15 @@ export class Ball extends Moveable {
     }
     
 	incrementBallSpeed(){
-		super.incrementSpeed();
-	}
-	moveTest(w:number, h: number) {
-		var ballPos = this.getPosition();
-		// W H campo
-		// POS BALL
+		if (this.speedRatio.x < 2.5)
+            this.speedRatio.x += 0.1;
+    }
+    
+    setOldX(oldX: number) {
+        this.oldX = oldX;
+    }
 
-		//CAMPO PARTE ARRIBA ABAJO
-		if (ballPos.y <= 0 || ballPos.y + this.getHeight() >= h)
-		{
-			this.reverseY();
-			//console.log("ball pos: ", ballPos);
-		}
-			
-		//CAMPO PARTE DERECHA IZQUIERDA
-		else if (ballPos.x <=0 || ballPos.x + this.getWidth() >= w)
-		{
-			this.reverseX();
-			console.log("LOST: ", ballPos);
-		}
-        super.move(this.speedRatio);
+    getOldX() {
+        return (this.oldX);
     }
 }
