@@ -30,9 +30,9 @@ export class Game {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.padTouch = false;
-        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 0.5 });
-       	this.pad_1 = new Paddle(450, 10, 10000, { x: 50, y: (this.cHeight / 2) });
-	    this.pad_2 = new Paddle(450, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+       	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
+	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -108,35 +108,27 @@ export class Game {
 		this.setVerticalSpeedRatio(this.boundPad_1, this.pad_1);
 		var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 		if (this.boundBall.left >= paddMid)
-		{
 			this.hits_p1 = this.reverseX(this.hits_p1);
-			this.boost(this.pad_1, 1);
-		}
 		else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 			this.hits_p1 = this.reverseXY(this.hits_p1);
-		this.incrementSpeed();
+		this.boost(this.pad_1, 1);
+		this.speedUp();
 	}
 
 	rightPadCollision(){
-		//this.pad_1.shots = false;
 		this.setVerticalSpeedRatio(this.boundPad_2, this.pad_2);
 		var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 		if (this.boundBall.right <= paddMid)
-		{
 			this.hits_p2 = this.reverseX(this.hits_p2)
-			this.boost(this.pad_2, -1);
-		}
 		else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
-			this.hits_p2 = this.reverseXY(this.hits_p2)
-		this.incrementSpeed();	
+		this.hits_p2 = this.reverseXY(this.hits_p2)
+		this.boost(this.pad_2, -1);
+		this.speedUp();	
 	}
 
 	boost(pad: Paddle, dir: number){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			//pad.setOldX(this.ball.getHorizontalSpeedRatio());
-			//this.ball.setOldX(Math.abs(this.ball.getHorizontalSpeedRatio()));
-			//console.log("boost", this.ball.getOldX());
 			this.ball.setHorizontalSpeedRatio(3 * dir);
 			pad.shot_number--;
 			pad.shots = false;
@@ -166,12 +158,12 @@ export class Game {
 		return (hit + 1);
 	}
 	
-	incrementSpeed(){
+	speedUp(){
 		if (!this.start) {
 			this.ball.setSpeedBall(2);
 			this.start = true;
 		}
 		else 
-			this.ball.incrementBallSpeed();
+			this.ball.speedUp();
 	}
 }

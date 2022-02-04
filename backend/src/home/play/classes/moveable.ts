@@ -48,4 +48,9 @@ export abstract class Moveable {
 	getSpeed(): number {
 		return (this.maxSpeed);
 	}
+	speedUp() {
+		console.log("speddball: ", this.maxSpeed);
+		if (this.maxSpeed < 3)
+		this.maxSpeed += 0.1;
+	}
 }

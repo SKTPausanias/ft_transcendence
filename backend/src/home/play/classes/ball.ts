@@ -63,16 +63,7 @@ export class Ball extends Moveable {
         return (super.getSpeed());
     }
     
-	incrementBallSpeed(){
-		if (this.speedRatio.x < 2.5)
-            this.speedRatio.x += 0.1;
-    }
-    
-    setOldX(oldX: number) {
-        this.oldX = oldX;
-    }
-
-    getOldX() {
-        return (this.oldX);
+	speedUp(){
+		super.speedUp();
     }
 }
