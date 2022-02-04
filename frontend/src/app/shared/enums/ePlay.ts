@@ -17,11 +17,17 @@ export enum ePlay {
 	ON_GAME_LOSER = "on-game-loser",
 	ON_GAME_WINNER = "on-game-winner",
 	ON_MATCH_MAKING = "on-match-making",
-	ON_CANCEL_MATCH_MAKING = "on-cancel-match-making"
+	ON_CANCEL_MATCH_MAKING = "on-cancel-match-making",
+	ON_SELECT_PLAY_MODE = "on-select-play-mode" 
 }
 
 export enum eRequestPlayer{
 	WAITING = "waiting",
 	ACCEPTED = "accepted",
 	REJECTED = "rejected"
+}
+export enum ePlayMode{
+	CLASIC = 1,
+	POWER = 2,
+	ANGLE = 3
 }

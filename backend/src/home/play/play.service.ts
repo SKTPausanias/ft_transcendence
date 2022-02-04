@@ -139,11 +139,12 @@ export class PlayService {
 		else
 			invitation.p2_status = eRequestPlayer.ACCEPTED;
 		if (invitation.p1_status == eRequestPlayer.ACCEPTED && invitation.p2_status == eRequestPlayer.ACCEPTED)
-			invitation.ready = true;
-		invitation.player_1.in_game = true;
-		invitation.player_2.in_game = true;
-		await this.userService.changeInGameStatus(invitation.player_1);
-		await this.userService.changeInGameStatus(invitation.player_2);
+			invitation.selecting = invitation.player_1.nickname;
+		//	invitation.ready = true;
+		//invitation.player_1.in_game = true;
+		//invitation.player_2.in_game = true;
+		//await this.userService.changeInGameStatus(invitation.player_1);
+		//await this.userService.changeInGameStatus(invitation.player_2);
 		await this.playRepository.save(invitation);
 		return(invitation);
 	}
@@ -290,7 +291,9 @@ export class PlayService {
 			player2: this.createPlayer(invitation.player_2, invitation.p2_status),
 			expires: invitation.expiration_time,
 			ready: invitation.ready,
-			viewers: invitation.viewers
+			viewers: invitation.viewers,
+			selecting: invitation.selecting,
+			play_modes: invitation.play_modes
 		})
 	}
 
@@ -343,6 +346,23 @@ export class PlayService {
 			return (this.createWaitRoom(playRoom));
 		} catch (error) {
 			return (null);
+		}
+	}
+
+	async diselectPlayMode(data: any, me: UserEntity): Promise<PlayEntity>
+	{
+		try {
+			const room = await this.findGameById(data.id);
+			if (room.player_1.nickname == me.nickname)
+				room.selecting = room.player_2.nickname;
+			else
+				room.selecting = room.player_1.nickname;
+			room.play_modes = room.play_modes.filter(item => item != data.mode);
+			if (room.play_modes.length == 1)
+				room.ready = true;
+			await this.playRepository.save(room);
+			return (room)
+		} catch (error) {	
 		}
 	}
 }
