@@ -13,6 +13,7 @@ import { SocketService } from '../../../socket.service';
 import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
 import { BallI, GameDataI, GameI, GameMoveableI, PadI } from 'src/app/shared/interface/iPlay';
+import { ePlayMode } from 'src/app/shared/enums/ePlay';
 
 @Component({
 	selector: 'app-game',
@@ -41,6 +42,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	hits_p2: number;
 	gameFinished: boolean = false;
 	cont: any;
+	modeImg = new Image();
 	
 	constructor(private socketService: SocketService,
 		private playService: PlayService) {
@@ -83,6 +85,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	ngAfterViewInit() {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("canvasCtn");
+		this.setModeImage();
 		if (this.cont != undefined)
 		{
 			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
@@ -98,6 +101,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	renderFrame(): void {
 		this.resize();
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
+		this.context?.drawImage(this.modeImg, 0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height)
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
@@ -153,6 +157,14 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		obj.height *= ry;
 		obj.pos_x *= rx;
 		obj.pos_y *= ry;
+	}
+	setModeImage(){
+		if (this.prefs.game.play_modes[0] == ePlayMode.CLASIC)
+			this.modeImg.src = '/assets/img/play_modes/clasic_mode.png';
+		else if (this.prefs.game.play_modes[0] == ePlayMode.POWER)
+			this.modeImg.src = '/assets/img/play_modes/power_mode.png';
+		else if (this.prefs.game.play_modes[0] == ePlayMode.ANGLE)
+			this.modeImg.src = '/assets/img/play_modes/angle_mode.png';
 	}
 	@HostListener('window:keydown', ['$event'])
 	keyUp(event: KeyboardEvent) {
