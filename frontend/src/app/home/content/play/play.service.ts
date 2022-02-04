@@ -9,6 +9,7 @@ import { SocketService } from "../../socket.service";
 @Injectable({providedIn: "root"})
 export class PlayService {
 	playEmiter: EventEmitter<any>;
+	waitRoomEmiter: EventEmitter<any>;
 	liveDataEmiter: EventEmitter<any>;
 	gameDataEmiter: EventEmitter<any>;
 	gameWinnerEmiter: EventEmitter<any>;
@@ -16,6 +17,7 @@ export class PlayService {
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
 		this.playEmiter = new EventEmitter<any>();
+		this.waitRoomEmiter = new EventEmitter<any>();
 		this.liveDataEmiter = new EventEmitter<any>();
 		this.gameDataEmiter = new EventEmitter<any>();
 		this.gameWinnerEmiter = new EventEmitter<any>();
@@ -30,6 +32,7 @@ export class PlayService {
 		this.onDeclineInvitation();
 		this.onWaitRoomReject();
 		this.onWaitRoomAccept();
+		this.onSelectPlayMode();
 		this.onLoadActiveWaitRoom();
 		this.onMatchData();
 		this.onStartGame();
@@ -90,6 +93,14 @@ export class PlayService {
 		})
 	}
 
+	private onSelectPlayMode(){ ///Change test name for another more convenient
+		this.socket.on(ePlay.ON_SELECT_PLAY_MODE, (emiter: string, data: any) => {
+			try {
+				this.waitRoomEmiter.emit(data);
+				//connect to new game socket 
+			}catch(error){}
+		})
+	}
 	private onMatchData(){ ///Change test name to another more convenient
 		this.socket.on(ePlay.ON_MATCH_DATA, (emiter: string, data: any) => {
 			try {

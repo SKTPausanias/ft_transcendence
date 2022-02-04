@@ -6,6 +6,8 @@ export interface WaitRoomI {
 	player2: PlayerI,
 	expires : number,
 	ready: boolean,
+	selecting: string,
+	play_modes: number[],
 	viewers: UserPublicInfoI[]
 }
 export interface PlayerI  {

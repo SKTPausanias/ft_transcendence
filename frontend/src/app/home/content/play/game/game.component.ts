@@ -52,6 +52,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 
 	ngOnInit(): void {
+		console.log("GAME MODE = ", this.prefs.game.play_modes[0]);
 		this.playService.gameDataEmiter.subscribe((data: any) => {
 			if (data.gameInfo !== undefined) {
 				this.width = data.gameInfo.map.width;
