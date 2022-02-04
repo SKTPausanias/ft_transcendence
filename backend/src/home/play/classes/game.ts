@@ -30,9 +30,9 @@ export class Game {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.padTouch = false;
-        this.ball = new Ball(10, 10, 2, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
-       	this.pad_1 = new Paddle(75, 10, 10000, { x: 50, y: (this.cHeight / 2) });
-	    this.pad_2 = new Paddle(75, 10, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+        this.ball = new Ball(10, 10, 1.5, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+       	this.pad_1 = new Paddle(75, 10, 5000, { x: 50, y: (this.cHeight / 2) });
+	    this.pad_2 = new Paddle(75, 10, 5000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -129,7 +129,7 @@ export class Game {
 	boost(pad: Paddle, dir: number){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			this.ball.setHorizontalSpeedRatio(3 * dir);
+			this.ball.setHorizontalSpeedRatio(2.5 * dir);
 			pad.shot_number--;
 			pad.shots = false;
 		}
@@ -160,7 +160,7 @@ export class Game {
 	
 	speedUp(){
 		if (!this.start) {
-			this.ball.setSpeedBall(2);
+			this.ball.setSpeedBall(1.5);
 			this.start = true;
 		}
 		else 
