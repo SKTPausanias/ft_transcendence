@@ -102,6 +102,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.resize();
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 		this.context?.drawImage(this.modeImg, 0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height)
+		if (this.context != undefined)
+			this.context.fillStyle = '#ffffff';
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
