@@ -94,7 +94,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.playService.emit(ePlay.ON_START_GAME, this.prefs.game.id);
 		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
-		}, 20);
+		}, 10);
 	}
 
 	//renders every frame cleaning and drawing the elements
