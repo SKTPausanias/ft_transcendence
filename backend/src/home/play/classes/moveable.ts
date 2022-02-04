@@ -50,7 +50,6 @@ export abstract class Moveable {
 	setSpeedX(speed: number) {
 		this.maxSpeedX = speed;
 	}
-
 	setSpeedY(speed: number) {
 		this.maxSpeedY = speed;
 	}

@@ -59,8 +59,11 @@ export class Ball extends Moveable {
         super.moveX(this.speedRatio);
         super.moveY(this.speedRatio);
     }
-	setSpeedBall(speed: number): void {
+	setSpeedBallX(speed: number): void {
 		super.setSpeedX(speed);
+	}
+	setSpeedBallY(speed: number): void {
+		super.setSpeedY(speed);
 	}
 
     getSpeedBall(): number {
