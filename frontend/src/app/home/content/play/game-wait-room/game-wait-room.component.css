@@ -86,3 +86,24 @@ img{
 .ready{
 	opacity: 1;
 }
+.mode{
+	width: 100px;
+	height: 70px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+.enabled{
+	opacity: 1;
+	border-radius: 10px solid #ffffff;
+}
+.enabled:hover{
+	cursor: pointer;
+	border: 4px solid #ffffff;
+	border-radius: 4px;
+}
+.disabled{
+	cursor: not-allowed;
+}
+.op{
+	opacity: 0.3;
+}

@@ -151,8 +151,8 @@ export class HomeComponent implements OnInit {
 		  });
 		this.modal.componentInstance.waitRoom = waitRoom;
 		this.modal.componentInstance.me = this.sharedPreference.userInfo;
-		this.modal.componentInstance.waitRoomEntry.subscribe((reload: any) => {
-			this.modal.componentInstance.waitRoom = this.sharedPreference.game;
+		this.modal.componentInstance.waitRoomEntry.subscribe((data: any) => {
+			this.sharedPreference.game = data;
 		});
 	}
 

@@ -335,9 +335,31 @@ export class PlayGateway {
     }
   }
 
-  @SubscribeMessage(ePlay.ON_CANCEL_MATCH_MAKING)
-  async onCancelMatchMaking(client: any): Promise<void> {
-    const usr = await this.playService.getSessionUser(client);
-    this.matchMaking = this.matchMaking.filter(item => item.login != usr.login);
-  }
+	@SubscribeMessage(ePlay.ON_CANCEL_MATCH_MAKING)
+	async onCancelMatchMaking(client: any): Promise<void> {
+		const usr = await this.playService.getSessionUser(client);
+		this.matchMaking = this.matchMaking.filter(item => item.login != usr.login);
+	}
+	@SubscribeMessage(ePlay.ON_SELECT_PLAY_MODE)
+	async onSelectPlayMode(client: any, data: any): Promise<void> {
+		console.log(data);
+		const me = await this.playService.getSessionUser(client);
+		const room = await this.playService.diselectPlayMode(data, me);
+		if (!room)
+			return ;
+		this.socketService.emitToOne(
+			this.server,
+			ePlay.ON_SELECT_PLAY_MODE,
+			me.login,
+			room.player_1,
+			this.playService.createWaitRoom(room)
+		);
+		this.socketService.emitToOne(
+			this.server,
+			ePlay.ON_SELECT_PLAY_MODE,
+			me.login,
+			room.player_2,
+			this.playService.createWaitRoom(room)
+		);
+	}
 }
