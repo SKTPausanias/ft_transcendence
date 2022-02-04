@@ -8,11 +8,12 @@ export class Paddle extends Moveable {
 
     constructor(height: number,
         width: number,
-        maxSpeed: number,
+        maxSpeedX: number,
+        maxSpeedY: number,
         position: iPosition,
         )
     {
-        super(height, width, maxSpeed, position);
+        super(height, width, maxSpeedX, maxSpeedY, position);
         this.speedRatio = {x: 0, y: 0};
         this.shots = false;
         this.shot_number = 3;
@@ -22,7 +23,8 @@ export class Paddle extends Moveable {
      * Moves object using existing speed ratio
      */
     move() {
-        super.move(this.speedRatio);
+        super.moveX(this.speedRatio);
+        super.moveY(this.speedRatio);
     }
 
     moveUp() {

@@ -5,15 +5,21 @@ export abstract class Moveable {
 
     constructor(private height: number, 
                 private width: number, 
-                private maxSpeed: number, 
+                private maxSpeedX: number,
+				private maxSpeedY: number, 
                 public position: iPosition) {
     }
 
-    move(speedRatio: iSpeedRatio): void {
-        this.position.x += this.maxSpeed * speedRatio.x;
-        this.position.y += this.maxSpeed * speedRatio.y;
-    }
-
+    /*move(speedRatio: iSpeedRatio): void {
+        //this.position.x += this.maxSpeed * speedRatio.x;
+       
+    }*/
+	moveX(speedRatio: iSpeedRatio): void {
+		this.position.x += this.maxSpeedX * speedRatio.x;
+	}
+	moveY(speedRatio: iSpeedRatio): void {
+		this.position.y += this.maxSpeedY * speedRatio.y;
+	}
 	getCollisionBoundaries(): Boundaries {
 		return {
 			top: this.position.y,
@@ -41,16 +47,21 @@ export abstract class Moveable {
 
     setYPosition(position: number): void { this.position.y = position; }
 
-	setSpeed(speed: number) {
-		this.maxSpeed = speed;
+	setSpeedX(speed: number) {
+		this.maxSpeedX = speed;
 	}
 
-	getSpeed(): number {
-		return (this.maxSpeed);
+	setSpeedY(speed: number) {
+		this.maxSpeedY = speed;
 	}
+
+	getSpeedX(): number {
+		return (this.maxSpeedX);
+	}
+
 	speedUp() {
-		console.log("speddball: ", this.maxSpeed);
-		if (this.maxSpeed < 2.5)
-		this.maxSpeed += 0.1;
+		console.log("speddball: ", this.maxSpeedX);
+		if (this.maxSpeedX < 2.5)
+		this.maxSpeedX += 0.1;
 	}
 }
