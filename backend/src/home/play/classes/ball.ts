@@ -7,11 +7,12 @@ export class Ball extends Moveable {
 
     constructor(height: number,
         width: number,
-        maxSpeed: number,
+        maxSpeedX: number,
+        maxSpeedY: number,
         position: iPosition,
         speedRatio: iSpeedRatio)
     {
-        super(height, width, maxSpeed, position);
+        super(height, width, maxSpeedX, maxSpeedY, position);
         this.speedRatio = speedRatio;
         this.oldX = speedRatio.x;
     }
@@ -42,7 +43,9 @@ export class Ball extends Moveable {
     }
 
     setHorizontalSpeedRatio(horizontalSpeedRatio: number): void {
-        this.speedRatio.x = horizontalSpeedRatio;
+        //this.speedRatio.x = horizontalSpeedRatio;
+        console.log(horizontalSpeedRatio);
+        super.setSpeedX(horizontalSpeedRatio);
     }
 
     getHorizontalSpeedRatio(): number {
@@ -53,14 +56,15 @@ export class Ball extends Moveable {
      * Moves object using existing speed ratio
      */
     move() {
-        super.move(this.speedRatio);
+        super.moveX(this.speedRatio);
+        super.moveY(this.speedRatio);
     }
 	setSpeedBall(speed: number): void {
-		super.setSpeed(speed);
+		super.setSpeedX(speed);
 	}
 
     getSpeedBall(): number {
-        return (super.getSpeed());
+        return (super.getSpeedX());
     }
     
 	speedUp(){
