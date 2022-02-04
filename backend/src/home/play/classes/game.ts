@@ -86,8 +86,8 @@ export class Game {
 				this.gameFinished = true;
             this.start = false;
 			this.ball.setVerticalSpeedRatio(0.5);
-            this.ball.setSpeedBallX(0.3);
-            this.ball.setSpeedBallY(0.3);
+            this.ball.setSpeedBallX(1);
+            this.ball.setSpeedBallY(1);
             this.ball.reverseX();
             this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
 		}
@@ -109,10 +109,15 @@ export class Game {
 		this.setVerticalSpeedRatio(this.boundPad_1, this.pad_1);
 		var paddMid = this.boundPad_1.left + this.pad_1.getWidth() / 2;
 		if (this.boundBall.left >= paddMid)
+		{
 			this.hits_p1 = this.reverseX(this.hits_p1);
+			this.boost(this.pad_1);
+		}
 		else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
+		{
 			this.hits_p1 = this.reverseXY(this.hits_p1);
-		this.boost(this.pad_1, 1);
+			this.boost(this.pad_1);
+		}
 		this.speedUp();
 	}
 
@@ -120,22 +125,27 @@ export class Game {
 		this.setVerticalSpeedRatio(this.boundPad_2, this.pad_2);
 		var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 		if (this.boundBall.right <= paddMid)
+		{
 			this.hits_p2 = this.reverseX(this.hits_p2)
-		else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
-		this.hits_p2 = this.reverseXY(this.hits_p2)
-		this.boost(this.pad_2, -1);
+			this.boost(this.pad_2);
+		}
+			else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
+		{
+			this.hits_p2 = this.reverseXY(this.hits_p2)
+			this.boost(this.pad_2);
+		}
 		this.speedUp();	
 	}
 
-	boost(pad: Paddle, dir: number){
+	boost(pad: Paddle){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			this.ball.setHorizontalSpeedRatio(3 * dir);
+			this.ball.setHorizontalSpeedRatio(3);
 			pad.shot_number--;
 			pad.shots = false;
 		}
 		else {
-			this.ball.setHorizontalSpeedRatio(1.5 * dir);
+			this.ball.setHorizontalSpeedRatio(1.5);
 		}
 	}
 	
@@ -161,8 +171,8 @@ export class Game {
 	
 	speedUp(){
 		if (!this.start) {
-			this.ball.setSpeedBallX(2);
-			this.ball.setSpeedBallY(2);
+			this.ball.setSpeedBallX(1.6);
+			this.ball.setSpeedBallY(1.6);
 			this.start = true;
 		}
 		else 
