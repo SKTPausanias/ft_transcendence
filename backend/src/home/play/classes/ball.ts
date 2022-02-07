@@ -44,7 +44,7 @@ export class Ball extends Moveable {
 
     setHorizontalSpeedRatio(horizontalSpeedRatio: number): void {
         //this.speedRatio.x = horizontalSpeedRatio;
-        console.log(horizontalSpeedRatio);
+        //console.log(horizontalSpeedRatio);
         super.setSpeedX(horizontalSpeedRatio);
     }
 

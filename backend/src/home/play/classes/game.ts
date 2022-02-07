@@ -11,10 +11,13 @@ export class Game {
     ball: Ball;
     pad_1: Paddle;
     pad_2: Paddle;
+	obstacle: Paddle;
     boundBall: Boundaries;
     boundPad_1: Boundaries;
     boundPad_2: Boundaries;
+	boundObstacle: Boundaries;
 	padTouch: boolean;
+	obstacleTouch: boolean;
 	score_p1: number;
 	score_p2: number;
 	hits_p1: number;
@@ -35,10 +38,12 @@ export class Game {
         this.ball = new Ball(10, 10, 0.3, 0.3, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
        	this.pad_1 = new Paddle(75, 10, 5000, 5000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 5000, 5000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+		this.obstacle = new Paddle(75, 10, 0, 0, { x: this.cWidth / 2, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
 		this.start = false;
+		this.obstacleTouch = false;
 		this.gameFinished = false;
 		this.max_score = 3;
 
@@ -79,7 +84,8 @@ export class Game {
 		var left_touch = this.ball.getSpeedRatio().x < 0;
         this.boundBall = this.ball.getCollisionBoundaries();
         this.boundPad_1 = this.pad_1.getCollisionBoundaries();
-        this.boundPad_2 = this.pad_2.getCollisionBoundaries();		
+        this.boundPad_2 = this.pad_2.getCollisionBoundaries();
+		this.boundObstacle = this.obstacle.getCollisionBoundaries();		
 
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
@@ -87,12 +93,14 @@ export class Game {
 			if (this.score_p1 == this.max_score || this.score_p2 == this.max_score)
 				this.gameFinished = true;
             this.start = false;
+			this.obstacleTouch = false;
 			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBallX(1);
             this.ball.setSpeedBallY(1);
             this.ball.reverseX();
             this.ball.setPosition({ x: this.cWidth / 2, y: this.cHeight / 2 });
 		}
+		//collision with obstacle in game mode 3
 		else if (this.boundBall.bottom >= this.cHeight || this.boundBall.top <= 0) //top bottom wall collision
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch) // left padd collision
@@ -105,6 +113,10 @@ export class Game {
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 				this.rightPadCollision();
 		}
+		if (this.game_mode == 3 && this.obstacleTouch && 
+			(this.boundBall.top <= this.boundObstacle.bottom && this.boundBall.bottom >= this.boundObstacle.top && 
+			this.boundBall.left <= this.boundObstacle.right && this.boundBall.right >= this.boundObstacle.left))
+			this.crazyCollision();
 	}
 
 	leftPadCollision(){
@@ -113,13 +125,14 @@ export class Game {
 		if (this.boundBall.left >= paddMid)
 		{
 			this.hits_p1 = this.reverseX(this.hits_p1);
-			this.boost(this.pad_1);
+			this.game_mode == 2 ? this.boost(this.pad_1) : null;
 		}
 		else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 		{
 			this.hits_p1 = this.reverseXY(this.hits_p1);
-			this.boost(this.pad_1);
+			this.game_mode == 2 ? this.boost(this.pad_1) : null;
 		}
+		this.obstacleTouch = true;
 		this.speedUp();
 	}
 
@@ -128,14 +141,15 @@ export class Game {
 		var paddMid = this.boundPad_2.left + this.pad_2.getWidth() / 2;
 		if (this.boundBall.right <= paddMid)
 		{
-			this.hits_p2 = this.reverseX(this.hits_p2)
-			this.boost(this.pad_2);
+			this.hits_p2 = this.reverseX(this.hits_p2);
+			this.game_mode == 2 ? this.boost(this.pad_2) : null;
 		}
 			else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
 		{
 			this.hits_p2 = this.reverseXY(this.hits_p2)
-			this.boost(this.pad_2);
+			this.game_mode == 2 ? this.boost(this.pad_2) : null;
 		}
+		this.obstacleTouch = true;
 		this.speedUp();	
 	}
 
@@ -149,6 +163,14 @@ export class Game {
 		else {
 			this.ball.setHorizontalSpeedRatio(1.5);
 		}
+	}
+
+	crazyCollision(){
+		this.obstacleTouch = false;
+		//make the ball go random direction and speed (between 1.5 and 3)
+		this.ball.setHorizontalSpeedRatio(Math.random() * 2 + 1.5);
+		this.ball.setVerticalSpeedRatio(Math.random() * 2 + 1.5);
+		this.ball.setSpeedBallX(Math.random() * 2 + 1.5);
 	}
 	
 	setVerticalSpeedRatio(bound: Boundaries, pad: Paddle)
