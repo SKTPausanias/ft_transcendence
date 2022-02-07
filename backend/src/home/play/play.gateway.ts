@@ -242,7 +242,7 @@ export class PlayGateway {
   async onStartGame(client, data: number) {
     const game = await this.playService.findGameById(data);
     if (game !== undefined) {
-      var gameObj = new Game(game.id);
+      var gameObj = new Game(game.id, game.play_modes[0]);
       this.games.push(gameObj);
       this.server
         .to(client.id)

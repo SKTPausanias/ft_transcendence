@@ -22,8 +22,10 @@ export class Game {
 	start: boolean;
 	gameFinished: boolean;
 	max_score: number;
+	game_mode: number;
 
-    constructor(private id: number) {
+    constructor(private id: number, gameMode: number) {
+		this.game_mode = gameMode;
         this.id = id;
 		this.score_p1 = 0;
 		this.score_p2 = 0;
