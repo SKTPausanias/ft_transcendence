@@ -1,3 +1,4 @@
+import { ePlayMode } from "../ePlay";
 import { BallI, GameI } from "../iPlay";
 import { Ball } from "./ball";
 import { Boundaries } from "./iPosition";
@@ -116,7 +117,7 @@ export class Game {
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 				this.rightPadCollision();
 		}
-		if (this.game_mode == 3 && this.obstacleTouch && 
+		if (this.game_mode == ePlayMode.ANGLE && this.obstacleTouch && 
 			(this.boundBall.top <= this.boundObstacle.bottom && this.boundBall.bottom >= this.boundObstacle.top && 
 			this.boundBall.left <= this.boundObstacle.right && this.boundBall.right >= this.boundObstacle.left))
 			this.crazyCollision();
@@ -128,15 +129,15 @@ export class Game {
 		if (this.boundBall.left >= paddMid)
 		{
 			this.hits_p1 = this.reverseX(this.hits_p1);
-			this.game_mode == 2 ? this.boost(this.pad_1) : null;
+			this.game_mode == ePlayMode.POWER ? this.boost(this.pad_1) : null;
 		}
 		else if (this.boundBall.left >= this.boundPad_1.left && this.boundBall.right <= this.boundPad_1.right)
 		{
 			this.hits_p1 = this.reverseXY(this.hits_p1);
-			this.game_mode == 2 ? this.boost(this.pad_1) : null;
+			this.game_mode == ePlayMode.POWER ? this.boost(this.pad_1) : null;
 		}
 		this.obstacleTouch = true;
-		this.game_mode == 1 ? this.speedUp() : this.speedUp(this.speed);
+		this.game_mode == ePlayMode.CLASIC ? this.speedUp() : this.speedUp(this.speed);
 	}
 
 	rightPadCollision(){
@@ -145,15 +146,15 @@ export class Game {
 		if (this.boundBall.right <= paddMid)
 		{
 			this.hits_p2 = this.reverseX(this.hits_p2);
-			this.game_mode == 2 ? this.boost(this.pad_2) : null;
+			this.game_mode == ePlayMode.POWER ? this.boost(this.pad_2) : null;
 		}
 			else if (this.boundBall.right <= this.boundPad_2.right && this.boundBall.left >= this.boundPad_2.left)
 		{
 			this.hits_p2 = this.reverseXY(this.hits_p2)
-			this.game_mode == 2 ? this.boost(this.pad_2) : null;
+			this.game_mode == ePlayMode.POWER ? this.boost(this.pad_2) : null;
 		}
 		this.obstacleTouch = true;
-		this.game_mode == 1 ? this.speedUp() : this.speedUp(this.speed);
+		this.game_mode == ePlayMode.CLASIC ? this.speedUp() : this.speedUp(this.speed);
 	}
 
 	boost(pad: Paddle){
@@ -208,7 +209,7 @@ export class Game {
 			this.ball.setSpeedBallY(speed);
 			this.start = true;
 		}
-		else if (this.game_mode == 1)
+		else if (this.game_mode == ePlayMode.CLASIC)
 			this.ball.speedUp();
 	}
 }
