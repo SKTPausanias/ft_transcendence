@@ -1,5 +1,5 @@
 .bg-img{
-	background: url("src/assets/img/pong.jpeg");
+	background: url("/assets/img/pong.jpeg");
 	filter: blur(10px);
 	-webkit-filter: blur(10px);
 	height: 600px;

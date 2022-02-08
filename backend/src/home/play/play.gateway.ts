@@ -168,14 +168,15 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_START_STREAM)
   async onStartStream(client, data: WaitRoomI) {
     if (data !== undefined) {
-      const game = await this.playService.findGameById(data.id);
-      //const gameViewers = await this.playService.addViewer(me, data);
-      if (game !== undefined && this.games.length > 0) {
-        var obj = this.games.find((item) => item.getId() == game.id);
-        this.server
-            .to(client.id)
-            .emit(ePlay.ON_START_STREAM, { gameInfo: obj.getMap() });
-     }
+		//const me = await this.playService.getSessionUser(client)
+		const game = await this.playService.findGameById(data.id);
+		//const gameViewers = await this.playService.addViewer(me, data);
+		if (game !== undefined && this.games.length > 0) {
+		var obj = this.games.find((item) => item.getId() == game.id);
+		this.server
+			.to(client.id)
+			.emit(ePlay.ON_START_STREAM, { gameInfo: obj.getMap() });
+		}
     }
   }
 
@@ -186,20 +187,20 @@ export class PlayGateway {
     if (game == undefined) return;
     var gameI = this.playService.createWaitRoom(game);
 
-    this.socketService.emitToOne(
-      this.server,
-      ePlay.ON_WAIT_ROOM_ACCEPT,
-      me.login,
-      game.player_1,
-      gameI
-    );
-    this.socketService.emitToOne(
-      this.server,
-      ePlay.ON_WAIT_ROOM_ACCEPT,
-      me.login,
-      game.player_2,
-      gameI
-    );
+	this.socketService.emitToOne(
+	this.server,
+	ePlay.ON_WAIT_ROOM_ACCEPT,
+	me.login,
+	game.player_1,
+	gameI
+	);
+	this.socketService.emitToOne(
+	this.server,
+	ePlay.ON_WAIT_ROOM_ACCEPT,
+	me.login,
+	game.player_2,
+	gameI
+	);
   }
 
   @SubscribeMessage(ePlay.ON_GAME_END)

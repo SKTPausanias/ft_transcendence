@@ -1,5 +1,5 @@
 .bg{
-	background: linear-gradient( rgba(172, 160, 160, 0.5), rgba(0, 0, 0, 0.5) ), url("src/assets/img/pong.jpeg");
+	background: linear-gradient( rgba(172, 160, 160, 0.5), rgba(0, 0, 0, 0.5) ), url("/assets/img/pong.jpeg");
 	filter: blur(4px);
 	-webkit-filter: blur(4px);
 	height: 300px;

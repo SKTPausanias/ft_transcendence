@@ -68,6 +68,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.gameFinished = data.gameInfo.gameFinished;
+				this.resize();
 				if (data.gameInfo.gameFinished)
 					this.sndWinner.emit(data.gameInfo);
 				if (this.animationFrame == undefined)
@@ -98,7 +99,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 
 	//renders every frame cleaning and drawing the elements
 	renderFrame(): void {
-		this.resize();
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 		this.context?.drawImage(this.modeImg, 0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height)
 		if (this.context != undefined)
@@ -134,8 +134,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		//this.sndWinner.emit();
 	}
 	resize(){
-		
-
 		var padd_ratio_x = this.gameCanvas.nativeElement.width / this.width;
 		var padd_ratio_y = this.gameCanvas.nativeElement.height / this.height;
 		this.width = this.gameCanvas.nativeElement.width;
@@ -144,13 +142,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.resizeVector(this.pad_1, padd_ratio_x, padd_ratio_y);
 		this.resizeVector(this.pad_2, padd_ratio_x, padd_ratio_y);
 		this.resizeVector(this.ball, padd_ratio_x, padd_ratio_y);
-	/* 	var scale = this.width / this.height;
-
-		this.width = this.gameCanvas.nativeElement.width * scale;
-		this.height = this.gameCanvas.nativeElement.height * scale;
-
-		 */
-		//this.pad_2.pos_x = this.gameCanvas.nativeElement.width - 50;
 	}
 	resizeVector(obj: GameMoveableI, rx: number, ry: number)
 	{
@@ -175,7 +166,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.moving_down = true;
 		if (event.code == "Space")
 			this.shoots = true;
-		console.log("Event keyCodeUp space: ", this.shoots);
 	}
 	
 	@HostListener('window:keyup', ['$event'])
@@ -186,7 +176,6 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.moving_down = false;
 		if (event.code == "Space")
 			this.shoots = false;
-		console.log("Event keyCodeDown space: ", this.shoots);
 	}
 	@HostListener('window:resize', ['$event'])
 	onWindowResize(event: KeyboardEvent) {

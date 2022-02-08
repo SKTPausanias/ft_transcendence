@@ -1,9 +1,8 @@
 .cont{
-	width: 80%;
 	text-align: center;
 	margin: auto;
-	border: 1px solid #ffffff;
-	padding: 20px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 h3{
 	margin: 0;
@@ -21,4 +20,9 @@ h3{
 	border: 1px solid #ffffff;
 	background-color: #ffffff;
 	border-radius: 12px;
+	text-align: center;
+}
+#viewers{
+	position: absolute;
+	top: 10px;
 }
