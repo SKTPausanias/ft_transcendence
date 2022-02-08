@@ -26,6 +26,7 @@ export class Game {
 	gameFinished: boolean;
 	max_score: number;
 	game_mode: number;
+	speed: number;
 
     constructor(private id: number, gameMode: number) {
 		this.game_mode = gameMode;
@@ -35,10 +36,10 @@ export class Game {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.padTouch = false;
-        this.ball = new Ball(10, 10, 0.3, 0.3, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(10, 10, 0.5, 0.5, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
        	this.pad_1 = new Paddle(75, 10, 5000, 5000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 5000, 5000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
-		this.obstacle = new Paddle(75, 10, 0, 0, { x: this.cWidth / 2, y: (this.cHeight / 2) });
+		this.obstacle = new Paddle(70, 5, 0, 0, { x: this.cWidth / 2, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
 		this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -46,6 +47,7 @@ export class Game {
 		this.obstacleTouch = false;
 		this.gameFinished = false;
 		this.max_score = 3;
+		this.speed = 2;
 
     }
 
@@ -67,6 +69,7 @@ export class Game {
 			hits_p1: this.hits_p1,
 			hits_p2: this.hits_p2,
 			gameFinished: this.gameFinished,
+			game_mode : this.game_mode
         });
     }
     
@@ -81,7 +84,7 @@ export class Game {
     }
 
 	checkCollisions() {
-		var left_touch = this.ball.getSpeedRatio().x < 0;
+		var left_touch = this.ball.getHorizontalSpeedRatio() < 0;
         this.boundBall = this.ball.getCollisionBoundaries();
         this.boundPad_1 = this.pad_1.getCollisionBoundaries();
         this.boundPad_2 = this.pad_2.getCollisionBoundaries();
@@ -133,7 +136,7 @@ export class Game {
 			this.game_mode == 2 ? this.boost(this.pad_1) : null;
 		}
 		this.obstacleTouch = true;
-		this.speedUp();
+		this.game_mode == 1 ? this.speedUp() : this.speedUp(this.speed);
 	}
 
 	rightPadCollision(){
@@ -150,27 +153,31 @@ export class Game {
 			this.game_mode == 2 ? this.boost(this.pad_2) : null;
 		}
 		this.obstacleTouch = true;
-		this.speedUp();	
+		this.game_mode == 1 ? this.speedUp() : this.speedUp(this.speed);
 	}
 
 	boost(pad: Paddle){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			this.ball.setHorizontalSpeedRatio(3);
+			this.ball.setHorizontalSpeed(3);
 			pad.shot_number--;
 			pad.shots = false;
 		}
 		else {
-			this.ball.setHorizontalSpeedRatio(1.5);
+			this.ball.setHorizontalSpeed(1.5);
 		}
 	}
 
 	crazyCollision(){
+		var dirX = (Math.round(Math.random())) == 1 ? 1 : -1;
+		var dirY = (Math.round(Math.random())) == 1 ? 1 : -1;
 		this.obstacleTouch = false;
+
 		//make the ball go random direction and speed (between 1.5 and 3)
-		this.ball.setHorizontalSpeedRatio(Math.random() * 2 + 1.5);
-		this.ball.setVerticalSpeedRatio(Math.random() * 2 + 1.5);
-		this.ball.setSpeedBallX(Math.random() * 2 + 1.5);
+		this.ball.setHorizontalSpeed((Math.random() * 2 + 1.5)); 
+		this.ball.setVerticalSpeed((Math.random() * 2 + 1.5));
+		this.ball.setHorizontalSpeedRatio(dirX * this.ball.getHorizontalSpeedRatio());
+		this.ball.setVerticalSpeedRatio(dirY * this.ball.getVerticalSpeedRatio());
 	}
 	
 	setVerticalSpeedRatio(bound: Boundaries, pad: Paddle)
@@ -193,13 +200,15 @@ export class Game {
 		return (hit + 1);
 	}
 	
-	speedUp(){
+	speedUp(spd?: number){
+		var speed = spd? spd: 1.6;
 		if (!this.start) {
-			this.ball.setSpeedBallX(1.6);
-			this.ball.setSpeedBallY(1.6);
+			
+			this.ball.setSpeedBallX(speed);
+			this.ball.setSpeedBallY(speed);
 			this.start = true;
 		}
-		else 
+		else if (this.game_mode == 1)
 			this.ball.speedUp();
 	}
 }
