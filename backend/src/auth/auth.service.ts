@@ -27,6 +27,7 @@ export class AuthService {
 
 	async login(usrData: any) {
 		try {
+			usrData.login = usrData.login.toLowerCase();
 			const resp = await this.userService.findByLogin(usrData.login);
 			if (resp === undefined)
 				return (Response.makeResponse(401, {error : "User or password incorrect"})); 
@@ -68,6 +69,8 @@ export class AuthService {
 	async signUp(usrData: UserRegI) {
 		usrData.password = this.hashService.hash(usrData.password);
 		try {
+			usrData.login = usrData.login.toLowerCase();
+			usrData.nickname = usrData.nickname.toLowerCase();
 			const uResp = await this.userService.save(User.getUser(usrData));
 			const code = randomstring.generate(50);
 			const hashedCode = this.hashService.hash(code);

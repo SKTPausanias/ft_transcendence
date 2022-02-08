@@ -243,7 +243,7 @@ export class PlayGateway {
   async onStartGame(client, data: number) {
     const game = await this.playService.findGameById(data);
     if (game !== undefined) {
-      var gameObj = new Game(game.id);
+      var gameObj = new Game(game.id, game.play_modes[0]);
       this.games.push(gameObj);
       this.server
         .to(client.id)
@@ -282,13 +282,13 @@ export class PlayGateway {
 		    obj.checkCollisions();
         obj.ball.move();
         if (data.p1) {
-          if (data.shoots)
+          if (data.shoots && obj.game_mode == 2)
             obj.pad_1.setShoots(data.shoots);
           if (data.up && obj.boundPad_1.top > 0) obj.pad_1.moveUp();
           else if (data.down && obj.boundPad_1.bottom < obj.cHeight)
             obj.pad_1.moveDown();
         } else {
-          if (data.shoots)
+          if (data.shoots && obj.game_mode == 2)
             obj.pad_2.setShoots(data.shoots);
           if (data.up && obj.boundPad_2.top > 0) obj.pad_2.moveUp();
           else if (data.down && obj.boundPad_2.bottom < obj.cHeight)

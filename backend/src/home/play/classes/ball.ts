@@ -43,13 +43,23 @@ export class Ball extends Moveable {
     }
 
     setHorizontalSpeedRatio(horizontalSpeedRatio: number): void {
-        //this.speedRatio.x = horizontalSpeedRatio;
-        console.log(horizontalSpeedRatio);
-        super.setSpeedX(horizontalSpeedRatio);
+        this.speedRatio.x = horizontalSpeedRatio;
+    }
+
+    setVerticalSpeed(horizontalSpeed: number): void {
+        super.setSpeedY(horizontalSpeed);
+    }
+
+    setHorizontalSpeed(horizontalSpeed: number): void {
+        super.setSpeedX(horizontalSpeed);
     }
 
     getHorizontalSpeedRatio(): number {
         return (this.speedRatio.x);
+    }
+
+    getVerticalSpeedRatio(): number {
+        return (this.speedRatio.y);
     }
     
     /**

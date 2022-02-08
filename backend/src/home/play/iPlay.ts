@@ -35,6 +35,7 @@ export interface GameI {
 	hits_p1: number,
 	hits_p2: number,
 	gameFinished: boolean,
+	game_mode: number
 }
 
 export interface GameMoveableI {

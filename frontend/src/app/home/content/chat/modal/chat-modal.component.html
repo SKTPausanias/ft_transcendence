@@ -37,11 +37,11 @@
 			 	<div class="searchbar mx-2">
 					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}..." [ngClass]="{'hide' : type == 'protected'}">
 					<input *ngIf="type == 'protected'" [(ngModel)]="password" class="search_input" type="password" name="" placeholder="Enter password...">
-					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
+					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" data-mdb-toggle="tooltip" title="Find a channel" (click)=onSubmitFriends()></i></span>
 					<span *ngIf="type == 'protected'" class="search_icon"><i class="fas fa-key" (click)=onJoinProtectedRoom()></i></span>
 				</div>
-				<div *ngIf="type != 'member' && type != 'protected'"  class="searchbar d-flex justify-content-center mx-2">
-					<span class="add_icon"><i class="fas fa-plus" (click)='openForm()'></i></span>
+				<div *ngIf="showAddButton && type != 'member' && type != 'protected'" data-mdb-toggle="tooltip" title="Create new channels" (click)='openForm()' class="lens searchbar d-flex justify-content-center mx-2">
+					<span class="add_icon"><i class="fas fa-plus"></i></span>
 				</div>
 			</div>
 		</div>
@@ -61,7 +61,7 @@
 							<span *ngIf="type == 'friend'" class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="chat with this user" (click)="startChat(item)"></span>
 							<span *ngIf="type == 'friend' && isNotFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Start a friendship" (click)="addFriendShip(item)"></span>
 							<span *ngIf="type == 'friend'" class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Request to play pong" (click)="playPong(item)"></span>
-							<span *ngIf="type == 'member'" class="fa fa-plus  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="add to members chat" (click)="addMemberToChat(item)"></span>
+							<span *ngIf="type == 'member'" class="fa fa-plus fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="add to members chat" (click)="addMemberToChat(item)"></span>
 						</div>
 					</div>
 				</div>
@@ -77,7 +77,7 @@
 					</div>
 					<div class="col-3">
 						<div class="h-100 d-flex justify-content-center">
-							<span class="fa fa-sign-in-alt  fa-lg icon-btn float-right" style="margin: auto;" (click)="joinRoom(item)"></span>
+							<span class="fa fa-sign-in-alt fa-lg icon-btn float-right" style="margin: auto;" (click)="joinRoom(item)"></span>
 						</div>
 					</div>
 				</div>

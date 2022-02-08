@@ -56,6 +56,13 @@
 	color: #e74c3c;
 }
 
+.lens{
+	cursor: none;
+}
+.lens:hover{
+	cursor: pointer;
+}
+
 .search_icon{
 	height: 40px;
 	width: 40px;
