@@ -160,7 +160,9 @@ export class ChatModalComponent implements OnInit {
 		{
 			if (this.searchInput.nativeElement.value.length > 0)
 				this.searchResult = await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value);
-				this.searchResult = this.searchResult.filter(item => item.login != "nobody");
+			else
+			this.searchResult = await this.dashboardService.searchUsers(this.session, "%");
+			this.searchResult = this.searchResult.filter(item => item.login != "nobody");
 			this.filterSearchResults();
 		}
 		else 

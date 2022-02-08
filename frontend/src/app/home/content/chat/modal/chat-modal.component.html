@@ -37,10 +37,10 @@
 			 	<div class="searchbar mx-2">
 					<input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}..." [ngClass]="{'hide' : type == 'protected'}">
 					<input *ngIf="type == 'protected'" [(ngModel)]="password" class="search_input" type="password" name="" placeholder="Enter password...">
-					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" (click)=onSubmitFriends()></i></span>
+					<span *ngIf="type != 'protected'" class="search_icon"><i class="fas fa-search" data-mdb-toggle="tooltip" title="Find a channel" (click)=onSubmitFriends()></i></span>
 					<span *ngIf="type == 'protected'" class="search_icon"><i class="fas fa-key" (click)=onJoinProtectedRoom()></i></span>
 				</div>
-				<div *ngIf="type != 'member' && type != 'protected'" (click)='openForm()' class="lens searchbar d-flex justify-content-center mx-2">
+				<div *ngIf="showAddButton && type != 'member' && type != 'protected'" data-mdb-toggle="tooltip" title="Create new channels" (click)='openForm()' class="lens searchbar d-flex justify-content-center mx-2">
 					<span class="add_icon"><i class="fas fa-plus"></i></span>
 				</div>
 			</div>
