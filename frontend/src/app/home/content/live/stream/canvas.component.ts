@@ -33,11 +33,13 @@ export class CanvasComponent implements OnInit {
 	width: number;
 	height: number;
 	modeImg = new Image();
+	circleImg = new Image();
 	cont: any;
 	p1_score: number;
 	p2_score: number;
 	hits_p1: number;
 	hits_p2: number;
+	game_mode: number;
 	
 	constructor(private liveService: LiveService,
 				private location: Location,
@@ -59,7 +61,8 @@ export class CanvasComponent implements OnInit {
 		this.isStreaming = true;
 		this.context = this.liveCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("liveCanvasCtn");
-		this.setModeImage();		
+		this.setModeImage();	
+		this.circleImg.src = "/assets/img/play_modes/mid_circle.png";	
 		if (this.cont != undefined)
 		{
 			this.liveCanvas.nativeElement.width = this.cont.clientWidth;
@@ -86,7 +89,17 @@ export class CanvasComponent implements OnInit {
 		this.context?.fillRect(this.width - 10, this.height-10, 5, 5);
 		this.context?.fillRect(10, 10, 5, 5);
 		this.context?.fillRect(10, this.height -10, 5, 5);
-		this.context?.fillRect(this.width - 10, 10, 5, 5);
+		this.context?.fillRect(this.width - 10, 10, 5, 5);if (this.game_mode == ePlayMode.ANGLE) {
+			var d = this.pad_1.height * 2.5;
+			var x = (this.width / 2) - (d / 2);
+			var y = (this.height / 2) - (d / 2);
+			//this.context?.beginPath();	
+			//this.context?.arc(this.width /2, this.height /2, this.pad_1.height, 0, 2 * Math.PI, false);
+			this.context?.drawImage(this.circleImg, x, y, d, d)
+			//this.context?.beginPath();
+			this.context?.fill();
+
+		}
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
 		});
@@ -104,6 +117,7 @@ export class CanvasComponent implements OnInit {
 				this.p2_score = data.gameInfo.score_p2;
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
+				this.game_mode = data.gameInfo.game_mode;
 				if (this.animationFrame == undefined)
 					this.renderFrame();
 			}

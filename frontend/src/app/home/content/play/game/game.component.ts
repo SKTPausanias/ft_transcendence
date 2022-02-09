@@ -97,7 +97,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("canvasCtn");
 		this.setModeImage();
-		this.circleImg.src = "/assets/img/logo.png"
+		this.circleImg.src = "/assets/img/play_modes/mid_circle.png"
 		if (this.cont != undefined)
 		{
 			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
