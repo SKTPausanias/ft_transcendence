@@ -38,8 +38,8 @@ export class Game {
 		this.hits_p2 = 0;
 		this.padTouch = false;
         this.ball = new Ball(10, 10, 0.5, 0.5, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
-       	this.pad_1 = new Paddle(75, 10, 5000, 5000, { x: 50, y: (this.cHeight / 2) });
-	    this.pad_2 = new Paddle(75, 10, 5000, 5000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
+       	this.pad_1 = new Paddle(75, 10, 10000, 10000, { x: 50, y: (this.cHeight / 2) });
+	    this.pad_2 = new Paddle(75, 10, 10000, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
 		this.obstacle = new Paddle(70, 5, 0, 0, { x: this.cWidth / 2, y: (this.cHeight / 2) });
         this.boundBall = this.ball.getCollisionBoundaries();
 		this.boundPad_1 = this.pad_1.getCollisionBoundaries();
@@ -47,7 +47,7 @@ export class Game {
 		this.start = false;
 		this.obstacleTouch = false;
 		this.gameFinished = false;
-		this.max_score = 3;
+		this.max_score = 10;
 		this.speed = 2;
 
     }
@@ -170,15 +170,17 @@ export class Game {
 	}
 
 	crazyCollision(){
+
+		console.log("crazy coolition");
 		var dirX = (Math.round(Math.random())) == 1 ? 1 : -1;
 		var dirY = (Math.round(Math.random())) == 1 ? 1 : -1;
 		this.obstacleTouch = false;
 
 		//make the ball go random direction and speed (between 1.5 and 3)
-		this.ball.setHorizontalSpeed((Math.random() * 2 + 1.5)); 
-		this.ball.setVerticalSpeed((Math.random() * 2 + 1.5));
+		this.ball.setHorizontalSpeed((Math.random() * 2 + 2.5)); 
+		this.ball.setVerticalSpeed((Math.random() * 2 + 2.5));
 		this.ball.setHorizontalSpeedRatio(dirX * this.ball.getHorizontalSpeedRatio());
-		this.ball.setVerticalSpeedRatio(dirY * this.ball.getVerticalSpeedRatio());
+		this.ball.setVerticalSpeedRatio(dirY * this.ball.getVerticalSpeedRatio() + 1.8);
 	}
 	
 	setVerticalSpeedRatio(bound: Boundaries, pad: Paddle)
