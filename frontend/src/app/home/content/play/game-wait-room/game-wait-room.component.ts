@@ -84,7 +84,8 @@ export class GameWaitRoomComponent implements OnInit, OnDestroy {
 		let intervalId = setInterval(() => {
 			var timeLeft = (this.waitRoom.expires - mDate.timeNowInSec());
 			timeLeft < 0 ? (timeLeft = 0) : 0;
-			this.timer = "0:" + (timeLeft < 10 ? "0" :"") + timeLeft;
+			this.timer = "" + timeLeft;
+			//this.timer = "0:" + (timeLeft < 10 ? "0" :"") + timeLeft;
 			this.waitRoomEntry.emit(this.waitRoom);
 			if (counter-- == 0 ||  mDate.expired(this.waitRoom.expires) || this.isRejected())
 			{
