@@ -2,20 +2,22 @@
 <div class="cont vh-100">
 	<div *ngIf="!games.length">There is no games in progress</div>
     <div *ngIf='!isStreaming' [ngClass]="{'d-flex justify-content-center scrool' : games.length > 3}">
-		<div *ngFor='let game of games' [ngClass]="{'text-center' : games.length > 3}">
-			<div class="game bg-img" (click)="startStreaming(game)">
-				<div class="p-info">
-					<h5 class="">{{game.player1.nickname}}</h5>
+		<div class="row mx-2 pt-4">
+			<div *ngFor='let game of games' [ngClass]="{'text-center' : games.length > 3}" class="game">
+				<div class="bg-img" (click)="startStreaming(game)">
+					<div class="p-info">
+						<h5 class="">{{game.player1.nickname}}</h5>
+					</div>
+					<div class="mode">
+						<img *ngIf="game.play_modes[0] == 1" src="/assets/img/play_modes/Clasic.png" alt="">
+						<img *ngIf="game.play_modes[0] == 2" src="/assets/img/play_modes/Power.png" alt="">
+						<img *ngIf="game.play_modes[0] == 3" src="/assets/img/play_modes/Angle.png" alt="">
+					</div>
+					<div class="p-info">
+						<h5>{{game.player2.nickname}}</h5>
+					</div>		
 				</div>
-				<div class="mode">
-					<img *ngIf="game.play_modes[0] == 1" src="/assets/img/play_modes/Clasic.png" alt="">
-					<img *ngIf="game.play_modes[0] == 2" src="/assets/img/play_modes/Power.png" alt="">
-					<img *ngIf="game.play_modes[0] == 3" src="/assets/img/play_modes/Angle.png" alt="">
-				</div>
-				<div class="p-info">
-					<h5>{{game.player2.nickname}}</h5>
-				</div>		
-			</div>	
+			</div>
 		</div>
     </div>
     <div *ngIf='isStreaming'>
