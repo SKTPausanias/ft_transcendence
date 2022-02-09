@@ -18,8 +18,9 @@ export class CanvasComponent implements OnInit {
 	@Input() game: WaitRoomI;
 	@Output() sndEvent = new EventEmitter<boolean>();
  
+	liveDataEmitter: EventEmitter<any>;
+	
 	isStreaming: boolean = false;
-
 	liveEventReciver: any;
 	session = this.sQuery.getSessionToken();
 	streaming: WaitRoomI = <WaitRoomI>{};
@@ -44,10 +45,11 @@ export class CanvasComponent implements OnInit {
 	constructor(private liveService: LiveService,
 				private location: Location,
 				private sQuery: SessionStorageQueryService,
-		private playService: PlayService) {
+				private playService: PlayService) {
 			this.width = 0;
 			this.height = 0;
 			console.log(this.game);
+			
 		}
 
 	ngOnInit(): void {
@@ -55,6 +57,7 @@ export class CanvasComponent implements OnInit {
 		this.height = 0;
 		this.location.replaceState(this.location.path().split('?')[0], '');
 		this.streaming = this.game;
+		 
 	}
 
 	ngAfterViewInit(){

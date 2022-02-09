@@ -59,6 +59,7 @@ export class LiveComponent implements OnInit {
    
    initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
+			console.log("Update games streaming", data);
 			if (data.games)
 				this.games = data.games;
 			if (this.games.find(item => item.id == this.streaming.id) == undefined)

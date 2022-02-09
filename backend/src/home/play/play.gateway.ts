@@ -168,9 +168,9 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_START_STREAM)
   async onStartStream(client, data: WaitRoomI) {
     if (data !== undefined) {
-		//const me = await this.playService.getSessionUser(client)
+		const me = await this.playService.getSessionUser(client)
 		const game = await this.playService.findGameById(data.id);
-		//const gameViewers = await this.playService.addViewer(me, data);
+		const gameViewers = await this.playService.addViewer(me, data);
 		if (game !== undefined && this.games.length > 0) {
 		var obj = this.games.find((item) => item.getId() == game.id);
 		this.server
@@ -242,12 +242,18 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_START_GAME)
   async onStartGame(client, data: number) {
     const game = await this.playService.findGameById(data);
+    const me = await this.playService.getSessionUser(client);
     if (game !== undefined) {
       var gameObj = new Game(game.id, game.play_modes[0]);
       this.games.push(gameObj);
       this.server
         .to(client.id)
         .emit(ePlay.ON_START_GAME, { gameInfo: gameObj.getMap() });
+      this.server.emit(
+        ePlay.ON_GET_LIVE_GAMES,
+        me.login,
+        await this.playService.onGetLiveGames()
+      );
     }
   }
 
