@@ -1,13 +1,24 @@
 <div class="cont vh-100">
-
 	<div *ngIf="playPreference.game != undefined && playPreference.game.ready" >
 		<app-game class="ms-3 " [prefs]="playPreference" (sndWinner)="rcvWinner($event)"></app-game>
 	</div>
 	<div *ngIf="playPreference.game == undefined || !playPreference.game.ready">
-		<h1>NO GAME IN PROGRESS</h1>
-		<div>
-			<button (click)='matchMaking()'>Play random</button>
-			<button (click)='cancelMatchMaking()'>Play random</button>
+		<div id="quick-play-ctn" class="d-flex justify-content-center">
+			<div  id="quick-play">
+				<div *ngIf="waiting" class="row mb-2">
+					<div class="col-5">
+						<img src="{{playPreference.userInfo.avatar}}" class="img img-fluid ico_m" alt="">
+					</div>
+					<div class="col-2"> <h3 style="line-height: 80px;">vs</h3></div>
+					<div class="col-5">
+						<img src="/assets/img/logo.png" class="img img-fluid ico_m" id="oponent" alt="">
+					</div>
+				</div>
+				<button  (click)='matchMaking()' [ngClass]="{'waiting' : waiting, 'play' : !waiting}">{{btnTxt}}</button>
+				<i><small class="mt-3">Online users: 500</small></i>
+			</div>
+			<!--
+			<button (click)='cancelMatchMaking()'>Cancel random</button> -->
 		</div>
 	</div>
 </div>

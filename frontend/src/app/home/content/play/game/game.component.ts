@@ -43,6 +43,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	gameFinished: boolean = false;
 	cont: any;
 	modeImg = new Image();
+	circleImg = new Image();
 	game_mode: number;
 
 	/* 
@@ -96,6 +97,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("canvasCtn");
 		this.setModeImage();
+		this.circleImg.src = "/assets/img/logo.png"
 		if (this.cont != undefined)
 		{
 			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
@@ -104,7 +106,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.playService.emit(ePlay.ON_START_GAME, this.prefs.game.id);
 		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
-		}, 10);
+		}, 20);
 	}
 
 	//renders every frame cleaning and drawing the elements
@@ -114,11 +116,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context?.drawImage(this.modeImg, 0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height)
 		if (this.context != undefined)
 			this.context.fillStyle = '#ffffff';
-		if (this.game_mode == ePlayMode.ANGLE) {
-			this.context?.arc(this.width /2, this.height /2, this.pad_1.height, 0, 2 * Math.PI, false);
-			//this.context?.fillStyle = 'white';
-			this.context?.fill();
-		}
+		
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
@@ -126,6 +124,17 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.context?.fillRect(10, 10, 5, 5);
 		this.context?.fillRect(10, this.height -10, 5, 5);
 		this.context?.fillRect(this.width - 10, 10, 5, 5);
+		if (this.game_mode == ePlayMode.ANGLE) {
+			var d = this.pad_1.height * 2.5;
+			var x = (this.width / 2) - (d / 2);
+			var y = (this.height / 2) - (d / 2);
+			//this.context?.beginPath();	
+			//this.context?.arc(this.width /2, this.height /2, this.pad_1.height, 0, 2 * Math.PI, false);
+			this.context?.drawImage(this.circleImg, x, y, d, d)
+			//this.context?.beginPath();
+			this.context?.fill();
+
+		}
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
 		});

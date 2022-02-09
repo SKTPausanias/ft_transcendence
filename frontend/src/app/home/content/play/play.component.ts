@@ -12,17 +12,28 @@ import { GameI } from "src/app/shared/interface/iPlay";
 })
 export class PlayComponent implements OnInit {
 	@Input() playPreference: SharedPreferencesI;
+	waiting: boolean = false;
+	btnTxt: string = "Quick Play";
+	gameWinnerEmiter: any;
+	matchMakingEmiter: any;
 	constructor(private router: Router, private playService: PlayService) {
 	//
 	}
 
 	ngOnInit(): void {
-		this.playService.gameWinnerEmiter.subscribe((data: any) => {
+		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
 			console.log("Winner from playComponent", data);
+		});
+		this.matchMakingEmiter = this.playService.matchMakingEmiter.subscribe((data: any) => {
+			console.log("Wait ROOm emiter", data);
+			this.waiting = false;
+			this.btnTxt = "Quick Play";
 		});
 	}
 
 	ngOnDestroy(): void {
+		this.gameWinnerEmiter.unsubscribe();
+		this.matchMakingEmiter.unsubscribe();
 	}
 	rcvWinner(game: GameI){
 		if (game.gameFinished)
@@ -37,9 +48,15 @@ export class PlayComponent implements OnInit {
 		this.playPreference.game = <WaitRoomI>{};
 	}
 	matchMaking(): void {
-		this.playService.emit(ePlay.ON_MATCH_MAKING)
+	/* 	if (!this.waiting)
+			this.playService.emit(ePlay.ON_MATCH_MAKING)
+		else
+			this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING); */
+		this.waiting ? this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING) : this.playService.emit(ePlay.ON_MATCH_MAKING);
+		this.waiting = this.waiting != true;
+		this.btnTxt = !this.waiting ? "Quick Play" : "Cancel";
+
 	}
 	cancelMatchMaking(): void {
-		this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING);
 	}
 }

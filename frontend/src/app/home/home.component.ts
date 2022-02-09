@@ -141,6 +141,7 @@ export class HomeComponent implements OnInit {
 
 	private openGameWaitRoom(waitRoom: WaitRoomI)
 	{
+		this.playService.matchMakingEmiter.emit();
 		this.waitRoomStatus = waitRoom;
 		this.modal = this.modalService.open(GameWaitRoomComponent, {
 			centered: false,

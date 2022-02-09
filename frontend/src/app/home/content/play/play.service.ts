@@ -13,6 +13,7 @@ export class PlayService {
 	liveDataEmiter: EventEmitter<any>;
 	gameDataEmiter: EventEmitter<any>;
 	gameWinnerEmiter: EventEmitter<any>;
+	matchMakingEmiter: EventEmitter<any>;
 	private socket: Socket;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
@@ -21,6 +22,7 @@ export class PlayService {
 		this.liveDataEmiter = new EventEmitter<any>();
 		this.gameDataEmiter = new EventEmitter<any>();
 		this.gameWinnerEmiter = new EventEmitter<any>();
+		this.matchMakingEmiter = new EventEmitter<any>();
 	}
 
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
