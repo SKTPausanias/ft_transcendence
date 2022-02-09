@@ -12,7 +12,7 @@ import { ePlay } from 'src/app/shared/ft_enums';
 import { SocketService } from '../../../socket.service';
 import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
-import { BallI, GameDataI, GameI, GameMoveableI, PadI } from 'src/app/shared/interface/iPlay';
+import { BallI, GameDataI, GameI, GameMoveableI, MapI, PadI } from 'src/app/shared/interface/iPlay';
 import { ePlayMode } from 'src/app/shared/enums/ePlay';
 
 @Component({
@@ -156,8 +156,28 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
 	}
 	cancelGame() {
-		//this.sndWinner.emit();
+		var gameInfo: GameI = <GameI>{};
+		gameInfo.map = <MapI>{};
+		gameInfo.map.width = this.width;
+		gameInfo.map.height = this.height;
+		gameInfo.ball = this.ball;
+		gameInfo.pad_1 = this.pad_1;
+		gameInfo.pad_2 = this.pad_2;
+		//check if i am player 1
+		if (this.prefs.game.player1.login == this.prefs.userInfo.login) {
+			gameInfo.score_p1 = 0;
+			gameInfo.score_p2 = 3;
+		}
+		else {
+			gameInfo.score_p1 = 3;
+			gameInfo.score_p2 = 0;
+		}
+		gameInfo.hits_p1 = this.hits_p1;
+		gameInfo.hits_p2 = this.hits_p2;
+		gameInfo.gameFinished = true;
+		this.sndWinner.emit(gameInfo);
 	}
+
 	resize(){
 		var padd_ratio_x = this.gameCanvas.nativeElement.width / this.width;
 		var padd_ratio_y = this.gameCanvas.nativeElement.height / this.height;
