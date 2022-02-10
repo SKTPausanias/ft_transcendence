@@ -1,16 +1,14 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Session } from "inspector";
-import { SessionEntity } from "src/session/session.entity";
 import { SessionService } from "src/session/session.service";
 import { mDate } from "src/shared/utils/date";
 import { SocketService } from "src/socket/socket.service";
-import { In, Like, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { UserEntity } from "../user/user.entity";
 import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
-import { ePlay, eRequestPlayer } from "./ePlay";
+import { eRequestPlayer } from "./ePlay";
 import { GameI, PlayerI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
 import { Response } from "src/shared/response/responseClass";
@@ -18,7 +16,7 @@ import { StatsEntity } from "./stats.entity";
 
 @Injectable()
 export class PlayService {
-    constructor(@InjectRepository(UserEntity)
+	constructor(@InjectRepository(UserEntity)
                 private userRepository: Repository<UserEntity>,
 				@InjectRepository(StatsEntity)
                 private statsRepository: Repository<StatsEntity>,
@@ -30,42 +28,38 @@ export class PlayService {
 				private sessionService: SessionService){}
 
 
-  async getSession(client: any) {
-    try {
-      const token = client.handshake.headers.authorization.split(" ")[1];
-      const session = await this.sessionService.findSessionWithRelation(token);
-      return session;
-    } catch (error) { }
-  }
+	async getSession(client: any): Promise<any> {
+		try {
+			const token = client.handshake.headers.authorization.split(" ")[1];
+			const session = await this.sessionService.findSessionWithRelation(token);
+			return session;
+		} catch (error) {}
+	}
   
-  async getSessionUser(client: any) {
-    try {
-      const session = await this.getSession(client);
-      return session.userID;
-    } catch (error) { }
-  }
+	async getSessionUser(client: any): Promise<any> {
+		try {
+		const session = await this.getSession(client);
+		return session.userID;
+		} catch (error) {}
+	}
     
     async newInviation(me: UserEntity, oponent: UserPublicInfoI): Promise<UserEntity>{
         try {
-        
-        const opUsr = await this.userService.findByLogin(oponent.login);
-        
-        /*Checks if invitation exists */
-        const invitation = await this.playRepository.findOne({where: [
-            {player_1: me.id, player_2: opUsr.id},
-            {player_2: me.id, player_1: opUsr.id}
-        ]});
-        if (invitation !== undefined)
-            return (null);
-            await this.playRepository.insert({player_1: me, player_2: opUsr});
-        return (opUsr);
-        } catch(e){
-            console.log(e);
+        	const opUsr = await this.userService.findByLogin(oponent.login);
+        	/*Checks if invitation exists */
+        	const invitation = await this.playRepository.findOne({where: [
+            	{player_1: me.id, player_2: opUsr.id},
+            	{player_2: me.id, player_1: opUsr.id}
+        	]});
+			if (invitation !== undefined)
+				return (null);
+			await this.playRepository.insert({player_1: me, player_2: opUsr});
+			return (opUsr);
+        } catch(e) {
             return (null);
         }
     }
   
-
 	async getAllGameInvitations(user: UserEntity): Promise<UserPublicInfoI[]>
 	{
 		var userProfiles: UserPublicInfoI[] = [];
@@ -85,7 +79,7 @@ export class PlayService {
 		const invitation = await this.playRepository.findOne({
 			relations: ["player_1", "player_2", "viewers"],
 			where: {player_1: usrEntity.id, player_2: me.id}
-		})
+		});
 		invitation.confirmed = true;
 		invitation.p2_status = eRequestPlayer.ACCEPTED;
 		invitation.expiration_time = mDate.setExpirationTime(Number(process.env.WAIT_ROOM_EXPIRES));
@@ -96,27 +90,28 @@ export class PlayService {
 				{player_2: invitation.player_2.id, confirmed: true},
 				{player_1: invitation.player_2.id, confirmed: true}
 			]
-		})
+		});
 		if (tmp.length > 0)
 			return (null);
 		await this.playRepository.save(invitation);
 		return (invitation);
 	}
-	async declineGameInvitation(me: UserEntity, user: UserPublicInfoI){
+
+	async declineGameInvitation(me: UserEntity, user: UserPublicInfoI): Promise<void>{
 		const usrEntity = await this.userService.findByLogin(user.login);
 		const invitation = await this.playRepository.findOne({
 			where: {player_1: usrEntity.id, player_2: me.id}
-		})
+		});
 		if (invitation !== undefined)
 			await this.playRepository.delete(invitation);
 	}
 
-	async removePlayRoom(waitRoom: WaitRoomI)
+	async removePlayRoom(waitRoom: WaitRoomI): Promise<void>
 	{
 		const playRoom = await this.playRepository.findOne({
 			relations: ["player_1", "player_2"],
 			where: {id: waitRoom.id}
-		})
+		});
 		if (playRoom !== undefined)
 		{
 			playRoom.player_1.in_game = false;
@@ -132,19 +127,14 @@ export class PlayService {
 		console.log("accepting");
 		const invitation = await this.playRepository.findOne({
 			relations: ["player_1", "player_2", "viewers"],
-			where: {id: waitRoom.id}
-		})
+			where: { id: waitRoom.id }
+		});
 		if (invitation.player_1.login == me.login)
 			invitation.p1_status = eRequestPlayer.ACCEPTED;
 		else
 			invitation.p2_status = eRequestPlayer.ACCEPTED;
 		if (invitation.p1_status == eRequestPlayer.ACCEPTED && invitation.p2_status == eRequestPlayer.ACCEPTED)
 			invitation.selecting = invitation.player_1.nickname;
-		//	invitation.ready = true;
-		//invitation.player_1.in_game = true;
-		//invitation.player_2.in_game = true;
-		//await this.userService.changeInGameStatus(invitation.player_1);
-		//await this.userService.changeInGameStatus(invitation.player_2);
 		await this.playRepository.save(invitation);
 		return(invitation);
 	}
@@ -157,7 +147,7 @@ export class PlayService {
 				{player_1: me.id, confirmed: true},
 				{player_2: me.id, confirmed: true}
 			]
-		})
+		});
 		return (playRoom);
 	}
 
@@ -199,15 +189,15 @@ export class PlayService {
 		var game = await this.playRepository.findOne({
 			relations: ["player_1", "player_2", "viewers"],
 			where: {id: gameRoom.id}
-		})
+		});
 		if (game == undefined)
 			return (game);
 		game.viewers = game.viewers.filter(item => item.login != viewer.login);
 		await this.playRepository.save(game);
 		return (game);
 	}
-	
-	async getGame(token: string, user: UserPublicInfoI)
+
+	async getGame(token: string, user: UserPublicInfoI): Promise<any>
 	{
 		try {
 			const session = await this.sessionService.findSessionWithRelation(token);
@@ -220,7 +210,7 @@ export class PlayService {
 					{player_1 : usrEntity.id, ready: true},
 					{player_2 : usrEntity.id, ready: true},
 				]
-			})
+			});
 			return (Response.makeResponse(200, this.createWaitRoom(game)));
 		}
 		catch (error) {
@@ -229,13 +219,13 @@ export class PlayService {
 		}
 	}
 
-	async findGameById(id: number)
+	async findGameById(id: number): Promise<PlayEntity|undefined>
 	{
 		try {
 			const game = await this.playRepository.findOne({
 				relations: ["player_1", "player_2", "viewers"],
 				where: {id: id}
-			})
+			});
 			return (game);
 		}
 		catch (error) {
@@ -243,7 +233,7 @@ export class PlayService {
 		}
 	}
 
-	async endGame(obj: GameI, game: WaitRoomI)
+	async endGame(obj: GameI, game: WaitRoomI): Promise<void>
 	{
 		var stats = <StatsEntity>{};
 		stats.player_1 = game.player1.nickname;
@@ -294,7 +284,7 @@ export class PlayService {
 			viewers: invitation.viewers,
 			selecting: invitation.selecting,
 			play_modes: invitation.play_modes
-		})
+		});
 	}
 
 	public	createPlayer(user: UserEntity, status: string): PlayerI
@@ -305,7 +295,7 @@ export class PlayService {
 			login: user.login,
 			avatar : user.avatar,
 			status : status
-		})
+		});
 	}
 
 	/** Get live games for controler. Can be deleted */
@@ -362,7 +352,6 @@ export class PlayService {
 				room.ready = true;
 			await this.playRepository.save(room);
 			return (room)
-		} catch (error) {	
-		}
+		} catch (error) {}
 	}
 }

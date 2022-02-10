@@ -9,8 +9,8 @@
 
 import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, Input, HostListener, ɵAPP_ID_RANDOM_PROVIDER, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { ePlay } from 'src/app/shared/ft_enums';
-import { SocketService } from '../../../socket.service';
-import { SharedPreferencesI, WaitRoomI } from 'src/app/shared/ft_interfaces';
+import { LiveService } from '../../live/live.service';
+import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { PlayService } from '../play.service';
 import { BallI, GameDataI, GameI, GameMoveableI, MapI, PadI } from 'src/app/shared/interface/iPlay';
 import { ePlayMode } from 'src/app/shared/enums/ePlay';
@@ -25,6 +25,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@Input() prefs: SharedPreferencesI;
 	@Output() sndWinner = new EventEmitter<GameI>();
 	context: CanvasRenderingContext2D | null;
+	liveViewerReciver: any;
+	viewers: number;
 	ball: BallI;
 	pad_1: PadI;
 	pad_2: PadI;
@@ -45,16 +47,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	modeImg = new Image();
 	circleImg = new Image();
 	game_mode: number;
-
-	/* 
-      context.fillStyle = 'green';
-      context.fill();
-      context.lineWidth = 5;
-      context.strokeStyle = '#003300';
-      context.stroke();
- */
 	
-	constructor(private socketService: SocketService,
+	constructor(private liveService: LiveService,
 		private playService: PlayService) {
 		this.width = 0;
 		this.height = 0;
@@ -63,6 +57,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.p2_score = 0;
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
+		this.viewers = 0;
 		
 	}
 
@@ -87,13 +82,15 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			}
 		});
 	}
-	ngOnDestroy(): void {
-		clearInterval(this.movableInterval);
-		window.cancelAnimationFrame(this.animationFrame);
-	}
-
+	
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
+		this.liveViewerReciver = this.liveService.liveViewersEmitter.subscribe((data: any)=>{
+			console.log("entering on subscribe:", data);
+			this.viewers = data
+		});
+		console.log("refreshing game: ", this.prefs.game);
+		this.liveService.emit(ePlay.ON_GET_LIVE_VIEWERS, this.prefs.game);
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("canvasCtn");
 		this.setModeImage();
@@ -107,6 +104,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.movableInterval = setInterval(() => {
 			this.emitMoveable();
 		}, 20);
+	}
+
+	ngOnDestroy(): void {
+		clearInterval(this.movableInterval);
+		window.cancelAnimationFrame(this.animationFrame);
+		this.liveViewerReciver.unsubscribe();
 	}
 
 	//renders every frame cleaning and drawing the elements
@@ -140,22 +143,23 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		});
 	}
 
-	emitMoveable() {
-		if (this.gameFinished)
+	emitMoveable(): void {
+		if (!this.gameFinished)
 		{
-			clearInterval(this.movableInterval);
-			return;
+			var gameData: GameDataI = <GameDataI>{};
+			gameData.id = this.prefs.game.id;
+			gameData.up = this.moving_up;
+			gameData.down = this.moving_down;
+			gameData.shoots = this.shoots;
+			gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
+			/* !gameFinished */
+			this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
 		}
-		var gameData: GameDataI = <GameDataI>{};
-		gameData.id = this.prefs.game.id;
-		gameData.up = this.moving_up;
-		gameData.down = this.moving_down;
-		gameData.shoots = this.shoots;
-		gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
-		/* !gameFinished */
-		this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
+		else
+			clearInterval(this.movableInterval);
 	}
-	cancelGame() {
+
+	cancelGame(): void {
 		var gameInfo: GameI = <GameI>{};
 		gameInfo.map = <MapI>{};
 		gameInfo.map.width = this.width;
@@ -178,7 +182,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.sndWinner.emit(gameInfo);
 	}
 
-	resize(){
+	resize(): void {
 		var padd_ratio_x = this.gameCanvas.nativeElement.width / this.width;
 		var padd_ratio_y = this.gameCanvas.nativeElement.height / this.height;
 		this.width = this.gameCanvas.nativeElement.width;
@@ -188,14 +192,15 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.resizeVector(this.pad_2, padd_ratio_x, padd_ratio_y);
 		this.resizeVector(this.ball, padd_ratio_x, padd_ratio_y);
 	}
-	resizeVector(obj: GameMoveableI, rx: number, ry: number)
-	{
+
+	resizeVector(obj: GameMoveableI, rx: number, ry: number): void {
 		obj.width *= rx;
 		obj.height *= ry;
 		obj.pos_x *= rx;
 		obj.pos_y *= ry;
 	}
-	setModeImage(){
+
+	setModeImage(): void {
 		if (this.prefs.game.play_modes[0] == ePlayMode.CLASIC)
 			this.modeImg.src = '/assets/img/play_modes/clasic_mode.png';
 		else if (this.prefs.game.play_modes[0] == ePlayMode.POWER)
@@ -203,8 +208,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		else if (this.prefs.game.play_modes[0] == ePlayMode.ANGLE)
 			this.modeImg.src = '/assets/img/play_modes/angle_mode.png';
 	}
+
 	@HostListener('window:keydown', ['$event'])
-	keyUp(event: KeyboardEvent) {
+	keyUp(event: KeyboardEvent): void {
 		if (event.code == "ArrowUp")
 			this.moving_up = true;
 		if (event.code == "ArrowDown")
@@ -214,7 +220,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	}
 	
 	@HostListener('window:keyup', ['$event'])
-	keyDown(event: KeyboardEvent) {
+	keyDown(event: KeyboardEvent): void {
 		if (event.code == "ArrowUp")
 			this.moving_up = false;
 		if (event.code == "ArrowDown")
@@ -222,8 +228,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		if (event.code == "Space")
 			this.shoots = false;
 	}
+	
 	@HostListener('window:resize', ['$event'])
-	onWindowResize(event: KeyboardEvent) {
+	onWindowResize(event: KeyboardEvent): void {
 		if (this.cont != undefined)
 		{
 			this.gameCanvas.nativeElement.width = this.cont.clientWidth;
@@ -231,28 +238,3 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		}	
 	}
 }
-/*
-var ratio = 1.0;
-		var ratio_w = this.gameCanvas.nativeElement.width/(this.width);
-		var ratio_h = this.gameCanvas.nativeElement.height/(this.height);
-
-		var ratio_max = Math.max(ratio_w, ratio_h);
-
-		if (ratio_max < 1.0)
-		{  
-		// width & height are larger than allowed
-		// scale to the larger scaling factor
-		ratio = ratio_max;
-		}
-		else
-		{
-		// pick a scaling factor <= 1.0
-			ratio = Math.min(ratio, ratio_w);
-			ratio = Math.min(ratio, ratio_h);
-		}
-		this.width *= ratio;
-		this.height *= ratio;
-		this.resizeVector(this.ball, ratio);
-		this.resizeVector(this.pad_1, ratio);
-		this.resizeVector(this.pad_2, ratio);
-		*/

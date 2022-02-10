@@ -1,11 +1,9 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from "@angular/core";
-import { Router } from "@angular/router";
 import { ePlay } from "src/app/shared/ft_enums";
 import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { LiveService } from "./live.service";
 import { Location } from '@angular/common';
-import { BallI, PadI } from "src/app/shared/interface/iPlay";
 
 @Component({
 	selector: "app-live",
@@ -21,45 +19,23 @@ export class LiveComponent implements OnInit {
 	games: WaitRoomI[] = [];
 	isStreaming: boolean = false;
 	streaming: WaitRoomI = <WaitRoomI>{};
-	streamInterval: any;
-	animationFrame: any;
-	
-	context: CanvasRenderingContext2D | null;
-	ball: BallI;
-	pad_1: PadI;
-	pad_2: PadI;
-	width: number;
-	height: number;
-	//gameId: number;
 
 	constructor(private liveService: LiveService,
-				//private router: Router,
-				private location: Location,
-				private sQuery: SessionStorageQueryService,
-				) {
-				
-				this.width = 0;
-				this.height = 0;
-				}
+		private location: Location,
+		private sQuery: SessionStorageQueryService) {}
 
 	ngOnInit(): void {
-		this.width = 0;
-		this.height = 0;
 		this.initLiveEventReciver();
 		this.liveService.emit(ePlay.ON_GET_LIVE_GAMES);
-		//this.gameId = this.router.parseUrl(this.router.url).queryParams.game_id;
 		this.location.replaceState(this.location.path().split('?')[0], '');
 	}
-
-	ngAfterViewInit(){}
 
 	ngOnDestroy(): void {
 		this.liveEventReciver.unsubscribe();
 	}
    
-   initLiveEventReciver(){
+  	initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
-			console.log("Update games streaming", data);
 			if (data.games)
 				this.games = data.games;
 			if (this.games.find(item => item.id == this.streaming.id) == undefined)
@@ -67,6 +43,9 @@ export class LiveComponent implements OnInit {
 				this.isStreaming = false;
 				this.streaming = <WaitRoomI>{};
 			}
+			this.games.forEach(element => {
+				this.liveService.emit(ePlay.ON_STOP_STREAM, element);
+			});
 		});
 	}
 
@@ -78,5 +57,6 @@ export class LiveComponent implements OnInit {
 	rcvEvent(val: boolean){
 		if (val)
 			this.isStreaming = false;
+		this.liveService.emit(ePlay.ON_GET_LIVE_GAMES);
 	}
 }

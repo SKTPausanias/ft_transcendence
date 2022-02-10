@@ -16,9 +16,7 @@ export class PlayComponent implements OnInit {
 	btnTxt: string = "Quick Play";
 	gameWinnerEmiter: any;
 	matchMakingEmiter: any;
-	constructor(private router: Router, private playService: PlayService) {
-	//
-	}
+	constructor(private playService: PlayService) {}
 
 	ngOnInit(): void {
 		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
@@ -30,7 +28,9 @@ export class PlayComponent implements OnInit {
 			this.btnTxt = "Quick Play";
 		});
 	}
-
+	ngAfterViewInit(){
+	}
+	
 	ngOnDestroy(): void {
 		this.gameWinnerEmiter.unsubscribe();
 		this.matchMakingEmiter.unsubscribe();
@@ -48,10 +48,6 @@ export class PlayComponent implements OnInit {
 		this.playPreference.game = <WaitRoomI>{};
 	}
 	matchMaking(): void {
-	/* 	if (!this.waiting)
-			this.playService.emit(ePlay.ON_MATCH_MAKING)
-		else
-			this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING); */
 		this.waiting ? this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING) : this.playService.emit(ePlay.ON_MATCH_MAKING);
 		this.waiting = this.waiting != true;
 		this.btnTxt = !this.waiting ? "Quick Play" : "Cancel";

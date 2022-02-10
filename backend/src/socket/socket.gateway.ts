@@ -2,6 +2,7 @@ import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnectio
 import { ChatGateway } from 'src/home/chat/chat.gateway';
 import { FriendService } from 'src/home/friends/friend.service';
 import { PlayGateway } from 'src/home/play/play.gateway';
+import { PlayService } from 'src/home/play/play.service';
 import { UserService } from 'src/home/user/user.service';
 import { User } from 'src/home/user/userClass';
 import { SessionService } from 'src/session/session.service';
@@ -42,7 +43,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 		}
 	async handleDisconnect(client) { //set another way of counting users: This is not a good way
-		--this.clientsConnected
+		--this.clientsConnected;
 		console.log("onDisconect(): Client count : ", this.server.engine.clientsCount);
 
 	}

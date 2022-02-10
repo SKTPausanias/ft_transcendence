@@ -168,39 +168,79 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_START_STREAM)
   async onStartStream(client, data: WaitRoomI) {
     if (data !== undefined) {
-		const me = await this.playService.getSessionUser(client)
+		//const me = await this.playService.getSessionUser(client)
 		const game = await this.playService.findGameById(data.id);
-		const gameViewers = await this.playService.addViewer(me, data);
+		//const gameViewers = await this.playService.addViewer(me, data);
 		if (game !== undefined && this.games.length > 0) {
-		var obj = this.games.find((item) => item.getId() == game.id);
-		this.server
-			.to(client.id)
-			.emit(ePlay.ON_START_STREAM, { gameInfo: obj.getMap() });
-		}
+		  var obj = this.games.find((item) => item.getId() == game.id);
+		  this.server
+			  .to(client.id)
+			  .emit(ePlay.ON_START_STREAM, { gameInfo: obj.getMap() });
+		  }
     }
   }
 
   @SubscribeMessage(ePlay.ON_STOP_STREAM)
   async onStopStream(client, data: WaitRoomI) {
-    const me = await this.playService.getSessionUser(client);
-    const game = await this.playService.removeViewer(me, data);
-    if (game == undefined) return;
-    var gameI = this.playService.createWaitRoom(game);
+      const me = await this.playService.getSessionUser(client);
+      const game = await this.playService.removeViewer(me, data);
+      if (game == undefined) return;
+        var gameI = this.playService.createWaitRoom(game);
 
-	this.socketService.emitToOne(
-	this.server,
-	ePlay.ON_WAIT_ROOM_ACCEPT,
-	me.login,
-	game.player_1,
-	gameI
-	);
-	this.socketService.emitToOne(
-	this.server,
-	ePlay.ON_WAIT_ROOM_ACCEPT,
-	me.login,
-	game.player_2,
-	gameI
-	);
+    this.socketService.emitToOne(
+      this.server,
+      ePlay.ON_WAIT_ROOM_ACCEPT,
+      me.login,
+      game.player_1,
+      gameI
+    );
+    this.socketService.emitToOne(
+      this.server,
+      ePlay.ON_WAIT_ROOM_ACCEPT,
+      me.login,
+      game.player_2,
+      gameI
+    );
+    
+    //const game = await this.playService.findGameById(data.id);
+    if (game !== undefined){
+        /* emit player_1, player_2 & viewers */
+        console.log("Calling stopLiveView");
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
+        this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
+      }
+
+  }
+
+  @SubscribeMessage(ePlay.ON_SET_LIVE_VIEWERS)
+  async onSetLiveViewers(client, data: WaitRoomI) {
+    if (data !== undefined) {
+      const me = await this.playService.getSessionUser(client)
+      const game = await this.playService.addViewer(me, data);
+      if (game !== undefined){
+        /* emit player_1, player_2 & viewers */
+        console.log("Calling setLiveView");
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
+        this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
+      }
+    }
+  }
+
+  @SubscribeMessage(ePlay.ON_GET_LIVE_VIEWERS)
+  async onGetLiveViewers(client, data: WaitRoomI) {
+    if (data !== undefined) {
+      const me = await this.playService.getSessionUser(client)
+      const game = await this.playService.findGameById(data.id);
+      if (game !== undefined){
+        /* emit player_1, player_2 & viewers */
+        console.log("Calling getLiveView");
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
+        this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
+        this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
+      }
+    }
   }
 
   @SubscribeMessage(ePlay.ON_GAME_END)

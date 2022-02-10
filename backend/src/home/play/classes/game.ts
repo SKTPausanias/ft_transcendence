@@ -47,7 +47,7 @@ export class Game {
 		this.start = false;
 		this.obstacleTouch = false;
 		this.gameFinished = false;
-		this.max_score = 10;
+		this.max_score = 100;
 		this.speed = 2;
 
     }

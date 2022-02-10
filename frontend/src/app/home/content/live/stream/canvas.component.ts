@@ -17,11 +17,11 @@ export class CanvasComponent implements OnInit {
 	@ViewChild('canvas_watch') liveCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() game: WaitRoomI;
 	@Output() sndEvent = new EventEmitter<boolean>();
- 
 	liveDataEmitter: EventEmitter<any>;
 	
+	viewers: number;
 	isStreaming: boolean = false;
-	liveEventReciver: any;
+	liveViewerReciver: any;
 	session = this.sQuery.getSessionToken();
 	streaming: WaitRoomI = <WaitRoomI>{};
 	streamInterval: any;
@@ -48,8 +48,7 @@ export class CanvasComponent implements OnInit {
 				private playService: PlayService) {
 			this.width = 0;
 			this.height = 0;
-			console.log(this.game);
-			
+			this.viewers = 0;
 		}
 
 	ngOnInit(): void {
@@ -57,10 +56,9 @@ export class CanvasComponent implements OnInit {
 		this.height = 0;
 		this.location.replaceState(this.location.path().split('?')[0], '');
 		this.streaming = this.game;
-		 
 	}
 
-	ngAfterViewInit(){
+	ngAfterViewInit(): void {
 		this.isStreaming = true;
 		this.context = this.liveCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("liveCanvasCtn");
@@ -73,12 +71,16 @@ export class CanvasComponent implements OnInit {
 		}
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
         this.startStreaming();
+		this.liveViewerReciver = this.liveService.liveViewersEmitter.subscribe((data: any) => {
+			this.viewers = data;
+		});
+		this.liveService.emit(ePlay.ON_SET_LIVE_VIEWERS, this.streaming);
     }
 
 	ngOnDestroy(): void {
 		this.sndCloseStreaming(true);
 	}
-	
+
     //renders every frame cleaning and drawing the elements
 	renderFrame(): void {
 		this.resize();
@@ -96,12 +98,8 @@ export class CanvasComponent implements OnInit {
 			var d = this.pad_1.height * 2.5;
 			var x = (this.width / 2) - (d / 2);
 			var y = (this.height / 2) - (d / 2);
-			//this.context?.beginPath();	
-			//this.context?.arc(this.width /2, this.height /2, this.pad_1.height, 0, 2 * Math.PI, false);
 			this.context?.drawImage(this.circleImg, x, y, d, d)
-			//this.context?.beginPath();
 			this.context?.fill();
-
 		}
 		this.animationFrame = window.requestAnimationFrame(() => {
 			this.renderFrame()
@@ -130,7 +128,7 @@ export class CanvasComponent implements OnInit {
 		}, 20);
 	}
 
-	sndCloseStreaming(val: boolean) {
+	sndCloseStreaming(val: boolean): void {
 		this.liveService.emit(ePlay.ON_STOP_STREAM, this.streaming);
 		this.isStreaming = false;
 		this.streaming = <WaitRoomI>{};
@@ -138,8 +136,10 @@ export class CanvasComponent implements OnInit {
 		window.cancelAnimationFrame(this.animationFrame);
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
 		this.sndEvent.emit(val);
+		this.liveViewerReciver.unsubscribe();
 	}
-	resize(){
+
+	resize(): void {
 		var padd_ratio_x = this.liveCanvas.nativeElement.width / this.width;
 		var padd_ratio_y = this.liveCanvas.nativeElement.height / this.height;
 		this.width = this.liveCanvas.nativeElement.width;
@@ -149,14 +149,15 @@ export class CanvasComponent implements OnInit {
 		this.resizeVector(this.pad_2, padd_ratio_x, padd_ratio_y);
 		this.resizeVector(this.ball, padd_ratio_x, padd_ratio_y);
 	}
-	resizeVector(obj: GameMoveableI, rx: number, ry: number)
-	{
+
+	resizeVector(obj: GameMoveableI, rx: number, ry: number): void {
 		obj.width *= rx;
 		obj.height *= ry;
 		obj.pos_x *= rx;
 		obj.pos_y *= ry;
 	}
-	setModeImage(){
+
+	setModeImage(): void {
 		if (this.game.play_modes[0] == ePlayMode.CLASIC)
 			this.modeImg.src = '/assets/img/play_modes/clasic_mode.png';
 		else if (this.game.play_modes[0] == ePlayMode.POWER)
@@ -164,8 +165,9 @@ export class CanvasComponent implements OnInit {
 		else if (this.game.play_modes[0] == ePlayMode.ANGLE)
 			this.modeImg.src = '/assets/img/play_modes/angle_mode.png';
 	}
+
 	@HostListener('window:resize', ['$event'])
-	onWindowResize(event: KeyboardEvent) {
+	onWindowResize(event: KeyboardEvent): void {
 		if (this.cont != undefined)
 		{
 			this.liveCanvas.nativeElement.width = this.cont.clientWidth;
