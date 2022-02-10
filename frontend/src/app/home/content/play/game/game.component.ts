@@ -60,8 +60,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.viewers = 0;
-		this.rockets_p1 = 3;
-		this.rockets_p2 = 3;
+		this.rockets_p1 = 0;
+		this.rockets_p2 = 0;
 		
 	}
 
