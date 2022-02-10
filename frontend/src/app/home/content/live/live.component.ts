@@ -36,13 +36,14 @@ export class LiveComponent implements OnInit {
    
   	initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
-			if (data.games)
-				this.games = data.games;
+			if (data.games.lives)
+				this.games = data.games.lives;
 			if (this.games.find(item => item.id == this.streaming.id) == undefined)
 			{
 				this.isStreaming = false;
 				this.streaming = <WaitRoomI>{};
 			}
+			if (data.games.delView)
 			this.games.forEach(element => {
 				this.liveService.emit(ePlay.ON_STOP_STREAM, element);
 			});

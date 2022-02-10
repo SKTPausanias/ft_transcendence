@@ -60,7 +60,6 @@ export class PlayService {
 	private onRequestInvitation(){
 		this.socket.on(ePlay.ON_REQUEST_INVITATION, (emiter: string, data: any) => {
 			try {
-				console.log(this.socket);
 				this.playEmiter.emit({invitation: data});
 			}catch(error){}
 		})
@@ -108,7 +107,6 @@ export class PlayService {
 			try {
 				this.gameDataEmiter.emit(data);
 				this.liveDataEmiter.emit(data);
-				//console.log("match data: ", data.ball, data.paddle1);
 			}catch(error){}
 		})
 	}

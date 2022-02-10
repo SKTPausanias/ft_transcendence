@@ -86,10 +86,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	//Call when the whole elements in the html document were loaded
 	ngAfterViewInit() {
 		this.liveViewerReciver = this.liveService.liveViewersEmitter.subscribe((data: any)=>{
-			console.log("entering on subscribe:", data);
 			this.viewers = data
 		});
-		console.log("refreshing game: ", this.prefs.game);
 		this.liveService.emit(ePlay.ON_GET_LIVE_VIEWERS, this.prefs.game);
 		this.context = this.gameCanvas.nativeElement.getContext('2d');
 		this.cont = document.getElementById("canvasCtn");

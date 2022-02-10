@@ -124,7 +124,6 @@ export class PlayService {
 
 	async acceptWaitRoom(me: UserEntity, waitRoom: WaitRoomI): Promise<PlayEntity>
 	{
-		console.log("accepting");
 		const invitation = await this.playRepository.findOne({
 			relations: ["player_1", "player_2", "viewers"],
 			where: { id: waitRoom.id }

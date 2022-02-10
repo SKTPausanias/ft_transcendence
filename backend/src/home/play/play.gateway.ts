@@ -123,7 +123,7 @@ export class PlayGateway {
     this.server.emit(
       ePlay.ON_GET_LIVE_GAMES,
       me.login,
-      await this.playService.onGetLiveGames()
+      {lives: await this.playService.onGetLiveGames()}
     );
   }
 
@@ -161,7 +161,7 @@ export class PlayGateway {
       ePlay.ON_GET_LIVE_GAMES,
       me.login,
       me,
-      games
+      {lives: games, delView: true}
     );
   }
 
@@ -205,7 +205,6 @@ export class PlayGateway {
     //const game = await this.playService.findGameById(data.id);
     if (game !== undefined){
         /* emit player_1, player_2 & viewers */
-        console.log("Calling stopLiveView");
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
         this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
@@ -220,7 +219,6 @@ export class PlayGateway {
       const game = await this.playService.addViewer(me, data);
       if (game !== undefined){
         /* emit player_1, player_2 & viewers */
-        console.log("Calling setLiveView");
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
         this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
@@ -235,7 +233,6 @@ export class PlayGateway {
       const game = await this.playService.findGameById(data.id);
       if (game !== undefined){
         /* emit player_1, player_2 & viewers */
-        console.log("Calling getLiveView");
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_1, game.viewers.length);
         this.socketService.emitToOne(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.player_2, game.viewers.length);
         this.socketService.emitToAll(this.server, ePlay.ON_GET_LIVE_VIEWERS, me.login, game.viewers, game.viewers.length);
@@ -273,7 +270,7 @@ export class PlayGateway {
     this.server.emit(
       ePlay.ON_GET_LIVE_GAMES,
       me.login,
-      await this.playService.onGetLiveGames()
+      {lives: await this.playService.onGetLiveGames()}
     );
     if (data.wRoom.id !== undefined)
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
@@ -292,7 +289,7 @@ export class PlayGateway {
       this.server.emit(
         ePlay.ON_GET_LIVE_GAMES,
         me.login,
-        await this.playService.onGetLiveGames()
+        {lives: await this.playService.onGetLiveGames()}
       );
     }
   }
@@ -389,7 +386,6 @@ export class PlayGateway {
 	}
 	@SubscribeMessage(ePlay.ON_SELECT_PLAY_MODE)
 	async onSelectPlayMode(client: any, data: any): Promise<void> {
-		console.log(data);
 		const me = await this.playService.getSessionUser(client);
 		const room = await this.playService.diselectPlayMode(data, me);
 		if (!room)
