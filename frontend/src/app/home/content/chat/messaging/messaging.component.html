@@ -97,7 +97,7 @@
 	<div *ngIf='room.imMuted' class="d-flex justify-content-center"><i><small>You are muted in this room</small></i></div>
 	<div *ngIf='!directBanned'class='msg-action row'> 
 		<div class="col-11 ps-0 pe-0">
-			<textarea *ngIf='!room.imMuted' type="text" [(ngModel)]="msg"></textarea>
+			<textarea id='messageBox' *ngIf='!room.imMuted' type="text" [(ngModel)]="msg"></textarea>
 		</div>
 		<div *ngIf='!room.imMuted'class="col-1 btn-send" data-toggle="tooltip" title="Send message" (click)="send()">
 			<span class="fa fa-paper-plane fa-lg"></span>

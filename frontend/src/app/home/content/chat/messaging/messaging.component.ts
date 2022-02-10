@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output } from "@angular/core";
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, EventEmitter, Output, HostListener } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { eChat } from "src/app/shared/ft_enums";
 import { ChatRoomI, MessagesI, SharedPreferencesI } from "src/app/shared/ft_interfaces";
@@ -173,4 +173,16 @@ export class MessagingComponent implements OnInit {
 			this.chatService.emit(eChat.ON_UPDATE_ROOM, {room : receivedEntry});
 		});
 	  }
+
+	@HostListener('window:keyup', ['$event'])
+	keyDown(event: KeyboardEvent): void {
+		if (event.ctrlKey && event.code == "Enter" || event.ctrlKey && event.code == "NumpadEnter") {
+			var messageBox: any;
+			messageBox = document.getElementById('messageBox');
+			messageBox.value += "\n";
+		}
+		else if (event.code == "Enter" || event.code == "NumpadEnter")
+			this.send();
+		
+	}
 }
