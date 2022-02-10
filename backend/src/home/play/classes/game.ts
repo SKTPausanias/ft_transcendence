@@ -47,7 +47,11 @@ export class Game {
 		this.start = false;
 		this.obstacleTouch = false;
 		this.gameFinished = false;
-		this.max_score = 100;
+		this.max_score = 3;
+		if (gameMode == ePlayMode.POWER)
+			this.max_score = 5;
+		else if (gameMode == ePlayMode.ANGLE)
+			this.max_score = 7;
 		this.speed = 2;
 
     }
@@ -69,6 +73,8 @@ export class Game {
 			score_p2: this.score_p2,
 			hits_p1: this.hits_p1,
 			hits_p2: this.hits_p2,
+			rockets_p1: this.pad_1.getShoots(),
+			rockets_p2: this.pad_2.getShoots(), 
 			gameFinished: this.gameFinished,
 			game_mode : this.game_mode
         });

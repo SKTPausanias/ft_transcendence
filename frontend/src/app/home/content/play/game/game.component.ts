@@ -47,6 +47,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	modeImg = new Image();
 	circleImg = new Image();
 	game_mode: number;
+	rockets_p1: number;
+	rockets_p2: number;
 	
 	constructor(private liveService: LiveService,
 		private playService: PlayService) {
@@ -58,6 +60,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.viewers = 0;
+		this.rockets_p1 = 3;
+		this.rockets_p2 = 3;
 		
 	}
 
@@ -75,6 +79,10 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.gameFinished = data.gameInfo.gameFinished;
 				this.game_mode = data.gameInfo.game_mode;
+				if (data.gameInfo.game_mode == ePlayMode.POWER){
+					this.rockets_p1 = data.gameInfo.rockets_p1;
+					this.rockets_p2 = data.gameInfo.rockets_p2;
+				}
 				if (data.gameInfo.gameFinished)
 					this.sndWinner.emit(data.gameInfo);
 				if (this.animationFrame == undefined)

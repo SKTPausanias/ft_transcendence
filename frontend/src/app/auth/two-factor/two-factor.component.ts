@@ -26,11 +26,12 @@ export class TwoFactorComponent implements OnInit {
 		}
 
   ngOnInit(): void {
+	  this.resend();
   }
   async resend(){
 	  try {
 		  const resp = await this.authService.generate(this.email);
-		  this.code = resp;
+		  //this.code = resp;
 	  } catch (error) {
 	  }
   }

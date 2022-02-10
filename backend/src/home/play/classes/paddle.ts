@@ -40,4 +40,7 @@ export class Paddle extends Moveable {
     setShoots(shots: boolean) {
         this.shots = shots;
     }
+    getShoots(): number{
+        return (this.shot_number);
+    }
 }

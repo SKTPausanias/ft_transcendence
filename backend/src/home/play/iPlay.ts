@@ -34,6 +34,8 @@ export interface GameI {
 	score_p2: number,
 	hits_p1: number,
 	hits_p2: number,
+	rockets_p1: number,
+	rockets_p2: number,
 	gameFinished: boolean,
 	game_mode: number
 }

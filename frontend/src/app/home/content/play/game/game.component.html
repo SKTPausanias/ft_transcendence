@@ -36,6 +36,13 @@
 	<div id="canvasCtn" class="d-flex" style="height: 70vh;">
 	 	<canvas #game width="0" height="0" style="border: 2px solid white"></canvas>
 	</div>
+	<div *ngIf="game_mode == 2">
+		<img *ngFor="let rocket_p1 of [].constructor(rockets_p1)" src="/assets/img/rocket.jpg" class="justify-content-start img img-fuild, ico_s" alt="">
+		---
+		<img *ngFor="let rocket_p2 of [].constructor(rockets_p2)" src="/assets/img/rocket.jpg" class="justify-content-end img img-fuild, ico_s" alt="">
+	</div>
+	
+	
 	<div>
 		<button class="mt-3 login_42" (click)="cancelGame()">Give Up</button>
 	</div>
