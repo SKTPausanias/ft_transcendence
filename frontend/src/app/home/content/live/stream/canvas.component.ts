@@ -41,6 +41,8 @@ export class CanvasComponent implements OnInit {
 	hits_p1: number;
 	hits_p2: number;
 	game_mode: number;
+	rockets_p1: number;
+	rockets_p2: number;
 	
 	constructor(private liveService: LiveService,
 				private location: Location,
@@ -119,6 +121,10 @@ export class CanvasComponent implements OnInit {
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.game_mode = data.gameInfo.game_mode;
+				if (data.gameInfo.game_mode == ePlayMode.POWER){
+					this.rockets_p1 = data.gameInfo.rockets_p1;
+					this.rockets_p2 = data.gameInfo.rockets_p2;
+				}
 				if (this.animationFrame == undefined)
 					this.renderFrame();
 			}

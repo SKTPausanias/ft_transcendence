@@ -25,13 +25,15 @@
 			<h4 class="text-center">{{waitRoom.selecting}}</h4>
 			<i><p class="text-center">Select mode you don't want to play</p></i>
 			<div class="d-flex justify-content-center">
-				<div class="row mb-3" *ngFor="let mode of modes; let i = index">
+				<div class="row" *ngFor="let mode of modes; let i = index">
 					<div class="col" [ngClass]="{'op' : !mode.available}" (click)="selectMode(i)">
 						<img class="mode disabled" src="/assets/img/play_modes/{{mode.name}}.png" [ngClass]="{'enabled' : waitRoom.selecting == me.nickname && mode.available}"/>
 						<small><p class="text-center">{{mode.name}} Mode</p></small>
 					</div>
 				</div>
 			</div>
+
+			<p class="text-center p-0 m-0">{{timer}}</p>
 		</div>
 		<div class="d-flex justify-content-center" *ngIf="waitRoom.player1.status != 'accepted' || waitRoom.player2.status != 'accepted'">
 			<div class="d-block action">

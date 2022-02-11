@@ -57,6 +57,8 @@ export class LeftNavComponent implements OnInit {
 	chat(): void { this.selectSnd.play();this.navigate(Nav.CHAT); }
 	conf(): void { this.selectSnd.play();this.navigate(Nav.CONF); }
 	async open(name: string) {
+		if (this.leftNavPreference.in_game != undefined)
+			return ;
 		var snd = new Audio("../../../assets/sounds/logout.wav");
 		snd.volume = 0.1;
 		snd.play();

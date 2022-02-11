@@ -98,7 +98,8 @@ export class PlayService {
 		this.socket.on(ePlay.ON_SELECT_PLAY_MODE, (emiter: string, data: any) => {
 			try {
 				this.waitRoomEmiter.emit(data);
-				//connect to new game socket 
+				if (data.ready)
+					this.playEmiter.emit({waitRoomStatus: data})
 			}catch(error){}
 		})
 	}

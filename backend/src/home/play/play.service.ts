@@ -348,8 +348,15 @@ export class PlayService {
 				room.selecting = room.player_1.nickname;
 			room.play_modes = room.play_modes.filter(item => item != data.mode);
 			if (room.play_modes.length == 1)
+			{
 				room.ready = true;
+				room.player_1.in_game = true;
+				room.player_2.in_game = true;
+				await this.userRepository.save(room.player_1);
+				await this.userRepository.save(room.player_2);
+			}
 			await this.playRepository.save(room);
+
 			return (room)
 		} catch (error) {}
 	}

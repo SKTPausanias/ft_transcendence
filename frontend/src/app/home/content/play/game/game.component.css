@@ -25,6 +25,7 @@ h3{
 #viewers{
 	position: absolute;
 	top: 10px;
+	margin-left: 10px;
 }
 .login_42{
 	margin-left: 20px;

@@ -4,6 +4,7 @@ import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
 import { SessionStorageQueryService } from "src/app/shared/ft_services";
 import { LiveService } from "./live.service";
 import { Location } from '@angular/common';
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
 	selector: "app-live",
@@ -19,14 +20,17 @@ export class LiveComponent implements OnInit {
 	games: WaitRoomI[] = [];
 	isStreaming: boolean = false;
 	streaming: WaitRoomI = <WaitRoomI>{};
+	gameId: number | undefined;
 
 	constructor(private liveService: LiveService,
 		private location: Location,
-		private sQuery: SessionStorageQueryService) {}
+		private sQuery: SessionStorageQueryService,
+		private route: ActivatedRoute) {}
 
 	ngOnInit(): void {
 		this.initLiveEventReciver();
 		this.liveService.emit(ePlay.ON_GET_LIVE_GAMES);
+		this.gameId =  this.route.snapshot.queryParams['game_id'];
 		this.location.replaceState(this.location.path().split('?')[0], '');
 	}
 
@@ -36,7 +40,9 @@ export class LiveComponent implements OnInit {
    
   	initLiveEventReciver(){
 		this.liveEventReciver = this.liveService.liveEventEmitter.subscribe((data : any )=>{
-			if (data.games.lives)
+			if (data.games.stream)
+				this.startStreaming(data.games.stream);
+			else if (data.games.lives)
 				this.games = data.games.lives;
 			if (this.games.find(item => item.id == this.streaming.id) == undefined)
 			{
@@ -47,6 +53,13 @@ export class LiveComponent implements OnInit {
 			this.games.forEach(element => {
 				this.liveService.emit(ePlay.ON_STOP_STREAM, element);
 			});
+			if (this.gameId != undefined)
+			{
+				var g = this.games.find(item => item.id == this.gameId);
+				if (g != undefined)
+					this.startStreaming(g);
+				this.gameId = undefined;
+			}
 		});
 	}
 

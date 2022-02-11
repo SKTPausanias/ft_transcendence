@@ -16,61 +16,16 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent implements OnInit {
 	@Input() dashboardPreference: SharedPreferencesI;
-	@ViewChild('searchUsers', { static: true }) searchInput: ElementRef;
-	@ViewChild('friendship') friendInput : ElementRef;
-  
-	users: UserPublicInfoI[];
 	session = this.sQuery.getSessionToken();
-	fInvitation = [
-		{ nickname: "dbelinsk"},
-		{ nickname: "pepe"},
-		{ nickname: "juan"},
-		{ nickname: "carlos"}
-	]
+	
 	constructor(
-	  private dashboardService: DashboardService,
 	  private sQuery: SessionStorageQueryService,
 	  public homeService: HomeService,
-	  private router: Router
 	  ) { }
   
 	ngOnInit() {
-		this.initSearchboxListener();
 	}
   
-	async onSubmitFriends(): Promise<void> {
-	  this.users = (await this.dashboardService.searchUsers(this.session, this.searchInput.nativeElement.value));
-	  this.users = this.users.filter(item => item.login != "nobody");
-	}
   
-	initSearchboxListener(){
-	  fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
-		  map((event: any) => {
-			return event.target.value;
-		  })	//, filter(res => res.length > 2)
-				, debounceTime(1000)
-				, distinctUntilChanged()).subscribe((text: string) => {
-				  if (text.length <= 0)
-					  this.users = [];
-				  else
-					  this.onSearchBoxChange(text).subscribe((res: any)=> {
-						  this.users = res;
-						  this.users = this.users.filter(item => item.login != "nobody");
-					  }, (err: any) => {
-						  console.log('error', err);
-					  });
-		});
-	}
 	
-	onSearchBoxChange(value: any)
-	{
-		return (this.dashboardService.liveSearchUsers(this.session, value));
-	}
-	async addFriendShip(user: any): Promise<any>{
-	  return (await this.dashboardService.addFriendShip(user, this.session))
-	}
-  
-	async removeFriendShip(user: any): Promise<any>{
-	  return (await this.dashboardService.removeFriendShip(user, this.session));
-	}
 }

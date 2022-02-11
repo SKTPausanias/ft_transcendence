@@ -4,8 +4,8 @@
 
 .game{
 	display: inline-block;
-	width: 25vh;
-	height: 25vh;
+	width: 200px;
+	height: auto;
 	border-radius: 20px;
 	margin: 10px;
 	text-align: center;

@@ -1,6 +1,10 @@
 <!-- list games -->
 <div class="cont vh-100">
-	<div *ngIf="!games.length">There is no games in progress</div>
+	<div style="width: 100%; text-align: center; padding-left: 20px; padding-right: 20px; padding-top: 10px;">
+		<h4 *ngIf="!isStreaming" class="text-light border-bottom m-0 p-2">Games in progress</h4>
+		<div *ngIf="!games.length && !isStreaming" class="mt-4"><i>There is no games in progress</i></div>
+	</div>
+	
     <div *ngIf='!isStreaming' [ngClass]="{'d-flex justify-content-center scrool' : games.length > 3}">
 		<div class="row mx-2 pt-4">
 			<div *ngFor='let game of games' [ngClass]="{'text-center' : games.length > 3}" class="game">
@@ -24,3 +28,23 @@
         <app-canvas [game]="streaming" (sndEvent)="rcvEvent($event)"></app-canvas>
     </div>
 </div>
+
+<!-- <div class="cont vh-100">
+	<div *ngIf="!games.length">There is no games in progress</div>
+    <div *ngIf='!isStreaming' class="scrool">
+		<div class="d-flex mx-2 pt-4 justify-content-center">
+			<div *ngFor='let game of games'  class="d-inline">
+				<div class="card game mx-2"  style="width: 14rem; text-align: center;" (click)="startStreaming(game)">
+					<img class="card-img-top" *ngIf="game.play_modes[0] == 1" src="/assets/img/play_modes/Clasic.png" alt="">
+					<img class="card-img-top" *ngIf="game.play_modes[0] == 2" src="/assets/img/play_modes/Power.png" alt="">
+					<img class="card-img-top" *ngIf="game.play_modes[0] == 3" src="/assets/img/play_modes/Angle.png" alt="">
+					<div class="card-body">
+					<h5 class="card-title mb-0 pb-0">{{game.player1.nickname}} vs {{game.player2.nickname}}</h5>
+				</div>
+			</div>
+		</div>
+    </div>
+    <div *ngIf='isStreaming'>
+        <app-canvas [game]="streaming" (sndEvent)="rcvEvent($event)"></app-canvas>
+    </div>
+</div> -->

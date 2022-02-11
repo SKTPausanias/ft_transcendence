@@ -93,7 +93,7 @@ export class UserProfileComponent implements OnInit {
 		{
 			this.modal.dismiss();
 			if (this.preferences.path == Nav.LIVE)
-				this.liveService.liveEventEmitter.emit({stream : resp.data});
+				this.liveService.liveEventEmitter.emit({games : {stream : resp.data}});
 			else
 				this.router.navigateByUrl("/live?game_id=" + resp.data.id);
 		}
