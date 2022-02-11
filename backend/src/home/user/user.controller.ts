@@ -30,4 +30,8 @@ export class UserController {
 
 		return (await this.userService.getUserPosition(body.token, body.user));
 	}
+	@Get('/nobody')
+ 	async setNobody(): Promise<void> {
+    	await this.userService.insertNoBody();
+  }
 }

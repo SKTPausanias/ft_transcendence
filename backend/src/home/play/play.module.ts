@@ -18,11 +18,12 @@ import { HashService } from 'src/shared/hash/hash.service';
 import { PlayService } from './play.service';
 import { PlayEntity } from './play.entity';
 import { StatsEntity } from './stats.entity';
+import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 
 @Module({
 	imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity,
         ChatEntity, ChatUsersEntity, MessageEntity,
-        ActiveRoomEntity, UnreadMessageEntity, PlayEntity, StatsEntity])],
+        ActiveRoomEntity, UnreadMessageEntity, PlayEntity, StatsEntity, TwoFactorEntity])],
 	providers: [SocketService, SessionService, FriendService, UserService, ChatService, HashService, PlayService],
 
 	controllers: [PlayController]

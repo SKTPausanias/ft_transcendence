@@ -17,6 +17,7 @@ import { ChatService } from "../chat/chat.service"
 import { ChatRoomI } from "../chat/iChat";
 import { ChatEntity } from '../chat/entities/chat.entity';
 import { UserPublicInfoI } from './userI';
+import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 
 @Injectable()
 export class UserService {
@@ -37,6 +38,7 @@ export class UserService {
 		@InjectRepository(UnreadMessageEntity)
 		private unreadMessagesRepository: Repository<UnreadMessageEntity>,
 		@InjectRepository(MessageEntity) private messagesRepository: Repository<MessageEntity>,
+		@InjectRepository(TwoFactorEntity) private twoFactorRepository: Repository<TwoFactorEntity>,
 		private friendService: FriendService,
 		private sessionService: SessionService,
 		//A circular dependency occurs when two classes depend on each other. For example, class A needs class B, and class B also needs class A. 
@@ -172,6 +174,13 @@ export class UserService {
 				}
 			}
 
+			//Deleting from twoFactor
+			console.log("Finding twoFactor", usr);
+			const factorDelete = await this.twoFactorRepository.find({relations: ['userID'], where: {"userID.id": usr.id}});
+			if (factorDelete !== undefined){
+				console.log("Deleting from twoFactor");
+				await this.twoFactorRepository.remove(factorDelete);
+			}
 			//delete direct chats:
 			/** (NEXT TIME WE CODE DATABASE TABLES SCHEMES WE MUST GIVE STANDARD NAMES FOR FIELDS AND RELATIONS FIELDS :( )*/
 			//return ({});
@@ -262,7 +271,33 @@ export class UserService {
 			return (Response.makeResponse(401, {error : "Unauthorized"}));
 		}
 	}
+	async insertNoBody(): Promise<void> {
 
+		var name: string = "nobody"
+		var usr:UserEntity =  <UserEntity>{};
+		
+		try {
+			usr.id = 1000000;
+			usr.login = name;
+			usr.nickname = name;
+			usr.first_name = name;
+			usr.last_name = name;
+			usr.email = "nobody@nobody.local";
+			usr.password = "123456qwerty123456qwerty";
+			usr.role = "fool";
+			usr.avatar = "http://localhost:3000/img/default_avatar.png";
+			usr.factor_enabled = true;
+			usr.confirmed = true;
+			usr.online = false;
+			usr.victories = 0;
+			usr.defeats = 0;
+			usr.in_game = false;
+			usr.hits = 0;
+		
+			await this.userRepository.save(usr);
+			console.log("User nobody created from userService");
+		} catch (e){}
+	  }
 
 	/* async activateRoom(users: UserEntity[], roomId: number){
 		users.forEach(async user => {

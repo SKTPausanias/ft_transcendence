@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth/auth.service';
@@ -16,9 +17,18 @@ export class AppComponent {
   flag: boolean = false;
   constructor(private authService: AuthService,
 				private sQuery: SessionStorageQueryService,
-				private router: Router){
+				private router: Router,
+        private http: HttpClient){
   }
-/*   @HostListener('window:unload', [ '$event' ])
+  async ngOnInit(): Promise<void> {
+    console.log("Calling setNobody from appComponent on init");
+    await this.setNobody();
+  }
+  async setNobody(): Promise<void>{
+    const url = 'api/users/nobody';
+    await this.http.get<any>(url).toPromise();
+  }
+  /* @HostListener('window:unload', [ '$event' ])
   async unloadHandler(event: any) {
 	  await this.authService.logout(this.sQuery.getSessionToken());
   } */

@@ -58,20 +58,3 @@ import {PlayEntity } from './home/play/play.entity'
   providers: [AppService]
 })
 export class AppModule {}
-
-/* 
-	npm i --save @nestjs/config   
-	npm i --save ajv   
-	npm i --save ajv-keywords   
-	npm i --save typeorm postgres pg   
-	npm i --save @nestjs/typeorm   
-	npm i --save @nestjs/serve-static   
-	npm i --save nodemailer   
-	npm i --save randomstring   
-	npm i --save import @nestjs/axios   
-	npm i --save speakeasy 
-	npm i --save qrcode   
-
-
-
-*/
