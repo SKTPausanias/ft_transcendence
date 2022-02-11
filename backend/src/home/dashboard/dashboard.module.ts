@@ -17,9 +17,10 @@ import { MessageEntity } from '../chat/entities/message.entity';
 import { ChatService } from '../chat/chat.service';
 import { ChatEntity } from '../chat/entities/chat.entity';
 import { HashService } from 'src/shared/hash/hash.service';
+import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 
 @Module({
-    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ActiveRoomEntity, ChatUsersEntity, UnreadMessageEntity, MessageEntity, ChatEntity])],
+    imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ActiveRoomEntity, ChatUsersEntity, UnreadMessageEntity, MessageEntity, ChatEntity, TwoFactorEntity])],
     controllers: [DashboardController],
     providers: [
 		DashboardService, UserService, SessionService, FriendService, ChatService, HashService

@@ -28,8 +28,7 @@ export class PlayComponent implements OnInit {
 			this.btnTxt = "Quick Play";
 		});
 	}
-	ngAfterViewInit(){
-	}
+	ngAfterViewInit(){}
 	
 	ngOnDestroy(): void {
 		this.gameWinnerEmiter.unsubscribe();

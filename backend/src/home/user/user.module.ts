@@ -14,12 +14,18 @@ import { ActiveRoomEntity } from '../chat/entities/activeRoom.entity';
 import { ChatUsersEntity } from '../chat/entities/chatUsers.entity';
 import { UnreadMessageEntity } from '../chat/entities/unread-message.entity';
 import { HashService } from 'src/shared/hash/hash.service';
+import { TwoFactorEntity } from 'src/auth/two-factor/two-factor.entity';
 
 @Module({
-imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity, ActiveRoomEntity, ChatUsersEntity, UnreadMessageEntity, MessageEntity, ChatEntity])],
+imports: [ TypeOrmModule.forFeature([UserEntity, SessionEntity, FriendEntity,
+                                     ActiveRoomEntity, ChatUsersEntity,
+                                     UnreadMessageEntity, MessageEntity, ChatEntity, TwoFactorEntity])],
   controllers: [UserController],
   providers: [
 	UserService, SessionService, FriendService, ChatService, HashService
+],
+exports: [
+  UserService
 ]
 })
 export class UserModule {}
