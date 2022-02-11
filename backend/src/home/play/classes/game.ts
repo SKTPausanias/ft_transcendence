@@ -28,6 +28,7 @@ export class Game {
 	max_score: number;
 	game_mode: number;
 	speed: number;
+	gameInterval: any;
 
     constructor(private id: number, gameMode: number) {
 		this.game_mode = gameMode;
@@ -52,8 +53,15 @@ export class Game {
 			this.max_score = 5;
 		else if (gameMode == ePlayMode.ANGLE)
 			this.max_score = 7;
-		this.speed = 2;
-
+		this.speed = 2.5;
+		this.gameInterval = setInterval(()=>{
+			this.checkCollisions();
+			this.ball.move();
+			if (this.score_p1 >= this.max_score || this.score_p2 >= this.max_score){
+				this.removeInterval();
+				console.log("game finished", this.score_p2);
+			}
+		}, 10);
     }
 
     getId (): number{
@@ -100,8 +108,8 @@ export class Game {
         //Collision ball with backPad -> may consider reabse back pad's limits
 		if (this.boundBall.left > this.cWidth || this.boundBall.right < 0){
 			this.boundBall.left > this.cWidth ? this.score_p1++ : this.score_p2++;
-			if (this.score_p1 == this.max_score || this.score_p2 == this.max_score)
-				this.gameFinished = true;
+			/* if (this.score_p1 == this.max_score || this.score_p2 == this.max_score) //this was commented to set the interval.
+				this.gameFinished = true; */
             this.start = false;
 			this.obstacleTouch = false;
 			this.ball.setVerticalSpeedRatio(0.5);
@@ -166,12 +174,12 @@ export class Game {
 	boost(pad: Paddle){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			this.ball.setHorizontalSpeed(3);
+			this.ball.setHorizontalSpeed(3.5);
 			pad.shot_number--;
 			pad.shots = false;
 		}
 		else {
-			this.ball.setHorizontalSpeed(1.5);
+			this.ball.setHorizontalSpeed(2.5);
 		}
 	}
 
@@ -219,5 +227,9 @@ export class Game {
 		}
 		else if (this.game_mode == ePlayMode.CLASIC)
 			this.ball.speedUp();
+	}
+	removeInterval(){
+		clearInterval(this.gameInterval);
+		this.gameInterval = undefined;
 	}
 }

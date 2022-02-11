@@ -272,6 +272,7 @@ export class PlayGateway {
       me.login,
       {lives: await this.playService.onGetLiveGames()}
     );
+    console.log("Finishing...");
     if (data.wRoom.id !== undefined)
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
   }
@@ -322,8 +323,12 @@ export class PlayGateway {
     if (game !== undefined && this.games.length > 0) {
       var obj = this.games.find((item) => item.getId() == game.id);
       if (obj !== undefined && !obj.gameFinished) {
-		    obj.checkCollisions();
-        obj.ball.move();
+        if (obj.gameInterval === undefined) {
+          console.log("Finishing...");
+		      obj.checkCollisions();
+          obj.ball.move();
+          obj.gameFinished = true;
+        }
         if (data.p1) {
           if (data.shoots && obj.game_mode == 2)
             obj.pad_1.setShoots(data.shoots);
