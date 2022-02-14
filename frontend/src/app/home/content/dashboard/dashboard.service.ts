@@ -9,8 +9,11 @@ import { wSocket } from 'src/app/shared/ft_enums';
 export class DashboardService {
 
   constructor(
-	  		private http: HttpClient,
-			private socketService: SocketService) { }
+    private http: HttpClient,
+    private socketService: SocketService) 
+    {
+    }
+
   async searchUsers(session: SessionI, val: string): Promise<any> {
     const url = '/api/users/dashboard/search';
     var searchParams = new HttpParams().set('match', val);

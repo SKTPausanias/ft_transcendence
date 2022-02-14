@@ -1,3 +1,7 @@
-<div class="cont vh-100 pe-3 ps-3">
-   
-</div>
+<h2>Ranking</h2>
+<ul>
+  <li *ngFor="let rank of ranking">
+    <!-- print stats for each rank -->
+     {{rank.login}} - victories: {{rank.victories}} - defeats: {{rank.defeats}}
+  </li>
+</ul>

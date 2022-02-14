@@ -14,6 +14,7 @@ export class PlayService {
 	gameDataEmiter: EventEmitter<any>;
 	gameWinnerEmiter: EventEmitter<any>;
 	matchMakingEmiter: EventEmitter<any>;
+	getRankingEmiter: EventEmitter<any>;
 	private socket: Socket;
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private http: HttpClient) {
@@ -23,6 +24,7 @@ export class PlayService {
 		this.gameDataEmiter = new EventEmitter<any>();
 		this.gameWinnerEmiter = new EventEmitter<any>();
 		this.matchMakingEmiter = new EventEmitter<any>();
+		this.getRankingEmiter = new EventEmitter<any>();
 	}
 
 	initGateway(socket: Socket, sharedPreference: SharedPreferencesI) {
@@ -40,6 +42,7 @@ export class PlayService {
 		this.onStartGame();
 		this.onGameMoving();
 		this.onWinGame();
+		this.onGetRanking();
 		/* this.onPaddleMove(); */
 	}
 
@@ -132,6 +135,15 @@ export class PlayService {
 			try {
 				this.gameWinnerEmiter.emit(data);
 			}catch(error){}
+		})
+	}
+
+	private onGetRanking(){
+		this.socket.on(ePlay.ON_GET_RANKING, (data: any) => {
+			try {
+				this.getRankingEmiter.emit(data);
+			}
+			catch(error){}
 		})
 	}
 	

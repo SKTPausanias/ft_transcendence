@@ -8,6 +8,7 @@ import { WaitRoomI } from "./iPlay";
 import { PlayService } from "./play.service";
 import { UserService } from "../user/user.service";
 import { Game } from "./classes/game";
+import { UserPublicInfoI } from "../user/userI";
 
 @WebSocketGateway({ cors: true })
 export class PlayGateway {
@@ -272,6 +273,7 @@ export class PlayGateway {
       me.login,
       {lives: await this.playService.onGetLiveGames()}
     );
+    this.server.emit(ePlay.ON_GET_RANKING, await this.playService.getRanking());
     console.log("Finishing...");
     if (data.wRoom.id !== undefined)
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
@@ -414,4 +416,10 @@ export class PlayGateway {
 			this.playService.createWaitRoom(room)
 		);
 	}
+  
+  @SubscribeMessage(ePlay.ON_GET_RANKING)
+  async onGetRanking(client: any): Promise<void> {
+    this.server.emit(ePlay.ON_GET_RANKING, await this.playService.getRanking());
+  }
 }
+

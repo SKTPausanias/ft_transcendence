@@ -360,4 +360,15 @@ export class PlayService {
 			return (room)
 		} catch (error) {}
 	}
+
+	async getRanking(): Promise<UserPublicInfoI[]> {
+		try {
+			const ranking = await this.userService.findPosition();
+			//transform into UserPublicInfoI array
+			var users: UserPublicInfoI [] = [];
+			for (var i = 0; i < ranking.length; i++)
+			  users.push(await User.getPublicInfo(ranking[i]));
+			return (users);
+		} catch (error) { }
+	}
 }

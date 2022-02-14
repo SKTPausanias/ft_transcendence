@@ -20,7 +20,7 @@ export class PlayComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
-			console.log("Winner from playComponent", data);
+			console.log("Winner from playComponent", data);			
 		});
 		this.matchMakingEmiter = this.playService.matchMakingEmiter.subscribe((data: any) => {
 			console.log("Wait ROOm emiter", data);
@@ -38,6 +38,7 @@ export class PlayComponent implements OnInit {
 		if (game.gameFinished)
 			this.cancelGame(game);
 	}
+	
 	cancelGame(game: GameI){
 		this.playService.emit(ePlay.ON_GAME_END, {wRoom: this.playPreference.game, game: game});
 		if (game.score_p1 > game.score_p2)
@@ -46,6 +47,7 @@ export class PlayComponent implements OnInit {
 			this.playService.emit(ePlay.ON_GAME_WINNER, {winner: this.playPreference.game.player2, loser: this.playPreference.game.player1});
 		this.playPreference.game = <WaitRoomI>{};
 	}
+
 	matchMaking(): void {
 		this.waiting ? this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING) : this.playService.emit(ePlay.ON_MATCH_MAKING);
 		this.waiting = this.waiting != true;

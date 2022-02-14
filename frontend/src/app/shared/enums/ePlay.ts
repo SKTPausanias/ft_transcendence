@@ -20,7 +20,8 @@ export enum ePlay {
 	ON_CANCEL_MATCH_MAKING = "on-cancel-match-making",
 	ON_SELECT_PLAY_MODE = "on-select-play-mode",
 	ON_SET_LIVE_VIEWERS = "on-set-live-viewers",
-	ON_GET_LIVE_VIEWERS = "on-get-live-viewers"
+	ON_GET_LIVE_VIEWERS = "on-get-live-viewers",
+	ON_GET_RANKING = "on-get-ranking",
 }
 
 export enum eRequestPlayer{

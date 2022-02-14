@@ -82,8 +82,8 @@ export class UserService {
 				hits: "DESC"
 			}
 		});
-
 	}
+
 	async save(user: any): Promise<UserEntity | any>{
 		try {
 			return (await this.userRepository.save(user));
