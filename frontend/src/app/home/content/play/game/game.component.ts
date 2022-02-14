@@ -20,7 +20,7 @@ import { ePlayMode } from 'src/app/shared/enums/ePlay';
 	templateUrl: './game.component.html',
 	styleUrls: ['./game.component.css']
 })
-export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
+export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
 	@ViewChild('game') gameCanvas: ElementRef<HTMLCanvasElement>;
 	@Input() prefs: SharedPreferencesI;
 	@Output() sndWinner = new EventEmitter<GameI>();

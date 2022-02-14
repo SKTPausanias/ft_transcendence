@@ -29,7 +29,7 @@ import { ChatModalComponent } from './home/content/chat/modal/chat-modal.compone
 import { ChangePasswordComponent } from './home/content/chat/modal/change-password/change-password.component';
 import { UserProfileComponent } from './home/content/chat/modal/user-profile/user-profile.component';
 import { GameWaitRoomComponent } from './home/content/play/game-wait-room/game-wait-room.component';
-import { gameComponent } from './home/content/play/game/game.component';
+import { GameComponent } from './home/content/play/game/game.component';
 import { CanvasComponent } from './home/content/live/stream/canvas.component';
 
 @NgModule({
@@ -58,7 +58,7 @@ import { CanvasComponent } from './home/content/live/stream/canvas.component';
   ChangePasswordComponent,
   UserProfileComponent,
   GameWaitRoomComponent,
-  gameComponent,
+  GameComponent,
   CanvasComponent
   ],
   imports: [
