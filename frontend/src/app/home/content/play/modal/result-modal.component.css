@@ -1,0 +1,104 @@
+.bg-img{
+	background: url("/assets/img/pong.jpeg");
+	filter: blur(10px);
+	-webkit-filter: blur(10px);
+	height: 300px;
+	width: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.profile-ctn{
+	background-color: #00000041; 
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.profile-info{
+	text-align: center;
+	color: #ffffff;
+	margin-bottom: 20px;
+}
+
+.close-ctn{
+	height: 50px;
+}
+#close{
+	color: #ffffff;
+	background-color: #0e193096;
+ 	border: 1px solid #ffffff;
+	text-align: center;
+	padding: 5px 10px 5px 10px;
+	margin-top: 15px;
+	margin-right: 15px;
+	border-radius: 50%;
+}
+
+#close:hover{
+	cursor: pointer;
+	background-color: #ffffff6c; 
+	color: #0e1930;
+	border-color: #0e1930;
+}
+
+.content{
+	height: 550px;
+	margin: 0px 0 0 0;
+}
+
+.game{
+	margin-top: 75px;
+	text-align: center;
+}
+
+.game h1{
+    border-bottom: 3px solid #ffffff;
+}
+
+.stats{
+	margin-top: 150px;
+	text-align: center;
+}
+
+.stats-ctn{
+	width: 125px;
+	height: 125px;
+	margin: auto;
+	padding: 20px;
+	border-radius: 50%;
+	border: 1px solid;
+	margin-bottom: 20px;
+
+}
+
+.total{
+	color: #fcff2f;
+	border-color: #fcff2f;
+	background-color: #fcff2f21;
+}
+.wins{
+	color: #5ffc51;
+	border-color: #5ffc51;
+	background-color: #5ffc5121;
+}
+.loses{
+	color: #f50404;
+	border-color: #f50404;
+	background-color: #f5040421;
+}
+
+.rank{
+	color: #fd7200;
+	border-color: #fd7200;
+	background-color: #fd720021;
+}
+
+img{
+	border: 1px solid #ffffff;
+}
+
+

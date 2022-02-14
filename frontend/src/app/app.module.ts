@@ -31,6 +31,7 @@ import { UserProfileComponent } from './home/content/chat/modal/user-profile/use
 import { GameWaitRoomComponent } from './home/content/play/game-wait-room/game-wait-room.component';
 import { GameComponent } from './home/content/play/game/game.component';
 import { CanvasComponent } from './home/content/live/stream/canvas.component';
+import { ResultModalComponent } from './home/content/play/modal/result-modal.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import { CanvasComponent } from './home/content/live/stream/canvas.component';
   UserProfileComponent,
   GameWaitRoomComponent,
   GameComponent,
-  CanvasComponent
+  CanvasComponent,
+  ResultModalComponent
   ],
   imports: [
     BrowserModule,

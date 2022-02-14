@@ -306,7 +306,10 @@ export class PlayGateway {
       ePlay.ON_GAME_WINNER,
       data.winner.login,
       user,
-      "you win!"
+      {
+        message: "you Win",
+        showModal: true
+      }
     );
 
     user = await this.userService.findByLogin(data.loser.login);
@@ -315,7 +318,10 @@ export class PlayGateway {
       ePlay.ON_GAME_WINNER,
       data.winner.login,
       user,
-      "you lose :("
+      {
+        message: "you lose :(",
+        showModal: true
+      }
     ); 
   }
 
