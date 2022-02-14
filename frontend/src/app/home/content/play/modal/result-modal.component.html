@@ -1,0 +1,20 @@
+<div class="bg-img"></div>
+<div class="profile-ctn">
+	<div class="d-flex justify-content-end close-ctn" (click)="close()">
+		<div id="close">
+			<span class="fa fa-times"></span>
+		</div>
+	</div>
+	<div class="row content">
+		<div class="col-6 profile-info">
+			<img src="{{user.avatar}}" class="img-fluid ico_l mt-3" alt="">
+			<i><h2 class="mt-3 mb-0">{{user.nickname}}</h2></i>
+		</div>
+		<div class="col-3 game">
+			<div class="text-center profile-info">
+					<h3 class="wins">{{message}}</h3>
+			</div>
+		</div>
+	</div>
+</div>
+	

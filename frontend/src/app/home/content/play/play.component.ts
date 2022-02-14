@@ -1,9 +1,11 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { SharedPreferencesI, WaitRoomI } from "src/app/shared/ft_interfaces";
+import { SharedPreferencesI, UserInfoI, WaitRoomI } from "src/app/shared/ft_interfaces";
 import { PlayService } from "./play.service";
 import { Router } from "@angular/router";
 import { ePlay } from "src/app/shared/ft_enums";
 import { GameI } from "src/app/shared/interface/iPlay";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { ResultModalComponent } from "./modal/result-modal.component";
 
 @Component({
 	selector: "app-play",
@@ -16,24 +18,30 @@ export class PlayComponent implements OnInit {
 	btnTxt: string = "Quick Play";
 	gameWinnerEmiter: any;
 	matchMakingEmiter: any;
-	constructor(private playService: PlayService) {}
+	constructor(private playService: PlayService,
+				private modalService: NgbModal) {}
 
 	ngOnInit(): void {
 		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
-			console.log("Winner from playComponent", data);
+			if (data.showModal == true)
+				this.openModal(data.message, this.playPreference);
 		});
 		this.matchMakingEmiter = this.playService.matchMakingEmiter.subscribe((data: any) => {
 			console.log("Wait ROOm emiter", data);
 			this.waiting = false;
 			this.btnTxt = "Quick Play";
 		});
+		
 	}
-	ngAfterViewInit(){}
+	ngAfterViewInit(){
+		//this.openModal("Hola !!!", this.playPreference);
+	}
 	
 	ngOnDestroy(): void {
 		this.gameWinnerEmiter.unsubscribe();
 		this.matchMakingEmiter.unsubscribe();
 	}
+
 	rcvWinner(game: GameI){
 		if (game.gameFinished)
 			this.cancelGame(game);
@@ -53,5 +61,13 @@ export class PlayComponent implements OnInit {
 
 	}
 	cancelMatchMaking(): void {
+	}
+	openModal(message: string, preferences: SharedPreferencesI) {
+		const modal = this.modalService.open(ResultModalComponent, {
+		  centered: false,
+		  animation: true,
+		});
+		modal.componentInstance.message = message;
+		modal.componentInstance.preferences = preferences;
 	}
 }
