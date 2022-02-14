@@ -49,6 +49,12 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 	game_mode: number;
 	rockets_p1: number;
 	rockets_p2: number;
+	first_hit: boolean;
+	num_color_p1: number;
+	num_color_p2: number;
+	color_p1: number;
+	color_p2: number;
+	colors: string[] = [];
 	
 	constructor(private liveService: LiveService,
 		private playService: PlayService) {
@@ -62,6 +68,13 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.viewers = 0;
 		this.rockets_p1 = 0;
 		this.rockets_p2 = 0;
+		this.first_hit = false;
+		this.colors.push('#FFFFFF');
+		this.colors.push('#5DD2AA');
+		this.colors.push('#5D99E1');
+		this.colors.push('#E366CD');
+		this.num_color_p1 = 0;
+		this.num_color_p2 = 0;
 		
 	}
 
@@ -80,6 +93,9 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.gameFinished = data.gameInfo.gameFinished;
 				this.game_mode = data.gameInfo.game_mode;
+				this.first_hit = data.gameInfo.first_hit;
+				this.color_p1 = data.gameInfo.color_num_p1;
+				this.color_p2 = data.gameInfo.color_num_p2;
 				if (data.gameInfo.game_mode == ePlayMode.POWER){
 					this.rockets_p1 = data.gameInfo.rockets_p1;
 					this.rockets_p2 = data.gameInfo.rockets_p2;
@@ -124,12 +140,14 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 		this.resize();
 		this.context?.clearRect(0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height);
 		this.context?.drawImage(this.modeImg, 0, 0, this.gameCanvas.nativeElement.width, this.gameCanvas.nativeElement.height)
-		if (this.context != undefined)
-			this.context.fillStyle = '#ffffff';
-		
+		this.context ? this.context.fillStyle = this.colors[0]: null; // array pos = white
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
+		this.context ? this.context.fillStyle = this.colors[this.color_p1] : null;
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
+		this.context ? this.context.fillStyle = this.colors[0]: null;		
+		this.context ? this.context.fillStyle = this.colors[this.color_p2] : null;
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
+		this.context ? this.context.fillStyle = this.colors[0]: null;
 		this.context?.fillRect(this.width - 10, this.height-10, 5, 5);
 		this.context?.fillRect(10, 10, 5, 5);
 		this.context?.fillRect(10, this.height -10, 5, 5);
@@ -159,6 +177,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			gameData.down = this.moving_down;
 			gameData.shoots = this.shoots;
 			gameData.p1 = this.prefs.game.player1.login == this.prefs.userInfo.login;
+			gameData.color_num_p1 = this.num_color_p1;
+			gameData.color_num_p2 = this.num_color_p2;
 			/* !gameFinished */
 			this.playService.emit(ePlay.ON_GAME_MOVING, gameData);
 		}
@@ -216,6 +236,30 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.modeImg.src = '/assets/img/play_modes/angle_mode.png';
 	}
 
+	private changeColor(val: string):void {
+		if (val == "Digit1"){
+			if (this.prefs.game.player1.login == this.prefs.userInfo.login)
+				this.num_color_p1 = 0;
+			else
+				this.num_color_p2 = 0;
+		} else if (val == "Digit2"){
+			if (this.prefs.game.player1.login == this.prefs.userInfo.login)
+				this.num_color_p1 = 1;
+			else
+				this.num_color_p2 = 1;
+		} else if (val == "Digit3"){
+			if (this.prefs.game.player1.login == this.prefs.userInfo.login)
+				this.num_color_p1 = 2;
+			else
+				this.num_color_p2 = 2;
+		} else if (val == "Digit4"){
+			if (this.prefs.game.player1.login == this.prefs.userInfo.login)
+				this.num_color_p1 = 3;
+			else
+				this.num_color_p2 = 3;
+		}
+	}
+
 	@HostListener('window:keydown', ['$event'])
 	keyUp(event: KeyboardEvent): void {
 		if (event.code == "ArrowUp")
@@ -226,6 +270,7 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.shoots = true;
 	}
 	
+	
 	@HostListener('window:keyup', ['$event'])
 	keyDown(event: KeyboardEvent): void {
 		if (event.code == "ArrowUp")
@@ -234,6 +279,8 @@ export class gameComponent implements OnInit, OnDestroy, AfterViewInit {
 			this.moving_down = false;
 		if (event.code == "Space")
 			this.shoots = false;
+		if (!this.first_hit)
+			this.changeColor(event.code);
 	}
 	
 	@HostListener('window:resize', ['$event'])

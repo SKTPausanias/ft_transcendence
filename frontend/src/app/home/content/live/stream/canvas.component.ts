@@ -43,15 +43,28 @@ export class CanvasComponent implements OnInit {
 	game_mode: number;
 	rockets_p1: number;
 	rockets_p2: number;
+	first_hit: boolean;
+	num_color_p1: number;
+	num_color_p2: number;
+	color_p1: number;
+	color_p2: number;
+	colors: string[] = [];
 	
 	constructor(private liveService: LiveService,
 				private location: Location,
 				private sQuery: SessionStorageQueryService,
 				private playService: PlayService) {
-			this.width = 0;
-			this.height = 0;
-			this.viewers = 0;
-		}
+		this.width = 0;
+		this.height = 0;
+		this.viewers = 0;
+		this.first_hit = false;
+		this.colors.push('#FFFFFF');
+		this.colors.push('#5DD2AA');
+		this.colors.push('#5D99E1');
+		this.colors.push('#E366CD');
+		this.num_color_p1 = 0;
+		this.num_color_p2 = 0;
+	}
 
 	ngOnInit(): void {
 		this.width = 0;
@@ -88,11 +101,14 @@ export class CanvasComponent implements OnInit {
 		this.resize();
 		this.context?.clearRect(0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height);
 		this.context?.drawImage(this.modeImg, 0, 0, this.liveCanvas.nativeElement.width, this.liveCanvas.nativeElement.height)
-		if (this.context != undefined)
-			this.context.fillStyle = '#ffffff';
+		this.context ? this.context.fillStyle = this.colors[0]: null; // array pos = white
 		this.context?.fillRect(this.ball.pos_x, this.ball.pos_y, this.ball.width, this.ball.height);
+		this.context ? this.context.fillStyle = this.colors[this.color_p1] : null;
 		this.context?.fillRect(this.pad_1.pos_x, this.pad_1.pos_y, this.pad_1.width, this.pad_1.height);
+		this.context ? this.context.fillStyle = this.colors[0]: null;		
+		this.context ? this.context.fillStyle = this.colors[this.color_p2] : null;
 		this.context?.fillRect(this.pad_2.pos_x, this.pad_2.pos_y, this.pad_2.width, this.pad_2.height);
+		this.context ? this.context.fillStyle = this.colors[0]: null;
 		this.context?.fillRect(this.width - 10, this.height-10, 5, 5);
 		this.context?.fillRect(10, 10, 5, 5);
 		this.context?.fillRect(10, this.height -10, 5, 5);
@@ -121,6 +137,9 @@ export class CanvasComponent implements OnInit {
 				this.hits_p1 = data.gameInfo.hits_p1;
 				this.hits_p2 = data.gameInfo.hits_p2;
 				this.game_mode = data.gameInfo.game_mode;
+				this.first_hit = data.gameInfo.first_hit;
+				this.color_p1 = data.gameInfo.color_num_p1;
+				this.color_p2 = data.gameInfo.color_num_p2;
 				if (data.gameInfo.game_mode == ePlayMode.POWER){
 					this.rockets_p1 = data.gameInfo.rockets_p1;
 					this.rockets_p2 = data.gameInfo.rockets_p2;

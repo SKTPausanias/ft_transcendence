@@ -38,7 +38,9 @@ export interface GameDataI{
 	up: boolean | undefined,
 	down: boolean | undefined,
 	p1: boolean,
-	shoots: boolean
+	shoots: boolean,
+	color_num_p1: number,
+	color_num_p2: number
 }
 
 export interface MapI {
@@ -55,5 +57,5 @@ export interface GameI {
 	score_p2: number,
 	hits_p1: number,
 	hits_p2: number,
-	gameFinished: boolean
+	gameFinished: boolean,
 }

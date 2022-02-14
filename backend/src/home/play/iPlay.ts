@@ -37,7 +37,10 @@ export interface GameI {
 	rockets_p1: number,
 	rockets_p2: number,
 	gameFinished: boolean,
-	game_mode: number
+	game_mode: number,
+	first_hit: boolean,
+	color_num_p1: number,
+	color_num_p2: number
 }
 
 export interface GameMoveableI {

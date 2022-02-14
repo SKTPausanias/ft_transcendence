@@ -29,6 +29,9 @@ export class Game {
 	game_mode: number;
 	speed: number;
 	gameInterval: any;
+	first_hit: boolean;
+	num_color_p1: number;
+	num_color_p2: number;
 
     constructor(private id: number, gameMode: number) {
 		this.game_mode = gameMode;
@@ -49,6 +52,9 @@ export class Game {
 		this.obstacleTouch = false;
 		this.gameFinished = false;
 		this.max_score = 3;
+		this.first_hit = false;
+		this.num_color_p1 = 0;
+		this.num_color_p2 = 0;
 		if (gameMode == ePlayMode.POWER)
 			this.max_score = 5;
 		else if (gameMode == ePlayMode.ANGLE)
@@ -84,7 +90,10 @@ export class Game {
 			rockets_p1: this.pad_1.getShoots(),
 			rockets_p2: this.pad_2.getShoots(), 
 			gameFinished: this.gameFinished,
-			game_mode : this.game_mode
+			game_mode : this.game_mode,
+			first_hit: this.first_hit,
+			color_num_p1: this.num_color_p1,
+			color_num_p2: this.num_color_p2
         });
     }
     
@@ -111,6 +120,7 @@ export class Game {
 			/* if (this.score_p1 == this.max_score || this.score_p2 == this.max_score) //this was commented to set the interval.
 				this.gameFinished = true; */
             this.start = false;
+			this.first_hit = true;
 			this.obstacleTouch = false;
 			this.ball.setVerticalSpeedRatio(0.5);
             this.ball.setSpeedBallX(1);
@@ -123,11 +133,13 @@ export class Game {
 			this.ball.reverseY();
 		else if (this.boundBall.left <= this.boundPad_1.right && left_touch) // left padd collision
 		{
+			this.first_hit = true;
 			if (this.boundBall.bottom >= this.boundPad_1.top && this.boundBall.top <= this.boundPad_1.bottom)
 				this.leftPadCollision();
 		}
 		else if (this.boundBall.right >= this.boundPad_2.left && !left_touch) // right pad collision
 		{
+			this.first_hit = true;
 			if (this.boundBall.bottom >= this.boundPad_2.top && this.boundBall.top <= this.boundPad_2.bottom)
 				this.rightPadCollision();
 		}
@@ -231,5 +243,29 @@ export class Game {
 	removeInterval(){
 		clearInterval(this.gameInterval);
 		this.gameInterval = undefined;
+	}
+
+	changeColor(pad_id: number, val: number):void {
+		if (val == 0){
+			if (pad_id == 0)
+				this.num_color_p1 = 0;
+			else
+				this.num_color_p2 = 0;
+		} else if (val == 1){
+			if (pad_id == 0)
+				this.num_color_p1 = 1;
+			else
+				this.num_color_p2 = 1;
+		} else if (val == 2){
+			if (pad_id == 0)
+				this.num_color_p1 = 2;
+			else
+				this.num_color_p2 = 2;
+		} else if (val == 3){
+			if (pad_id == 0)
+				this.num_color_p1 = 3;
+			else
+				this.num_color_p2 = 3;
+		}
 	}
 }
