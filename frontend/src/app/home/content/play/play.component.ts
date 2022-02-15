@@ -6,6 +6,7 @@ import { ePlay } from "src/app/shared/ft_enums";
 import { GameI } from "src/app/shared/interface/iPlay";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ResultModalComponent } from "./modal/result-modal.component";
+import { SystemInfoI } from "src/app/shared/interface/iDash";
 
 @Component({
 	selector: "app-play",
@@ -18,8 +19,15 @@ export class PlayComponent implements OnInit {
 	btnTxt: string = "Quick Play";
 	gameWinnerEmiter: any;
 	matchMakingEmiter: any;
+	infoSystemEmitter: any;
+	infoSystem: SystemInfoI;
 	constructor(private playService: PlayService,
-				private modalService: NgbModal) {}
+				private modalService: NgbModal) {
+		this.infoSystem = <SystemInfoI>{};
+		this.infoSystem.total_users = 0;
+		this.infoSystem.online_users = 0;
+		this.infoSystem.in_game_users = 0;
+	}
 
 	ngOnInit(): void {
 		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
@@ -31,6 +39,10 @@ export class PlayComponent implements OnInit {
 			this.waiting = false;
 			this.btnTxt = "Quick Play";
 		});
+		this.infoSystemEmitter = this.playService.getInfoSystemEmitter.subscribe((data: any) => {
+			this.infoSystem = data;
+		});
+		this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		
 	}
 	ngAfterViewInit(){
@@ -40,6 +52,7 @@ export class PlayComponent implements OnInit {
 	ngOnDestroy(): void {
 		this.gameWinnerEmiter.unsubscribe();
 		this.matchMakingEmiter.unsubscribe();
+		this.infoSystemEmitter.unsubscribe();
 	}
 
 	rcvWinner(game: GameI){
