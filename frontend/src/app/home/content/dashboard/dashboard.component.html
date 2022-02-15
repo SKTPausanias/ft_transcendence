@@ -1,7 +1,63 @@
-<h2>Ranking</h2>
-<ul>
-  <li *ngFor="let rank of ranking">
-    <!-- print stats for each rank -->
-     {{rank.login}} - victories: {{rank.victories}} - defeats: {{rank.defeats}}
-  </li>
-</ul>
+<div class="cont vh-100">
+  <div style="width: 100%; text-align: center; padding-left: 20px; padding-right: 20px; padding-top: 10px;">
+    <h4 class="text-light border-bottom m-0 p-2">Dashboard</h4>
+  </div>
+  <div class="row">
+    <div class="dash-ctn col">
+
+      <div class="quick-dash-content">
+        <div class="info-ctn col">
+          <h4 class="text-light border-bottom">Top ten</h4>
+          <div class="row">
+            <div class="col">
+              <p class="mb-1">#Position</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">NickName</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">Victories</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">defeats</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">Total hits</p>
+            </div>
+          </div>
+          <div class="row" *ngFor="let player of ranking; let i=index;">
+            <div class="col">
+              <p class="mb-1"><i>#{{i + 1}}</i></p>
+            </div>
+            <div class="col">
+              <p class="mb-1">{{player.nickname}}</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">{{player.victories}}</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">{{player.defeats}}</p>
+            </div>
+            <div class="col">
+              <p class="mb-1">{{player.hits}}</p>
+            </div>
+          </div>
+        </div>
+        <div>
+        </div>
+
+
+      </div>
+    </div> <!-- END COL MAIN DIV-->
+    <div class="info-dash-ctn col">
+      <div class="quick-dash-content">
+        <div class="info-ctn col">
+          <h4 class="text-light border-bottom">Info</h4>
+          <i><small class="mt-3">Total users: {{infoSystem.total_users}}</small></i><br>
+          <i><small class="mt-3">Online users: {{infoSystem.online_users}}</small></i><br>
+          <i><small class="mt-3">In game users: {{infoSystem.in_game_users}}</small></i><br>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

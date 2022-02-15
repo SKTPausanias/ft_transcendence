@@ -9,3 +9,45 @@
 .parent>div{
 	display: inline-block;
 }
+.dash-ctn{
+	position: relative;
+	width: 60%;
+	float:left; 
+	height: 100vh;
+	text-align: center;
+}
+.info-dash-ctn{
+	position: relative;
+	width: 30%;
+	height: 100vh;
+	text-align: center;
+	float: left;
+}
+
+.quick-dash-content{
+	position: absolute;
+	width: 80%;
+	left: 50%;
+	top: 20%;
+	-webkit-transform: translate(-50%, -20%);
+	transform: translate(-50%, -20%);
+	text-align: center;
+	overflow: hidden;
+}
+
+.row-inf{
+	text-align: left;
+}
+
+#quick-play{
+	width: 250px;
+	height: 60px;
+	margin: auto;
+	margin-top: 16px;
+}
+.info-ctn{
+	color: #ffffff;
+	padding: 20px;
+	background-color: #727e96;
+	border-radius: 10px;
+}

@@ -274,6 +274,7 @@ export class PlayGateway {
       {lives: await this.playService.onGetLiveGames()}
     );
     this.server.emit(ePlay.ON_GET_RANKING, await this.playService.getRanking());
+    this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
     console.log("Finishing...");
     if (data.wRoom.id !== undefined)
       this.games = this.games.filter(item => item.getId() != data.wRoom.id);
@@ -295,6 +296,7 @@ export class PlayGateway {
         {lives: await this.playService.onGetLiveGames()}
       );
     }
+    this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
   }
 
   @SubscribeMessage(ePlay.ON_GAME_WINNER)
@@ -426,6 +428,11 @@ export class PlayGateway {
   @SubscribeMessage(ePlay.ON_GET_RANKING)
   async onGetRanking(client: any): Promise<void> {
     this.server.emit(ePlay.ON_GET_RANKING, await this.playService.getRanking());
+  }
+  
+  @SubscribeMessage(ePlay.ON_GET_INFO_SYSTEM)
+  async onGetInfoSystem(client: any): Promise<void> {
+    this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
   }
 }
 

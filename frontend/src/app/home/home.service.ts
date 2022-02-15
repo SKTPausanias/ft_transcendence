@@ -29,6 +29,7 @@ export class HomeService {
 		this.terminateWorker();
 		//await this.authService.logout(this.session);
 		this.sQuery.removeAll();
+		await this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		this.router.navigateByUrl("logIn");
 	}
 	listenSessionWorker(){

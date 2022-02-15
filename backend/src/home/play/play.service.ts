@@ -9,7 +9,7 @@ import { UserService } from "../user/user.service";
 import { User } from "../user/userClass";
 import { UserPublicInfoI } from "../user/userI";
 import { eRequestPlayer } from "./ePlay";
-import { GameI, PlayerI, WaitRoomI } from "./iPlay";
+import { GameI, PlayerI, SystemInfoI, WaitRoomI } from "./iPlay";
 import { PlayEntity } from "./play.entity";
 import { Response } from "src/shared/response/responseClass";
 import { StatsEntity } from "./stats.entity";
@@ -366,9 +366,29 @@ export class PlayService {
 			const ranking = await this.userService.findPosition();
 			//transform into UserPublicInfoI array
 			var users: UserPublicInfoI [] = [];
-			for (var i = 0; i < ranking.length; i++)
-			  users.push(await User.getPublicInfo(ranking[i]));
+			for (var i = 0; i < ranking.length; i++) {
+				if (ranking[i].login != "nobody")
+			  		users.push(await User.getPublicInfo(ranking[i]));
+			}
 			return (users);
+		} catch (error) { }
+	}
+	async getInfoSystem(): Promise<any> {
+		try {
+			var data: SystemInfoI = <SystemInfoI>{}
+			data.in_game_users = 0;
+			data.online_users = 0;
+			data.total_users = 0;
+			var result = await this.userRepository.find();
+			result = result.filter(item => item.login != "nobody");
+			data.total_users = result.length;
+			for (var i = 0; i < result.length; i++){
+				if (result[i].online)
+					data.online_users++;
+				if (result[i].in_game)
+					data.in_game_users++;
+			}
+			return (data);
 		} catch (error) { }
 	}
 }

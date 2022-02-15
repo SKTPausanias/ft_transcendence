@@ -2,15 +2,11 @@ import { Component, ElementRef, Input, OnInit, ViewChild  } from '@angular/core'
 
 import { SessionStorageQueryService } from 'src/app/shared/ft_services';
 import { UserPublicInfoI } from 'src/app/shared/interface/iUserInfo';
-import { DashboardService } from './dashboard.service';
-import { debounceTime, map, distinctUntilChanged, filter} from "rxjs/operators";
-import { fromEvent } from 'rxjs';
 import { SharedPreferencesI } from 'src/app/shared/ft_interfaces';
 import { HomeService } from '../../home.service';
-import { Router } from '@angular/router';
-import { taggedTemplate } from '@angular/compiler/src/output/output_ast';
 import { PlayService } from '../play/play.service';
 import { ePlay } from 'src/app/shared/ft_enums';
+import { SystemInfoI } from 'src/app/shared/interface/iDash';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,22 +16,38 @@ import { ePlay } from 'src/app/shared/ft_enums';
 export class DashboardComponent implements OnInit {
 	@Input() dashboardPreference: SharedPreferencesI;
 	session = this.sQuery.getSessionToken();
-	getRankingsEmiter: any;
+	getRankingsEmitter: any;
+	getInfoSystemEmitter:any;
 	ranking: UserPublicInfoI[] = [];
+	infoSystem: SystemInfoI;
 	
 	constructor(
 	  private sQuery: SessionStorageQueryService,
 	  public homeService: HomeService,
 	  private playService: PlayService,
-	  ) { }
+	  ) {
+		  this.infoSystem = <SystemInfoI>{};
+		  this.infoSystem.total_users = 0;
+		  this.infoSystem.in_game_users = 0;
+		  this.infoSystem.online_users = 0;
+	  }
   
 	ngOnInit() {
-		this.getRankingsEmiter = this.playService.getRankingEmiter.subscribe((data: any) => {
+		this.getRankingsEmitter = this.playService.getRankingEmiter.subscribe((data: any) => {
 			if (data !== undefined) {
 				this.ranking = data;
 			}		
 		});
+		this.getInfoSystemEmitter = this.playService.getInfoSystemEmitter.subscribe((data: any) =>{
+			console.log("DashBoard infoSystem was called");
+			this.infoSystem = data;
+		})
+		this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		this.showRanking();
+	}
+	ngOnDestroy(): void {
+		this.getRankingsEmitter.unsubscribe();
+		this.getInfoSystemEmitter.unsubscribe();
 	}
 
 	showRanking() {

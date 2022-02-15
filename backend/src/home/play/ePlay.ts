@@ -25,6 +25,7 @@ export enum ePlay {
 	ON_SET_LIVE_VIEWERS = "on-set-live-viewers",
 	ON_GET_LIVE_VIEWERS = "on-get-live-viewers",
 	ON_GET_RANKING = "on-get-ranking",
+	ON_GET_INFO_SYSTEM = "on-get-info-system"
 }
 export enum eRequestPlayer{
 	WAITING = "waiting",
