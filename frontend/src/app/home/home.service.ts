@@ -25,11 +25,11 @@ export class HomeService {
 	async closeSession(){
 		await this.playService.emit(ePlay.ON_CANCEL_MATCH_MAKING);
 		await this.socketService.emit(wSocket.DISCONNECT_USER);
-		//this.socketService.disconnect();
+		this.socketService.disconnect();
 		this.terminateWorker();
-		//await this.authService.logout(this.session);
+		await this.authService.logout(this.session);
 		this.sQuery.removeAll();
-		await this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
+		await this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);//see socket gateway on disconect_user
 		this.router.navigateByUrl("logIn");
 	}
 	listenSessionWorker(){

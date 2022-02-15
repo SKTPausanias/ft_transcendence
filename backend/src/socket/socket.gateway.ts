@@ -1,6 +1,7 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { ChatGateway } from 'src/home/chat/chat.gateway';
 import { FriendService } from 'src/home/friends/friend.service';
+import { ePlay } from 'src/home/play/ePlay';
 import { PlayGateway } from 'src/home/play/play.gateway';
 import { PlayService } from 'src/home/play/play.service';
 import { UserService } from 'src/home/user/user.service';
@@ -16,6 +17,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(private socketService: SocketService,
 				private chatGateway: ChatGateway,
 				private playGateway: PlayGateway,
+				private playService: PlayService,
 				private userService: UserService,
 				private sessionService: SessionService,
 				private friendService: FriendService){}
@@ -44,6 +46,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	async handleDisconnect(client) { //set another way of counting users: This is not a good way
 		--this.clientsConnected;
+		
 		console.log("onDisconect(): Client count : ", this.server.engine.clientsCount);
 
 	}
@@ -106,7 +109,8 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await this.socketService.emitToAllFriends(this.server, wSocket.USER_UPDATE, session.userID.login, 
 				friends, User.getPublicInfo(session.userID));
 		}
-		this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
+		await this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
+		await this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
 	}
 
 	private async getSessionData(client: any){
