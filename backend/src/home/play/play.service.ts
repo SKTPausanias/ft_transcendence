@@ -363,7 +363,9 @@ export class PlayService {
 
 	async getRanking(): Promise<UserPublicInfoI[]> {
 		try {
-			const ranking = await this.userService.findPosition();
+			var ranking = await this.userService.findPosition();
+			//only first 10 players
+			ranking = ranking.slice(0, 10);
 			//transform into UserPublicInfoI array
 			var users: UserPublicInfoI [] = [];
 			for (var i = 0; i < ranking.length; i++) {

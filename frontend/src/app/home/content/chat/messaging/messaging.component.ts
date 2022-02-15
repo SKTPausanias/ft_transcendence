@@ -48,6 +48,7 @@ export class MessagingComponent implements OnInit {
 		this.room = this.msgPreference.chat.active_room;
 		this.members =  this.room.members;
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
+		console.log("prefernce", this.msgPreference.chat.active_room);
 		
 
 	}
@@ -183,6 +184,10 @@ export class MessagingComponent implements OnInit {
 		}
 		else if (event.code == "Enter" || event.code == "NumpadEnter")
 			this.send();
+		
+	}
+
+	private userBanned() {
 		
 	}
 }
