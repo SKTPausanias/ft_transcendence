@@ -174,8 +174,9 @@ export class UserService {
 				}
 			}
 
+			//Deleting from session
+			await this.sessionService.deleteFromSession(usr);
 			//Deleting from twoFactor
-			console.log("Finding twoFactor", usr);
 			const factorDelete = await this.twoFactorRepository.find({relations: ['userID'], where: {"userID.id": usr.id}});
 			if (factorDelete !== undefined){
 				console.log("Deleting from twoFactor");

@@ -124,4 +124,12 @@ export class SessionService {
 
 		}
 	}
+	
+	async deleteFromSession(user: UserEntity){
+		try {
+			const sessions = await this.sessionRepository.find({relations: ['userID'], where: {'userID': user}})
+			if (sessions !== undefined)
+				await this.sessionRepository.remove(sessions);
+		} catch(e) {}
+	}
 }
