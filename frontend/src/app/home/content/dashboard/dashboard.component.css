@@ -2,27 +2,44 @@
 .cont{
 	background-color: #92a1c0;
 }
+#titleBar{
+	width: 100%;
+	text-align: center;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 10px;
+}
+
+.dash-ctn{
+	position: relative;
+	width: 50%;
+	margin-top: 100px;
+	text-align: center;
+}
+
+.info-dash-ctn{
+	position: relative;
+	width: 30%;
+	margin-top: 100px;
+	text-align: center;
+}
+.friend-dash-ctn{
+	position: relative;
+	width: 40%;
+	height: 200px;
+	margin-top: 250px;
+	text-align: center;
+}
+
 .parent{
 	margin-top: 10px;
 	margin-bottom: 10px;
 }
+
 .parent>div{
 	display: inline-block;
 }
-.dash-ctn{
-	position: relative;
-	width: 60%;
-	float:left; 
-	height: 100vh;
-	text-align: center;
-}
-.info-dash-ctn{
-	position: relative;
-	width: 30%;
-	height: 100vh;
-	text-align: center;
-	float: left;
-}
+
 
 .quick-dash-content{
 	position: absolute;
@@ -32,7 +49,7 @@
 	-webkit-transform: translate(-50%, -20%);
 	transform: translate(-50%, -20%);
 	text-align: center;
-	overflow: hidden;
+	
 }
 
 .row-inf{
@@ -50,4 +67,74 @@
 	padding: 20px;
 	background-color: #727e96;
 	border-radius: 10px;
+}
+
+.item-ctn{
+	margin: 0;
+	padding: 10px 5px 10px 5px;
+	background-color: #53668f;
+	border-radius: 20px;
+	color: #ffffff;
+}
+.profile:hover{
+	cursor: pointer;
+}
+.search_input{
+	color: white;
+	border: 0;
+	outline: 0;
+	background: none;
+	width: 250px;
+	caret-color:transparent;
+	line-height: 40px;
+	transition: width 0.4s linear;
+}
+.searchbar{
+	margin-bottom: auto;
+	margin-top: auto;
+	height: 60px;
+	background-color: #53668f;
+	border-radius: 30px;
+	padding: 10px;
+}
+.searchbar:hover > .search_input{
+	padding: 0 10px;
+	width: 250px;
+	caret-color:red;
+	
+}
+
+.searchbar:hover > .search_icon{
+	background: white;
+	color: #e74c3c;
+}
+
+.search-results span{
+	padding-right: 15px;
+
+}
+.search-results span:hover{
+cursor: pointer;
+color: #313131;
+}
+
+.lens{
+	cursor: none;
+}
+.lens:hover{
+	cursor: pointer;
+}
+.scrool{
+	overflow-y: scroll;
+	max-height: 20vh;	
+}
+.scrool::-webkit-scrollbar {
+	width: 25px;
+
+}
+.scrool::-webkit-scrollbar-thumb {
+	border: 8px solid rgba(0, 0, 0, 0);
+	background-clip: padding-box;
+	border-radius: 9999px;
+	background-color: #415a8b;
 }
