@@ -24,13 +24,9 @@
 	margin-bottom: 20px;
 }
 
-.close-ctn{
-	height: 50px;
-}
 #close{
 	color: #ffffff;
 	background-color: #0e193096;
- 	border: 1px solid #ffffff;
 	text-align: center;
 	padding: 5px 10px 5px 10px;
 	margin-top: 15px;
@@ -39,9 +35,8 @@
 }
 
 #close:hover{
+	color: rgb(255, 0, 0);
 	cursor: pointer;
-	background-color: #ffffff6c; 
-	color: #0e1930;
 	border-color: #0e1930;
 }
 

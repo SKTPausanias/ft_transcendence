@@ -309,7 +309,7 @@ export class PlayGateway {
       data.winner.login,
       user,
       {
-        message: "you Win",
+        message: "Victory!",
         showModal: true
       }
     );
@@ -321,7 +321,7 @@ export class PlayGateway {
       data.winner.login,
       user,
       {
-        message: "you lose :(",
+        message: "Defeat!",
         showModal: true
       }
     ); 
