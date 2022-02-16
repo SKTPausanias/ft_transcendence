@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth/auth.service';
+import { PlayService } from './home/content/play/play.service';
+import { ePlay } from './shared/ft_enums';
 import { SessionStorageService } from './shared/ft_services';
 import { SessionStorageQueryService } from './shared/service/session-storage-query.service';
 import { mDate } from './utils/date';
@@ -18,7 +20,8 @@ export class AppComponent {
   constructor(private authService: AuthService,
 				private sQuery: SessionStorageQueryService,
 				private router: Router,
-        private http: HttpClient){
+        private http: HttpClient,
+        private playService: PlayService){
   }
   async ngOnInit(): Promise<void> {
     console.log("Calling setNobody from appComponent on init");
@@ -28,8 +31,12 @@ export class AppComponent {
     const url = 'api/users/nobody';
     await this.http.get<any>(url).toPromise();
   }
+
   @HostListener('window:unload', [ '$event' ])
   async unloadHandler(event: any) {
-	  await this.authService.logout(this.sQuery.getSessionToken());
+    console.log("Calling unloadHandler from appComponent...", event);
+    this.playService.emit(ePlay.ON_FORCE_UPDATE);
+    if (this.sQuery !== undefined && this.sQuery.getSessionToken() !== undefined)
+	    await this.authService.logout(this.sQuery.getSessionToken());
   }
 }

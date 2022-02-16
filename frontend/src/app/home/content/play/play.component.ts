@@ -20,6 +20,7 @@ export class PlayComponent implements OnInit {
 	gameWinnerEmiter: any;
 	matchMakingEmiter: any;
 	infoSystemEmitter: any;
+	forceUpdateEmitter: any;
 	infoSystem: SystemInfoI;
 	constructor(private playService: PlayService,
 				private modalService: NgbModal) {
@@ -32,7 +33,7 @@ export class PlayComponent implements OnInit {
 	ngOnInit(): void {
 		this.gameWinnerEmiter = this.playService.gameWinnerEmiter.subscribe((data: any) => {
 			if (data.showModal == true)
-				this.openModal(data.message, this.playPreference);
+			this.openModal(data.message, this.playPreference);
 		});
 		this.matchMakingEmiter = this.playService.matchMakingEmiter.subscribe((data: any) => {
 			console.log("Wait ROOm emiter", data);
@@ -46,6 +47,10 @@ export class PlayComponent implements OnInit {
 		
 	}
 	ngAfterViewInit(){
+		this.forceUpdateEmitter = this.playService.foreceUpdateEmitter.subscribe((data: any) => {
+			console.log("Calling pepito frmo playComponent...");
+			this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
+		});
 		//this.openModal("Hola !!!", this.playPreference);
 	}
 	
