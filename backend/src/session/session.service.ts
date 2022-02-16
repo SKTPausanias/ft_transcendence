@@ -18,9 +18,7 @@ export class SessionService {
 
 	expires_in: number = 60 * 60 * 2; //2 hours
 	constructor(@InjectRepository(SessionEntity)
-	private sessionRepository: Repository<SessionEntity>,
-	@Inject(forwardRef(() => UserService))
-	private userService: UserService
+	private sessionRepository: Repository<SessionEntity>
 	){}
 
 	async newSession(user: UserEntity){
@@ -132,22 +130,5 @@ export class SessionService {
 			if (sessions !== undefined)
 				await this.sessionRepository.remove(sessions);
 		} catch(e) {}
-	}
-	async closeSession(socket_id: string)
-	{
-		try {
-			const session = await this.sessionRepository.findOne({
-				relations: ["userID"],
-				 where: { socket_id}});
-			const sessions = await this.findByUser(session.userID);
-			if (sessions.length <= 1)
-			{
-				session.userID.online = false;
-				await this.userService.save(session.userID);
-			}
-			await this.sessionRepository.delete(session);
-		} catch (error) {
-			return (error);
-		}
 	}
 }
