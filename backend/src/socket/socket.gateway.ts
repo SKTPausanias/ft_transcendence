@@ -46,7 +46,9 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	async handleDisconnect(client) { //set another way of counting users: This is not a good way
 		--this.clientsConnected;
-		
+		//const sessionData = await this.getSessionData(client);
+		await this.sessionService.closeSession(client.id);
+		//console.log("disconnected: ", sessionData.userInfo.login);
 		console.log("onDisconect(): Client count : ", this.server.engine.clientsCount);
 
 	}
