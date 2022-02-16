@@ -60,7 +60,7 @@ export abstract class Moveable {
 
 	speedUp() {
 		console.log("speddball: ", this.maxSpeedX);
-		if (this.maxSpeedX < 2.5)
-		this.maxSpeedX += 0.1;
+		if (this.maxSpeedX < 5)
+		this.maxSpeedX += 0.2;
 	}
 }

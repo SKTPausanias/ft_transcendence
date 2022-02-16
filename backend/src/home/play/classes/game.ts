@@ -41,7 +41,7 @@ export class Game {
 		this.hits_p1 = 0;
 		this.hits_p2 = 0;
 		this.padTouch = false;
-        this.ball = new Ball(10, 10, 0.5, 0.5, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
+        this.ball = new Ball(10, 10, 0.6, 0.6, { x: this.cWidth / 2, y: this.cHeight / 2 }, { x: 1, y: 1 });
        	this.pad_1 = new Paddle(75, 10, 10000, 10000, { x: 50, y: (this.cHeight / 2) });
 	    this.pad_2 = new Paddle(75, 10, 10000, 10000, { x: this.cWidth - 50, y: (this.cHeight / 2) });
 		this.obstacle = new Paddle(70, 5, 0, 0, { x: this.cWidth / 2, y: (this.cHeight / 2) });
@@ -59,7 +59,7 @@ export class Game {
 			this.max_score = 5;
 		else if (gameMode == ePlayMode.ANGLE)
 			this.max_score = 7;
-		this.speed = 2.5;
+		this.speed = 4;
 		this.gameInterval = setInterval(()=>{
 			this.checkCollisions();
 			this.ball.move();
@@ -186,12 +186,12 @@ export class Game {
 	boost(pad: Paddle){
 		if (pad.shots && pad.shot_number > 0)
 		{
-			this.ball.setHorizontalSpeed(3.5);
+			this.ball.setHorizontalSpeed(5);
 			pad.shot_number--;
 			pad.shots = false;
 		}
 		else {
-			this.ball.setHorizontalSpeed(2.5);
+			this.ball.setHorizontalSpeed(this.speed);
 		}
 	}
 
@@ -230,7 +230,7 @@ export class Game {
 	}
 	
 	speedUp(spd?: number){
-		var speed = spd? spd: 1.6;
+		var speed = spd? spd: 2.6;
 		if (!this.start) {
 			
 			this.ball.setSpeedBallX(speed);
