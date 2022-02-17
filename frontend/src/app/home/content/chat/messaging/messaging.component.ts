@@ -28,6 +28,8 @@ export class MessagingComponent implements OnInit {
 	name: string = '';
 	messages: MessagesI[] = [];
 	members: UserPublicInfoI[];
+	banned: string[] = [];
+	muted: string[] = [];
 	room: ChatRoomI;
 	subscription: any;
 	imBanned: boolean = false;
@@ -45,10 +47,26 @@ export class MessagingComponent implements OnInit {
 		this.subscription = this.chatService.chatFragmentEmmiter.subscribe((data : any)=> {
 			this.chatFragmentEmitterHandler(data);
 		});
+		this.chatService.chatPreferenceEmiter.subscribe((data : any)=> {
+			if (data != undefined)
+			{
+				//console.log("Received data from chatPreferenceEmiter: ", data.chat);
+				if (data.chat != undefined)
+				{
+					this.room = data.chat.active_room;
+					this.banned = this.banned = this.room.banned.map(b => b.login);
+					this.muted = this.muted = this.room.muted.map(m => m.login);
+				}
+			}
+		});
 		this.room = this.msgPreference.chat.active_room;
 		this.members =  this.room.members;
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
-		console.log("prefernce", this.msgPreference.chat.active_room);
+		//extract login for each object in this.room.banned
+		this.banned = this.room.banned.map(b => b.login);
+		this.muted = this.room.muted.map(m => m.login);
+		/* console.log("room", this.room);
+		console.log("prefernce", this.banned); */
 		
 
 	}
@@ -91,6 +109,8 @@ export class MessagingComponent implements OnInit {
 	}
 	private onRoomChange(newRoom: ChatRoomI){
 		this.room = newRoom;
+		this.banned = this.room.banned.map(b => b.login);
+		this.muted = this.room.muted.map(m => m.login);
 		this.chatService.emit(eChat.ON_All_MSG, {room: this.room});
 	}
 	closeRoom(){
@@ -184,10 +204,6 @@ export class MessagingComponent implements OnInit {
 		}
 		else if (event.code == "Enter" || event.code == "NumpadEnter")
 			this.send();
-		
-	}
-
-	private userBanned() {
 		
 	}
 }

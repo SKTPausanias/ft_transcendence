@@ -51,12 +51,10 @@
 										<div class="col-3 offset-3">
 											<span *ngIf="room.admin && room.ownerInfo.login != item.login" class="fa fa-user-secret fa-lg icon-btn" data-toggle="tooltip" title="Set user as admin" (click)="setAsAdmin(item)"></span>
 										</div>
-										<div class="col-3">
-											<span *ngIf="room.admin && room.ownerInfo.login != item.login || room.type =='direct'" class="fa fa-volume-mute fa-lg icon-btn" data-toggle="tooltip" title="Mute this user" (click)="muteUser(item)"></span>
-										</div>
-										<div class="col-3">
-											<span *ngIf="(room.admin && room.ownerInfo.login != item.login) || room.type =='direct'" class="fa fa-lg icon-btn" [ngClass]="{'fa-ban': !directBanned, 'fa-volume-mute': directBanned}" data-toggle="tooltip" title="Ban this user" (click)="blockUser(item)"></span>
-										</div>
+										<div class="col-3" *ngIf="room.admin && room.ownerInfo.login != item.login || room.type =='direct'">
+											<span class="fa fa-lg icon-btn" [ngClass]="{'fa-solid fa-microphone-slash': muted.includes(item.login) == true, 'fa-solid fa-microphone': muted.includes(item.login) == false}" data-toggle="tooltip" title="Mute this user" (click)="muteUser(item)"></span>
+											<span class="fa fa-lg icon-btn" [ngClass]="{'fa-regular fa-eye-slash': banned.includes(item.login) == true, 'fa-regular fa-eye': banned.includes(item.login) == false}" data-toggle="tooltip" title="Ban this user" (click)="blockUser(item)"></span>
+										</div>	
 									<!-- 	<div class="col-3">
 											<span class="fa fa-id-badge fa-lg icon-btn" (click)="openProfile(item)"></span>
 										</div> -->

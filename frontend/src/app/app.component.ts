@@ -32,11 +32,11 @@ export class AppComponent {
     await this.http.get<any>(url).toPromise();
   }
 
-  @HostListener('window:unload', [ '$event' ])
+/*   @HostListener('window:unload', [ '$event' ])
   async unloadHandler(event: any) {
     console.log("Calling unloadHandler from appComponent...", event);
     this.playService.emit(wSocket.ON_FORCE_UPDATE);
     if (this.sQuery !== undefined && this.sQuery.getSessionToken() !== undefined)
 	    await this.authService.logout(this.sQuery.getSessionToken());
-  }
+  } */
 }
