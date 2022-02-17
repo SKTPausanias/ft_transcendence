@@ -46,7 +46,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	async handleDisconnect(client) { //set another way of counting users: This is not a good way
 		--this.clientsConnected;
-		await this.server.emit(ePlay.ON_FORCE_UPDATE);
+		await this.server.emit(wSocket.ON_FORCE_UPDATE);
 		console.log("onDisconect(): Client count : ", this.server.engine.clientsCount);
 
 	}
@@ -108,7 +108,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await this.userService.save(session.userID);
 			await this.socketService.emitToAllFriends(this.server, wSocket.USER_UPDATE, session.userID.login, 
 				friends, User.getPublicInfo(session.userID));
-			await this.server.emit(ePlay.ON_FORCE_UPDATE);
+			await this.server.emit(wSocket.ON_FORCE_UPDATE);
 		}
 		await this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
 		await this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);

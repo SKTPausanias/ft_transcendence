@@ -7,6 +7,7 @@ import { GameI } from "src/app/shared/interface/iPlay";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { ResultModalComponent } from "./modal/result-modal.component";
 import { SystemInfoI } from "src/app/shared/interface/iDash";
+import { SocketService } from "../../socket.service";
 
 @Component({
 	selector: "app-play",
@@ -23,6 +24,7 @@ export class PlayComponent implements OnInit {
 	forceUpdateEmitter: any;
 	infoSystem: SystemInfoI;
 	constructor(private playService: PlayService,
+				private socketService: SocketService,
 				private modalService: NgbModal) {
 		this.infoSystem = <SystemInfoI>{};
 		this.infoSystem.total_users = 0;
@@ -47,7 +49,7 @@ export class PlayComponent implements OnInit {
 		
 	}
 	ngAfterViewInit(){
-		this.forceUpdateEmitter = this.playService.foreceUpdateEmitter.subscribe((data: any) => {
+		this.forceUpdateEmitter = this.socketService.foreceUpdateEmitter.subscribe((data: any) => {
 			console.log("Calling pepito frmo playComponent...");
 			this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		});

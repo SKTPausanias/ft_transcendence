@@ -14,6 +14,7 @@ import { DashboardService } from './dashboard.service';
 import { StatusMessageI } from '../chat/modal/statusMsgI';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { SocketService } from '../../socket.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,9 +29,11 @@ export class DashboardComponent implements OnInit {
 	session = this.sQuery.getSessionToken();
 	getRankingsEmitter: any;
 	getInfoSystemEmitter:any;
+	forceUpdateEmitter: any;
 	ranking: UserPublicInfoI[] = [];
 	infoSystem: SystemInfoI;
 	searchResult: any[] = [];
+
 	
 	statusMsg: StatusMessageI = <StatusMessageI>{};
 	
@@ -40,6 +43,7 @@ export class DashboardComponent implements OnInit {
 	 	public homeService: HomeService,
 	 	private playService: PlayService,
 		private chatService: ChatService,
+		private socketService: SocketService,
 		private router: Router
 	  ) {
 			this.initVariables(true);
@@ -51,6 +55,10 @@ export class DashboardComponent implements OnInit {
 	  }
   
 	ngOnInit() {
+		this.forceUpdateEmitter = this.socketService.foreceUpdateEmitter.subscribe((data: any) => {
+			console.log("Calling pepito frmo playComponent...");
+			this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
+		});
 		this.initSearchboxListener();
 		this.getRankingsEmitter = this.playService.getRankingEmiter.subscribe((data: any) => {
 			if (data !== undefined) {

@@ -17,15 +17,20 @@ export class SocketService {
 	socketEmiter: EventEmitter<any>;
 	chatEmiter: EventEmitter<any>;
 	playEmiter: EventEmitter<any>;
+	foreceUpdateEmitter: EventEmitter<any>;
+	
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private router: Router, private chatService: ChatService, 
 	private playService: PlayService, private liveService: LiveService) {
+		
+		
 	}
 	
 	public connect(session : SessionI, sharedPreference: SharedPreferencesI){
 		this.socketEmiter = new EventEmitter<any>();
 		this.chatEmiter = new EventEmitter<any>();
 		this.playEmiter = new EventEmitter<any>();
+		this.foreceUpdateEmitter = new EventEmitter<any>();
 		this.sharedPreferences = sharedPreference;
 		this.init(session);
 		this.onConnect();
@@ -37,6 +42,7 @@ export class SocketService {
 		this.onFriendAccept();
 		this.onFriendRemove();
 		this.onDeleteAccount();
+		this.onForceUpdate();
 		this.chatService.initGateway(this.socket, sharedPreference);
 		this.playService.initGateway(this.socket, sharedPreference);
 		this.liveService.initGateway(this.socket, sharedPreference);
@@ -137,6 +143,13 @@ export class SocketService {
 					this.sharedPreferences.friends.filter(obj => obj.login != emiter);
 				this.socketEmiter.emit(this.sharedPreferences);
 			}catch(error){}
+		})
+	}
+	private onForceUpdate(){
+		this.socket.on(wSocket.ON_FORCE_UPDATE, () => {
+			try {
+				this.foreceUpdateEmitter.emit();
+			} catch(e) {}
 		})
 	}
 

@@ -434,9 +434,6 @@ export class PlayGateway {
   async onGetInfoSystem(client: any): Promise<void> {
     this.server.emit(ePlay.ON_GET_INFO_SYSTEM, await this.playService.getInfoSystem());
   }
-  @SubscribeMessage(ePlay.ON_FORCE_UPDATE)
-  async onForceChange(client: any): Promise<void> {
-    this.server.emit(ePlay.ON_FORCE_UPDATE);
-  }
+ 
 }
 

@@ -22,8 +22,7 @@ export enum ePlay {
 	ON_SET_LIVE_VIEWERS = "on-set-live-viewers",
 	ON_GET_LIVE_VIEWERS = "on-get-live-viewers",
 	ON_GET_RANKING = "on-get-ranking",
-	ON_GET_INFO_SYSTEM = "on-get-info-system",
-	ON_FORCE_UPDATE = "on-force-update"
+	ON_GET_INFO_SYSTEM = "on-get-info-system"
 }
 
 export enum eRequestPlayer{
