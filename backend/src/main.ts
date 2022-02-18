@@ -9,5 +9,6 @@ async function bootstrap() {
   console.log("\x1b[36m%s", "Server ready:", "\x1b[35m", await app.getUrl(), "\x1b[0m");
   var obj = process.env.CONTRIBUTORS.split(' ');
   console.log(obj);
+  console.log(process.env.TEST)
 }
 bootstrap();

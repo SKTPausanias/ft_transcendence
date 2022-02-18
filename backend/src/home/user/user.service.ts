@@ -276,9 +276,9 @@ export class UserService {
 
 		var name: string = "nobody"
 		var usr:UserEntity =  <UserEntity>{};
-		
+		if (await this.userRepository.findOne({where: {login : name}}) != undefined)
+			return ;
 		try {
-			usr.id = 1000000;
 			usr.login = name;
 			usr.nickname = name;
 			usr.first_name = name;
