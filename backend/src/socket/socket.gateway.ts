@@ -123,8 +123,6 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await this.server.to(element.socket_id).emit(wSocket.FORCE_DISCONNECT);
 		});
 		this.sessionService.removeSesions(sessions);
-		console.log("socketID from socketGateway : ", session.socket_id);
-		console.log("Closing sessions", sessions);
 	}
 
 	private async getSessionData(client: any){

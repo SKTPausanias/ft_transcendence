@@ -56,7 +56,6 @@ export class DashboardComponent implements OnInit {
   
 	ngOnInit() {
 		this.forceUpdateEmitter = this.socketService.foreceUpdateEmitter.subscribe((data: any) => {
-			console.log("Calling pepito frmo playComponent...");
 			this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		});
 		this.initSearchboxListener();

@@ -50,10 +50,8 @@ export class PlayComponent implements OnInit {
 	}
 	ngAfterViewInit(){
 		this.forceUpdateEmitter = this.socketService.foreceUpdateEmitter.subscribe((data: any) => {
-			console.log("Calling pepito frmo playComponent...");
 			this.playService.emit(ePlay.ON_GET_INFO_SYSTEM);
 		});
-		//this.openModal("Hola !!!", this.playPreference);
 	}
 	
 	ngOnDestroy(): void {
