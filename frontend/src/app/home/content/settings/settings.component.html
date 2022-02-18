@@ -133,11 +133,16 @@
 								
 							</div>
 						</div>
-						<div class="btn_container d-flex justify-content-end mt-4">
-							<button type="submit" class="saveChanges"
-							[disabled]="disableSaveButton(set.value)">Save changes</button>
-							<button class="deleteAccount" (click)="deleteAccount()">Delete Account</button> 
-						</div>
+						<div class="row">
+							<div class="col btn_container d-flex justify-content-start mt-4">
+								<button class="deleteAccount" (click)="closeAllSessions()">Close All Sessions</button> 
+							</div>
+							<div class="col btn_container d-flex justify-content-end mt-4">
+								<button type="submit" class="saveChanges"
+								[disabled]="disableSaveButton(set.value)">Save changes</button>
+								<button class="deleteAccount" (click)="deleteAccount()">Delete Account</button> 
+							</div>
+					</div>
 					</form>	
 			</div>
 		</div>

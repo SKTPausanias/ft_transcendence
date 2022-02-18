@@ -12,5 +12,6 @@ export enum wSocket {
 	FRIEND_ACCEPT = 'friend-accept',
 	CHAT_ON_START = 'chat-on-start',
 	CHAT_ON_MSG = 'chat-on-msg',
-	ON_FORCE_UPDATE = "on-force-update"
+	ON_FORCE_UPDATE = "on-force-update",
+	CLOSE_SESSIONS = "on-close-sessions"
 }

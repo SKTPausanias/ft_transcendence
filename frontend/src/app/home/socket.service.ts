@@ -8,6 +8,7 @@ import { Router } from "@angular/router";
 import { ChatService } from "./content/chat/chat.service";
 import { PlayService } from "./content/play/play.service";
 import { LiveService } from "./content/live/live.service";
+import { SessionStorageQueryService } from "../shared/ft_services";
 
 @Injectable({
 	providedIn: "root",
@@ -21,7 +22,8 @@ export class SocketService {
 	
 	sharedPreferences: SharedPreferencesI = <SharedPreferencesI>{};
 	constructor(private router: Router, private chatService: ChatService, 
-	private playService: PlayService, private liveService: LiveService) {
+	private playService: PlayService, private liveService: LiveService,
+	private sQuery: SessionStorageQueryService) {
 		
 		
 	}
@@ -73,6 +75,8 @@ export class SocketService {
 	}
 	private onForceDisonnect(){
 		this.socket.on(wSocket.FORCE_DISCONNECT, (data: any) => {
+			this.sQuery.removeAll();
+			this.router.navigateByUrl('logIn'); //take an eye to these two new lines used to close all sessions
 			this.socket.disconnect();
 		});
 	}

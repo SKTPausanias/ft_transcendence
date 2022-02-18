@@ -10,5 +10,6 @@ export enum wSocket {
 	FRIEND_INVITATION = 'friend-invitation',
 	FRIEND_DELETE = 'friend-delete',
 	FRIEND_ACCEPT = 'friend-accept',
-	ON_FORCE_UPDATE = "on-force-update"
+	ON_FORCE_UPDATE = "on-force-update",
+	CLOSE_SESSIONS = "on-close-sessions"
 }

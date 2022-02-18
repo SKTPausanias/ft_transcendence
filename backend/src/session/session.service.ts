@@ -113,6 +113,14 @@ export class SessionService {
 			}});
 		return (sessions);
 	}
+	async findExceptOwn(session: SessionEntity): Promise<SessionEntity[] | undefined> {
+		try {
+			return (await this.sessionRepository.find({ 
+				relations: ["userID"], where: { userID: session.userID, socket_id: Not(session.socket_id) }}));
+		} catch(e) {
+			return (undefined);
+		}
+	}
 
 	async findByUser(user: UserEntity){
 		try {
@@ -130,5 +138,8 @@ export class SessionService {
 			if (sessions !== undefined)
 				await this.sessionRepository.remove(sessions);
 		} catch(e) {}
+	}
+	async removeSesions(sessions: SessionEntity []): Promise<void> {
+		this.sessionRepository.remove(sessions);
 	}
 }

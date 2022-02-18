@@ -114,6 +114,19 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		await this.server.to(client.id).emit(wSocket.FORCE_DISCONNECT);
 	}
 
+	@SubscribeMessage(wSocket.CLOSE_SESSIONS)
+	async closeSessions(client) {
+		const token = client.handshake.headers.authorization.split(' ')[1];
+		const session = await this.sessionService.findSessionWithRelation(token);
+		const sessions = await this.sessionService.findExceptOwn(session);
+		sessions.forEach(async element => {
+			await this.server.to(element.socket_id).emit(wSocket.FORCE_DISCONNECT);
+		});
+		this.sessionService.removeSesions(sessions);
+		console.log("socketID from socketGateway : ", session.socket_id);
+		console.log("Closing sessions", sessions);
+	}
+
 	private async getSessionData(client: any){
 		const token = client.handshake.headers.authorization.split(' ')[1];
 		return (await this.socketService.getSessionData(token, client.id));

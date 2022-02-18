@@ -136,6 +136,17 @@ export class SettingsComponent implements OnInit {
 		else
 			this.formFactor = false;
 	}
+	async closeAllSessions(): Promise<void>{
+		if (confirm('Are you sure you want all your sessions?')) {
+			this.socketService.emit(wSocket.CLOSE_SESSIONS, {
+					emiter : this.settingsPreference.userInfo.login
+				});
+			//this.sQuery.removeAll();
+			//this.router.navigateByUrl('logIn');
+		}
+		else
+			this.showMsgBox = false;
+	}
 
 	async deleteAccount(): Promise<void> {
 		if (confirm('Are you sure you want to delete your account? You won\'t get it back!')) {
