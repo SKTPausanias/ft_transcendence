@@ -7,7 +7,10 @@ export const loc = {
 };
 
 export const pub = {
-  ftAuthUrl: "https://api.intra.42.fr/oauth/authorize?client_id=484b3a764e26aec9b3220318c9a86040f303a892182e81fa7068f136d815a174&redirect_uri=http%3A%2F%2Fwww.ph.noip.me%3A4200%2Fauth&response_type=code"
+	ftAuthUrl: "https://api.intra.42.fr/oauth/authorize?client_id=484b3a764e26aec9b3220318c9a86040f303a892182e81fa7068f136d815a174&redirect_uri=http%3A%2F%2Fwww.ph.noip.me%3A4200%2Fauth&response_type=code"
+  };
+export const loc_ip = {
+	ftAuthUrl: "https://api.intra.42.fr/oauth/authorize?client_id=e65dc65eea7945ab09485e75e19dcd9fd2cb1186545f4183ba153b6b04983855&redirect_uri=http%3A%2F%2F192.168.1.49%3A4200%2Fauth&response_type=code"
 };
 
 export const environment = {
