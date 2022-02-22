@@ -13,19 +13,15 @@ services:
       - 5432:5432
   frontend:
     build: ./frontend
+    environment:
+      - IP=${IP}
     ports:
       - 4200:4200
-    volumes: 
-      - ./frontend:/app
-      - /app/node_modules/
   backend: 
     build: ./backend
+    environment:
+      - IP=${IP}
     ports: 
       - 3000:3000
-    volumes:
-      - ./backend:/app
-      - /app/node_modules/
-    env_file:
-      - ./backend/.env
 volumes: 
   pgdata:
