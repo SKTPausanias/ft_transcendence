@@ -108,7 +108,7 @@ export class SettingsComponent implements OnInit {
 			this.settingsPreference.userInfo.nickname = this.formNickname = nickname;
 			this.settingsPreference.userInfo.email = this.formEmail = email;
 			this.settingsPreference.userInfo.factor_enabled = this.formFactor = factor;
-			this.showMsg("Email or username not availible!", true);
+			this.showMsg("Unable to update changes:(", true);
 		}
 	}
 	async onUploadAvatar(value: any){

@@ -4,7 +4,7 @@ import e from "express";
 import { SessionEntity } from "src/session/session.entity";
 import { UserEntity } from "./user.entity";
 import { UserI, UserInfoI, UserPublicInfoI, UserRegI } from "./userI";
-import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString } from 'class-validator'
+import { IsNumber, Matches, IsEmail, IsBoolean, MaxLength, MinLength, IsString, isAlphanumeric } from 'class-validator'
 import { FriendEntity } from "../friends/friend.entity";
 
 
@@ -12,17 +12,17 @@ export class User implements UserI {
 
 	ft_id:			number;
 
-	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
+	@Matches(/^[\u0020\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00E1\u00E9\u00ED\u00F3\u00FA\u00C1\u00C9\u00CD\u00D3\u00DA\u00DC\u00FC\u00C4\u00CB\u00D6\u00CF\u00E4\u00EB\u00EF\u00F6\u00D1\u00F1]+$/, {message: 'Invalid characters'})
 	first_name: 	string;
 
-	@Matches(/^([a-zA-Z]+([ ]?[a-zA-Z]?['-]?[a-zA-Z]+)*)$/)
+	@Matches(/^[\u0020\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00E1\u00E9\u00ED\u00F3\u00FA\u00C1\u00C9\u00CD\u00D3\u00DA\u00DC\u00FC\u00C4\u00CB\u00D6\u00CF\u00E4\u00EB\u00EF\u00F6\u00D1\u00F1]+$/, {message: 'Invalid characters'})
 	last_name: 		string;
 
 	@MaxLength(12)
 	@MinLength(3)
 	login:			string;
 
-	@Matches(/^[a-zA-Z0-9\-=\_]{3,12}$/, { message: 'Invalid nickname' })
+	@Matches(/^[\u0020\u0030-\u0039\u0041-\u005A\u0061-\u007A\u00E1\u00E9\u00ED\u00F3\u00FA\u00C1\u00C9\u00CD\u00D3\u00DA\u00DC\u00FC\u00C4\u00CB\u00D6\u00CF\u00E4\u00EB\u00EF\u00F6\u00D1\u00F1]+$/, {message: 'Invalid characters'})
 	@MaxLength(12, { message: 'nickname too long: max 12 characters' })
 	@MinLength(3, { message: 'nickname too short: min 5 characters' })
 	nickname:		string;
