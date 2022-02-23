@@ -5,12 +5,16 @@
 !/backend/.env_test
 !/backend/package.json
 !/backend/tsconfig.*
+!/backend/Dockerfile
+!/backend/ip_config.sh
 #Frontend exluded files
 /frontend/*
 !/frontend/src
 !/frontend/angular.json
 !/frontend/package.json
 !/frontend/tsconfig.*
+!/frontend/Dockerfile
+!/frontend/ip_config.sh
 
 sendgrid.env
 
