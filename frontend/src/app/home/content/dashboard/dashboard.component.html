@@ -1,101 +1,76 @@
 <div class="cont vh-100">
-  <div id="titleBar">
-    <h4 class="text-light border-bottom m-0 p-2">Dashboard</h4>
-  </div>
-  <div class="row"> <!--START: First row -->
-    <div class="dash-ctn col"> <!-- START: First col-->
-      <div class="quick-dash-content">
-        <div class="info-ctn col">
-          <h4 class="text-light border-bottom">Top ten</h4>
-          <div class="row">
-            <div class="col">
-              <p class="mb-1">#Position</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">NickName</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">Victories</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">defeats</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">Total hits</p>
-            </div>
-          </div>
-          <div class="row" *ngFor="let player of ranking; let i=index;">
-            <div class="col">
-              <p class="mb-1"><i>#{{i + 1}}</i></p>
-            </div>
-            <div class="col">
-              <p class="mb-1">{{player.nickname}}</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">{{player.victories}}</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">{{player.defeats}}</p>
-            </div>
-            <div class="col">
-              <p class="mb-1">{{player.hits}}</p>
-            </div>
-          </div>
-        </div>
-        <div>
-        </div>
-      </div>
-    </div> <!-- END First Col -->
-    <div class="info-dash-ctn col"> <!--START: Second col-->
-        <div class="quick-dash-content">
-          <div class="info-ctn col">
-            <h4 class="text-light border-bottom">Info</h4>
-            <i><small class="mt-3">Total users: {{infoSystem.total_users}}</small></i><br>
-            <i><small class="mt-3">Online users: {{infoSystem.online_users}}</small></i><br>
-            <i><small class="mt-3">In game users: {{infoSystem.in_game_users}}</small></i><br>
-          </div>
-        </div>
-    </div> <!--END: Second col-->
-  </div> <!--END First row-->
-
-  <div class="row friend-dash-ctn"> <!--START: Second row-->
-    <div class="col">
-      <div class="quick-dash-content">
-        <div class="input-group pb-3 mt-3">
-          <div class="container">
-            <div class="d-flex justify-content-center">
-              <div class="searchbar mx-2">
-                <input #searchUsers [(ngModel)]="search" class="search_input" type="text" name="" placeholder="Search {{type}}...">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div *ngIf='searchResult.length > 0' class="scrool pb-3">
-          <div class="ms-2 pt-2 search-results" *ngFor='let item of searchResult'>
-            <!-- friend -->
-            <div class="border-bottom border-light">
-              <div class="row item-ctn" >
-                <div class="col-9 profile" (click)="openProfile(item)">
-                  <img class="ico_s img-fluid me-2" src="{{item.avatar}}" alt="image">	
-                  <h5 class="d-inline me-5">{{item.nickname}}</h5>
-                </div>
-                <div class="col-3">
-                  <div class="h-100 d-flex justify-content-center">
-                    <span  class="fa fa-comment-dots  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="chat with this user" (click)="startChat(item)"></span>
-                    <span *ngIf="isNotFriend(item)" class="fa fa-user-plus fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Start a friendship" (click)="addFriendShip(item)"></span>
-                    <span class="fa fa-table-tennis  fa-lg icon-btn float-right" style="margin: auto;" data-toggle="tooltip" title="Request to play pong" (click)="playPong(item)"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!--END Second row-->
+	<div id="titleBar">
+		<h4 class="text-light border-bottom m-0 p-2">Home</h4>
+	</div>
+	<div class="row p-4 mx-4">
+		<div class="table-ctn col-7">
+			<table class="table table-sm">
+				<thead>
+					<tr>
+						<th scope="col" class="text-center">Rank</th>
+						<th scope="col" class="text-start">Nickname</th>
+						<th scope="col" class="text-center">Victories</th>
+						<th scope="col" class="text-center">Defeats</th>
+						<th scope="col" class="text-center">Total hits</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let player of ranking; let i=index;">
+						<th scope="row" class="text-center" style="line-height: 50px;">
+							<i *ngIf='i > 2'>{{i + 1}}</i>
+							<img *ngIf='i == 0' src="/assets/img/ico/gold.png" style="width: 35px; height: 35px;" alt="">
+							<img *ngIf='i == 1' src="/assets/img/ico/silver.png" style="width: 35px; height: 35px;" alt="">
+							<img *ngIf='i == 2' src="/assets/img/ico/bronze.png" style="width: 35px; height: 35px;" alt="">
+						</th>
+						<td class="text-center">
+							<div class="row ">
+								<div class="col-2">
+									<img src="{{player.avatar}}" class="ico_s" alt="">
+								</div>
+								<div class="col-10 text-start" style="line-height: 50px;">
+									<p class="mb-1 ps-2">{{player.nickname}}</p>
+								</div>
+							</div>
+						</td>
+						<td class="text-center" style="line-height: 50px;">{{player.victories}}</td>
+						<td class="text-center" style="line-height: 50px;">{{player.defeats}}</td>
+						<td class="text-center" style="line-height: 50px;">{{player.hits}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="col text-center">
+			<div style="position: relative;">
+				<div class="mb-4">
+					<input #searchUsers [(ngModel)]="search" type="text" name=""
+					placeholder="Search users...">
+				</div>
+				<div>
+					<div class="info-ctn">
+						<h4 class="text-light border-bottom">Info</h4>
+						<i><small>Total users: {{infoSystem.total_users}}</small></i><br>
+						<i><small>Online users: {{infoSystem.online_users}}</small></i><br>
+						<i><small>In game users: {{infoSystem.in_game_users}}</small></i><br>
+					</div>
+				</div>
+				<div class="search-result-ctn scrool">
+					<div *ngFor='let item of searchResult' class="search-row text-start p-2 px-3">
+						<div class="search-row row" >
+							<div class="col-8" (click)="openProfile(item)">
+								<img src="{{item.avatar}}" class="ico_s" alt="">
+								<p class="d-inline ms-3">{{item.nickname}}</p>
+							</div>
+							<div class="col-4">
+								<span  class="d-inline fa fa-comment-dots  fa-lg float-right me-2" style="margin: auto; line-height: 50px;" data-toggle="tooltip" title="chat with this user" (click)="startChat(item)"></span>
+								<span *ngIf="isNotFriend(item)" class="d-inline fa fa-user-plus fa-lg float-right me-2" style="margin: auto; line-height: 50px;" data-toggle="tooltip" title="Start a friendship" (click)="addFriendShip(item)"></span>
+								<span class="d-inline fa fa-table-tennis  fa-lg float-right me-2" style="margin: auto; line-height: 50px;" data-toggle="tooltip" title="Request to play pong" (click)="playPong(item)"></span>
+							</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+		</div> 
+	</div>
+</div>
 
 
-
-
-
-</div> <!--END OF MAIN CONTAINER-->

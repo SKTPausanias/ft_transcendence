@@ -87,8 +87,7 @@ export class DashboardComponent implements OnInit {
 		fromEvent(this.searchInput.nativeElement, 'keyup').pipe(
 			map((event: any) => {
 				return event.target.value;
-			})	//, filter(res => res.length > 2)
-					, debounceTime(1000)
+			})		, debounceTime(100)
 					, distinctUntilChanged()).subscribe((text: string) => {
 					if (text.length <= 0)
 						this.searchResult = [];
