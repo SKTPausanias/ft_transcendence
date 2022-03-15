@@ -86,4 +86,5 @@ npm run start:dev
 # FRONTEND
 npm install   
 npm start    
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
+[contributors-url]: https://github.com/SKTPausanias/ft_transcendence/graphs/contributors
+[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
