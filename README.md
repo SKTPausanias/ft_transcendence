@@ -31,7 +31,7 @@
     </ol>
 </details>
 
-
+<img src="./ezgif.com-gif-maker.gif" alt="My Project GIF">
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
