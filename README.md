@@ -11,8 +11,9 @@
 </div>
 
 <div align="center">
-  <img src="./ezgif.com-gif-maker.gif" alt="My Project GIF">
+  <img src="./media/transcendenceGif1.gif" alt="My Project GIF">
 </div>
+<br>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -41,6 +42,12 @@
 Transcendence is a web application where you can play the game pong against other players, climb up the ladder to prove how good you are! 
 
 In the platform you are able to chat with other users, create or join public and private channels, add friends and check their profiles, and of course challenge them into a good old pong game, or even try a different game mode
+
+<br>
+<div align="center">
+  <img src="./media/transcendenceGif3.gif" alt="My Project GIF">
+</div>
+<br>
 
 <!-- TECHNOLOGIES -->
 ## Technologies
@@ -73,3 +80,9 @@ cd ..
 cd frontend
 npm start
 </pre>
+
+<br>
+<div align="center">
+  <img src="./media/transcendenceGif2.gif" alt="My Project GIF">
+</div>
+<br>
