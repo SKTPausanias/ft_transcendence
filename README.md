@@ -10,10 +10,15 @@
   </p>
 </div>
 
+<div align="center">
+  <img src="./ezgif.com-gif-maker.gif" alt="My Project GIF">
+</div>
+
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
     <ol>
+      <br>
       <li>
         <a href="#about-the-project">About The Project</a>
       </li>
@@ -23,15 +28,13 @@
       <li>
         <a href="#installation">Installation</a>
       </li>
-      <li><a href="#usage">Usage</a></li>
+      <!--<li><a href="#usage">Usage</a></li>
       <li><a href="#contributing">Contributing</a></li>
       <li><a href="#license">License</a></li>
       <li><a href="#contact">Contact</a></li>
-      <li><a href="#acknowledgments">Acknowledgments</a></li>
+      <li><a href="#acknowledgments">Acknowledgments</a></li>-->
     </ol>
 </details>
-
-<img src="./ezgif.com-gif-maker.gif" alt="My Project GIF">
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -41,10 +44,32 @@ In the platform you are able to chat with other users, create or join public and
 
 <!-- TECHNOLOGIES -->
 ## Technologies
+* [typescript](https://www.typescriptlang.org/)
 * [nestjs](https://nestjs.com/)
 * [Angular](https://angular.io/)
 * [Bootstrap](https://getbootstrap.com)
+* [postgresql](https://www.postgresql.org/)
+* [typeOrm](https://typeorm.io/)
+* [docker](https://www.docker.com/)
+* [docker-compose](https://docs.docker.com/compose/)
 
 <!-- INSTALLATION -->
 ## Installation
 
+### Install it using Docker and Docker Compose
+
+<pre>
+git clone git@github.com:SKTPausanias/ft_transcendence.git
+docker-compose up --build
+</pre>
+
+### Install it locally
+
+<pre>
+git clone git@github.com:SKTPausanias/ft_transcendence.git
+cd backend
+npm start
+cd ..
+cd frontend
+npm start
+</pre>
