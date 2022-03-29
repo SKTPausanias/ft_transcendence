@@ -83,6 +83,6 @@ npm start
 
 <br>
 <div align="center">
-  <img src="" alt="My Project GIF">
+  <img src="./media/transcendenceGif2.gif" alt="My Project GIF">
 </div>
 <br>
